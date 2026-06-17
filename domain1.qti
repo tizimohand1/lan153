@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<questestinterop>
+  <assessment title="CompTIA Security+ SY0-701 Domain 1: General Security Concepts">
+    <!-- Question 1: Multiple Choice -->
+    <item title="What does the CIA triad stand for?" ident="q1">
+      <presentation>
+        <material>
+          <mattext>What does the CIA triad stand for?</mattext>
+        </material>
+        <response_lid ident="response1">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Confidentiality, Integrity, Availability</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Control, Input, Authentication</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Cryptography, Identity, Access</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Control, Integrity, Audit</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response1">A</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 2: Multiple Choice -->
+    <item title="Which of the following is an example of a technical security control?" ident="q2">
+      <presentation>
+        <material>
+          <mattext>Which of the following is an example of a technical security control?</mattext>
+        </material>
+        <response_lid ident="response2">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Security Policy</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>CCTV Surveillance</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Firewall</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Security Awareness Training</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response2">C</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 3: Multiple Choice -->
+    <item title="What is the concept of 'least privilege'?" ident="q3">
+      <presentation>
+        <material>
+          <mattext>What is the concept of 'least privilege'?</mattext>
+        </material>
+        <response_lid ident="response3">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Giving users access to all company resources</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Providing each user only the permissions needed to do their job</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Assigning all users the same role</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Requiring two people for every decision</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response3">B</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 4: Multiple Choice -->
+    <item title="Which term is used for verifying a user's identity?" ident="q4">
+      <presentation>
+        <material>
+          <mattext>Which term is used for verifying a user's identity?</mattext>
+        </material>
+        <response_lid ident="response4">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Authorization</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Accounting</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Authentication</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Availability</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response4">C</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 5: Multiple Choice -->
+    <item title="Non-repudiation ensures what?" ident="q5">
+      <presentation>
+        <material>
+          <mattext>Non-repudiation ensures what?</mattext>
+        </material>
+        <response_lid ident="response5">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Data remains confidential</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>The origin of a message can be verified</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Data is always available</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Only authorized users can access data</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response5">B</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 6: Multiple Choice -->
+    <item title="Which security principle states that you should verify everything and trust nothing?" ident="q6">
+      <presentation>
+        <material>
+          <mattext>Which security principle states that you should verify everything and trust nothing?</mattext>
+        </material>
+        <response_lid ident="response6">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Zero Trust</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Least Privilege</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Need to Know</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Separation of Duties</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response6">A</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 7: Multiple Choice -->
+    <item title="Which of the following is a preventive control?" ident="q7">
+      <presentation>
+        <material>
+          <mattext>Which of the following is a preventive control?</mattext>
+        </material>
+        <response_lid ident="response7">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Alarm system</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Security awareness training</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Firewall rule blocking unapproved ports</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Video camera recording</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response7">C</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 8: Multiple Choice -->
+    <item title="A digital signature primarily provides which of the following?" ident="q8">
+      <presentation>
+        <material>
+          <mattext>A digital signature primarily provides which of the following?</mattext>
+        </material>
+        <response_lid ident="response8">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Availability</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Integrity</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Encryption</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Non-repudiation</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response8">D</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 9: Multiple Choice -->
+    <item title="Which of these best describes the process of hashing?" ident="q9">
+      <presentation>
+        <material>
+          <mattext>Which of these best describes the process of hashing?</mattext>
+        </material>
+        <response_lid ident="response9">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Encrypting for confidentiality</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Converting data to a fixed-length value</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Verifying authorization</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Ensuring availability</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response9">B</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 10: Multiple Choice -->
+    <item title="Which of these is an example of a physical security control?" ident="q10">
+      <presentation>
+        <material>
+          <mattext>Which of these is an example of a physical security control?</mattext>
+        </material>
+        <response_lid ident="response10">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Encryption</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Locking doors</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Password policy</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>User training</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response10">B</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 11: Multiple Choice -->
+    <item title="Salting in password security helps to:" ident="q11">
+      <presentation>
+        <material>
+          <mattext>Salting in password security helps to:</mattext>
+        </material>
+        <response_lid ident="response11">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Increase password length</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Prevent precomputed hash attacks</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Allow password resets</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Allow multi-factor authentication</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response11">B</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 12: Multiple Choice -->
+    <item title="Which of the following BEST defines 'availability' in the CIA triad?" ident="q12">
+      <presentation>
+        <material>
+          <mattext>Which of the following BEST defines 'availability' in the CIA triad?</mattext>
+        </material>
+        <response_lid ident="response12">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Information is correct and not altered</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Data is accessible when needed</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Only authorized people can see data</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Users can prove senders' identity</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response12">B</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 13: Multiple Choice -->
+    <item title="Blockchain is MOST often used to provide which security property?" ident="q13">
+      <presentation>
+        <material>
+          <mattext>Blockchain is MOST often used to provide which security property?</mattext>
+        </material>
+        <response_lid ident="response13">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Confidentiality</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Obfuscation</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Integrity</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Availability</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <varequal respident="response13">C</varequal>
+          </conditionvar>
+          <setvar action="Set">100</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 14: Multiple Answer -->
+    <item title="Which of the following are examples of security controls? (Select all that apply)" ident="q14">
+      <presentation>
+        <material>
+          <mattext>Which of the following are examples of security controls? (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response14" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Physical security</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Technical controls</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Managerial controls</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>User authentication</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response14">A</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response14">B</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response14">C</varequal>
+          </conditionvar>
+          <setvar action="Add">33.34</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 15: Multiple Answer -->
+    <item title="Which are main functions of security controls? (Select all that apply)" ident="q15">
+      <presentation>
+        <material>
+          <mattext>Which are main functions of security controls? (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response15" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Preventive</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Deterrent</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Operational</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Corrective</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response15">A</varequal>
+          </conditionvar>
+          <setvar action="Add">25</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response15">B</varequal>
+          </conditionvar>
+          <setvar action="Add">25</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response15">D</varequal>
+          </conditionvar>
+          <setvar action="Add">25</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 16: Multiple Answer -->
+    <item title="Which of these concepts are part of AAA? (Select all that apply)" ident="q16">
+      <presentation>
+        <material>
+          <mattext>Which of these concepts are part of AAA? (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response16" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Authentication</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Authorization</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Accounting</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Application</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response16">A</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response16">B</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response16">C</varequal>
+          </conditionvar>
+          <setvar action="Add">33.34</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 17: Multiple Answer -->
+    <item title="What are types of cryptographic solutions? (Select all that apply)" ident="q17">
+      <presentation>
+        <material>
+          <mattext>What are types of cryptographic solutions? (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response17" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Encryption</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Hashing</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Tokenization</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Patching</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response17">A</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response17">B</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response17">C</varequal>
+          </conditionvar>
+          <setvar action="Add">33.34</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 18: Multiple Answer -->
+    <item title="Which are examples of operational security controls? (Select all that apply)" ident="q18">
+      <presentation>
+        <material>
+          <mattext>Which are examples of operational security controls? (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response18" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Incident response processes</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Firewall rules</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Physical locks</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Security awareness training</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response18">A</varequal>
+          </conditionvar>
+          <setvar action="Add">50</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response18">D</varequal>
+          </conditionvar>
+          <setvar action="Add">50</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 19: Multiple Answer -->
+    <item title="Which actions are part of change management? (Select all that apply)" ident="q19">
+      <presentation>
+        <material>
+          <mattext>Which actions are part of change management? (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response19" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Documenting changes</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Version Control</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>User authentication</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Assessing business impact</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response19">A</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response19">B</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response19">D</varequal>
+          </conditionvar>
+          <setvar action="Add">33.34</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 20: Multiple Answer -->
+    <item title="Key benefits of effective change management include: (Select all that apply)" ident="q20">
+      <presentation>
+        <material>
+          <mattext>Key benefits of effective change management include: (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response20" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Reduced risk of errors</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Improved system availability</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Unauthorized changes</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Better troubleshooting</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response20">A</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response20">B</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response20">D</varequal>
+          </conditionvar>
+          <setvar action="Add">33.34</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 21: Multiple Answer -->
+    <item title="Forms of physical security include: (Select all that apply)" ident="q21">
+      <presentation>
+        <material>
+          <mattext>Forms of physical security include: (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response21" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Fences</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Biometric sensors</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Firewalls</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Security guards</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response21">A</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response21">B</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response21">D</varequal>
+          </conditionvar>
+          <setvar action="Add">33.34</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 22: Multiple Answer -->
+    <item title="In cryptography, what are uses for public key infrastructure (PKI)? (Select all that apply)" ident="q22">
+      <presentation>
+        <material>
+          <mattext>In cryptography, what are uses for public key infrastructure (PKI)? (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response22" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Email signing</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Website authentication</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Data tokenization</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Document encryption</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response22">A</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response22">B</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response22">D</varequal>
+          </conditionvar>
+          <setvar action="Add">33.34</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 23: Multiple Answer -->
+    <item title="Benefits of security documentation include: (Select all that apply)" ident="q23">
+      <presentation>
+        <material>
+          <mattext>Benefits of security documentation include: (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response23" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Clear procedures</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Consistent policy enforcement</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Less management oversight</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Easier troubleshooting</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response23">A</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response23">B</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response23">D</varequal>
+          </conditionvar>
+          <setvar action="Add">33.34</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 24: Multiple Answer -->
+    <item title="Which processes help protect data integrity? (Select all that apply)" ident="q24">
+      <presentation>
+        <material>
+          <mattext>Which processes help protect data integrity? (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response24" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>Hashing</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Encryption</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Salting</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Backup</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response24">A</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response24">C</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response24">D</varequal>
+          </conditionvar>
+          <setvar action="Add">33.34</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <!-- Question 25: Multiple Answer -->
+    <item title="Which aspects are included in the 'security baseline' for systems? (Select all that apply)" ident="q25">
+      <presentation>
+        <material>
+          <mattext>Which aspects are included in the 'security baseline' for systems? (Select all that apply)</mattext>
+        </material>
+        <response_lid ident="response25" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="A"><material><mattext>System configuration standards</mattext></material></response_label>
+            <response_label ident="B"><material><mattext>Patching schedules</mattext></material></response_label>
+            <response_label ident="C"><material><mattext>Random user privileges</mattext></material></response_label>
+            <response_label ident="D"><material><mattext>Password policies</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response25">A</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response25">B</varequal>
+          </conditionvar>
+          <setvar action="Add">33.33</setvar>
+        </respcondition>
+        <respcondition continue="Yes">
+          <conditionvar>
+            <varequal respident="response25">D</varequal>
+          </conditionvar>
+          <setvar action="Add">33.34</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+  </assessment>
+</questestinterop>

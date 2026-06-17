@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<questestinterop>
+  <assessment title="Security+ SY0-701 Domain 5 Practice">
+
+    <!-- Multiple Choice Questions -->
+    <item title="Security policy documentation" ident="q1">
+      <presentation>
+        <material><mattext>Which document typically defines an organization's security requirements and high-level goals?</mattext></material>
+        <response_lid ident="response1">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Security policy</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Security baseline</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Audit log</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Awareness training</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response1">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Security frameworks" ident="q2">
+      <presentation>
+        <material><mattext>Which framework aligns information security management with business objectives?</mattext></material>
+        <response_lid ident="response2">
+          <render_choice>
+            <response_label ident="a"><material><mattext>ISO/IEC 27001</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>PCI DSS</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>GDPR</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>SOX</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response2">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Risk assessment purpose" ident="q3">
+      <presentation>
+        <material><mattext>What is the main goal of a risk assessment?</mattext></material>
+        <response_lid ident="response3">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Identify threats and vulnerabilities</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Create compliance reports</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Hire consultants</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Change staff schedules</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response3">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+
+    <item title="Risk response strategies" ident="q4">
+      <presentation>
+        <material><mattext>Which risk response strategy involves purchasing cyber insurance?</mattext></material>
+        <response_lid ident="response4">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Risk transfer</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Risk avoidance</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Risk acceptance</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Risk mitigation</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response4">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+
+    <item title="Vendor management" ident="q5">
+      <presentation>
+        <material><mattext>What tool is commonly used to assess third-party security controls?</mattext></material>
+        <response_lid ident="response5">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Questionnaire</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Policy</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Incident report</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>User manual</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response5">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+
+    <item title="SOC 2 compliance" ident="q6">
+      <presentation>
+        <material><mattext>Which type of compliance report focuses on service organization controls, including security and privacy?</mattext></material>
+        <response_lid ident="response6">
+          <render_choice>
+            <response_label ident="a"><material><mattext>SOC 2</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>HIPAA</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>PCI DSS</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>SOC 1</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response6">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Internal audit" ident="q7">
+      <presentation>
+        <material><mattext>What is the main purpose of an internal audit?</mattext></material>
+        <response_lid ident="response7">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Assess internal controls for effectiveness</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Issue new passwords</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Create a project plan</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Increase revenue</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response7">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Security awareness" ident="q8">
+      <presentation>
+        <material><mattext>Which is a goal of a security awareness training program?</mattext></material>
+        <response_lid ident="response8">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Reduce human risk</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Increase attack surface</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Expand vendor access</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Create compliance issues</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response8">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+
+    <item title="Incident response policy" ident="q9">
+      <presentation>
+        <material><mattext>What does an incident response policy typically include?</mattext></material>
+        <response_lid ident="response9">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Reporting and escalation procedures</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Firewall configuration</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Physical security plans</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Application deployment</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response9">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+
+    <item title="Continuous monitoring" ident="q10">
+      <presentation>
+        <material><mattext>Which process helps organizations detect security incidents quickly?</mattext></material>
+        <response_lid ident="response10">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Continuous monitoring</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Quarterly reviews</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Asset tagging</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Network segmentation</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response10">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Privacy regulation" ident="q11">
+      <presentation>
+        <material><mattext>Which regulation governs personal data rights in the European Union?</mattext></material>
+        <response_lid ident="response11">
+          <render_choice>
+            <response_label ident="a"><material><mattext>GDPR</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>PCI DSS</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>SOX</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>SOC 2</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response11">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Audit trail" ident="q12">
+      <presentation>
+        <material><mattext>Which element is crucial to maintain for investigations and regulatory compliance?</mattext></material>
+        <response_lid ident="response12">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Audit trail</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Marketing plan</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Brand guidelines</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Sales ledger</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response12">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Third-party risk example" ident="q13">
+      <presentation>
+        <material><mattext>Allowing direct network access to a vendor's system is an example of what type of risk?</mattext></material>
+        <response_lid ident="response13">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Third-party risk</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Operational risk</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Strategic risk</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Compliance risk</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response13">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+
+    <item title="Data retention" ident="q14">
+      <presentation>
+        <material><mattext>Data retention policies help organizations:</mattext></material>
+        <response_lid ident="response14">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Comply with regulations and manage storage</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Increase data sprawl</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Reduce user access controls</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Eliminate backup processes</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response14">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Penetration testing" ident="q15">
+      <presentation>
+        <material><mattext>Penetration testing is primarily used to:</mattext></material>
+        <response_lid ident="response15">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Identify exploitable vulnerabilities</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Approve firewall rules</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Manage user accounts</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Allocate budgets</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response15">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Separation of duties" ident="q16">
+      <presentation>
+        <material><mattext>What is the main benefit of separation of duties?</mattext></material>
+        <response_lid ident="response16">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Reduce fraud and errors</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Increase overtime</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Promote single points of failure</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Improve marketing</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response16">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Third-party risk mitigation" ident="q17">
+      <presentation>
+        <material><mattext>Which operates as a legally binding third-party risk mitigation tool?</mattext></material>
+        <response_lid ident="response17">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Service level agreement (SLA)</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>User manual</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Holiday calendar</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Press release</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response17">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Security controls" ident="q18">
+      <presentation>
+        <material><mattext>What type of control is a firewall?</mattext></material>
+        <response_lid ident="response18">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Technical</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Managerial</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Operational</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Physical</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response18">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Governance external consideration" ident="q19">
+      <presentation>
+        <material><mattext>External considerations in security governance typically include:</mattext></material>
+        <response_lid ident="response19">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Laws and regulations</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Internal meetings</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Product launches</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Office decorations</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response19">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Audit committee" ident="q20">
+      <presentation>
+        <material><mattext>What role does an audit committee serve in security program management?</mattext></material>
+        <response_lid ident="response20">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Provides independent oversight</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Installs server patches</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Trains users</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Creates hardware manuals</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar><varequal respident="response20">a</varequal></conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+
+    <!-- Multiple Answer Questions -->
+    <item title="Elements of security governance" ident="q21">
+      <presentation>
+        <material><mattext>Select all elements associated with effective security governance.</mattext></material>
+        <response_lid ident="response21" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Policies</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Procedures</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Standards</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Fictional stories</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <and>
+              <varequal respident="response21">a</varequal>
+              <varequal respident="response21">b</varequal>
+              <varequal respident="response21">c</varequal>
+            </and>
+          </conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Risk management steps" ident="q22">
+      <presentation>
+        <material><mattext>Select all steps in the risk management process.</mattext></material>
+        <response_lid ident="response22" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Identify assets</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Assess threats</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Install antivirus</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Determine vulnerabilities</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <and>
+              <varequal respident="response22">a</varequal>
+              <varequal respident="response22">b</varequal>
+              <varequal respident="response22">d</varequal>
+            </and>
+          </conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Types of audits" ident="q23">
+      <presentation>
+        <material><mattext>Select all types of security audits.</mattext></material>
+        <response_lid ident="response23" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Internal audit</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>External audit</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>User settings audit</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Third-party audit</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <and>
+              <varequal respident="response23">a</varequal>
+              <varequal respident="response23">b</varequal>
+              <varequal respident="response23">d</varequal>
+            </and>
+          </conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Security awareness practices" ident="q24">
+      <presentation>
+        <material><mattext>Which are examples of security awareness practices?</mattext></material>
+        <response_lid ident="response24" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Phishing simulations</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Annual training</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Security posters</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Data warehouse upgrades</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <and>
+              <varequal respident="response24">a</varequal>
+              <varequal respident="response24">b</varequal>
+              <varequal respident="response24">c</varequal>
+            </and>
+          </conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+    <item title="Security control categories" ident="q25">
+      <presentation>
+        <material><mattext>Select all categories of security controls.</mattext></material>
+        <response_lid ident="response25" rcardinality="Multiple">
+          <render_choice>
+            <response_label ident="a"><material><mattext>Preventive</mattext></material></response_label>
+            <response_label ident="b"><material><mattext>Corrective</mattext></material></response_label>
+            <response_label ident="c"><material><mattext>Directive</mattext></material></response_label>
+            <response_label ident="d"><material><mattext>Creative</mattext></material></response_label>
+          </render_choice>
+        </response_lid>
+      </presentation>
+      <resprocessing>
+        <respcondition>
+          <conditionvar>
+            <and>
+              <varequal respident="response25">a</varequal>
+              <varequal respident="response25">b</varequal>
+              <varequal respident="response25">c</varequal>
+            </and>
+          </conditionvar>
+          <setvar varname="SCORE" action="Set">1</setvar>
+        </respcondition>
+      </resprocessing>
+    </item>
+
+  </assessment>
+</questestinterop>

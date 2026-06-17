@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<questestinterop>
+  <assessment title="Security+ Domain 2: Threats, Vulnerabilities, and Mitigations">
+    <section>
+      <!-- Question 1 -->
+      <item title="1" ident="1">
+        <presentation>
+          <material><mattext>Which of the following is a common motivation for nation-state threat actors?</mattext></material>
+          <response_lid ident="response1" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Financial gain</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Espionage</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Accidental damage</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Personal vendetta</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response1">B</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 2 -->
+      <item title="2" ident="2">
+        <presentation>
+          <material><mattext>What is a common vector used in phishing attacks?</mattext></material>
+          <response_lid ident="response2" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Email</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Physical access</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Firewall exploitation</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Malware injection</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response2">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 3 -->
+      <item title="3" ident="3">
+        <presentation>
+          <material><mattext>Which attack exploits a buffer overflow vulnerability?</mattext></material>
+          <response_lid ident="response3" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>SQL injection</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Race condition</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Memory injection</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>XSS attack</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response3">C</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 4 -->
+      <item title="4" ident="4">
+        <presentation>
+          <material><mattext>What indicator may suggest that a user account is being targeted by a brute force attack?</mattext></material>
+          <response_lid ident="response4" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Increased CPU usage</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Account lockout</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Resource inaccessibility</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Delayed network traffic</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response4">B</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 5 -->
+      <item title="5" ident="5">
+        <presentation>
+          <material><mattext>Which mitigation technique is designed to restrict software from running except those explicitly allowed?</mattext></material>
+          <response_lid ident="response5" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Segmentation</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Application allow listing</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Encryption</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Isolation</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response5">B</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 6 -->
+      <item title="6" ident="6">
+        <presentation>
+          <material><mattext>Who is considered an insider threat?</mattext></material>
+          <response_lid ident="response6" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>External hacker</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Disgruntled employee</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Cybercriminal group</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Nation-state actor</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response6">B</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 7 -->
+      <item title="7" ident="7">
+        <presentation>
+          <material><mattext>What type of attack does 'watering hole' refer to?</mattext></material>
+          <response_lid ident="response7" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Network attack</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Supply chain attack</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Social engineering</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Physical attack</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response7">C</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 8 -->
+      <item title="8" ident="8">
+        <presentation>
+          <material><mattext>Which of the following is an example of an attack surface?</mattext></material>
+          <response_lid ident="response8" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Open service ports</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Threat actor motivation</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Encryption keys</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Security policy</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response8">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 9 -->
+      <item title="9" ident="9">
+        <presentation>
+          <material><mattext>What type of vulnerability involves an attacker exploiting the timing of operations?</mattext></material>
+          <response_lid ident="response9" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Zero-day</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Race condition</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Firmware vulnerability</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Misconfiguration</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response9">B</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 10 -->
+      <item title="10" ident="10">
+        <presentation>
+          <material><mattext>What is the purpose of segmentation in network security?</mattext></material>
+          <response_lid ident="response10" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>To separate networks to limit attack spread</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>To increase bandwidth</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>To simplify configurations</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>To monitor user activity</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response10">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 11 -->
+      <item title="11" ident="11">
+        <presentation>
+          <material><mattext>Which of the following is a social engineering technique that impersonates a trusted brand?</mattext></material>
+          <response_lid ident="response11" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Typosquatting</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Vishing</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Phishing</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Smishing</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response11">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 12 -->
+      <item title="12" ident="12">
+        <presentation>
+          <material><mattext>Which of the following is a hardware vulnerability commonly addressed in enterprise security?</mattext></material>
+          <response_lid ident="response12" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>End-of-life systems</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>SQL injection</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>DNS attacks</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Race condition</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response12">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 13 -->
+      <item title="13" ident="13">
+        <presentation>
+          <material><mattext>What type of attack is characterized by attempts to overwhelm services with traffic?</mattext></material>
+          <response_lid ident="response13" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>DDoS</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Ransomware</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Trojan</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Worm</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response13">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 14 -->
+      <item title="14" ident="14">
+        <presentation>
+          <material><mattext>Which mitigation approach uses the principle of least privilege?</mattext></material>
+          <response_lid ident="response14" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Access control</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Encryption</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Patching</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Continuous monitoring</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response14">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 15 -->
+      <item title="15" ident="15">
+        <presentation>
+          <material><mattext>Which of the following describes a zero-day vulnerability?</mattext></material>
+          <response_lid ident="response15" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Known vulnerability with a patch available</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Unknown vulnerability not yet exploited</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Unknown vulnerability being exploited before public awareness</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>An intentional backdoor</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response15">C</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 16 -->
+      <item title="16" ident="16">
+        <presentation>
+          <material><mattext>What kind of attack involves stealing cryptographic keys or breaking cryptographic algorithms?</mattext></material>
+          <response_lid ident="response16" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Cryptographic attack</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Application attack</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Network attack</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Physical attack</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response16">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 17 -->
+      <item title="17" ident="17">
+        <presentation>
+          <material><mattext>Which of the following methods helps to secure enterprise applications by ensuring only authorized interactions?</mattext></material>
+          <response_lid ident="response17" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Isolation</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Open ports</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Default credentials</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Supply chain integration</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response17">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 18 -->
+      <item title="18" ident="18">
+        <presentation>
+          <material><mattext>Which vulnerability type is frequently caused by misconfigurations?</mattext></material>
+          <response_lid ident="response18" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Cryptographic weakness</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Misconfiguration</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Memory injection</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Social engineering</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response18">B</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 19 -->
+      <item title="19" ident="19">
+        <presentation>
+          <material><mattext>What kind of attack attempts to gain access by guessing or cracking passwords?</mattext></material>
+          <response_lid ident="response19" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Password spraying</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>SQL injection</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>DNS poisoning</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>DDoS</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response19">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 20 -->
+      <item title="20" ident="20">
+        <presentation>
+          <material><mattext>In risk mitigation, what is the purpose of patching?</mattext></material>
+          <response_lid ident="response20" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>To monitor network activity</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>To fix vulnerabilities</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>To segment the network</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>To isolate infected systems</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response20">B</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 21 -->
+      <item title="21" ident="21">
+        <presentation>
+          <material><mattext>What is the primary security concern with using default credentials on devices?</mattext></material>
+          <response_lid ident="response21" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>They are widely known and exploited</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>They cause configuration errors</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>They improve convenience</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>They prevent updates</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response21">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 22 -->
+      <item title="22" ident="22">
+        <presentation>
+          <material><mattext>Which of the following mitigation techniques involves the encryption of data to protect its confidentiality?</mattext></material>
+          <response_lid ident="response22" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Encryption</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Segmentation</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Access control</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Patching</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response22">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 23 -->
+      <item title="23" ident="23">
+        <presentation>
+          <material><mattext>Which is the best way to monitor for unusual activity on an enterprise network?</mattext></material>
+          <response_lid ident="response23" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Regular patching</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Encryption</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Continuous monitoring</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Isolation</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response23">C</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 24 -->
+      <item title="24" ident="24">
+        <presentation>
+          <material><mattext>What is the advantage of decommissioning outdated systems?</mattext></material>
+          <response_lid ident="response24" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Reduces attack surface</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>Improves network speed</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Increases monitoring</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Guarantees compliance</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response24">A</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- Question 25 -->
+      <item title="25" ident="25">
+        <presentation>
+          <material><mattext>Which endpoint protection method involves detecting and preventing host-based intrusions?</mattext></material>
+          <response_lid ident="response25" rcardinality="Single">
+            <render_choice>
+              <response_label ident="A"><material><mattext>Host-based firewall</mattext></material></response_label>
+              <response_label ident="B"><material><mattext>HIPS</mattext></material></response_label>
+              <response_label ident="C"><material><mattext>Application allow listing</mattext></material></response_label>
+              <response_label ident="D"><material><mattext>Encryption</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar><varequal respident="response25">B</varequal></conditionvar>
+            <setvar>100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+    </section>
+  </assessment>
+</questestinterop>

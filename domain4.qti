@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<questestinterop>
+  <assessment title="Security+ SY0-701 Domain 4: Security Operations Practice">
+    <section ident="root_section">
+      <!-- MCQ 1 -->
+      <item title="Question 1" ident="q1">
+        <presentation>
+          <material>
+            <mattext>What is the primary purpose of establishing a secure baseline for computing resources?</mattext>
+          </material>
+          <response_lid ident="response1" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Simplify user onboarding</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Ensure consistent security configurations</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Increase network speed</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Reduce compliance requirements</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response1">b</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 2 -->
+      <item title="Question 2" ident="q2">
+        <presentation>
+          <material>
+            <mattext>Which process best describes the removal of unnecessary services and features from a new server before it is deployed?</mattext>
+          </material>
+          <response_lid ident="response2" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Patch management</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Tokenization</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Hardening</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Segmentation</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response2">c</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 3 -->
+      <item title="Question 3" ident="q3">
+        <presentation>
+          <material>
+            <mattext>Which security control would help prevent unauthorized access to wireless networks?</mattext>
+          </material>
+          <response_lid ident="response3" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>WPA3 encryption</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>VLAN trunking</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Patch testing</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Data retention</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response3">a</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 4 -->
+      <item title="Question 4" ident="q4">
+        <presentation>
+          <material>
+            <mattext>Which activity is associated with proper asset management?</mattext>
+          </material>
+          <response_lid ident="response4" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Encrypting network traffic</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Maintaining and updating an inventory of hardware and software</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Configuring SIEM dashboards</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Implementing VLANs</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response4">b</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 5 -->
+      <item title="Question 5" ident="q5">
+        <presentation>
+          <material>
+            <mattext>What is the best first step after identifying a new critical vulnerability in your environment?</mattext>
+          </material>
+          <response_lid ident="response5" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Reimage all systems</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Assess assets for exposure</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Disable all user accounts</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Disconnect from the internet</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response5">b</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 6 -->
+      <item title="Question 6" ident="q6">
+        <presentation>
+          <material>
+            <mattext>What tool provides centralized collection and analysis of security event data from multiple sources?</mattext>
+          </material>
+          <response_lid ident="response6" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Patch manager</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Vulnerability scanner</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>SIEM</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Web filter</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response6">c</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 7 -->
+      <item title="Question 7" ident="q7">
+        <presentation>
+          <material>
+            <mattext>Which type of alert requires immediate response due to potential security impact?</mattext>
+          </material>
+          <response_lid ident="response7" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>High severity alert</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Notification alert</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Advisory alert</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Informational alert</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response7">a</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 8 -->
+      <item title="Question 8" ident="q8">
+        <presentation>
+          <material>
+            <mattext>What is the role of a firewall in enterprise security?</mattext>
+          </material>
+          <response_lid ident="response8" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Performing software updates</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Controlling network traffic based on rules</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Storing backups</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Monitoring network performance</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response8">b</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 9 -->
+      <item title="Question 9" ident="q9">
+        <presentation>
+          <material>
+            <mattext>Which statement best defines “principle of least privilege”?</mattext>
+          </material>
+          <response_lid ident="response9" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Administrators have access to all systems</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Users get only the minimum access needed for their job</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>All users share a group account</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>All remote logins are blocked</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response9">b</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 10 -->
+      <item title="Question 10" ident="q10">
+        <presentation>
+          <material>
+            <mattext>What action should be taken first during the incident containment phase?</mattext>
+          </material>
+          <response_lid ident="response10" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Destroy evidence</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Isolate affected systems</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Notify all end users</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Apply security patches</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response10">b</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 11 -->
+      <item title="Question 11" ident="q11">
+        <presentation>
+          <material>
+            <mattext>What is provisioning in the context of identity and access management?</mattext>
+          </material>
+          <response_lid ident="response11" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Removing outdated user accounts</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Creating and configuring new user accounts</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Monitoring network traffic</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Encrypting data at rest</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response11">b</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 12 -->
+      <item title="Question 12" ident="q12">
+        <presentation>
+          <material>
+            <mattext>Why might an organization implement security automation and orchestration?</mattext>
+          </material>
+          <response_lid ident="response12" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>To reduce the number of employees</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>To speed up routine incident response tasks</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>To avoid network segmentation</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>To decrease system uptime</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response12">b</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 13 -->
+      <item title="Question 13" ident="q13">
+        <presentation>
+          <material>
+            <mattext>Which type of report provides evidence for internal investigations of security events?</mattext>
+          </material>
+          <response_lid ident="response13" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Marketing report</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Time sheet</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Log report</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Sales report</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response13">c</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 14 -->
+      <item title="Question 14" ident="q14">
+        <presentation>
+          <material>
+            <mattext>What is the main benefit of vulnerability scanning?</mattext>
+          </material>
+          <response_lid ident="response14" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Encrypting data during transmission</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Preventing user account lockouts</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Identifying unpatched systems and weak configurations</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Improving physical security</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response14">c</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MCQ 15 -->
+      <item title="Question 15" ident="q15">
+        <presentation>
+          <material>
+            <mattext>Which is most likely a function of a SOAR (Security Orchestration Automation and Response) platform?</mattext>
+          </material>
+          <response_lid ident="response15" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Encrypting laptops</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Creating hardware baselines</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Automating repetitive security tasks and playbook execution</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Backing up data to cloud storage</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition continue="No">
+            <conditionvar><varequal respident="response15">c</varequal></conditionvar>
+            <setvar varname="SCORE" action="Set">1</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MAQ 16 -->
+      <item title="Question 16" ident="q16">
+        <presentation>
+          <material>
+            <mattext>Which of the following are examples of secure baseline requirements for servers? (Select all that apply)</mattext>
+          </material>
+          <response_lid ident="response16" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Disabling unused ports and services</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Allowing default passwords</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Applying latest security patches</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Enabling host-based firewalls</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar>
+              <and>
+                <varequal respident="response16">a</varequal>
+                <varequal respident="response16">c</varequal>
+                <varequal respident="response16">d</varequal>
+              </and>
+              <not>
+                <varequal respident="response16">b</varequal>
+              </not>
+            </conditionvar>
+            <setvar varname="SCORE" action="Set">2</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MAQ 17 -->
+      <item title="Question 17" ident="q17">
+        <presentation>
+          <material>
+            <mattext>Which techniques are common in vulnerability management? (Select all that apply)</mattext>
+          </material>
+          <response_lid ident="response17" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Performing scheduled system scans</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Remediating identified risks</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Generating vulnerability assessment reports</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Disabling encryption</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar>
+              <and>
+                <varequal respident="response17">a</varequal>
+                <varequal respident="response17">b</varequal>
+                <varequal respident="response17">c</varequal>
+              </and>
+              <not>
+                <varequal respident="response17">d</varequal>
+              </not>
+            </conditionvar>
+            <setvar varname="SCORE" action="Set">2</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MAQ 18 -->
+      <item title="Question 18" ident="q18">
+        <presentation>
+          <material>
+            <mattext>Which are advantages of maintaining an asset inventory? (Select all that apply)</mattext>
+          </material>
+          <response_lid ident="response18" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Improved incident response</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Increased licensing costs</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Easier vulnerability tracking</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Simplified compliance reporting</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar>
+              <and>
+                <varequal respident="response18">a</varequal>
+                <varequal respident="response18">c</varequal>
+                <varequal respident="response18">d</varequal>
+              </and>
+              <not>
+                <varequal respident="response18">b</varequal>
+              </not>
+            </conditionvar>
+            <setvar varname="SCORE" action="Set">2</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MAQ 19 -->
+      <item title="Question 19" ident="q19">
+        <presentation>
+          <material>
+            <mattext>What are effective data sources for supporting a security investigation? (Select all that apply)</mattext>
+          </material>
+          <response_lid ident="response19" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Log files</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Marketing brochures</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Network traffic captures</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>SIEM alerts</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar>
+              <and>
+                <varequal respident="response19">a</varequal>
+                <varequal respident="response19">c</varequal>
+                <varequal respident="response19">d</varequal>
+              </and>
+              <not>
+                <varequal respident="response19">b</varequal>
+              </not>
+            </conditionvar>
+            <setvar varname="SCORE" action="Set">2</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MAQ 20 -->
+      <item title="Question 20" ident="q20">
+        <presentation>
+          <material>
+            <mattext>Which options represent proper incident response activities? (Select all that apply)</mattext>
+          </material>
+          <response_lid ident="response20" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Identification</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Containment</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Eradication</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Load balancing</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar>
+              <and>
+                <varequal respident="response20">a</varequal>
+                <varequal respident="response20">b</varequal>
+                <varequal respident="response20">c</varequal>
+              </and>
+              <not>
+                <varequal respident="response20">d</varequal>
+              </not>
+            </conditionvar>
+            <setvar varname="SCORE" action="Set">2</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MAQ 21 (corrected with separate <not> blocks) -->
+      <item title="Question 21" ident="q21">
+        <presentation>
+          <material>
+            <mattext>Which are typical functions of enterprise firewalls? (Select all that apply)</mattext>
+          </material>
+          <response_lid ident="response21" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Filtering inbound traffic</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Filtering outbound traffic</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Scanning for malware on endpoints</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Issuing SSL certificates</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar>
+              <and>
+                <varequal respident="response21">a</varequal>
+                <varequal respident="response21">b</varequal>
+              </and>
+              <not>
+                <varequal respident="response21">c</varequal>
+              </not>
+              <not>
+                <varequal respident="response21">d</varequal>
+              </not>
+            </conditionvar>
+            <setvar varname="SCORE" action="Set">2</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MAQ 22 -->
+      <item title="Question 22" ident="q22">
+        <presentation>
+          <material>
+            <mattext>What are examples of identity access controls? (Select all that apply)</mattext>
+          </material>
+          <response_lid ident="response22" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Role-based access controls</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Time-of-day restrictions</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Disk defragmentation</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Multi-factor authentication</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar>
+              <and>
+                <varequal respident="response22">a</varequal>
+                <varequal respident="response22">b</varequal>
+                <varequal respident="response22">d</varequal>
+              </and>
+              <not>
+                <varequal respident="response22">c</varequal>
+              </not>
+            </conditionvar>
+            <setvar varname="SCORE" action="Set">2</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MAQ 23 -->
+      <item title="Question 23" ident="q23">
+        <presentation>
+          <material>
+            <mattext>Which practices help achieve system hardening? (Select all that apply)</mattext>
+          </material>
+          <response_lid ident="response23" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Removing unnecessary software</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Disabling unused protocols</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Enabling automatic security updates</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Sharing passwords securely</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar>
+              <and>
+                <varequal respident="response23">a</varequal>
+                <varequal respident="response23">b</varequal>
+                <varequal respident="response23">c</varequal>
+              </and>
+              <not>
+                <varequal respident="response23">d</varequal>
+              </not>
+            </conditionvar>
+            <setvar varname="SCORE" action="Set">2</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MAQ 24 -->
+      <item title="Question 24" ident="q24">
+        <presentation>
+          <material>
+            <mattext>Which are common causes for generating a security alert? (Select all that apply)</mattext>
+          </material>
+          <response_lid ident="response24" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Multiple failed login attempts</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Successful data backup</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Detection of malware signatures</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Unusual outbound traffic</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar>
+              <and>
+                <varequal respident="response24">a</varequal>
+                <varequal respident="response24">c</varequal>
+                <varequal respident="response24">d</varequal>
+              </and>
+              <not>
+                <varequal respident="response24">b</varequal>
+              </not>
+            </conditionvar>
+            <setvar varname="SCORE" action="Set">2</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <!-- MAQ 25 -->
+      <item title="Question 25" ident="q25">
+        <presentation>
+          <material>
+            <mattext>Which are critical steps in user deprovisioning? (Select all that apply)</mattext>
+          </material>
+          <response_lid ident="response25" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="a"><material><mattext>Disabling user accounts</mattext></material></response_label>
+              <response_label ident="b"><material><mattext>Revoking access to systems and data</mattext></material></response_label>
+              <response_label ident="c"><material><mattext>Granting admin rights</mattext></material></response_label>
+              <response_label ident="d"><material><mattext>Removing user credentials from group memberships</mattext></material></response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <respcondition>
+            <conditionvar>
+              <and>
+                <varequal respident="response25">a</varequal>
+                <varequal respident="response25">b</varequal>
+                <varequal respident="response25">d</varequal>
+              </and>
+              <not>
+                <varequal respident="response25">c</varequal>
+              </not>
+            </conditionvar>
+            <setvar varname="SCORE" action="Set">2</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+    </section>
+  </assessment>
+</questestinterop>

@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<questestinterop>
+  <!-- 1 -->
+  <item ident="q1" title="Question 1">
+    <presentation>
+      <material><mattext>Which architecture model involves shared security responsibilities between the cloud provider and the customer?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>On-premises architecture</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Cloud architecture</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Zero-trust architecture</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Decentralized architecture</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">B</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 2 -->
+  <item ident="q2" title="Question 2">
+    <presentation>
+      <material><mattext>What is an essential characteristic to consider in designing resilient architectures?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Single point of failure</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Lack of redundancy</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>High availability</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Manual failover processes</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">C</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 3 -->
+  <item ident="q3" title="Question 3">
+    <presentation>
+      <material><mattext>Which of the following is a network security device used to monitor and filter incoming and outgoing network traffic?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Firewall</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Load balancer</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Proxy</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Cluster</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">A</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 4 -->
+  <item ident="q4" title="Question 4">
+    <presentation>
+      <material><mattext>Which security principle focuses on limiting access rights for users to the minimum necessary?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Least privilege</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Separation of duties</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Defense in depth</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Fail-safe defaults</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">A</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 5 -->
+  <item ident="q5" title="Question 5">
+    <presentation>
+      <material><mattext>In the context of data protection, what technique replaces sensitive data with non-sensitive substitutes?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Encryption</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Tokenization</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Hashing</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Masking</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">B</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 6 -->
+  <item ident="q6" title="Question 6">
+    <presentation>
+      <material><mattext>Which type of site is fully operational with all systems and data ready for immediate use in case of a disaster?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Cold site</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Warm site</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Hot site</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Offline site</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">C</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 7 -->
+  <item ident="q7" title="Question 7">
+    <presentation>
+      <material><mattext>What security technology uses sandboxing and microservices to enhance isolation and scalability?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Virtualization</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Containerization</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Serverless computing</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Infrastructure as Code</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">B</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 8 -->
+  <item ident="q8" title="Question 8">
+    <presentation>
+      <material><mattext>Which of the following provides secure communication over an unsecured network by creating encrypted tunnels?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>VPN</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>WAF</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>NGFW</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Proxy</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">A</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 9 -->
+  <item ident="q9" title="Question 9">
+    <presentation>
+      <material><mattext>What is a primary benefit of network segmentation in security architecture?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Improved network speed</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Increased attack surface</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Containment of security breaches</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Simplified management</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">C</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 10 -->
+  <item ident="q10" title="Question 10">
+    <presentation>
+      <material><mattext>Which security architecture model assumes no implicit trust and verifies every access request?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Perimeter security model</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Zero-trust model</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Discretionary access control</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Mandatory access control</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">B</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 11 -->
+  <item ident="q11" title="Question 11">
+    <presentation>
+      <material><mattext>Which data protection method converts data into a fixed-length string to verify integrity but not confidentiality?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Encryption</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Hashing</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Masking</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Obfuscation</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">B</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 12 -->
+  <item ident="q12" title="Question 12">
+    <presentation>
+      <material><mattext>What is the purpose of a load balancer in security architecture?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>To block unauthorized access</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>To distribute network traffic evenly</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>To encrypt data</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>To isolate network segments</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">B</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 13 -->
+  <item ident="q13" title="Question 13">
+    <presentation>
+      <material><mattext>Which type of firewall specifically protects web applications by filtering and monitoring HTTP traffic?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Network firewall</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Web Application Firewall (WAF)</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Next-Generation Firewall (NGFW)</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Proxy firewall</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">B</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 14 -->
+  <item ident="q14" title="Question 14">
+    <presentation>
+      <material><mattext>Which term describes a disaster recovery site that has hardware and connectivity but requires data restoration before use?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Hot site</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Warm site</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Cold site</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Disaster site</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">B</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 15 -->
+  <item ident="q15" title="Question 15">
+    <presentation>
+      <material><mattext>Which concept involves managing infrastructure through code rather than manual processes?</mattext></material>
+      <response_lid ident="response1" rcardinality="Single">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Infrastructure as Code (IaC)</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Serverless computing</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Containerization</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Virtualization</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response1">A</varequal></conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- Multiple Answer Questions -->
+  <!-- 16 -->
+  <item ident="q16" title="Question 16">
+    <presentation>
+      <material><mattext>Which of the following are components of the shared responsibility model in cloud security? (Select all that apply.)</mattext></material>
+      <response_lid ident="response1" rcardinality="Multiple">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Cloud provider</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>End user</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Third-party vendors</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Internal IT department</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar>
+          <and>
+            <varequal respident="response1">A</varequal>
+            <varequal respident="response1">B</varequal>
+            <varequal respident="response1">C</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 17 -->
+  <item ident="q17" title="Question 17">
+    <presentation>
+      <material><mattext>Which are characteristics of a resilient security architecture? (Select all that apply.)</mattext></material>
+      <response_lid ident="response1" rcardinality="Multiple">
+        <render_choice>
+          <response_label ident="A"><material><mattext>High availability</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Single point of failure</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Load balancing</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Clustering</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar>
+          <and>
+            <varequal respident="response1">A</varequal>
+            <varequal respident="response1">C</varequal>
+            <varequal respident="response1">D</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 18 -->
+  <item ident="q18" title="Question 18">
+    <presentation>
+      <material><mattext>Data protection strategies include which of the following? (Select all that apply.)</mattext></material>
+      <response_lid ident="response1" rcardinality="Multiple">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Encryption</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Tokenization</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Firewall</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Masking</mattext></material></response_label>
+          <response_label ident="E"><material><mattext>Load balancer</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar>
+          <and>
+            <varequal respident="response1">A</varequal>
+            <varequal respident="response1">B</varequal>
+            <varequal respident="response1">D</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 19 -->
+  <item ident="q19" title="Question 19">
+    <presentation>
+      <material><mattext>Which of the following are types of network segmentation? (Select all that apply.)</mattext></material>
+      <response_lid ident="response1" rcardinality="Multiple">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Physical segmentation</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Logical segmentation</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Virtual segmentation</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Application segmentation</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar>
+          <and>
+            <varequal respident="response1">A</varequal>
+            <varequal respident="response1">B</varequal>
+            <varequal respident="response1">C</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 20 -->
+  <item ident="q20" title="Question 20">
+    <presentation>
+      <material><mattext>Which technologies contribute to secure enterprise infrastructure? (Select all that apply.)</mattext></material>
+      <response_lid ident="response1" rcardinality="Multiple">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Firewalls</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Intrusion detection systems</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Load balancers</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Clustering</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar>
+          <and>
+            <varequal respident="response1">A</varequal>
+            <varequal respident="response1">B</varequal>
+            <varequal respident="response1">C</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 21 -->
+  <item ident="q21" title="Question 21">
+    <presentation>
+      <material><mattext>Which of the following are valid types of disaster recovery sites? (Select all that apply.)</mattext></material>
+      <response_lid ident="response1" rcardinality="Multiple">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Hot site</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Cold site</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Warm site</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Virtual site</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar>
+          <and>
+            <varequal respident="response1">A</varequal>
+            <varequal respident="response1">B</varequal>
+            <varequal respident="response1">C</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 22 -->
+  <item ident="q22" title="Question 22">
+    <presentation>
+      <material><mattext>Select all effective data protection methods from the list below.</mattext></material>
+      <response_lid ident="response1" rcardinality="Multiple">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Hashing</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Obfuscation</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Tokenization</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Encryption</mattext></material></response_label>
+          <response_label ident="E"><material><mattext>Firewall</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar>
+          <and>
+            <varequal respident="response1">A</varequal>
+            <varequal respident="response1">B</varequal>
+            <varequal respident="response1">C</varequal>
+            <varequal respident="response1">D</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 23 -->
+  <item ident="q23" title="Question 23">
+    <presentation>
+      <material><mattext>Which items are considered when applying security principles to enterprise infrastructure? (Select all that apply.)</mattext></material>
+      <response_lid ident="response1" rcardinality="Multiple">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Attack surface</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Security zones</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Firewall placement</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Data sovereignty</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar>
+          <and>
+            <varequal respident="response1">A</varequal>
+            <varequal respident="response1">B</varequal>
+            <varequal respident="response1">C</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 24 -->
+  <item ident="q24" title="Question 24">
+    <presentation>
+      <material><mattext>Which of the following are cloud architecture considerations? (Select all that apply.)</mattext></material>
+      <response_lid ident="response1" rcardinality="Multiple">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Infrastructure as Code (IaC)</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Serverless computing</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Microservices</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Network segmentation</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar>
+          <and>
+            <varequal respident="response1">A</varequal>
+            <varequal respident="response1">B</varequal>
+            <varequal respident="response1">C</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+  <!-- 25 -->
+  <item ident="q25" title="Question 25">
+    <presentation>
+      <material><mattext>Select all that apply for disaster recovery and continuity planning.</mattext></material>
+      <response_lid ident="response1" rcardinality="Multiple">
+        <render_choice>
+          <response_label ident="A"><material><mattext>Backup strategies</mattext></material></response_label>
+          <response_label ident="B"><material><mattext>Onsite and offsite replication</mattext></material></response_label>
+          <response_label ident="C"><material><mattext>Tabletop exercises</mattext></material></response_label>
+          <response_label ident="D"><material><mattext>Load balancing</mattext></material></response_label>
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes>
+        <decvar varname="SCORE" vartype="Decimal" minvalue="0" maxvalue="1"/>
+      </outcomes>
+      <respcondition continue="No">
+        <conditionvar>
+          <and>
+            <varequal respident="response1">A</varequal>
+            <varequal respident="response1">B</varequal>
+            <varequal respident="response1">C</varequal>
+          </and>
+        </conditionvar>
+        <setvar varname="SCORE" action="Set">1</setvar>
+      </respcondition>
+    </resprocessing>
+  </item>
+
+</questestinterop>
