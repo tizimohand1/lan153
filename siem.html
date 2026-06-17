@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshFlow Systems - SIEM Log Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ffffff 0%, #e8f5e8 50%, #2d4a3e 100%);
+            color: #2d4a3e;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #2d4a3e, #4a7c59);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 5px solid #4a7c59;
+            height: fit-content;
+        }
+
+        .log-display {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            min-height: 600px;
+            overflow-y: auto;
+            border: 2px solid #4a7c59;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .section h3 {
+            margin-top: 0;
+            color: #2d4a3e;
+            border-bottom: 2px solid #4a7c59;
+            padding-bottom: 8px;
+        }
+
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            background: #4a7c59;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #3a5c49;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 8px;
+            border-left: 3px solid #4a7c59;
+            background: rgba(74, 124, 89, 0.1);
+            word-wrap: break-word;
+        }
+
+        .info { color: #00ff00; }
+        .warning { color: #ffaa00; }
+        .error { color: #ff4444; }
+        .critical { color: #ff0000; }
+        .success { color: #00dd00; }
+
+        .equipment-info {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4a7c59;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-top: 3px solid #4a7c59;
+        }
+
+        .clear-logs {
+            background: #dc3545;
+            margin-top: 10px;
+        }
+
+        .clear-logs:hover {
+            background: #c82333;
+        }
+
+        .auto-generate {
+            background: #17a2b8;
+        }
+
+        .auto-generate:hover {
+            background: #138496;
+        }
+
+        #timestamp {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏭 FreshFlow Systems - SIEM Log Generator</h1>
+        <p>Industrial Process Monitoring & Security Event Management Training Tool</p>
+    </div>
+
+    <div class="container">
+        <div class="control-panel">
+            <div class="equipment-info">
+                <h3>🔧 FreshFlow Systems Equipment Profile</h3>
+                <p><strong>Facility:</strong> Food Processing & Distribution Center</p>
+                <p><strong>Location:</strong> Chicago, IL</p>
+                <p><strong>Equipment:</strong> SCADA Systems, PLCs, HMI Terminals, Sensors, Pumps, Conveyors</p>
+                <p><strong>Protocols:</strong> Modbus, DNP3, OPC-UA, Ethernet/IP</p>
+            </div>
+
+            <div class="section">
+                <h3>Log Generation Controls</h3>
+                
+                <label for="logType">Log Event Type:</label>
+                <select id="logType">
+                    <option value="system">System Events</option>
+                    <option value="security">Security Events</option>
+                    <option value="application">Application Logs</option>
+                    <option value="network">Network Events</option>
+                    <option value="process">Process Control</option>
+                    <option value="alarm">Alarms & Alerts</option>
+                    <option value="maintenance">Maintenance</option>
+                    <option value="audit">Audit Logs</option>
+                    <option value="performance">Performance Metrics</option>
+                    <option value="compliance">Compliance Events</option>
+                </select>
+
+                <label for="severity">Severity Level:</label>
+                <select id="severity">
+                    <option value="info">INFO</option>
+                    <option value="warning">WARNING</option>
+                    <option value="error">ERROR</option>
+                    <option value="critical">CRITICAL</option>
+                    <option value="success">SUCCESS</option>
+                </select>
+
+                <label for="equipment">Equipment/Component:</label>
+                <select id="equipment">
+                    <option value="SCADA-01">SCADA Master Station</option>
+                    <option value="PLC-TANK01">Tank Level PLC</option>
+                    <option value="PLC-CONV01">Conveyor Control PLC</option>
+                    <option value="HMI-OP01">Operator HMI Terminal</option>
+                    <option value="PUMP-01">Primary Circulation Pump</option>
+                    <option value="VALVE-CV01">Control Valve CV-01</option>
+                    <option value="SENSOR-T01">Temperature Sensor T-01</option>
+                    <option value="RTU-FIELD01">Remote Terminal Unit</option>
+                    <option value="FW-DMZ01">DMZ Firewall</option>
+                    <option value="SW-CORE01">Core Network Switch</option>
+                </select>
+
+                <button onclick="generateLog()">Generate Log Entry</button>
+                <button class="auto-generate" onclick="toggleAutoGenerate()">Start Auto-Generate</button>
+                <button class="clear-logs" onclick="clearLogs()">Clear All Logs</button>
+            </div>
+
+            <div class="section">
+                <h3>Custom Message</h3>
+                <input type="text" id="customMessage" placeholder="Enter custom log message...">
+                <button onclick="generateCustomLog()">Generate Custom Log</button>
+            </div>
+
+            <div class="section">
+                <h3>Scenario Simulation</h3>
+                <select id="scenario">
+                    <option value="">Select Scenario...</option>
+                    <option value="cyberattack">Cyber Attack Simulation</option>
+                    <option value="equipment_failure">Equipment Failure</option>
+                    <option value="maintenance">Planned Maintenance</option>
+                    <option value="emergency_stop">Emergency Stop Sequence</option>
+                    <option value="process_optimization">Process Optimization</option>
+                    <option value="compliance_audit">Compliance Audit</option>
+                </select>
+                <button onclick="runScenario()">Run Scenario</button>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div id="totalLogs">0</div>
+                    <small>Total Logs</small>
+                </div>
+                <div class="stat-card">
+                    <div id="errorCount">0</div>
+                    <small>Errors</small>
+                </div>
+                <div class="stat-card">
+                    <div id="warningCount">0</div>
+                    <small>Warnings</small>
+                </div>
+                <div class="stat-card">
+                    <div id="criticalCount">0</div>
+                    <small>Critical</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="log-display" id="logDisplay">
+            <div style="color: #4a7c59; margin-bottom: 20px; text-align: center;">
+                === FreshFlow Systems SIEM Console ===<br>
+                Real-time Security Information & Event Management<br>
+                <span id="timestamp"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let logCounter = 0;
+        let stats = { total: 0, error: 0, warning: 0, critical: 0 };
+        let autoGenerateInterval;
+        let isAutoGenerating = false;
+
+        // Log message templates for different types
+        const logTemplates = {
+            system: [
+                "System boot completed successfully",
+                "Service {service} started",
+                "Configuration file loaded: {config}",
+                "System health check passed",
+                "Memory usage at {percentage}%",
+                "CPU temperature: {temp}°C",
+                "Disk space warning: {percentage}% full",
+                "Network interface {interface} up",
+                "System backup completed",
+                "Kernel module loaded: {module}"
+            ],
+            security: [
+                "User login attempt from IP {ip}",
+                "Failed authentication for user {user}",
+                "Security policy violation detected",
+                "Firewall rule {rule} triggered",
+                "Suspicious network traffic from {ip}",
+                "Access denied to resource {resource}",
+                "Certificate expired: {cert}",
+                "Intrusion attempt blocked",
+                "User {user} elevated privileges",
+                "VPN connection established from {location}"
+            ],
+            application: [
+                "Application {app} started successfully",
+                "Database connection established",
+                "Error in module {module}: {error}",
+                "Cache cleared for application {app}",
+                "API request processed: {endpoint}",
+                "Session timeout for user {user}",
+                "Configuration reload completed",
+                "License validation successful",
+                "Performance threshold exceeded",
+                "Application {app} shutdown gracefully"
+            ],
+            network: [
+                "Network interface {interface} configured",
+                "DHCP lease renewed for {ip}",
+                "Packet loss detected on link {link}",
+                "Bandwidth utilization: {percentage}%",
+                "Switch port {port} link up",
+                "Routing table updated",
+                "DNS query timeout for {domain}",
+                "TCP connection established {src} -> {dst}",
+                "Network congestion on segment {segment}",
+                "VLAN {vlan} configuration changed"
+            ],
+            process: [
+                "Tank level at {level}%",
+                "Pump {pump} started",
+                "Temperature reading: {temp}°C",
+                "Pressure alarm threshold exceeded",
+                "Flow rate stabilized at {rate} GPM",
+                "Valve position adjusted to {position}%",
+                "Recipe batch {batch} completed",
+                "Conveyor speed set to {speed} ft/min",
+                "Quality check passed for batch {batch}",
+                "Production line {line} stopped"
+            ],
+            alarm: [
+                "High temperature alarm on sensor {sensor}",
+                "Low pressure warning in line {line}",
+                "Equipment {equipment} fault detected",
+                "Emergency stop activated",
+                "Safety interlock triggered",
+                "Vibration alarm on motor {motor}",
+                "Level alarm: tank {tank} overflow risk",
+                "Communication timeout with PLC {plc}",
+                "Power supply failure detected",
+                "Smoke detector activation in zone {zone}"
+            ],
+            maintenance: [
+                "Scheduled maintenance started on {equipment}",
+                "Calibration completed for sensor {sensor}",
+                "Filter replacement due for unit {unit}",
+                "Preventive maintenance reminder",
+                "Equipment {equipment} inspection passed",
+                "Lubrication cycle completed",
+                "Belt tension adjusted on conveyor {conv}",
+                "Cleaning cycle initiated",
+                "Parts inventory low for {part}",
+                "Maintenance window scheduled"
+            ],
+            audit: [
+                "User {user} accessed control panel",
+                "Configuration change logged",
+                "Compliance report generated",
+                "Audit trail entry created",
+                "Operator {operator} modified setpoint",
+                "Security scan completed",
+                "Backup verification successful",
+                "Document access logged for {doc}",
+                "Permission change for user {user}",
+                "System integrity check passed"
+            ],
+            performance: [
+                "CPU utilization: {percentage}%",
+                "Memory usage: {memory}MB",
+                "Response time: {time}ms",
+                "Throughput: {rate} items/hour",
+                "Efficiency rating: {percentage}%",
+                "Queue depth: {depth} items",
+                "Error rate: {rate}%",
+                "Uptime: {uptime} hours",
+                "Performance baseline updated",
+                "Optimization cycle completed"
+            ],
+            compliance: [
+                "FDA compliance check passed",
+                "HACCP validation completed",
+                "Temperature log archived",
+                "Traceability record created",
+                "Quality assurance protocol executed",
+                "Safety inspection completed",
+                "Environmental monitoring updated",
+                "Chain of custody logged",
+                "Regulatory report submitted",
+                "Compliance audit scheduled"
+            ]
+        };
+
+        // Equipment-specific details
+        const equipmentDetails = {
+            "SCADA-01": { type: "SCADA", ip: "10.1.1.10", location: "Control Room" },
+            "PLC-TANK01": { type: "PLC", ip: "10.1.2.101", location: "Tank Farm" },
+            "PLC-CONV01": { type: "PLC", ip: "10.1.2.102", location: "Production Line A" },
+            "HMI-OP01": { type: "HMI", ip: "10.1.1.20", location: "Operator Station" },
+            "PUMP-01": { type: "Pump", ip: "10.1.2.201", location: "Pump House" },
+            "VALVE-CV01": { type: "Valve", ip: "10.1.2.202", location: "Process Line" },
+            "SENSOR-T01": { type: "Sensor", ip: "10.1.2.301", location: "Tank 1" },
+            "RTU-FIELD01": { type: "RTU", ip: "10.1.3.10", location: "Remote Site" },
+            "FW-DMZ01": { type: "Firewall", ip: "10.1.0.1", location: "DMZ" },
+            "SW-CORE01": { type: "Switch", ip: "10.1.1.1", location: "Network Closet" }
+        };
+
+        function updateTimestamp() {
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        }
+
+        function generateRandomValues() {
+            return {
+                service: ['ModbusService', 'OPCService', 'HMIService', 'HistorianService'][Math.floor(Math.random() * 4)],
+                config: ['plc_config.xml', 'scada_settings.ini', 'network.conf'][Math.floor(Math.random() * 3)],
+                percentage: Math.floor(Math.random() * 100),
+                temp: Math.floor(Math.random() * 50 + 20),
+                interface: ['eth0', 'eth1', 'wlan0'][Math.floor(Math.random() * 3)],
+                module: ['driver_modbus', 'security_auth', 'data_logger'][Math.floor(Math.random() * 3)],
+                ip: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+                user: ['operator1', 'admin', 'technician', 'guest'][Math.floor(Math.random() * 4)],
+                rule: ['DENY_ALL', 'ALLOW_HTTP', 'BLOCK_ICMP'][Math.floor(Math.random() * 3)],
+                resource: ['admin_panel', 'config_files', 'log_archives'][Math.floor(Math.random() * 3)],
+                cert: ['ssl_cert.pem', 'ca_root.crt', 'client.key'][Math.floor(Math.random() * 3)],
+                location: ['Chicago', 'Remote Site', 'Mobile'][Math.floor(Math.random() * 3)],
+                app: ['ProcessControl', 'DataLogger', 'AlarmManager'][Math.floor(Math.random() * 3)],
+                error: ['null_pointer', 'timeout', 'invalid_data'][Math.floor(Math.random() * 3)],
+                endpoint: ['/api/data', '/api/alarms', '/api/status'][Math.floor(Math.random() * 3)],
+                domain: ['freshflow.local', 'update.server.com', 'ntp.pool.org'][Math.floor(Math.random() * 3)],
+                src: `10.1.${Math.floor(Math.random() * 4)}.${Math.floor(Math.random() * 255)}`,
+                dst: `10.1.${Math.floor(Math.random() * 4)}.${Math.floor(Math.random() * 255)}`,
+                port: Math.floor(Math.random() * 48) + 1,
+                vlan: Math.floor(Math.random() * 100) + 1,
+                segment: `Segment-${Math.floor(Math.random() * 10)}`,
+                level: Math.floor(Math.random() * 100),
+                pump: ['PUMP-01', 'PUMP-02', 'PUMP-03'][Math.floor(Math.random() * 3)],
+                rate: Math.floor(Math.random() * 500 + 100),
+                position: Math.floor(Math.random() * 100),
+                batch: `B${Math.floor(Math.random() * 1000).toString().padStart(4, '0')}`,
+                speed: Math.floor(Math.random() * 100 + 50),
+                line: ['Line-A', 'Line-B', 'Line-C'][Math.floor(Math.random() * 3)],
+                sensor: ['T-01', 'P-01', 'F-01', 'L-01'][Math.floor(Math.random() * 4)],
+                equipment: ['Mixer-01', 'Pump-02', 'Valve-03'][Math.floor(Math.random() * 3)],
+                motor: ['M-001', 'M-002', 'M-003'][Math.floor(Math.random() * 3)],
+                tank: ['Tank-01', 'Tank-02', 'Tank-03'][Math.floor(Math.random() * 3)],
+                plc: ['PLC-01', 'PLC-02', 'PLC-03'][Math.floor(Math.random() * 3)],
+                zone: ['Zone-A', 'Zone-B', 'Zone-C'][Math.floor(Math.random() * 3)],
+                unit: ['Filter-01', 'Heater-01', 'Cooler-01'][Math.floor(Math.random() * 3)],
+                conv: ['CONV-01', 'CONV-02'][Math.floor(Math.random() * 2)],
+                part: ['Bearing-001', 'Belt-002', 'Filter-003'][Math.floor(Math.random() * 3)],
+                operator: ['Smith', 'Johnson', 'Williams'][Math.floor(Math.random() * 3)],
+                doc: ['SOP-001', 'Manual-V2', 'Report-Q3'][Math.floor(Math.random() * 3)],
+                memory: Math.floor(Math.random() * 2048 + 512),
+                time: Math.floor(Math.random() * 1000 + 50),
+                depth: Math.floor(Math.random() * 50),
+                uptime: Math.floor(Math.random() * 8760)
+            };
+        }
+
+        function formatLogMessage(template, values) {
+            return template.replace(/{(\w+)}/g, (match, key) => values[key] || match);
+        }
+
+        function generateLog() {
+            const logType = document.getElementById('logType').value;
+            const severity = document.getElementById('severity').value;
+            const equipment = document.getElementById('equipment').value;
+            
+            const templates = logTemplates[logType];
+            const template = templates[Math.floor(Math.random() * templates.length)];
+            const values = generateRandomValues();
+            const message = formatLogMessage(template, values);
+            
+            const equipInfo = equipmentDetails[equipment];
+            const timestamp = new Date().toISOString();
+            const eventId = Math.floor(Math.random() * 9999) + 1000;
+            
+            const logEntry = `[${timestamp}] [${severity.toUpperCase()}] [${equipment}] [${equipInfo.ip}] [EventID:${eventId}] ${message}`;
+            
+            addLogEntry(logEntry, severity);
+            updateStats(severity);
+        }
+
+        function generateCustomLog() {
+            const customMessage = document.getElementById('customMessage').value;
+            if (!customMessage.trim()) return;
+            
+            const severity = document.getElementById('severity').value;
+            const equipment = document.getElementById('equipment').value;
+            const equipInfo = equipmentDetails[equipment];
+            const timestamp = new Date().toISOString();
+            const eventId = Math.floor(Math.random() * 9999) + 1000;
+            
+            const logEntry = `[${timestamp}] [${severity.toUpperCase()}] [${equipment}] [${equipInfo.ip}] [EventID:${eventId}] ${customMessage}`;
+            
+            addLogEntry(logEntry, severity);
+            updateStats(severity);
+            
+            document.getElementById('customMessage').value = '';
+        }
+
+        function addLogEntry(entry, severity) {
+            const logDisplay = document.getElementById('logDisplay');
+            const logDiv = document.createElement('div');
+            logDiv.className = `log-entry ${severity}`;
+            logDiv.textContent = entry;
+            
+            logDisplay.appendChild(logDiv);
+            logDisplay.scrollTop = logDisplay.scrollHeight;
+            
+            logCounter++;
+        }
+
+        function updateStats(severity) {
+            stats.total++;
+            if (severity === 'error') stats.error++;
+            if (severity === 'warning') stats.warning++;
+            if (severity === 'critical') stats.critical++;
+            
+            document.getElementById('totalLogs').textContent = stats.total;
+            document.getElementById('errorCount').textContent = stats.error;
+            document.getElementById('warningCount').textContent = stats.warning;
+            document.getElementById('criticalCount').textContent = stats.critical;
+        }
+
+        function clearLogs() {
+            document.getElementById('logDisplay').innerHTML = `
+                <div style="color: #4a7c59; margin-bottom: 20px; text-align: center;">
+                    === FreshFlow Systems SIEM Console ===<br>
+                    Real-time Security Information & Event Management<br>
+                    <span id="timestamp"></span>
+                </div>
+            `;
+            
+            stats = { total: 0, error: 0, warning: 0, critical: 0 };
+            document.getElementById('totalLogs').textContent = 0;
+            document.getElementById('errorCount').textContent = 0;
+            document.getElementById('warningCount').textContent = 0;
+            document.getElementById('criticalCount').textContent = 0;
+            
+            updateTimestamp();
+        }
+
+        function toggleAutoGenerate() {
+            const button = event.target;
+            
+            if (isAutoGenerating) {
+                clearInterval(autoGenerateInterval);
+                button.textContent = 'Start Auto-Generate';
+                button.className = 'auto-generate';
+                isAutoGenerating = false;
+            } else {
+                autoGenerateInterval = setInterval(() => {
+                    // Randomize selections for auto-generation
+                    const logTypes = ['system', 'security', 'application', 'network', 'process', 'alarm'];
+                    const severities = ['info', 'warning', 'error', 'critical'];
+                    const equipments = Object.keys(equipmentDetails);
+                    
+                    document.getElementById('logType').value = logTypes[Math.floor(Math.random() * logTypes.length)];
+                    document.getElementById('severity').value = severities[Math.floor(Math.random() * severities.length)];
+                    document.getElementById('equipment').value = equipments[Math.floor(Math.random() * equipments.length)];
+                    
+                    generateLog();
+                }, 2000);
+                
+                button.textContent = 'Stop Auto-Generate';
+                button.className = 'clear-logs';
+                isAutoGenerating = true;
+            }
+        }
+
+        function runScenario() {
+            const scenario = document.getElementById('scenario').value;
+            if (!scenario) return;
+            
+            const scenarios = {
+                cyberattack: [
+                    { type: 'security', severity: 'critical', message: 'Multiple failed login attempts detected from external IP' },
+                    { type: 'security', severity: 'critical', message: 'Suspicious traffic pattern detected on network' },
+                    { type: 'security', severity: 'error', message: 'Firewall blocking malicious packets' },
+                    { type: 'system', severity: 'warning', message: 'Unusual CPU activity detected' },
+                    { type: 'security', severity: 'critical', message: 'Potential data exfiltration attempt blocked' }
+                ],
+                equipment_failure: [
+                    { type: 'alarm', severity: 'critical', message: 'Pump PUMP-01 mechanical failure detected' },
+                    { type: 'process', severity: 'error', message: 'Flow rate dropped below minimum threshold' },
+                    { type: 'alarm', severity: 'warning', message: 'Backup pump activation initiated' },
+                    { type: 'maintenance', severity: 'info', message: 'Emergency maintenance team dispatched' },
+                    { type: 'process', severity: 'success', message: 'Process stabilized on backup equipment' }
+                ],
+                maintenance: [
+                    { type: 'maintenance', severity: 'info', message: 'Planned maintenance window started' },
+                    { type: 'system', severity: 'info', message: 'Production line shutdown initiated' },
+                    { type: 'maintenance', severity: 'info', message: 'Calibration of sensors in progress' },
+                    { type: 'maintenance', severity: 'success', message: 'Filter replacement completed' },
+                    { type: 'system', severity: 'success', message: 'Systems returning to normal operation' }
+                ],
+                emergency_stop: [
+                    { type: 'alarm', severity: 'critical', message: 'Emergency stop button activated' },
+                    { type: 'process', severity: 'critical', message: 'All production processes halted' },
+                    { type: 'security', severity: 'warning', message: 'Safety systems engaged' },
+                    { type: 'audit', severity: 'info', message: 'Emergency stop event logged for investigation' },
+                    { type: 'system', severity: 'info', message: 'Awaiting safety clearance for restart' }
+                ],
+                process_optimization: [
+                    { type: 'performance', severity: 'info', message: 'Process optimization routine initiated' },
+                    { type: 'process', severity: 'info', message: 'Analyzing flow rates and efficiency metrics' },
+                    { type: 'performance', severity: 'success', message: 'Optimal parameters calculated' },
+                    { type: 'process', severity: 'success', message: 'Setpoints adjusted for improved efficiency' },
+                    { type: 'performance', severity: 'success', message: 'Process efficiency increased by 12%' }
+                ],
+                compliance_audit: [
+                    { type: 'compliance', severity: 'info', message: 'FDA compliance audit initiated' },
+                    { type: 'audit', severity: 'info', message: 'Temperature logs retrieved for analysis' },
+                    { type: 'compliance', severity: 'success', message: 'HACCP validation records verified' },
+                    { type: 'audit', severity: 'success', message: 'Traceability documentation complete' },
+                    { type: 'compliance', severity: 'success', message: 'Compliance audit passed successfully' }
+                ]
+            };
+            
+            const scenarioEvents = scenarios[scenario];
+            let delay = 0;
+            
+            scenarioEvents.forEach((event, index) => {
+                setTimeout(() => {
+                    document.getElementById('logType').value = event.type;
+                    document.getElementById('severity').value = event.severity;
+                    
+                    const equipment = document.getElementById('equipment').value;
+                    const equipInfo = equipmentDetails[equipment];
+                    const timestamp = new Date().toISOString();
+                    const eventId = Math.floor(Math.random() * 9999) + 1000;
+                    
+                    const logEntry = `[${timestamp}] [${event.severity.toUpperCase()}] [${equipment}] [${equipInfo.ip}] [EventID:${eventId}] ${event.message}`;
+                    
+                    addLogEntry(logEntry, event.severity);
+                    updateStats(event.severity);
+                }, delay);
+                
+                delay += 1500; // 1.5 second delay between scenario events
+            });
+        }
+
+        // Initialize the application
+        setInterval(updateTimestamp, 1000);
+        updateTimestamp();
+        
+        // Add some initial system startup logs
+        setTimeout(() => {
+            addLogEntry('[' + new Date().toISOString() + '] [INFO] [SYSTEM] [10.1.1.1] [EventID:1001] FreshFlow Systems SIEM Console initialized', 'info');
+            updateStats('info');
+        }, 500);
+        
+        setTimeout(() => {
+            addLogEntry('[' + new Date().toISOString() + '] [INFO] [SYSTEM] [10.1.1.1] [EventID:1002] All monitoring systems operational', 'success');
+            updateStats('success');
+        }, 1000);
+    </script>
+</body>
+</html>

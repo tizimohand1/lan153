@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Steganography Tool</title>
+    <style>
+        /* CSS for styling the page */
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #ffffff; /* White background */
+            color: #000000; /* Black text */
+            margin: 0;
+            padding: 2em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: #f0f0f0;
+            border: 2px solid #00ff00; /* Green border */
+            border-radius: 10px;
+            padding: 2em;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        h1, h2 {
+            color: #008000; /* Green headings */
+            text-align: center;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+        }
+        p, li {
+            line-height: 1.6;
+        }
+        .interactive-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2em;
+            justify-content: space-around;
+            margin-top: 2em;
+            padding: 2em;
+            border-top: 2px dashed #00ff00;
+        }
+        .panel {
+            flex: 1;
+            min-width: 300px;
+            padding: 1.5em;
+            background-color: #ffffff;
+            border: 1px solid #000000;
+            border-radius: 8px;
+        }
+        h3 {
+            color: #000000;
+            text-align: center;
+            margin-top: 0;
+        }
+        canvas {
+            max-width: 100%;
+            border: 1px solid #ccc;
+            margin-top: 1em;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button {
+            background-color: #008000; /* Green button */
+            color: #ffffff; /* White text */
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1em;
+            margin-top: 1em;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #00ff00; /* Lighter green on hover */
+            color: #000000;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        textarea, input[type="file"] {
+            width: calc(100% - 22px); /* Adjust for padding/border */
+            padding: 10px;
+            margin-bottom: 1em;
+            border: 1px solid #000000;
+            border-radius: 5px;
+        }
+        .code-block {
+            background-color: #000000; /* Black code block */
+            color: #00ff00; /* Green text */
+            padding: 1em;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .status {
+            text-align: center;
+            margin-top: 1em;
+            font-weight: bold;
+            color: #008000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Steganography: The Art of Hiding in Plain Sight 🕵️</h1>
+        <p>Welcome, cybersecurity students! This page will introduce you to <strong>steganography</strong>, a technique used to hide data within other non-secret files or messages. Unlike cryptography, which scrambles a message, steganography conceals the very existence of the message.</p>
+
+        <hr>
+
+        <h2>What is Steganography?</h2>
+        <p>The word steganography comes from the Greek words "steganos" (meaning covered or concealed) and "graphein" (meaning writing). The goal is to embed a secret message within a seemingly innocent "cover" file (like an image, audio, or video file) in a way that is difficult for anyone to detect.</p>
+        <ul>
+            <li><strong>Cover Medium:</strong> The file used to hide the data (e.g., a JPG or PNG image).</li>
+            <li><strong>Stego Medium:</strong> The cover medium after the secret data has been embedded.</li>
+            <li><strong>Payload:</strong> The secret data to be hidden.</li>
+        </ul>
+
+        <hr>
+
+        <h2>How It Works: Least Significant Bit (LSB)</h2>
+        <p>One of the most common techniques is <strong>Least Significant Bit (LSB)</strong> steganography. Digital images are made of pixels, and each pixel's color is represented by a set of numbers, typically for Red, Green, and Blue (RGB). Each of these color components is an 8-bit number (from 0 to 255).</p>
+        <p>LSB works by changing the last bit (the "least significant" one) of each of these color component numbers to store one bit of the secret message. Changing this last bit causes such a tiny change in the color that it's invisible to the human eye. 👀</p>
+        <p>For example, to hide the letter 'A' (binary: <span class="code-block" style="display:inline; padding: 2px 5px;">01000001</span>), we need 8 bits. We can take 8 color values from 3 pixels and alter their last bit:</p>
+        <div class="code-block">
+Pixel 1: (R: 1101011<b>0</b>, G: 0101010<b>1</b>, B: 1001110<b>0</b>)
+Pixel 2: (R: 0010110<b>0</b>, G: 1111000<b>0</b>, B: 0110101<b>0</b>)
+Pixel 3: (R: 1110011<b>1</b>, B: 0101010<b>1</b>)
+        </div>
+        <p>By modifying only the bolded bits, we embed the binary for 'A' without noticeably altering the image.</p>
+
+        <hr>
+
+        <h2 id="interactive-tool">Interactive Steganography Demo 💻</h2>
+
+        <div class="interactive-section">
+            <div class="panel">
+                <h3>1. Encode Message</h3>
+                <p>Choose an image and type a secret message to hide inside it.</p>
+                <label for="encode-file">Select Cover Image:</label>
+                <input type="file" id="encode-file" accept="image/png, image/jpeg">
+                <label for="message">Secret Message:</label>
+                <textarea id="message" rows="4" placeholder="Your secret message here..."></textarea>
+                <button id="encode-btn" disabled>Encode Message</button>
+                <p class="status" id="encode-status"></p>
+                <canvas id="encode-canvas"></canvas>
+            </div>
+
+            <div class="panel">
+                <h3>2. Decode Message</h3>
+                <p>Upload a stego image to reveal the hidden message.</p>
+                <label for="decode-file">Select Stego Image:</label>
+                <input type="file" id="decode-file" accept="image/png, image/jpeg">
+                <button id="decode-btn" disabled>Decode Message</button>
+                <p class="status" id="decode-status"></p>
+                <canvas id="decode-canvas"></canvas>
+                <textarea id="decoded-message" rows="4" readonly placeholder="Decoded message will appear here..."></textarea>
+            </div>
+        </div>
+
+        <hr>
+
+        <h2>Why Does Steganography Matter in Cybersecurity?</h2>
+        <p>Steganography is a powerful tool that can be used for both good and bad:</p>
+        <ul>
+            <li><strong>Malware Distribution:</strong> Attackers can hide malicious code within images posted on websites. When a user downloads the image, a script can extract and run the malware.</li>
+            <li><strong>Data Exfiltration:</strong> An insider could hide sensitive company data (e.g., trade secrets, customer lists) in seemingly harmless images and email them out of the corporate network without triggering data loss prevention (DLP) systems.</li>
+            <li><strong>Covert Communication:</strong> Whistleblowers, journalists, and intelligence agencies can use it to send messages without detection.</li>
+        </ul>
+        <p>Understanding steganography helps cybersecurity professionals develop better methods for detecting hidden data (this field is called <strong>steganalysis</strong>) and recognize potential threats that might otherwise go unnoticed.</p>
+    </div>
+
+    <script>
+    // JavaScript for steganography functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DOM Elements ---
+        const encodeFileInput = document.getElementById('encode-file');
+        const messageInput = document.getElementById('message');
+        const encodeBtn = document.getElementById('encode-btn');
+        const encodeCanvas = document.getElementById('encode-canvas');
+        const encodeCtx = encodeCanvas.getContext('2d');
+        const encodeStatus = document.getElementById('encode-status');
+
+        const decodeFileInput = document.getElementById('decode-file');
+        const decodeBtn = document.getElementById('decode-btn');
+        const decodeCanvas = document.getElementById('decode-canvas');
+        const decodeCtx = decodeCanvas.getContext('2d');
+        const decodeStatus = document.getElementById('decode-status');
+        const decodedMessageText = document.getElementById('decoded-message');
+        
+        const MESSAGE_TERMINATOR = '$$STEGO$$'; // A unique string to mark the end of the message
+
+        let originalImageData = null;
+
+        // --- Event Listeners & Logic ---
+
+        // Enable encode button only when both file and message are present
+        function checkEncodeReady() {
+            encodeBtn.disabled = !(encodeFileInput.files.length > 0 && messageInput.value.length > 0);
+        }
+        encodeFileInput.addEventListener('change', () => {
+            loadImageToCanvas(encodeFileInput.files[0], encodeCanvas, encodeCtx, () => {
+                originalImageData = encodeCtx.getImageData(0, 0, encodeCanvas.width, encodeCanvas.height);
+                checkEncodeReady();
+            });
+        });
+        messageInput.addEventListener('input', checkEncodeReady);
+
+        // Enable decode button when a file is selected
+        decodeFileInput.addEventListener('change', () => {
+            loadImageToCanvas(decodeFileInput.files[0], decodeCanvas, decodeCtx, () => {
+                decodeBtn.disabled = !(decodeFileInput.files.length > 0);
+            });
+        });
+        
+        // --- Encoding Process ---
+        encodeBtn.addEventListener('click', () => {
+            encodeStatus.textContent = 'Encoding...';
+            const message = messageInput.value + MESSAGE_TERMINATOR;
+            const messageBits = toBinary(message);
+
+            if (!originalImageData) {
+                encodeStatus.textContent = 'Error: Image data not loaded.';
+                return;
+            }
+
+            const imageData = new ImageData(
+                new Uint8ClampedArray(originalImageData.data),
+                originalImageData.width,
+                originalImageData.height
+            );
+
+            if (messageBits.length > imageData.data.length) {
+                encodeStatus.textContent = 'Error: Message is too large for this image.';
+                return;
+            }
+
+            // Embed message bits into image data
+            let dataIndex = 0;
+            for (let i = 0; i < messageBits.length; i++) {
+                // Skip the alpha channel (every 4th value)
+                if ((dataIndex + 1) % 4 === 0) {
+                    dataIndex++;
+                }
+                imageData.data[dataIndex] = setLSB(imageData.data[dataIndex], messageBits[i]);
+                dataIndex++;
+            }
+
+            // Put the modified data back onto the canvas
+            encodeCtx.putImageData(imageData, 0, 0);
+            
+            // Create a downloadable link
+            const link = document.createElement('a');
+            link.download = 'stego-image.png';
+            link.href = encodeCanvas.toDataURL('image/png');
+            link.textContent = 'Download Stego Image';
+            link.style.display = 'block';
+            link.style.textAlign = 'center';
+            link.style.marginTop = '1em';
+            
+            // Clear old link if exists
+            const oldLink = document.querySelector('#encode-panel a');
+            if (oldLink) oldLink.remove();
+            
+            document.querySelector('#encode-panel').appendChild(link);
+            encodeStatus.textContent = 'Encoding complete!';
+        });
+
+        // --- Decoding Process ---
+        decodeBtn.addEventListener('click', () => {
+            decodeStatus.textContent = 'Decoding...';
+            decodedMessageText.value = '';
+            
+            const imageData = decodeCtx.getImageData(0, 0, decodeCanvas.width, decodeCanvas.height);
+            let binaryMessage = '';
+            
+            // Extract LSBs from image data
+            for (let i = 0; i < imageData.data.length; i++) {
+                // Skip alpha channel
+                if ((i + 1) % 4 === 0) {
+                    continue;
+                }
+                binaryMessage += getLSB(imageData.data[i]);
+            }
+            
+            const decodedMessage = fromBinary(binaryMessage);
+            const terminatorIndex = decodedMessage.indexOf(MESSAGE_TERMINATOR);
+            
+            if (terminatorIndex !== -1) {
+                decodedMessageText.value = decodedMessage.substring(0, terminatorIndex);
+                decodeStatus.textContent = 'Message found! 🎉';
+            } else {
+                decodedMessageText.value = 'No hidden message found or image is corrupt.';
+                decodeStatus.textContent = 'Decoding complete.';
+            }
+        });
+
+        // --- Helper Functions ---
+
+        // Loads an image file onto a canvas
+        function loadImageToCanvas(file, canvas, ctx, callback) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    if (callback) callback();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Convert string to binary string
+        function toBinary(str) {
+            return str.split('').map(char => {
+                return char.charCodeAt(0).toString(2).padStart(8, '0');
+            }).join('');
+        }
+
+        // Convert binary string to ASCII string
+        function fromBinary(binaryStr) {
+            let str = '';
+            for (let i = 0; i < binaryStr.length; i += 8) {
+                const byte = binaryStr.slice(i, i + 8);
+                if (byte.length === 8) {
+                    str += String.fromCharCode(parseInt(byte, 2));
+                }
+            }
+            return str;
+        }
+
+        // Sets the Least Significant Bit (LSB) of a number
+        function setLSB(byte, bit) {
+            if (bit === '1') {
+                return byte | 1; // OR with 1 (e.g., 11010110 | 00000001 = 11010111)
+            } else {
+                return byte & ~1; // AND with NOT 1 (e.g., 11010111 & 11111110 = 11010110)
+            }
+        }
+        
+        // Gets the Least Significant Bit (LSB) of a number
+        function getLSB(byte) {
+            return (byte & 1).toString(); // AND with 1 to get the last bit
+        }
+    });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+Canvas
+
+Image
+
+Gemini can make mistakes, so double-check it
+
+
+
+
+

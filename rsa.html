@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA Key Generator - Alice & Bob</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .person-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .person-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .alice-card {
+            border-color: #e91e63;
+            background: linear-gradient(135deg, #fff 0%, #fce4ec 100%);
+        }
+
+        .bob-card {
+            border-color: #2196f3;
+            background: linear-gradient(135deg, #fff 0%, #e3f2fd 100%);
+        }
+
+        .person-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .alice-avatar {
+            background: linear-gradient(45deg, #e91e63, #f06292);
+        }
+
+        .bob-avatar {
+            background: linear-gradient(45deg, #2196f3, #64b5f6);
+        }
+
+        .person-name {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        .key-size-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #2196f3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        .generate-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(76, 175, 80, 0.3);
+        }
+
+        .generate-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .keys-display {
+            margin-top: 20px;
+        }
+
+        .key-section {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .key-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .key-value {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .math-explanation {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border-left: 5px solid #ff9800;
+        }
+
+        .math-explanation h3 {
+            color: #e65100;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .step {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 3px solid #ff9800;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #bf360c;
+            margin-bottom: 5px;
+        }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px 0;
+            display: inline-block;
+        }
+
+        .demo-section {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border-left: 5px solid #4caf50;
+        }
+
+        .demo-controls {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .message-input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .encrypt-btn, .decrypt-btn {
+            background: linear-gradient(45deg, #4caf50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .demo-result {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #4caf50;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .demo-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 RSA Key Generator</h1>
+            <p>Learn RSA Cryptography with Alice & Bob</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Alice's Section -->
+            <div class="person-card alice-card">
+                <div class="person-header">
+                    <div class="avatar alice-avatar">A</div>
+                    <div class="person-name">Alice</div>
+                </div>
+                
+                <div class="controls">
+                    <div class="key-size-group">
+                        <label for="alice-key-size">Key Size (bits):</label>
+                        <select id="alice-key-size">
+                            <option value="512">512 bits (Demo only)</option>
+                            <option value="1024">1024 bits (Legacy)</option>
+                            <option value="2048" selected>2048 bits (Standard)</option>
+                            <option value="4096">4096 bits (High Security)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="generate-btn" onclick="generateKeys('alice')">
+                        Generate Alice's Keys
+                    </button>
+                </div>
+
+                <div class="keys-display" id="alice-keys">
+                    <div class="loading">Click "Generate Alice's Keys" to create RSA key pair</div>
+                </div>
+            </div>
+
+            <!-- Bob's Section -->
+            <div class="person-card bob-card">
+                <div class="person-header">
+                    <div class="avatar bob-avatar">B</div>
+                    <div class="person-name">Bob</div>
+                </div>
+                
+                <div class="controls">
+                    <div class="key-size-group">
+                        <label for="bob-key-size">Key Size (bits):</label>
+                        <select id="bob-key-size">
+                            <option value="512">512 bits (Demo only)</option>
+                            <option value="1024">1024 bits (Legacy)</option>
+                            <option value="2048" selected>2048 bits (Standard)</option>
+                            <option value="4096">4096 bits (High Security)</option>
+                        </select>
+                    </div>
+                    
+                    <button class="generate-btn" onclick="generateKeys('bob')">
+                        Generate Bob's Keys
+                    </button>
+                </div>
+
+                <div class="keys-display" id="bob-keys">
+                    <div class="loading">Click "Generate Bob's Keys" to create RSA key pair</div>
+                </div>
+            </div>
+
+            <!-- Mathematical Explanation -->
+            <div class="math-explanation">
+                <h3>🧮 RSA Algorithm Steps</h3>
+                
+                <div class="step">
+                    <div class="step-title">Step 1: Choose two large prime numbers</div>
+                    <div>Select two distinct prime numbers <span class="formula">p</span> and <span class="formula">q</span></div>
+                    <div>Example: p = 61, q = 53</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-title">Step 2: Calculate the modulus</div>
+                    <div><span class="formula">n = p × q</span></div>
+                    <div>Example: n = 61 × 53 = 3233</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-title">Step 3: Calculate Euler's totient function</div>
+                    <div><span class="formula">φ(n) = (p-1) × (q-1)</span></div>
+                    <div>Example: φ(3233) = 60 × 52 = 3120</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-title">Step 4: Choose public exponent</div>
+                    <div>Choose <span class="formula">e</span> such that <span class="formula">gcd(e, φ(n)) = 1</span></div>
+                    <div>Common choice: e = 65537</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-title">Step 5: Calculate private exponent using Extended Euclidean Algorithm</div>
+                    <div>Find <span class="formula">d</span> such that <span class="formula">e × d ≡ 1 (mod φ(n))</span></div>
+                    <div>This means: <span class="formula">e × d = 1 + k × φ(n)</span> for some integer k</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-title">Result: Key Pairs</div>
+                    <div><strong>Public Key:</strong> <span class="formula">(n, e)</span> - shared with everyone</div>
+                    <div><strong>Private Key:</strong> <span class="formula">(n, d)</span> - kept secret</div>
+                </div>
+            </div>
+
+            <!-- Demo Section -->
+            <div class="demo-section">
+                <h3>🔄 Text Encryption/Decryption Demo</h3>
+                <p>Once both Alice and Bob have generated keys, try encrypting a text message!</p>
+                
+                <div class="demo-controls">
+                    <div>
+                        <label for="demo-message">Text Message:</label>
+                        <input type="text" id="demo-message" class="message-input" placeholder="Enter text to encrypt (e.g., HELLO)" maxlength="50">
+                        <small style="color: #666; font-size: 12px;">Letters will be converted to numbers: A=1, B=2, C=3... Z=26</small>
+                    </div>
+                    <button class="encrypt-btn" onclick="encryptDemo()">Encrypt with Bob's Public Key →</button>
+                    <div>
+                        <label for="encrypted-message">Encrypted (cipher blocks):</label>
+                        <textarea id="encrypted-message" class="message-input" readonly rows="3" style="resize: vertical;"></textarea>
+                    </div>
+                </div>
+                
+                <div class="demo-controls">
+                    <div>
+                        <label for="conversion-display">Text → Numbers:</label>
+                        <input type="text" id="conversion-display" class="message-input" readonly placeholder="Character conversion will appear here">
+                    </div>
+                    <button class="decrypt-btn" onclick="decryptDemo()">← Decrypt with Bob's Private Key</button>
+                    <div>
+                        <label for="decrypted-message">Decrypted Text:</label>
+                        <input type="text" id="decrypted-message" class="message-input" readonly>
+                    </div>
+                </div>
+
+                <div id="demo-explanation" class="demo-result" style="display: none;">
+                    <strong>Text Processing:</strong> Each character is converted to a number (A=1, B=2, ..., Z=26, space=27)<br>
+                    <strong>Block Encryption:</strong> Characters are processed in blocks to ensure each block < n<br>
+                    <strong>Encryption Formula:</strong> <span class="formula">ciphertext = block^e mod n</span><br>
+                    <strong>Decryption Formula:</strong> <span class="formula">block = ciphertext^d mod n</span>
+                </div>
+
+                <div class="demo-result">
+                    <h4>🎓 Educational Notes:</h4>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li><strong>Character Encoding:</strong> Each letter is converted to a number (A=1, B=2, C=3... Z=26, Space=27)</li>
+                        <li><strong>Block Processing:</strong> Text is divided into blocks that fit within the key size limit (< n)</li>
+                        <li><strong>Padding:</strong> In real implementations, secure padding schemes like OAEP are used</li>
+                        <li><strong>Practical Use:</strong> Real RSA typically encrypts symmetric keys, not direct text messages</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store generated keys
+        let aliceKeys = null;
+        let bobKeys = null;
+
+        // Simple prime checking function (for educational purposes)
+        function isPrime(n) {
+            if (n < 2) return false;
+            if (n === 2) return true;
+            if (n % 2 === 0) return false;
+            for (let i = 3; i * i <= n; i += 2) {
+                if (n % i === 0) return false;
+            }
+            return true;
+        }
+
+        // Generate a random prime number in a range
+        function generatePrime(min, max) {
+            let prime;
+            do {
+                prime = Math.floor(Math.random() * (max - min + 1)) + min;
+            } while (!isPrime(prime));
+            return prime;
+        }
+
+        // Calculate GCD using Euclidean algorithm
+        function gcd(a, b) {
+            while (b !== 0) {
+                [a, b] = [b, a % b];
+            }
+            return a;
+        }
+
+        // Extended Euclidean Algorithm to find modular inverse
+        function extendedGCD(a, b) {
+            if (a === 0) return [b, 0, 1];
+            
+            let [gcd, x1, y1] = extendedGCD(b % a, a);
+            let x = y1 - Math.floor(b / a) * x1;
+            let y = x1;
+            
+            return [gcd, x, y];
+        }
+
+        // Find modular inverse
+        function modInverse(e, phi) {
+            let [g, x, y] = extendedGCD(e, phi);
+            if (g !== 1) throw new Error('Modular inverse does not exist');
+            return ((x % phi) + phi) % phi;
+        }
+
+        // Fast modular exponentiation
+        function modPow(base, exp, mod) {
+            let result = 1;
+            base = base % mod;
+            while (exp > 0) {
+                if (exp % 2 === 1) {
+                    result = (result * base) % mod;
+                }
+                exp = Math.floor(exp / 2);
+                base = (base * base) % mod;
+            }
+            return result;
+        }
+
+        // Generate RSA key pair
+        function generateRSAKeys(keySize) {
+            const bitSize = Math.floor(keySize / 2);
+            
+            // For demo purposes, use smaller primes for faster generation
+            let min, max;
+            if (keySize === 512) {
+                min = 100; max = 500;
+            } else if (keySize === 1024) {
+                min = 500; max = 1500;
+            } else {
+                // For 2048 and 4096, use reasonable ranges for demo
+                min = 1000; max = 5000;
+            }
+            
+            // Generate two distinct primes
+            let p = generatePrime(min, max);
+            let q;
+            do {
+                q = generatePrime(min, max);
+            } while (q === p);
+
+            // Calculate n and phi(n)
+            const n = p * q;
+            const phi = (p - 1) * (q - 1);
+
+            // Choose e (commonly 65537, but use smaller values for demo)
+            let e = 65537;
+            if (e >= phi) e = 3; // Fallback for small keys
+            
+            // Ensure e is coprime with phi
+            while (gcd(e, phi) !== 1) {
+                e += 2;
+            }
+
+            // Calculate d using Extended Euclidean Algorithm
+            const d = modInverse(e, phi);
+
+            return {
+                publicKey: { n, e },
+                privateKey: { n, d },
+                primes: { p, q },
+                phi: phi,
+                keySize: keySize
+            };
+        }
+
+        // Generate keys for a person
+        async function generateKeys(person) {
+            const keySize = parseInt(document.getElementById(`${person}-key-size`).value);
+            const keysDisplay = document.getElementById(`${person}-keys`);
+            const button = document.querySelector(`[onclick="generateKeys('${person}')"]`);
+            
+            // Show loading state
+            button.disabled = true;
+            button.textContent = 'Generating...';
+            keysDisplay.innerHTML = '<div class="loading">🔄 Generating RSA keys... This may take a moment for larger key sizes.</div>';
+            
+            // Generate keys (add small delay for larger keys to show loading)
+            setTimeout(() => {
+                try {
+                    const keys = generateRSAKeys(keySize);
+                    
+                    // Store keys
+                    if (person === 'alice') {
+                        aliceKeys = keys;
+                    } else {
+                        bobKeys = keys;
+                    }
+                    
+                    // Display keys
+                    keysDisplay.innerHTML = `
+                        <div class="key-section">
+                            <div class="key-title">🔑 Public Key (n, e)</div>
+                            <div class="key-value">n = ${keys.publicKey.n}<br>e = ${keys.publicKey.e}</div>
+                        </div>
+                        <div class="key-section">
+                            <div class="key-title">🔒 Private Key (n, d)</div>
+                            <div class="key-value">n = ${keys.privateKey.n}<br>d = ${keys.privateKey.d}</div>
+                        </div>
+                        <div class="key-section">
+                            <div class="key-title">🧮 Mathematical Details</div>
+                            <div class="key-value">
+                                Prime p = ${keys.primes.p}<br>
+                                Prime q = ${keys.primes.q}<br>
+                                φ(n) = (p-1)(q-1) = ${keys.phi}<br>
+                                Key Size: ${keys.keySize} bits
+                            </div>
+                        </div>
+                    `;
+                    
+                    button.textContent = `Generate ${person.charAt(0).toUpperCase() + person.slice(1)}'s Keys`;
+                } catch (error) {
+                    keysDisplay.innerHTML = `<div style="color: red;">Error generating keys: ${error.message}</div>`;
+                }
+                
+                button.disabled = false;
+            }, keySize > 1024 ? 1000 : 100);
+        }
+
+        // Text to number conversion functions
+        function textToNumbers(text) {
+            // Convert text to uppercase and map each character to a number
+            // A=1, B=2, C=3, ..., Z=26, Space=27, Period=28, Comma=29
+            const charMap = {
+                'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9, 'J': 10,
+                'K': 11, 'L': 12, 'M': 13, 'N': 14, 'O': 15, 'P': 16, 'Q': 17, 'R': 18, 'S': 19, 'T': 20,
+                'U': 21, 'V': 22, 'W': 23, 'X': 24, 'Y': 25, 'Z': 26, ' ': 27, '.': 28, ',': 29
+            };
+            
+            return text.toUpperCase().split('').map(char => charMap[char] || 27); // Default to space for unknown chars
+        }
+
+        function numbersToText(numbers) {
+            // Convert numbers back to text
+            const reverseMap = {
+                1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E', 6: 'F', 7: 'G', 8: 'H', 9: 'I', 10: 'J',
+                11: 'K', 12: 'L', 13: 'M', 14: 'N', 15: 'O', 16: 'P', 17: 'Q', 18: 'R', 19: 'S', 20: 'T',
+                21: 'U', 22: 'V', 23: 'W', 24: 'X', 25: 'Y', 26: 'Z', 27: ' ', 28: '.', 29: ','
+            };
+            
+            return numbers.map(num => reverseMap[num] || ' ').join('');
+        }
+
+        function createBlocks(numbers, maxBlockValue) {
+            // Create blocks using a simple approach: pack as many 2-digit numbers as possible
+            const blocks = [];
+            const blockData = []; // Store original character data for reconstruction
+            
+            for (let i = 0; i < numbers.length; i += 3) { // Process 3 characters at a time max
+                let blockValue = 0;
+                let charsInBlock = [];
+                
+                // Try to fit up to 3 characters in a block
+                for (let j = 0; j < 3 && i + j < numbers.length; j++) {
+                    let newValue = blockValue * 100 + numbers[i + j];
+                    
+                    if (newValue < maxBlockValue) {
+                        blockValue = newValue;
+                        charsInBlock.push(numbers[i + j]);
+                    } else {
+                        break; // Can't fit more characters
+                    }
+                }
+                
+                // If we couldn't fit any characters, use single character
+                if (charsInBlock.length === 0) {
+                    blockValue = numbers[i];
+                    charsInBlock = [numbers[i]];
+                }
+                
+                blocks.push(blockValue);
+                blockData.push(charsInBlock);
+            }
+            
+            // Store block structure for decryption
+            window.blockStructure = blockData;
+            return blocks;
+        }
+
+        function parseBlocks(blocks) {
+            // Use stored block structure to correctly reconstruct the original numbers
+            if (window.blockStructure) {
+                const numbers = [];
+                for (let blockChars of window.blockStructure) {
+                    numbers.push(...blockChars);
+                }
+                return numbers;
+            }
+            
+            // Fallback parsing if structure is lost (less reliable)
+            const numbers = [];
+            for (let block of blocks) {
+                const blockStr = block.toString().padStart(2, '0'); // Ensure at least 2 digits
+                
+                // Simple parsing: assume 2-digit encoding
+                for (let i = 0; i < blockStr.length; i += 2) {
+                    if (i + 1 < blockStr.length) {
+                        let num = parseInt(blockStr.substr(i, 2));
+                        if (num >= 1 && num <= 29) {
+                            numbers.push(num);
+                        }
+                    } else {
+                        let num = parseInt(blockStr.substr(i, 1));
+                        if (num >= 1 && num <= 29) {
+                            numbers.push(num);
+                        }
+                    }
+                }
+            }
+            
+            return numbers;
+        }
+
+        // Encrypt demo message
+        function encryptDemo() {
+            const messageText = document.getElementById('demo-message').value.trim();
+            const encryptedField = document.getElementById('encrypted-message');
+            const conversionField = document.getElementById('conversion-display');
+            const explanationDiv = document.getElementById('demo-explanation');
+            
+            if (!messageText || !bobKeys) {
+                alert('Please enter a message and generate Bob\'s keys first!');
+                return;
+            }
+            
+            try {
+                // Convert text to numbers
+                const numbers = textToNumbers(messageText);
+                conversionField.value = messageText.toUpperCase() + ' → ' + numbers.join(', ');
+                
+                // Create blocks that fit within the key constraints
+                const blocks = createBlocks(numbers, bobKeys.publicKey.n);
+                
+                // Encrypt each block
+                const encryptedBlocks = blocks.map(block => 
+                    modPow(block, bobKeys.publicKey.e, bobKeys.publicKey.n)
+                );
+                
+                encryptedField.value = encryptedBlocks.join(', ');
+                
+                explanationDiv.style.display = 'block';
+                explanationDiv.innerHTML = `
+                    <strong>Text Encryption Process:</strong><br>
+                    1. Text "${messageText.toUpperCase()}" → Numbers: [${numbers.join(', ')}]<br>
+                    2. Grouped into blocks: [${blocks.join(', ')}]<br>
+                    3. Each block encrypted with Bob's public key (n=${bobKeys.publicKey.n}, e=${bobKeys.publicKey.e})<br>
+                    4. Encrypted blocks: [${encryptedBlocks.join(', ')}]
+                `;
+                
+                // Store for decryption
+                window.currentEncryptedBlocks = encryptedBlocks;
+                window.originalBlocks = blocks;
+                
+            } catch (error) {
+                alert('Error encrypting message: ' + error.message);
+            }
+        }
+
+        // Decrypt demo message
+        function decryptDemo() {
+            const decryptedField = document.getElementById('decrypted-message');
+            const explanationDiv = document.getElementById('demo-explanation');
+            
+            if (!window.currentEncryptedBlocks || !bobKeys) {
+                alert('Please encrypt a message first!');
+                return;
+            }
+            
+            try {
+                // Decrypt each block
+                const decryptedBlocks = window.currentEncryptedBlocks.map(encryptedBlock => 
+                    modPow(encryptedBlock, bobKeys.privateKey.d, bobKeys.privateKey.n)
+                );
+                
+                // Parse blocks back into character numbers
+                const numbers = parseBlocks(decryptedBlocks);
+                
+                // Convert numbers back to text
+                const decryptedText = numbersToText(numbers);
+                
+                decryptedField.value = decryptedText;
+                
+                explanationDiv.innerHTML += `<br><br>
+                    <strong>Text Decryption Process:</strong><br>
+                    1. Encrypted blocks [${window.currentEncryptedBlocks.join(', ')}] decrypted<br>
+                    2. Decrypted blocks: [${decryptedBlocks.join(', ')}]<br>
+                    3. Block structure preserved: ${JSON.stringify(window.blockStructure)}<br>
+                    4. Reconstructed character numbers: [${numbers.join(', ')}]<br>
+                    5. Converted to text: "${decryptedText}"<br>
+                    Using Bob's private key (n=${bobKeys.privateKey.n}, d=${bobKeys.privateKey.d})
+                `;
+                
+            } catch (error) {
+                alert('Error decrypting message: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

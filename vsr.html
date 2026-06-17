@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMMC 2.0 Level 2 - Vulnerability Scan Report (VSR)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #4a69bd;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #4a69bd, #1e3c72);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .classification-banner {
+            background: #e74c3c;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        .edit-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .edit-mode-toggle:hover {
+            background: #2ecc71;
+            transform: translateY(-2px);
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #4a69bd;
+            transition: all 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .section-title {
+            color: #4a69bd;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title::before {
+            content: "🔍";
+            font-size: 1.2em;
+        }
+        
+        .org-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #4a69bd;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #4a69bd;
+            margin-bottom: 5px;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .vulnerability-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .vulnerability-table th,
+        .vulnerability-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .vulnerability-table th {
+            background: #4a69bd;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .vulnerability-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .vulnerability-table tr:hover {
+            background: #e3f2fd;
+            transition: background 0.3s ease;
+        }
+        
+        .risk-critical { 
+            background: #e74c3c !important; 
+            color: white; 
+            font-weight: bold; 
+            text-align: center;
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+        
+        .risk-high { 
+            background: #f39c12 !important; 
+            color: white; 
+            font-weight: bold; 
+            text-align: center;
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+        
+        .risk-medium { 
+            background: #f1c40f !important; 
+            color: #333; 
+            font-weight: bold; 
+            text-align: center;
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+        
+        .risk-low { 
+            background: #27ae60 !important; 
+            color: white; 
+            font-weight: bold; 
+            text-align: center;
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+        
+        .recommendations {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .recommendations h3 {
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+        
+        .recommendations ol {
+            padding-left: 20px;
+        }
+        
+        .recommendations li {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #27ae60;
+        }
+        
+        .add-btn, .remove-btn, .save-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .add-btn:hover, .save-btn:hover {
+            background: #2ecc71;
+            transform: translateY(-1px);
+        }
+        
+        .remove-btn {
+            background: #e74c3c;
+        }
+        
+        .remove-btn:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+        }
+        
+        .editable {
+            border: 2px dashed transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .edit-mode .editable:hover {
+            border: 2px dashed #4a69bd;
+            background: rgba(74, 105, 189, 0.05);
+        }
+        
+        .edit-form {
+            display: none;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .edit-form input, .edit-form select, .edit-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        
+        .trends-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            color: #2d3436;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .compliance-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .compliance-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-complete {
+            background: #27ae60;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .status-partial {
+            background: #f39c12;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 2px solid #4a69bd;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .metric-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .org-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="edit-mode-toggle" onclick="toggleEditMode()">📝 Instructor Edit Mode: OFF</button>
+    
+    <div class="container">
+        <div class="classification-banner">
+            CONTROLLED UNCLASSIFIED INFORMATION (CUI) - FOR TRAINING PURPOSES ONLY
+        </div>
+        
+        <div class="header">
+            <h1>Annual Vulnerability Scan Summary Report (CY2024)</h1>
+            <h2>CMMC 2.0 Level 2 Compliance</h2>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Organization Information</div>
+            <div class="org-info">
+                <div class="info-item editable" onclick="editField(this, 'text')">
+                    <div class="info-label">Organization:</div>
+                    <div class="info-value">ACME Technology Services Corporation</div>
+                </div>
+                <div class="info-item editable" onclick="editField(this, 'text')">
+                    <div class="info-label">Prepared by:</div>
+                    <div class="info-value">IT Security Team / CISO</div>
+                </div>
+                <div class="info-item editable" onclick="editField(this, 'date')">
+                    <div class="info-label">Date:</div>
+                    <div class="info-value">January 15, 2025</div>
+                </div>
+                <div class="info-item editable" onclick="editField(this, 'select')">
+                    <div class="info-label">Classification:</div>
+                    <div class="info-value">Controlled Unclassified Information (CUI)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Executive Summary</div>
+            <div class="editable" onclick="editField(this, 'textarea')">
+                <p>This report summarizes the findings from ACME's quarterly internal and external vulnerability scans conducted throughout calendar year 2024. These scans were performed using industry-recognized tools (e.g., Nessus, OpenVAS, Qualys) and focused on identifying vulnerabilities across the organization's systems, networks, endpoints, and cloud environments.</p>
+                
+                <p>A total of <strong>four enterprise-wide scans</strong> and <strong>twelve targeted scans</strong> were conducted. The findings are consistent with national trends affecting <strong>small and medium-sized businesses (SMBs)</strong> and emphasize the importance of continuous patching, secure configurations, and user awareness.</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Key Metrics</div>
+            <div class="metric-grid">
+                <div class="metric-card editable" onclick="editMetric(this)">
+                    <div class="metric-value">124</div>
+                    <div class="metric-label">Total Systems Scanned</div>
+                </div>
+                <div class="metric-card editable" onclick="editMetric(this)">
+                    <div class="metric-value">279</div>
+                    <div class="metric-label">Unique Vulnerabilities Detected</div>
+                </div>
+                <div class="metric-card editable" onclick="editMetric(this)">
+                    <div class="metric-value">17</div>
+                    <div class="metric-label">Critical Vulnerabilities (6.1%)</div>
+                </div>
+                <div class="metric-card editable" onclick="editMetric(this)">
+                    <div class="metric-value">56</div>
+                    <div class="metric-label">High-Risk Vulnerabilities (20.1%)</div>
+                </div>
+                <div class="metric-card editable" onclick="editMetric(this)">
+                    <div class="metric-value">91%</div>
+                    <div class="metric-label">Vulnerabilities Remediated</div>
+                </div>
+                <div class="metric-card editable" onclick="editMetric(this)">
+                    <div class="metric-value">9 days</div>
+                    <div class="metric-label">Avg Time to Remediate (Critical)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Top 5 Vulnerability Categories</div>
+            <table class="vulnerability-table" id="vulnTable">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>% of Total Findings</th>
+                        <th>Common CVEs Identified</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Outdated Software / Unpatched OS</td>
+                        <td><span class="risk-high">26%</span></td>
+                        <td>CVE-2023-21674, CVE-2024-0179</td>
+                        <td><button class="remove-btn" onclick="removeVuln(this)">Remove</button></td>
+                    </tr>
+                    <tr>
+                        <td>Misconfigured Web Servers</td>
+                        <td><span class="risk-high">21%</span></td>
+                        <td>CVE-2024-23897 (Apache), CVE-2024-0347</td>
+                        <td><button class="remove-btn" onclick="removeVuln(this)">Remove</button></td>
+                    </tr>
+                    <tr>
+                        <td>Weak TLS/SSL Configurations</td>
+                        <td><span class="risk-medium">16%</span></td>
+                        <td>Use of deprecated ciphers, TLS 1.0/1.1</td>
+                        <td><button class="remove-btn" onclick="removeVuln(this)">Remove</button></td>
+                    </tr>
+                    <tr>
+                        <td>Missing Endpoint Protection Updates</td>
+                        <td><span class="risk-medium">13%</span></td>
+                        <td>AV signature failures, disabled agents</td>
+                        <td><button class="remove-btn" onclick="removeVuln(this)">Remove</button></td>
+                    </tr>
+                    <tr>
+                        <td>Default Credentials / Open Ports</td>
+                        <td><span class="risk-low">11%</span></td>
+                        <td>SSH/FTP open to public, weak password use</td>
+                        <td><button class="remove-btn" onclick="removeVuln(this)">Remove</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="add-btn" onclick="addVulnerability()">Add Vulnerability Category</button>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Notable Findings</div>
+            <ul id="findingsList">
+                <li class="editable" onclick="editField(this, 'text')"><strong>Critical vulnerability (CVE-2024-0347)</strong> found in the public-facing VPN appliance was patched within 48 hours following vendor alert.</li>
+                <li class="editable" onclick="editField(this, 'text')"><strong>Internal Linux servers</strong> running older kernels were flagged for privilege escalation vulnerabilities.</li>
+                <li class="editable" onclick="editField(this, 'text')"><strong>Credential exposure risk</strong> due to lack of MFA for admin access on internal tools.</li>
+                <li class="editable" onclick="editField(this, 'text')"><strong>IoT and legacy devices</strong> in the warehouse lacked up-to-date firmware, flagged for segmentation.</li>
+            </ul>
+            <button class="add-btn" onclick="addFinding()">Add Finding</button>
+        </div>
+        
+        <div class="section trends-section">
+            <div class="section-title">Trends Across SMBs in 2024</div>
+            <div class="editable" onclick="editField(this, 'textarea')">
+                <p>ACME's vulnerability posture mirrors national patterns seen in other small and mid-sized contractors in 2024, notably:</p>
+                <ol>
+                    <li><strong>Legacy System Exposure:</strong> Many SMBs rely on aging infrastructure without long-term vendor support.</li>
+                    <li><strong>Patch Management Gaps:</strong> Delays in patching due to resource constraints or fear of operational disruption.</li>
+                    <li><strong>Remote Work Risks:</strong> Increased use of VPNs and remote access tools without consistent hardening.</li>
+                    <li><strong>Cloud Misconfigurations:</strong> Poor IAM policies and logging gaps in cloud platforms (e.g., Azure, AWS).</li>
+                    <li><strong>Social Engineering Threats:</strong> Exploitation of untrained personnel through phishing and MFA bypass attacks.</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">CMMC 2.0 Level 2 Compliance Status</div>
+            <div class="compliance-matrix">
+                <div class="compliance-item">
+                    <span>Asset Inventory</span>
+                    <span class="status-complete">100% Complete</span>
+                </div>
+                <div class="compliance-item">
+                    <span>Vulnerability Scanning</span>
+                    <span class="status-complete">Implemented</span>
+                </div>
+                <div class="compliance-item">
+                    <span>Risk Assessment (RA.L2-3.11.1)</span>
+                    <span class="status-complete">Compliant</span>
+                </div>
+                <div class="compliance-item">
+                    <span>Vulnerability Remediation (RA.L2-3.11.3)</span>
+                    <span class="status-partial">91% Complete</span>
+                </div>
+                <div class="compliance-item">
+                    <span>FIPS 140-2 Encryption</span>
+                    <span class="status-complete">Validated</span>
+                </div>
+                <div class="compliance-item">
+                    <span>Access Controls</span>
+                    <span class="status-complete">Implemented</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="recommendations">
+            <h3>🎯 CMMC Level 2 Recommendations</h3>
+            <ol id="recommendationsList">
+                <li class="editable" onclick="editField(this, 'text')"><strong>Enhance Patch Management Processes</strong> – Reduce critical vulnerability resolution time to &lt;7 days.</li>
+                <li class="editable" onclick="editField(this, 'text')"><strong>Expand Use of MFA</strong> – Apply multi-factor authentication to all administrative and VPN access.</li>
+                <li class="editable" onclick="editField(this, 'text')"><strong>Network Segmentation</strong> – Further isolate legacy systems and OT devices from production networks.</li>
+                <li class="editable" onclick="editField(this, 'text')"><strong>User Training & Phishing Simulations</strong> – Improve resilience against credential-harvesting campaigns.</li>
+                <li class="editable" onclick="editField(this, 'text')"><strong>Quarterly Vulnerability Scans + Monthly Delta Scans</strong> – Implement continuous assessment model.</li>
+            </ol>
+            <button class="add-btn" onclick="addRecommendation()">Add Recommendation</button>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Conclusion</div>
+            <div class="editable" onclick="editField(this, 'textarea')">
+                <p>ACME Technology Services Corporation has made measurable improvements in reducing its vulnerability surface in 2024. Continued commitment to cybersecurity hygiene and alignment with <strong>CMMC 2.0 Level 2</strong> practices will help ensure resilience against emerging threats in 2025 and beyond.</p>
+                
+                <p>This report demonstrates compliance with NIST SP 800-171 requirement RA.L2-3.11.2 (Vulnerability Scanning) and supports the organization's broader CMMC Level 2 certification efforts.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Prepared by:</strong> Raymond Lawrence, Chief Information Security Officer</p>
+            <p><strong>Review Date:</strong> June 15, 2025</p>
+            <p><strong>Document Classification:</strong> Controlled Unclassified Information (CUI)</p>
+            <hr style="margin: 20px 0;">
+            <p><em>This is a training simulation for CMMC 2.0 Level 2 compliance education.</em></p>
+        </div>
+    </div>
+
+    <script>
+        let editMode = false;
+        
+        function toggleEditMode() {
+            editMode = !editMode;
+            const btn = document.querySelector('.edit-mode-toggle');
+            const body = document.body;
+            
+            if (editMode) {
+                btn.textContent = '📝 Instructor Edit Mode: ON';
+                btn.style.background = '#e74c3c';
+                body.classList.add('edit-mode');
+            } else {
+                btn.textContent = '📝 Instructor Edit Mode: OFF';
+                btn.style.background = '#27ae60';
+                body.classList.remove('edit-mode');
+            }
+        }
+        
+        function editField(element, type) {
+            if (!editMode) return;
+            
+            const currentValue = element.textContent || element.innerHTML;
+            const form = document.createElement('div');
+            form.className = 'edit-form';
+            form.style.display = 'block';
+            
+            let input;
+            if (type === 'textarea') {
+                input = document.createElement('textarea');
+                input.rows = 4;
+                input.value = currentValue.replace(/<[^>]*>/g, '');
+            } else if (type === 'select') {
+                input = document.createElement('select');
+                const options = ['Controlled Unclassified Information (CUI)', 'Federal Contract Information (FCI)', 'Public', 'Restricted'];
+                options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.textContent = opt;
+                    if (opt === currentValue) option.selected = true;
+                    input.appendChild(option);
+                });
+            } else {
+                input = document.createElement('input');
+                input.type = type;
+                input.value = currentValue;
+            }
+            
+            const saveBtn = document.createElement('button');
+            saveBtn.textContent = 'Save';
+            saveBtn.className = 'save-btn';
+            saveBtn.onclick = () => {
+                if (element.querySelector('.info-value')) {
+                    element.querySelector('.info-value').textContent = input.value;
+                } else {
+                    element.innerHTML = input.value;
+                }
+                form.remove();
+            };
+            
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.className = 'remove-btn';
+            cancelBtn.onclick = () => form.remove();
+            
+            form.appendChild(input);
+            form.appendChild(saveBtn);
+            form.appendChild(cancelBtn);
+            element.appendChild(form);
+        }
+        
+        function editMetric(card) {
+            if (!editMode) return;
+            
+            const valueEl = card.querySelector('.metric-value');
+            const labelEl = card.querySelector('.metric-label');
+            
+            const form = document.createElement('div');
+            form.className = 'edit-form';
+            form.style.display = 'block';
+            
+            const valueInput = document.createElement('input');
+            valueInput.placeholder = 'Metric Value';
+            valueInput.value = valueEl.textContent;
+            
+            const labelInput = document.createElement('input');
+            labelInput.placeholder = 'Metric Label';
+            labelInput.value = labelEl.textContent;
+            
+            const saveBtn = document.createElement('button');
+            saveBtn.textContent = 'Save';
+            saveBtn.className = 'save-btn';
+            saveBtn.onclick = () => {
+                valueEl.textContent = valueInput.value;
+                labelEl.textContent = labelInput.value;
+                form.remove();
+            };
+            
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.className = 'remove-btn';
+            cancelBtn.onclick = () => form.remove();
+            
+            form.appendChild(valueInput);
+            form.appendChild(labelInput);
+            form.appendChild(saveBtn);
+            form.appendChild(cancelBtn);
+            card.appendChild(form);
+        }
+        
+        function addVulnerability() {
+            if (!editMode) return;
+            
+            const table = document.getElementById('vulnTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            
+            newRow.innerHTML = `
+                <td contenteditable="true">New Vulnerability Category</td>
+                <td><span class="risk-medium">0%</span></td>
+                <td contenteditable="true">CVE-XXXX-XXXX</td>
+                <td><button class="remove-btn" onclick="removeVuln(this)">Remove</button></td>
+            `;
+        }
+        
+        function removeVuln(btn) {
+            if (!editMode) return;
+            btn.closest('tr').remove();
+        }
+        
+        function addFinding() {
+            if (!editMode) return;
+            
+            const list = document.getElementById('findingsList');
+            const newItem = document.createElement('li');
+            newItem.className = 'editable';
+            newItem.onclick = () => editField(newItem, 'text');
+            newItem.innerHTML = '<strong>New Finding:</strong> Enter finding description here.';
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove';
+            removeBtn.className = 'remove-btn';
+            removeBtn.style.marginLeft = '10px';
+            removeBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (editMode) newItem.remove();
+            };
+            
+            newItem.appendChild(removeBtn);
+            list.appendChild(newItem);
+        }
+        
+        function addRecommendation() {
+            if (!editMode) return;
+            
+            const list = document.getElementById('recommendationsList');
+            const newItem = document.createElement('li');
+            newItem.className = 'editable';
+            newItem.onclick = () => editField(newItem, 'text');
+            newItem.innerHTML = '<strong>New Recommendation:</strong> Enter recommendation description here.';
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove';
+            removeBtn.className = 'remove-btn';
+            removeBtn.style.marginLeft = '10px';
+            removeBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (editMode) newItem.remove();
+            };
+            
+            newItem.appendChild(removeBtn);
+            list.appendChild(newItem);
+        }
+        
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+            
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>

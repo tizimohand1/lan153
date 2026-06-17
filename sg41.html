@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompTIA Security+ Domain 4: Security Operations Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: white;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2e8b57, #228b22);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .navigation {
+            background-color: #f8f9fa;
+            border: 2px solid #2e8b57;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .nav-dropdown {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #2e8b57;
+            border-radius: 5px;
+            background-color: white;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .nav-dropdown:focus {
+            outline: none;
+            border-color: #228b22;
+            box-shadow: 0 0 5px rgba(46, 139, 87, 0.3);
+        }
+
+        .content-section {
+            display: none;
+            background-color: white;
+            border: 2px solid #2e8b57;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            color: #2e8b57;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #228b22;
+            padding-bottom: 10px;
+        }
+
+        .subsection {
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-left: 5px solid #2e8b57;
+            border-radius: 5px;
+        }
+
+        .subsection h3 {
+            color: #228b22;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .exam-tip {
+            background-color: #e8f5e8;
+            border: 2px solid #2e8b57;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .exam-tip::before {
+            content: "💡 EXAM TIP";
+            font-weight: bold;
+            color: #2e8b57;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .key-points {
+            background-color: #f0f8f0;
+            border: 1px solid #2e8b57;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .key-points h4 {
+            color: #228b22;
+            margin-bottom: 10px;
+        }
+
+        .key-points ul {
+            padding-left: 20px;
+        }
+
+        .key-points li {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .analogy-box {
+            background-color: #fffacd;
+            border: 2px solid #daa520;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .analogy-box::before {
+            content: "🔍 Real-World Analogy";
+            font-weight: bold;
+            color: #b8860b;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .quiz-section {
+            background-color: #e6ffe6;
+            border: 2px solid #228b22;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            font-weight: bold;
+            color: #2e8b57;
+            margin-bottom: 15px;
+        }
+
+        .quiz-options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quiz-options li {
+            padding: 8px;
+            margin: 5px 0;
+            background-color: white;
+            border: 1px solid #2e8b57;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-options li:hover {
+            background-color: #f0f8f0;
+            transform: translateX(5px);
+        }
+
+        .quiz-options li.correct {
+            background-color: #90ee90;
+            border-color: #228b22;
+        }
+
+        .quiz-options li.incorrect {
+            background-color: #ffcccb;
+            border-color: #dc143c;
+        }
+
+        .quiz-explanation {
+            display: none;
+            background-color: #f0f8f0;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            border-left: 5px solid #228b22;
+        }
+
+        .progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #2e8b57, #228b22);
+            height: 100%;
+            width: 0;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .domain-weight {
+            background-color: #2e8b57;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .objective-box {
+            border: 2px solid #2e8b57;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background-color: white;
+        }
+
+        .objective-box h4 {
+            color: #2e8b57;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .section-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CompTIA Security+ SY0-701</h1>
+            <p>Domain 4: Security Operations - Interactive Study Guide</p>
+            <div class="domain-weight">28% of Exam Weight</div>
+        </div>
+
+        <div class="navigation">
+            <label for="section-select" style="font-weight: bold; color: #2e8b57; display: block; margin-bottom: 10px;">
+                Select a topic to study:
+            </label>
+            <select id="section-select" class="nav-dropdown">
+                <option value="">Choose a Security Operations Topic...</option>
+                <option value="overview">Domain 4 Overview & Exam Strategy</option>
+                <option value="4.1">4.1 - Common Security Techniques for Computing Resources</option>
+                <option value="4.2">4.2 - Hardware, Software, and Data Asset Management</option>
+                <option value="4.3">4.3 - Vulnerability Management Activities</option>
+                <option value="4.4">4.4 - Security Alerting and Monitoring</option>
+                <option value="4.5">4.5 - Enterprise Security Enhancement</option>
+                <option value="4.6">4.6 - Identity and Access Management</option>
+                <option value="4.7">4.7 - Automation and Orchestration</option>
+                <option value="4.8">4.8 - Incident Response Activities</option>
+                <option value="4.9">4.9 - Data Sources for Investigation</option>
+                <option value="practice">Practice Questions</option>
+            </select>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview" class="content-section">
+            <h2 class="section-title">Domain 4: Security Operations Overview</h2>
+            
+            <div class="exam-tip">
+                Domain 4 is the LARGEST domain on the Security+ exam at 28% of total questions. This means approximately 25-26 questions will come from this domain. Master this content for exam success!
+            </div>
+
+            <div class="subsection">
+                <h3>What Security Operations Covers</h3>
+                <p>Security Operations focuses on the day-to-day activities that security professionals perform to protect organizational assets. Think of this as the "hands-on" domain where theory meets practice.</p>
+                
+                <div class="analogy-box">
+                    Security Operations is like running a hospital emergency room. You need established procedures (baselines), proper equipment (hardened systems), constant monitoring (alerting), quick response to incidents, and detailed documentation of everything that happens.
+                </div>
+            </div>
+
+            <div class="objective-box">
+                <h4>Domain 4 Learning Objectives:</h4>
+                <ul>
+                    <li><strong>4.1:</strong> Apply common security techniques to computing resources (25%)</li>
+                    <li><strong>4.2:</strong> Explain security implications of asset management (15%)</li>
+                    <li><strong>4.3:</strong> Explain vulnerability management activities (20%)</li>
+                    <li><strong>4.4:</strong> Explain security alerting and monitoring (15%)</li>
+                    <li><strong>4.5:</strong> Modify enterprise capabilities to enhance security (8%)</li>
+                    <li><strong>4.6:</strong> Implement and maintain identity and access management (12%)</li>
+                    <li><strong>4.7:</strong> Explain automation and orchestration (2%)</li>
+                    <li><strong>4.8:</strong> Explain incident response activities (2%)</li>
+                    <li><strong>4.9:</strong> Use data sources to support investigations (1%)</li>
+                </ul>
+            </div>
+
+            <div class="key-points">
+                <h4>Exam Success Strategy for Domain 4:</h4>
+                <ul>
+                    <li>Focus heavily on 4.1 (Computing Resources) - it's the largest sub-objective</li>
+                    <li>Memorize all mobile deployment models (BYOD, COPE, CYOD)</li>
+                    <li>Understand the difference between MDM, MAM, and UEM</li>
+                    <li>Know wireless security protocols (WPA3, EAP variants)</li>
+                    <li>Understand vulnerability management lifecycle</li>
+                    <li>Practice scenario-based questions for incident response</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 4.1 Section -->
+        <div id="4.1" class="content-section">
+            <h2 class="section-title">4.1 Common Security Techniques for Computing Resources</h2>
+            
+            <div class="exam-tip">
+                This is the most heavily tested sub-objective in Domain 4. Expect 6-7 questions on this topic alone!
+            </div>
+
+            <div class="subsection">
+                <h3>Secure Baselines</h3>
+                <p>A secure baseline is like a master recipe that ensures every system is configured consistently and securely.</p>
+                
+                <div class="analogy-box">
+                    Think of secure baselines like building codes for houses. Just as building codes ensure all houses meet minimum safety standards, secure baselines ensure all systems meet minimum security standards.
+                </div>
+
+                <div class="key-points">
+                    <h4>Baseline Lifecycle:</h4>
+                    <ul>
+                        <li><strong>Establish:</strong> Create the standard configuration</li>
+                        <li><strong>Deploy:</strong> Apply the baseline to systems</li>
+                        <li><strong>Maintain:</strong> Keep baselines current and detect drift</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Hardening Targets</h3>
+                <p>System hardening is like installing security features in a building - you remove unnecessary access points and strengthen what remains.</p>
+
+                <div class="objective-box">
+                    <h4>Key Hardening Targets for Exam:</h4>
+                    <ul>
+                        <li><strong>Mobile Devices:</strong> Encryption, strong authentication, app vetting, remote wipe</li>
+                        <li><strong>Workstations:</strong> Antivirus, host firewall, UAC, screen locks, FDE</li>
+                        <li><strong>Network Infrastructure:</strong> Switches (port security, VLAN), Routers (ACLs, disable unused services)</li>
+                        <li><strong>Cloud Infrastructure:</strong> IAM, security groups, encryption, monitoring</li>
+                        <li><strong>Servers:</strong> Minimal installation, service management, file permissions</li>
+                        <li><strong>Specialized Systems:</strong> ICS/SCADA, embedded systems, RTOS, IoT</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Mobile Solutions - HIGH EXAM FOCUS</h3>
+                
+                <div class="exam-tip">
+                    Mobile deployment models are heavily tested. Know the differences between BYOD, COPE, and CYOD!
+                </div>
+
+                <div class="key-points">
+                    <h4>Mobile Deployment Models:</h4>
+                    <ul>
+                        <li><strong>BYOD (Bring Your Own Device):</strong> Employee-owned, personal use allowed, organization provides access</li>
+                        <li><strong>COPE (Corporate-Owned, Personally Enabled):</strong> Company-owned, personal use allowed</li>
+                        <li><strong>CYOD (Choose Your Own Device):</strong> Company provides approved device list for employee selection</li>
+                    </ul>
+                </div>
+
+                <div class="key-points">
+                    <h4>Mobile Connection Methods:</h4>
+                    <ul>
+                        <li><strong>Cellular:</strong> 4G/5G networks, encrypted by default but use VPN for corporate access</li>
+                        <li><strong>Wi-Fi:</strong> Use WPA3, verify certificates, implement VPN</li>
+                        <li><strong>Bluetooth:</strong> Disable when not needed, use pairing, monitor connections</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Wireless Security Settings</h3>
+                
+                <div class="key-points">
+                    <h4>Critical Wireless Protocols:</h4>
+                    <ul>
+                        <li><strong>WPA3:</strong> Latest Wi-Fi security, 128-bit personal/192-bit enterprise</li>
+                        <li><strong>AAA/RADIUS:</strong> Centralized authentication for enterprise networks</li>
+                        <li><strong>EAP Variants:</strong> EAP-TLS (certificates), PEAP (tunneled), EAP-TTLS</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Application Security</h3>
+                
+                <div class="key-points">
+                    <h4>Application Security Techniques:</h4>
+                    <ul>
+                        <li><strong>Input Validation:</strong> Whitelist approach, check data types and length</li>
+                        <li><strong>Secure Cookies:</strong> Secure flag (HTTPS only), HttpOnly (no JavaScript access)</li>
+                        <li><strong>Static Code Analysis:</strong> Examine source code for vulnerabilities</li>
+                        <li><strong>Code Signing:</strong> Digital signatures to verify software authenticity</li>
+                        <li><strong>Sandboxing:</strong> Isolate applications in controlled environments</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4.2 Section -->
+        <div id="4.2" class="content-section">
+            <h2 class="section-title">4.2 Hardware, Software, and Data Asset Management</h2>
+
+            <div class="subsection">
+                <h3>Asset Management Lifecycle</h3>
+                
+                <div class="analogy-box">
+                    Asset management is like managing a library. You need to know what books you have (inventory), who has them (assignment), where they are (tracking), and when to remove old ones (disposal).
+                </div>
+
+                <div class="key-points">
+                    <h4>Asset Management Process:</h4>
+                    <ul>
+                        <li><strong>Acquisition/Procurement:</strong> Secure purchasing processes, vendor validation</li>
+                        <li><strong>Assignment/Accounting:</strong> Track ownership and classification</li>
+                        <li><strong>Monitoring/Asset Tracking:</strong> Inventory management and enumeration</li>
+                        <li><strong>Disposal/Decommissioning:</strong> Secure sanitization, destruction, certification</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Data Sanitization and Disposal</h3>
+                
+                <div class="exam-tip">
+                    Know the difference between sanitization (making data unrecoverable) and destruction (physical destruction of media).
+                </div>
+
+                <div class="key-points">
+                    <h4>Disposal Methods:</h4>
+                    <ul>
+                        <li><strong>Sanitization:</strong> Overwriting data multiple times to make it unrecoverable</li>
+                        <li><strong>Destruction:</strong> Physical destruction of storage media</li>
+                        <li><strong>Certification:</strong> Documentation proving proper disposal</li>
+                        <li><strong>Data Retention:</strong> Policies for how long to keep different types of data</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4.3 Section -->
+        <div id="4.3" class="content-section">
+            <h2 class="section-title">4.3 Vulnerability Management Activities</h2>
+
+            <div class="exam-tip">
+                Vulnerability management is a continuous process. Remember the cycle: Identify → Analyze → Respond → Validate → Report
+            </div>
+
+            <div class="subsection">
+                <h3>Identification Methods</h3>
+                
+                <div class="key-points">
+                    <h4>Vulnerability Discovery:</h4>
+                    <ul>
+                        <li><strong>Vulnerability Scans:</strong> Automated tools that check for known vulnerabilities</li>
+                        <li><strong>Application Security:</strong> Static analysis (code review), Dynamic analysis (running tests)</li>
+                        <li><strong>Threat Feeds:</strong> OSINT, proprietary feeds, information sharing organizations</li>
+                        <li><strong>Penetration Testing:</strong> Authorized simulated attacks</li>
+                        <li><strong>Bug Bounty Programs:</strong> Crowdsourced vulnerability discovery</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Analysis and Prioritization</h3>
+                
+                <div class="key-points">
+                    <h4>Vulnerability Analysis:</h4>
+                    <ul>
+                        <li><strong>CVSS (Common Vulnerability Scoring System):</strong> 0-10 scale for vulnerability severity</li>
+                        <li><strong>CVE (Common Vulnerability Enumeration):</strong> Unique identifiers for vulnerabilities</li>
+                        <li><strong>False Positives/Negatives:</strong> Incorrect scanner results that need validation</li>
+                        <li><strong>Environmental Variables:</strong> How vulnerability impacts your specific environment</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Response and Remediation</h3>
+                
+                <div class="key-points">
+                    <h4>Remediation Options:</h4>
+                    <ul>
+                        <li><strong>Patching:</strong> Apply vendor-provided fixes</li>
+                        <li><strong>Segmentation:</strong> Isolate vulnerable systems</li>
+                        <li><strong>Compensating Controls:</strong> Alternative security measures</li>
+                        <li><strong>Insurance:</strong> Transfer financial risk</li>
+                        <li><strong>Exceptions/Exemptions:</strong> Documented acceptance of risk</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4.4 Section -->
+        <div id="4.4" class="content-section">
+            <h2 class="section-title">4.4 Security Alerting and Monitoring</h2>
+
+            <div class="subsection">
+                <h3>Monitoring Computing Resources</h3>
+                
+                <div class="analogy-box">
+                    Security monitoring is like having security cameras throughout a building. You need to watch systems, applications, and infrastructure constantly to detect problems early.
+                </div>
+
+                <div class="key-points">
+                    <h4>Monitoring Activities:</h4>
+                    <ul>
+                        <li><strong>Log Aggregation:</strong> Collecting logs from multiple sources</li>
+                        <li><strong>Alerting:</strong> Automated notifications of security events</li>
+                        <li><strong>Scanning:</strong> Regular vulnerability and compliance checks</li>
+                        <li><strong>Reporting:</strong> Regular summaries of security posture</li>
+                        <li><strong>Alert Response:</strong> Quarantine, tuning, validation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Monitoring Tools</h3>
+                
+                <div class="key-points">
+                    <h4>Essential Monitoring Tools:</h4>
+                    <ul>
+                        <li><strong>SIEM:</strong> Security Information and Event Management - central log analysis</li>
+                        <li><strong>SCAP:</strong> Security Content Automation Protocol - standardized vulnerability data</li>
+                        <li><strong>DLP:</strong> Data Loss Prevention - monitors data movement</li>
+                        <li><strong>SNMP Traps:</strong> Network device notifications</li>
+                        <li><strong>NetFlow:</strong> Network traffic analysis</li>
+                        <li><strong>Vulnerability Scanners:</strong> Automated vulnerability detection</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4.5 Section -->
+        <div id="4.5" class="content-section">
+            <h2 class="section-title">4.5 Enterprise Security Enhancement</h2>
+
+            <div class="subsection">
+                <h3>Firewall Configuration</h3>
+                
+                <div class="key-points">
+                    <h4>Firewall Management:</h4>
+                    <ul>
+                        <li><strong>Rules:</strong> Allow/deny traffic based on criteria</li>
+                        <li><strong>Access Lists:</strong> Ordered list of permit/deny statements</li>
+                        <li><strong>Ports/Protocols:</strong> Specify what traffic types are allowed</li>
+                        <li><strong>Screened Subnets (DMZ):</strong> Isolated network segments</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>IDS/IPS Implementation</h3>
+                
+                <div class="key-points">
+                    <h4>Intrusion Detection/Prevention:</h4>
+                    <ul>
+                        <li><strong>Signature-based:</strong> Detect known attack patterns</li>
+                        <li><strong>Anomaly-based:</strong> Detect deviations from normal behavior</li>
+                        <li><strong>Trends:</strong> Analyze patterns over time</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Email Security</h3>
+                
+                <div class="exam-tip">
+                    Know the email security acronyms: SPF, DKIM, DMARC - these appear frequently on the exam!
+                </div>
+
+                <div class="key-points">
+                    <h4>Email Protection:</h4>
+                    <ul>
+                        <li><strong>SPF (Sender Policy Framework):</strong> Validates sending IP addresses</li>
+                        <li><strong>DKIM (DomainKeys Identified Mail):</strong> Digital signatures for email</li>
+                        <li><strong>DMARC:</strong> Policy for handling SPF/DKIM failures</li>
+                        <li><strong>Email Gateway:</strong> Centralized email security filtering</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4.6 Section -->
+        <div id="4.6" class="content-section">
+            <h2 class="section-title">4.6 Identity and Access Management</h2>
+
+            <div class="exam-tip">
+                IAM is fundamental to security. Focus on access control models, MFA implementation, and privileged access management.
+            </div>
+
+            <div class="subsection">
+                <h3>Access Control Models</h3>
+                
+                <div class="key-points">
+                    <h4>Access Control Types:</h4>
+                    <ul>
+                        <li><strong>Mandatory Access Control (MAC):</strong> System-enforced, based on security labels</li>
+                        <li><strong>Discretionary Access Control (DAC):</strong> Owner controls access</li>
+                        <li><strong>Role-Based Access Control (RBAC):</strong> Access based on job roles</li>
+                        <li><strong>Rule-Based Access Control:</strong> Access based on rules and conditions</li>
+                        <li><strong>Attribute-Based Access Control (ABAC):</strong> Dynamic access based on attributes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Multifactor Authentication</h3>
+                
+                <div class="key-points">
+                    <h4>Authentication Factors:</h4>
+                    <ul>
+                        <li><strong>Something You Know:</strong> Passwords, PINs</li>
+                        <li><strong>Something You Have:</strong> Tokens, smart cards, mobile devices</li>
+                        <li><strong>Something You Are:</strong> Biometrics (fingerprint, retina)</li>
+                        <li><strong>Somewhere You Are:</strong> Location-based authentication</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Single Sign-On (SSO)</h3>
+                
+                <div class="key-points">
+                    <h4>SSO Technologies:</h4>
+                    <ul>
+                        <li><strong>LDAP:</strong> Directory services protocol</li>
+                        <li><strong>OAuth:</strong> Authorization framework</li>
+                        <li><strong>SAML:</strong> Security Assertions Markup Language</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Privileged Access Management</h3>
+                
+                <div class="key-points">
+                    <h4>PAM Components:</h4>
+                    <ul>
+                        <li><strong>Just-in-Time Permissions:</strong> Temporary elevated access</li>
+                        <li><strong>Password Vaulting:</strong> Secure storage of privileged passwords</li>
+                        <li><strong>Ephemeral Credentials:</strong> Short-lived authentication tokens</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4.7 Section -->
+        <div id="4.7" class="content-section">
+            <h2 class="section-title">4.7 Automation and Orchestration</h2>
+
+            <div class="subsection">
+                <h3>Use Cases for Automation</h3>
+                
+                <div class="key-points">
+                    <h4>Automation Applications:</h4>
+                    <ul>
+                        <li><strong>User Provisioning:</strong> Automated account creation/deletion</li>
+                        <li><strong>Resource Provisioning:</strong> Automated infrastructure deployment</li>
+                        <li><strong>Guard Rails:</strong> Automated policy enforcement</li>
+                        <li><strong>Security Groups:</strong> Automated firewall rule management</li>
+                        <li><strong>Ticket Creation:</strong> Automated incident tracking</li>
+                        <li><strong>Escalation:</strong> Automated alert escalation processes</li>
+                        <li><strong>Service Management:</strong> Automated enabling/disabling of services</li>
+                        <li><strong>CI/CD Integration:</strong> Security testing in development pipelines</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Benefits and Considerations</h3>
+                
+                <div class="key-points">
+                    <h4>Automation Benefits:</h4>
+                    <ul>
+                        <li><strong>Efficiency:</strong> Faster response times and reduced manual work</li>
+                        <li><strong>Consistency:</strong> Standardized configurations and processes</li>
+                        <li><strong>Scaling:</strong> Handle larger environments with same staff</li>
+                        <li><strong>Employee Retention:</strong> Reduce repetitive tasks</li>
+                        <li><strong>Workforce Multiplier:</strong> Amplify human capabilities</li>
+                    </ul>
+                </div>
+
+                <div class="key-points">
+                    <h4>Automation Challenges:</h4>
+                    <ul>
+                        <li><strong>Complexity:</strong> More moving parts to manage</li>
+                        <li><strong>Cost:</strong> Initial setup and ongoing maintenance</li>
+                        <li><strong>Single Point of Failure:</strong> Automation system dependencies</li>
+                        <li><strong>Technical Debt:</strong> Maintaining automation code</li>
+                        <li><strong>Ongoing Support:</strong> Need skilled staff to maintain</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4.8 Section -->
+        <div id="4.8" class="content-section">
+            <h2 class="section-title">4.8 Incident Response Activities</h2>
+
+            <div class="exam-tip">
+                Memorize the incident response process phases. They appear frequently in scenario questions!
+            </div>
+
+            <div class="subsection">
+                <h3>Incident Response Process</h3>
+                
+                <div class="analogy-box">
+                    Incident response is like emergency medical response. You need preparation (training, procedures), detection (monitoring), analysis (diagnosis), containment (stopping the spread), eradication (removing the cause), recovery (returning to normal), and lessons learned (improving for next time).
+                </div>
+
+                <div class="key-points">
+                    <h4>IR Process Phases:</h4>
+                    <ul>
+                        <li><strong>1. Preparation:</strong> Policies, procedures, training, tools</li>
+                        <li><strong>2. Detection:</strong> Identifying potential security incidents</li>
+                        <li><strong>3. Analysis:</strong> Determining scope and impact</li>
+                        <li><strong>4. Containment:</strong> Stopping incident spread</li>
+                        <li><strong>5. Eradication:</strong> Removing the root cause</li>
+                        <li><strong>6. Recovery:</strong> Restoring normal operations</li>
+                        <li><strong>7. Lessons Learned:</strong> Post-incident review and improvement</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Training and Testing</h3>
+                
+                <div class="key-points">
+                    <h4>IR Preparedness:</h4>
+                    <ul>
+                        <li><strong>Tabletop Exercises:</strong> Discussion-based incident scenarios</li>
+                        <li><strong>Simulations:</strong> Hands-on practice with realistic scenarios</li>
+                        <li><strong>Root Cause Analysis:</strong> Determining why incidents occurred</li>
+                        <li><strong>Threat Hunting:</strong> Proactive searching for threats</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Digital Forensics</h3>
+                
+                <div class="key-points">
+                    <h4>Forensics Process:</h4>
+                    <ul>
+                        <li><strong>Legal Hold:</strong> Preserving evidence for legal proceedings</li>
+                        <li><strong>Chain of Custody:</strong> Documenting evidence handling</li>
+                        <li><strong>Acquisition:</strong> Creating forensic copies of evidence</li>
+                        <li><strong>Preservation:</strong> Maintaining evidence integrity</li>
+                        <li><strong>E-discovery:</strong> Electronic evidence identification and collection</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4.9 Section -->
+        <div id="4.9" class="content-section">
+            <h2 class="section-title">4.9 Data Sources for Investigation</h2>
+
+            <div class="subsection">
+                <h3>Log Data Sources</h3>
+                
+                <div class="key-points">
+                    <h4>Critical Log Types:</h4>
+                    <ul>
+                        <li><strong>Firewall Logs:</strong> Network traffic allow/deny decisions</li>
+                        <li><strong>Application Logs:</strong> Software-specific events and errors</li>
+                        <li><strong>Endpoint Logs:</strong> Workstation and server activities</li>
+                        <li><strong>OS Security Logs:</strong> Authentication and authorization events</li>
+                        <li><strong>IPS/IDS Logs:</strong> Intrusion detection and prevention events</li>
+                        <li><strong>Network Logs:</strong> Network device and traffic information</li>
+                        <li><strong>Metadata:</strong> Data about data (file creation times, etc.)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3>Investigation Data Sources</h3>
+                
+                <div class="key-points">
+                    <h4>Additional Investigation Resources:</h4>
+                    <ul>
+                        <li><strong>Vulnerability Scans:</strong> Historical vulnerability data</li>
+                        <li><strong>Automated Reports:</strong> Scheduled security summaries</li>
+                        <li><strong>Dashboards:</strong> Real-time security metrics visualization</li>
+                        <li><strong>Packet Captures:</strong> Raw network traffic analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Questions Section -->
+        <div id="practice" class="content-section">
+            <h2 class="section-title">Practice Questions - Domain 4</h2>
+
+            <div class="exam-tip">
+                These practice questions mirror the style and difficulty of actual Security+ exam questions. Focus on scenario-based thinking!
+            </div>
+
+            <div class="quiz-section">
+                <div class="quiz-question">
+                    1. Your organization is implementing a mobile device strategy where employees can choose from a pre-approved list of smartphones and tablets that the company will purchase. What deployment model is this?
+                </div>
+                <ul class="quiz-options" data-question="1">
+                    <li data-answer="wrong">A) BYOD (Bring Your Own Device)</li>
+                    <li data-answer="wrong">B) COPE (Corporate-Owned, Personally Enabled)</li>
+                    <li data-answer="correct">C) CYOD (Choose Your Own Device)</li>
+                    <li data-answer="wrong">D) MDM (Mobile Device Management)</li>
+                </ul>
+                <div class="quiz-explanation">
+                    <strong>Correct Answer: C) CYOD</strong><br>
+                    CYOD allows employees to choose from a company-approved list of devices that the organization purchases. BYOD uses employee-owned devices, COPE is company-owned with personal use allowed, and MDM is a management technology, not a deployment model.
+                </div>
+            </div>
+
+            <div class="quiz-section">
+                <div class="quiz-question">
+                    2. During a vulnerability assessment, you discover a critical vulnerability with a CVSS score of 9.2. However, the affected system is air-gapped and not accessible from the internet. What should be your primary consideration when prioritizing remediation?
+                </div>
+                <ul class="quiz-options" data-question="2">
+                    <li data-answer="wrong">A) The CVSS score alone determines priority</li>
+                    <li data-answer="correct">B) Environmental variables and exposure factor</li>
+                    <li data-answer="wrong">C) Always patch critical vulnerabilities immediately</li>
+                    <li data-answer="wrong">D) Air-gapped systems don't need patching</li>
+                </ul>
+                <div class="quiz-explanation">
+                    <strong>Correct Answer: B) Environmental variables and exposure factor</strong><br>
+                    While CVSS provides a baseline severity score, environmental variables (like network isolation) and exposure factors significantly impact actual risk. An air-gapped system with limited access may not require immediate patching despite a high CVSS score.
+                </div>
+            </div>
+
+            <div class="quiz-section">
+                <div class="quiz-question">
+                    3. What is the primary difference between WPA2 and WPA3 wireless security protocols?
+                </div>
+                <ul class="quiz-options" data-question="3">
+                    <li data-answer="wrong">A) WPA3 uses stronger passwords</li>
+                    <li data-answer="correct">B) WPA3 provides protection against offline dictionary attacks</li>
+                    <li data-answer="wrong">C) WPA3 requires enterprise certificates</li>
+                    <li data-answer="wrong">D) WPA3 only works with newer hardware</li>
+                </ul>
+                <div class="quiz-explanation">
+                    <strong>Correct Answer: B) WPA3 provides protection against offline dictionary attacks</strong><br>
+                    WPA3's key improvement is Simultaneous Authentication of Equals (SAE), which replaces WPA2's Pre-Shared Key (PSK) method and provides protection against offline dictionary attacks, even if an attacker captures the handshake.
+                </div>
+            </div>
+
+            <div class="quiz-section">
+                <div class="quiz-question">
+                    4. In the incident response process, what phase comes immediately after "Analysis"?
+                </div>
+                <ul class="quiz-options" data-question="4">
+                    <li data-answer="wrong">A) Detection</li>
+                    <li data-answer="wrong">B) Eradication</li>
+                    <li data-answer="correct">C) Containment</li>
+                    <li data-answer="wrong">D) Recovery</li>
+                </ul>
+                <div class="quiz-explanation">
+                    <strong>Correct Answer: C) Containment</strong><br>
+                    The IR process follows this order: Preparation → Detection → Analysis → Containment → Eradication → Recovery → Lessons Learned. After analyzing the incident to understand its scope and impact, the next step is to contain it to prevent further damage.
+                </div>
+            </div>
+
+            <div class="quiz-section">
+                <div class="quiz-question">
+                    5. Which email security protocol validates that emails are sent from authorized IP addresses for a domain?
+                </div>
+                <ul class="quiz-options" data-question="5">
+                    <li data-answer="correct">A) SPF (Sender Policy Framework)</li>
+                    <li data-answer="wrong">B) DKIM (DomainKeys Identified Mail)</li>
+                    <li data-answer="wrong">C) DMARC (Domain Message Authentication Reporting and Conformance)</li>
+                    <li data-answer="wrong">D) S/MIME (Secure/Multipurpose Internet Mail Extensions)</li>
+                </ul>
+                <div class="quiz-explanation">
+                    <strong>Correct Answer: A) SPF</strong><br>
+                    SPF validates that emails are sent from authorized IP addresses for a domain. DKIM provides digital signatures for email authenticity, DMARC sets policies for handling SPF/DKIM failures, and S/MIME provides end-to-end email encryption.
+                </div>
+            </div>
+
+            <div class="quiz-section">
+                <div class="quiz-question">
+                    6. What type of access control model uses security labels and is typically found in government and military environments?
+                </div>
+                <ul class="quiz-options" data-question="6">
+                    <li data-answer="correct">A) Mandatory Access Control (MAC)</li>
+                    <li data-answer="wrong">B) Discretionary Access Control (DAC)</li>
+                    <li data-answer="wrong">C) Role-Based Access Control (RBAC)</li>
+                    <li data-answer="wrong">D) Attribute-Based Access Control (ABAC)</li>
+                </ul>
+                <div class="quiz-explanation">
+                    <strong>Correct Answer: A) MAC</strong><br>
+                    Mandatory Access Control uses security labels (like Top Secret, Secret, Confidential) and is system-enforced rather than user-controlled. It's commonly used in government and military environments where strict information classification is required.
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 20px; background-color: #f0f8f0; border-radius: 8px;">
+                <h3 style="color: #2e8b57; margin-bottom: 15px;">Study Tips for Domain 4 Success:</h3>
+                <ul style="padding-left: 20px;">
+                    <li>Focus on practical scenarios - Domain 4 is heavily scenario-based</li>
+                    <li>Memorize mobile deployment models and their characteristics</li>
+                    <li>Understand the incident response process phases in order</li>
+                    <li>Know the differences between vulnerability identification methods</li>
+                    <li>Practice with acronyms: SPF, DKIM, DMARC, CVSS, CVE, etc.</li>
+                    <li>Understand the relationship between SIEM, logs, and monitoring</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        const sectionSelect = document.getElementById('section-select');
+        const progressFill = document.getElementById('progress-fill');
+        const allSections = document.querySelectorAll('.content-section');
+        
+        // Initialize with overview
+        document.getElementById('overview').classList.add('active');
+        updateProgress();
+
+        sectionSelect.addEventListener('change', function() {
+            const selectedValue = this.value;
+            
+            // Hide all sections
+            allSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            if (selectedValue && document.getElementById(selectedValue)) {
+                document.getElementById(selectedValue).classList.add('active');
+                updateProgress();
+            }
+        });
+
+        // Quiz functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'LI' && e.target.closest('.quiz-options')) {
+                const questionDiv = e.target.closest('.quiz-section');
+                const options = questionDiv.querySelectorAll('.quiz-options li');
+                const explanation = questionDiv.querySelector('.quiz-explanation');
+                
+                // Remove previous selections
+                options.forEach(option => {
+                    option.classList.remove('correct', 'incorrect');
+                });
+                
+                // Mark answers
+                if (e.target.dataset.answer === 'correct') {
+                    e.target.classList.add('correct');
+                } else {
+                    e.target.classList.add('incorrect');
+                    // Also highlight the correct answer
+                    options.forEach(option => {
+                        if (option.dataset.answer === 'correct') {
+                            option.classList.add('correct');
+                        }
+                    });
+                }
+                
+                // Show explanation
+                explanation.style.display = 'block';
+            }
+        });
+
+        function updateProgress() {
+            const activeSection = document.querySelector('.content-section.active');
+            if (activeSection) {
+                const sectionId = activeSection.id;
+                const sections = ['overview', '4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7', '4.8', '4.9', 'practice'];
+                const currentIndex = sections.indexOf(sectionId);
+                const progressPercent = ((currentIndex + 1) / sections.length) * 100;
+                progressFill.style.width = progressPercent + '%';
+            }
+        }
+
+        // Add smooth scrolling for better UX
+        sectionSelect.addEventListener('change', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                const currentIndex = sectionSelect.selectedIndex;
+                if (currentIndex < sectionSelect.options.length - 1) {
+                    sectionSelect.selectedIndex = currentIndex + 1;
+                    sectionSelect.dispatchEvent(new Event('change'));
+                }
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                const currentIndex = sectionSelect.selectedIndex;
+                if (currentIndex > 0) {
+                    sectionSelect.selectedIndex = currentIndex - 1;
+                    sectionSelect.dispatchEvent(new Event('change'));
+                }
+            }
+        });
+    </script>
+</body>
+</html>

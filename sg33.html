@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompTIA Security+ Study Guide - Data Protection Concepts and Strategies</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 120px);
+        }
+
+        .sidebar {
+            width: 350px;
+            background-color: #f8f9fa;
+            border-right: 3px solid #4caf50;
+            padding: 1rem;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .nav-section {
+            margin-bottom: 1rem;
+        }
+
+        .nav-title {
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+            padding: 0.8rem 1rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .nav-title .arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .nav-title.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .nav-items {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .nav-items.active {
+            max-height: 1000px;
+        }
+
+        .nav-item {
+            padding: 0.7rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .nav-item:last-child {
+            border-bottom: none;
+        }
+
+        .nav-item:hover {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            padding-left: 1.5rem;
+        }
+
+        .nav-item.active {
+            background-color: #4caf50;
+            color: white;
+            font-weight: 600;
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section h2 {
+            color: #2e7d32;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #4caf50;
+            padding-bottom: 0.5rem;
+        }
+
+        .section h3 {
+            color: #2e7d32;
+            font-size: 1.5rem;
+            margin: 1.5rem 0 1rem 0;
+            background-color: #f1f8e9;
+            padding: 0.8rem;
+            border-left: 4px solid #4caf50;
+            border-radius: 4px;
+        }
+
+        .section h4 {
+            color: #1b5e20;
+            font-size: 1.2rem;
+            margin: 1rem 0 0.5rem 0;
+            font-weight: 600;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        .section ul, .section ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);
+        }
+
+        .example-box {
+            background-color: #f9f9f9;
+            border-left: 4px solid #2e7d32;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .example-box h5 {
+            color: #2e7d32;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .quiz-button {
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
+        }
+
+        .progress-bar {
+            background-color: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #2e7d32, #4caf50);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            border-top: 2px solid #4caf50;
+            padding: 1rem;
+            text-align: center;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>CompTIA Security+ Study Guide</h1>
+        <p>Part 3.3: Data Protection Concepts and Strategies (SY0-701)</p>
+    </header>
+
+    <div class="container">
+        <nav class="sidebar">
+            <div class="nav-section">
+                <div class="nav-title" onclick="toggleSection('overview')">
+                    Study Guide Overview
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="nav-items" id="overview-items">
+                    <div class="nav-item" onclick="showSection('introduction')">Introduction</div>
+                    <div class="nav-item" onclick="showSection('exam-info')">Exam Information</div>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title" onclick="toggleSection('data-types')">
+                    Data Types & Classifications
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="nav-items" id="data-types-items">
+                    <div class="nav-item" onclick="showSection('regulated-data')">Regulated Data</div>
+                    <div class="nav-item" onclick="showSection('trade-secrets')">Trade Secrets</div>
+                    <div class="nav-item" onclick="showSection('intellectual-property')">Intellectual Property</div>
+                    <div class="nav-item" onclick="showSection('legal-info')">Legal Information</div>
+                    <div class="nav-item" onclick="showSection('financial-info')">Financial Information</div>
+                    <div class="nav-item" onclick="showSection('data-formats')">Data Formats</div>
+                    <div class="nav-item" onclick="showSection('classification-levels')">Classification Levels</div>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title" onclick="toggleSection('data-states')">
+                    Data States & Security
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="nav-items" id="data-states-items">
+                    <div class="nav-item" onclick="showSection('data-at-rest')">Data at Rest</div>
+                    <div class="nav-item" onclick="showSection('data-in-transit')">Data in Transit</div>
+                    <div class="nav-item" onclick="showSection('data-in-use')">Data in Use</div>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title" onclick="toggleSection('geographic')">
+                    Geographic & Legal Considerations
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="nav-items" id="geographic-items">
+                    <div class="nav-item" onclick="showSection('data-sovereignty')">Data Sovereignty</div>
+                    <div class="nav-item" onclick="showSection('geolocation')">Geolocation Requirements</div>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title" onclick="toggleSection('security-methods')">
+                    Methods to Secure Data
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="nav-items" id="security-methods-items">
+                    <div class="nav-item" onclick="showSection('cryptographic')">Cryptographic Protection</div>
+                    <div class="nav-item" onclick="showSection('data-transformation')">Data Transformation</div>
+                    <div class="nav-item" onclick="showSection('access-control')">Access Control & Segmentation</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+            </div>
+        </nav>
+
+        <main class="content">
+            <!-- Introduction Section -->
+            <section id="introduction" class="section active">
+                <h2>Introduction to Data Protection</h2>
+                <div class="highlight-box">
+                    <p><strong>Data is often called the "new oil" of the digital economy</strong>, but unlike oil, data can be copied instantly and distributed globally. This makes data protection one of the most critical aspects of cybersecurity.</p>
+                </div>
+                
+                <p>Think of data protection like protecting different types of valuables in a museum. Some items (like famous paintings) require climate-controlled environments, armed guards, and sophisticated alarm systems. Others (like historical documents) might need different protection from light and handling. Similarly, different types of data require different protection strategies based on their value, sensitivity, and regulatory requirements.</p>
+
+                <h3>Why Data Protection Matters for Security+</h3>
+                <p>Data protection is a core component of the CompTIA Security+ certification, particularly in the Architecture and Design domain. Understanding how to classify, protect, and manage data throughout its lifecycle is essential for any cybersecurity professional.</p>
+
+                <button class="quiz-button" onclick="startQuickQuiz('intro')">Quick Knowledge Check</button>
+            </section>
+
+            <!-- Exam Information Section -->
+            <section id="exam-info" class="section">
+                <h2>CompTIA Security+ Exam Information</h2>
+                
+                <div class="highlight-box">
+                    <h3>Exam Details (SY0-701)</h3>
+                    <ul>
+                        <li><strong>Launch Date:</strong> November 7, 2023</li>
+                        <li><strong>Number of Questions:</strong> Maximum of 90 questions</li>
+                        <li><strong>Question Types:</strong> Multiple-choice and performance-based</li>
+                        <li><strong>Duration:</strong> 90 minutes</li>
+                        <li><strong>Passing Score:</strong> 750 (on a scale of 100-900)</li>
+                        <li><strong>Cost:</strong> $404 USD (as of 2025)</li>
+                        <li><strong>Languages:</strong> English, Japanese, Portuguese, Spanish, and Thai</li>
+                    </ul>
+                </div>
+
+                <h3>Five Exam Domains</h3>
+                <div class="example-box">
+                    <h5>Domain 1: General Security Concepts</h5>
+                    <p>Security controls, fundamental concepts, and zero trust principles</p>
+                </div>
+                <div class="example-box">
+                    <h5>Domain 2: Threats, Vulnerabilities, and Mitigations</h5>
+                    <p>Attack types, threat actors, and vulnerability assessment</p>
+                </div>
+                <div class="example-box">
+                    <h5>Domain 3: Security Architecture</h5>
+                    <p>Enterprise infrastructure, data protection (this study guide!), and resilience</p>
+                </div>
+                <div class="example-box">
+                    <h5>Domain 4: Security Operations</h5>
+                    <p>Monitoring, incident response, and digital forensics</p>
+                </div>
+                <div class="example-box">
+                    <h5>Domain 5: Security Program Management and Oversight</h5>
+                    <p>Governance, risk management, and compliance</p>
+                </div>
+
+                <h3>Where This Material Fits</h3>
+                <p>This study guide covers <strong>Domain 3: Security Architecture</strong>, specifically the data protection portion. Data protection concepts are fundamental to understanding how to secure enterprise environments and implement appropriate security controls.</p>
+            </section>
+
+            <!-- Regulated Data Section -->
+            <section id="regulated-data" class="section">
+                <h2>Regulated Data</h2>
+                <p>Regulated data is like prescription medication—it's subject to strict legal controls about how it's handled, stored, and distributed. Organizations face significant penalties for mishandling regulated data.</p>
+
+                <h3>Examples of Regulated Data</h3>
+                
+                <div class="example-box">
+                    <h5>Personal Health Information (PHI)</h5>
+                    <p>Protected under HIPAA in healthcare settings. Includes medical records, treatment information, and health insurance data.</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Personally Identifiable Information (PII)</h5>
+                    <p>Protected under GDPR, CCPA, and other privacy laws. Includes names, addresses, social security numbers, and other identifying information.</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Payment Card Information</h5>
+                    <p>Protected under PCI DSS standards. Includes credit card numbers, cardholder data, and payment processing information.</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Financial Records</h5>
+                    <p>Subject to SOX, GLBA, and other financial regulations. Includes banking information, investment records, and financial statements.</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Educational Records</h5>
+                    <p>Protected under FERPA in educational institutions. Includes student grades, disciplinary records, and personal information.</p>
+                </div>
+
+                <h3>Regulatory Compliance Requirements</h3>
+                <ul>
+                    <li><strong>Data minimization:</strong> Collect only necessary information</li>
+                    <li><strong>Purpose limitation:</strong> Use data only for stated purposes</li>
+                    <li><strong>Retention limits:</strong> Delete data when no longer needed</li>
+                    <li><strong>Individual rights:</strong> Provide access, correction, and deletion rights</li>
+                    <li><strong>Breach notification:</strong> Report security incidents within specified timeframes</li>
+                </ul>
+
+                <button class="quiz-button" onclick="startQuickQuiz('regulated')">Test Your Knowledge</button>
+            </section>
+
+            <!-- Trade Secrets Section -->
+            <section id="trade-secrets" class="section">
+                <h2>Trade Secrets</h2>
+                <p>Trade secrets are like secret recipes that give companies competitive advantages—they're valuable precisely because they're not public knowledge. Unlike patents, trade secrets can be protected indefinitely as long as they remain secret.</p>
+
+                <h3>Characteristics of Trade Secrets</h3>
+                <ul>
+                    <li><strong>Economic value:</strong> Must derive value from being secret</li>
+                    <li><strong>Reasonable efforts:</strong> Company must take steps to keep information secret</li>
+                    <li><strong>Not generally known:</strong> Information must not be publicly available</li>
+                    <li><strong>Independent derivation:</strong> Others cannot independently create the same information</li>
+                </ul>
+
+                <h3>Examples of Trade Secrets</h3>
+                <div class="example-box">
+                    <h5>Manufacturing Processes</h5>
+                    <p>Coca-Cola formula, KFC recipe, proprietary manufacturing techniques</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Customer Lists</h5>
+                    <p>Valuable business relationships and contact information that provide competitive advantage</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Pricing Strategies</h5>
+                    <p>How companies price products and services, market positioning strategies</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Research and Development</h5>
+                    <p>Ongoing projects, experimental data, future product plans</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Business Strategies</h5>
+                    <p>Market expansion plans, competitive strategies, operational procedures</p>
+                </div>
+            </section>
+
+            <!-- Continue with other sections... -->
+            <!-- I'll include a few key sections to demonstrate the structure -->
+
+            <!-- Data Classification Levels Section -->
+            <section id="classification-levels" class="section">
+                <h2>Data Classification Levels</h2>
+                <p>Data classification is like organizing a library—you need consistent categories that help people find what they need while ensuring appropriate protection for different types of materials.</p>
+
+                <h3>Classification Hierarchy</h3>
+                
+                <div class="example-box">
+                    <h5>Public Data</h5>
+                    <p><strong>Definition:</strong> Information that can be disclosed without harm to the organization</p>
+                    <p><strong>Examples:</strong> Marketing materials, press releases, public financial reports</p>
+                    <p><strong>Protection:</strong> Minimal—mainly ensuring availability and integrity</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Sensitive Data</h5>
+                    <p><strong>Definition:</strong> Information that could cause minor harm if disclosed without authorization</p>
+                    <p><strong>Examples:</strong> Internal policies, employee directories, project plans</p>
+                    <p><strong>Protection:</strong> Basic access controls and handling procedures</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Confidential Data</h5>
+                    <p><strong>Definition:</strong> Information that could cause significant harm if disclosed without authorization</p>
+                    <p><strong>Examples:</strong> Strategic plans, customer databases, financial forecasts</p>
+                    <p><strong>Protection:</strong> Strong access controls, encryption, audit trails</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Restricted Data</h5>
+                    <p><strong>Definition:</strong> Information that could cause severe harm if disclosed without authorization</p>
+                    <p><strong>Examples:</strong> Trade secrets, merger and acquisition plans, security procedures</p>
+                    <p><strong>Protection:</strong> Strongest available controls, extensive monitoring</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Private Data</h5>
+                    <p><strong>Definition:</strong> Personal information about individuals that they have rights to control</p>
+                    <p><strong>Examples:</strong> Employee personal information, customer data, health records</p>
+                    <p><strong>Protection:</strong> Privacy controls, consent management, individual rights</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Critical Data</h5>
+                    <p><strong>Definition:</strong> Information essential to organizational operations and survival</p>
+                    <p><strong>Examples:</strong> Encryption keys, authentication databases, core intellectual property</p>
+                    <p><strong>Protection:</strong> Highest level of protection with redundancy and recovery</p>
+                </div>
+            </section>
+
+            <!-- Data States Section -->
+            <section id="data-at-rest" class="section">
+                <h2>Data at Rest</h2>
+                <p>Data at rest is like valuables stored in a safe—it's stationary but still needs protection from unauthorized access.</p>
+
+                <h3>Characteristics of Data at Rest</h3>
+                <ul>
+                    <li><strong>Location:</strong> Stored on persistent media like hard drives, databases, or archives</li>
+                    <li><strong>Persistence:</strong> Remains in place until deliberately moved or deleted</li>
+                    <li><strong>Access patterns:</strong> Typically accessed through applications or database systems</li>
+                    <li><strong>Threat profile:</strong> Physical theft, insider threats, system compromise</li>
+                </ul>
+
+                <h3>Protection Strategies</h3>
+                <div class="highlight-box">
+                    <h4>Encryption</h4>
+                    <p>Full-disk encryption, database encryption, file-level encryption</p>
+                    
+                    <h4>Access Controls</h4>
+                    <p>User authentication, authorization, and audit trails</p>
+                    
+                    <h4>Physical Security</h4>
+                    <p>Secure data centers, locked server rooms, device controls</p>
+                    
+                    <h4>Backup Security</h4>
+                    <p>Encrypted backups stored in secure locations</p>
+                </div>
+
+                <h3>Implementation Considerations</h3>
+                <ul>
+                    <li><strong>Performance impact:</strong> Encryption and decryption can affect system performance</li>
+                    <li><strong>Key management:</strong> Secure generation, distribution, and storage of encryption keys</li>
+                    <li><strong>Compliance:</strong> Meet regulatory requirements for data protection</li>
+                    <li><strong>Recovery:</strong> Ensure encrypted data can be recovered in disaster scenarios</li>
+                </ul>
+            </section>
+
+            <!-- Cryptographic Protection Section -->
+            <section id="cryptographic" class="section">
+                <h2>Cryptographic Protection</h2>
+
+                <h3>Encryption</h3>
+                <p>Encryption is like having a secret language that only authorized parties can understand—it transforms readable data into unreadable code that can only be decoded with the proper key.</p>
+
+                <h4>Types of Encryption</h4>
+                <div class="example-box">
+                    <h5>Symmetric Encryption</h5>
+                    <p>Same key for encryption and decryption (like a shared secret code)</p>
+                    <p><strong>Example:</strong> AES (Advanced Encryption Standard)</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Asymmetric Encryption</h5>
+                    <p>Different keys for encryption and decryption (like having a public mailbox with a private key to open it)</p>
+                    <p><strong>Example:</strong> RSA, ECC (Elliptic Curve Cryptography)</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>Hybrid Encryption</h5>
+                    <p>Combines symmetric and asymmetric encryption for efficiency and security</p>
+                </div>
+
+                <h3>Hashing</h3>
+                <p>Hashing is like creating a unique fingerprint for data—it produces a fixed-size output that uniquely identifies the input data. Unlike encryption, hashing is one-way and cannot be reversed.</p>
+
+                <h4>Hash Function Properties</h4>
+                <ul>
+                    <li><strong>Deterministic:</strong> Same input always produces same output</li>
+                    <li><strong>Fixed output size:</strong> Output is always the same length regardless of input size</li>
+                    <li><strong>Avalanche effect:</strong> Small changes in input cause large changes in output</li>
+                    <li><strong>Irreversible:</strong> Cannot determine input from output</li>
+                </ul>
+
+                <h4>Common Hash Algorithms</h4>
+                <ul>
+                    <li><strong>SHA-256:</strong> Part of SHA-2 family, produces 256-bit hash values</li>
+                    <li><strong>SHA-3:</strong> Latest SHA standard with different internal structure</li>
+                    <li><strong>MD5:</strong> Older algorithm now considered cryptographically broken</li>
+                    <li><strong>BLAKE2:</strong> High-performance alternative to SHA-2</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h4>Salting</h4>
+                    <p>Salting adds random data to inputs before hashing, like adding a unique spice to each dish to make them taste different even with the same base ingredients.</p>
+                    <ul>
+                        <li><strong>Purpose:</strong> Prevents rainbow table attacks on password hashes</li>
+                        <li><strong>Implementation:</strong> Add random salt to each password before hashing</li>
+                        <li><strong>Storage:</strong> Store salt alongside hash for verification</li>
+                        <li><strong>Uniqueness:</strong> Each password should have a unique salt</li>
+                    </ul>
+                </div>
+
+                <button class="quiz-button" onclick="startQuickQuiz('crypto')">Test Cryptographic Knowledge</button>
+            </section>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 CompTIA Security+ Study Guide - Data Protection Concepts and Strategies</p>
+        <p>Prepare for exam SY0-701 with confidence!</p>
+    </footer>
+
+    <script>
+        let completedSections = new Set();
+        let totalSections = 15; // Total number of main sections
+
+        function toggleSection(sectionId) {
+            const items = document.getElementById(sectionId + '-items');
+            const title = items.previousElementSibling;
+            
+            if (items.classList.contains('active')) {
+                items.classList.remove('active');
+                title.classList.remove('active');
+            } else {
+                items.classList.add('active');
+                title.classList.add('active');
+            }
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                
+                // Mark as completed
+                completedSections.add(sectionId);
+                updateProgress();
+                
+                // Update nav item states
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function updateProgress() {
+            const progressPercent = (completedSections.size / totalSections) * 100;
+            document.getElementById('progress').style.width = progressPercent + '%';
+        }
+
+        function startQuickQuiz(topic) {
+            const quizzes = {
+                'intro': [
+                    {
+                        question: "Why is data called the 'new oil' of the digital economy?",
+                        options: ["It's rare and expensive", "It's valuable but can be copied instantly", "It comes from the ground", "It's used for fuel"],
+                        correct: 1,
+                        explanation: "Data is valuable like oil, but unlike oil, it can be copied instantly and distributed globally, making protection crucial."
+                    }
+                ],
+                'regulated': [
+                    {
+                        question: "Which regulation protects Personal Health Information (PHI)?",
+                        options: ["GDPR", "HIPAA", "PCI DSS", "SOX"],
+                        correct: 1,
+                        explanation: "HIPAA (Health Insurance Portability and Accountability Act) specifically protects Personal Health Information in healthcare settings."
+                    }
+                ],
+                'crypto': [
+                    {
+                        question: "What is the main purpose of adding salt to password hashes?",
+                        options: ["Improve performance", "Prevent rainbow table attacks", "Reduce storage space", "Speed up verification"],
+                        correct: 1,
+                        explanation: "Salting prevents rainbow table attacks by ensuring each password has a unique hash, even if passwords are identical."
+                    }
+                ]
+            };
+
+            const quiz = quizzes[topic];
+            if (quiz && quiz.length > 0) {
+                const q = quiz[0];
+                const userAnswer = prompt(`${q.question}\n\n${q.options.map((opt, i) => `${i + 1}. ${opt}`).join('\n')}\n\nEnter your choice (1-${q.options.length}):`);
+                
+                if (userAnswer) {
+                    const answerIndex = parseInt(userAnswer) - 1;
+                    if (answerIndex === q.correct) {
+                        alert(`Correct! 🎉\n\n${q.explanation}`);
+                    } else {
+                        alert(`Incorrect. ❌\n\nThe correct answer is: ${q.options[q.correct]}\n\n${q.explanation}`);
+                    }
+                }
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-expand the first section
+            toggleSection('overview');
+            
+            // Add some interactive features
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Add visual feedback
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 100);
+                });
+            });
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const sections = ['introduction', 'exam-info', 'regulated-data', 'trade-secrets', 'intellectual-property', 
+                            'legal-info', 'financial-info', 'data-formats', 'classification-levels', 'data-at-rest', 
+                            'data-in-transit', 'data-in-use', 'data-sovereignty', 'geolocation', 'cryptographic', 
+                            'data-transformation', 'access-control'];
+            
+            const currentSection = document.querySelector('.section.active').id;
+            const currentIndex = sections.indexOf(currentSection);
+            
+            if (e.key === 'ArrowRight' && currentIndex < sections.length - 1) {
+                showSection(sections[currentIndex + 1]);
+            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                showSection(sections[currentIndex - 1]);
+            }
+        });
+    </script>
+
+    <!-- Additional sections to complete the study guide -->
+    
+    <!-- Intellectual Property Section -->
+    <section id="intellectual-property" class="section" style="display: none;">
+        <h2>Intellectual Property</h2>
+        <p>Intellectual property is like the blueprints and creative works that represent an organization's innovation and creativity. It includes both registered rights (patents, trademarks) and creative works (copyrights).</p>
+
+        <h3>Types of Intellectual Property</h3>
+        
+        <div class="example-box">
+            <h5>Patents</h5>
+            <p>Inventions and processes that provide temporary exclusive rights (typically 20 years)</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Trademarks</h5>
+            <p>Brand names, logos, and identifying marks that distinguish products/services</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Copyrights</h5>
+            <p>Creative works like software, documentation, and marketing materials</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Trade Dress</h5>
+            <p>The appearance and packaging of products that makes them distinctive</p>
+        </div>
+
+        <h3>IP Protection Strategies</h3>
+        <ul>
+            <li><strong>Access controls:</strong> Limit who can access IP-related information</li>
+            <li><strong>Digital rights management:</strong> Control how digital IP can be used</li>
+            <li><strong>Watermarking:</strong> Embed identifying information in digital content</li>
+            <li><strong>Legal agreements:</strong> NDAs and employment contracts protecting IP</li>
+        </ul>
+
+        <button class="quiz-button" onclick="startQuickQuiz('ip')">Test IP Knowledge</button>
+    </section>
+
+    <!-- Legal Information Section -->
+    <section id="legal-info" class="section" style="display: none;">
+        <h2>Legal Information</h2>
+        <p>Legal information requires special protection due to attorney-client privilege and litigation requirements. It's like having confidential conversations with your lawyer—they must remain private to preserve legal protections.</p>
+
+        <h3>Types of Legal Information</h3>
+        
+        <div class="example-box">
+            <h5>Attorney-client Communications</h5>
+            <p>Privileged communications with legal counsel that must remain confidential</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Litigation Hold Data</h5>
+            <p>Information that must be preserved for legal proceedings</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Contracts and Agreements</h5>
+            <p>Legal documents creating obligations and rights between parties</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Compliance Documentation</h5>
+            <p>Records required by law or regulation to demonstrate compliance</p>
+        </div>
+
+        <h3>Legal Information Security Requirements</h3>
+        <div class="highlight-box">
+            <ul>
+                <li><strong>Privilege protection:</strong> Maintain attorney-client privilege through proper handling</li>
+                <li><strong>Chain of custody:</strong> Document who handled information and when</li>
+                <li><strong>Litigation hold:</strong> Prevent deletion of relevant information during legal proceedings</li>
+                <li><strong>Discovery:</strong> Ability to search and produce information for legal proceedings</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Financial Information Section -->
+    <section id="financial-info" class="section" style="display: none;">
+        <h2>Financial Information</h2>
+        <p>Financial information is like the detailed accounting ledgers of an organization—it reveals financial performance, obligations, and strategic decisions. Both internal financial data and customer financial information require protection.</p>
+
+        <h3>Types of Financial Information</h3>
+        
+        <div class="example-box">
+            <h5>Financial Statements</h5>
+            <p>Income statements, balance sheets, cash flow statements</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Customer Payment Information</h5>
+            <p>Credit card numbers, bank account details, payment processing data</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Employee Financial Data</h5>
+            <p>Salary information, benefits, tax records, payroll data</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Investment Information</h5>
+            <p>Portfolio details, trading strategies, investment performance</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Audit Records</h5>
+            <p>Financial examination documentation, compliance reports</p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Key Regulations</h4>
+            <ul>
+                <li><strong>SOX (Sarbanes-Oxley):</strong> Financial reporting and internal controls</li>
+                <li><strong>GLBA (Gramm-Leach-Bliley):</strong> Financial privacy requirements</li>
+                <li><strong>PCI DSS:</strong> Payment card industry data security standards</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Data Formats Section -->
+    <section id="data-formats" class="section" style="display: none;">
+        <h2>Human-Readable vs. Non-Human-Readable Data</h2>
+        <p>The format of data affects how it can be protected and who can access it.</p>
+
+        <h3>Human-Readable Data</h3>
+        <div class="example-box">
+            <h5>Characteristics</h5>
+            <p>Can be understood directly by people without special tools</p>
+            
+            <h5>Examples</h5>
+            <p>Text documents, emails, reports, spreadsheets, web pages</p>
+            
+            <h5>Protection Challenges</h5>
+            <p>Easily copied, shared, and understood by unauthorized users</p>
+            
+            <h5>Protection Methods</h5>
+            <p>Access controls, encryption, data loss prevention (DLP)</p>
+        </div>
+
+        <h3>Non-Human-Readable Data</h3>
+        <div class="example-box">
+            <h5>Characteristics</h5>
+            <p>Requires software or special tools to interpret</p>
+            
+            <h5>Examples</h5>
+            <p>Database files, encrypted data, binary executables, sensor data, compiled code</p>
+            
+            <h5>Protection Advantages</h5>
+            <p>Natural obfuscation makes data less useful if stolen</p>
+            
+            <h5>Protection Methods</h5>
+            <p>Application-level security, database controls, encryption</p>
+        </div>
+    </section>
+
+    <!-- Data in Transit Section -->
+    <section id="data-in-transit" class="section" style="display: none;">
+        <h2>Data in Transit</h2>
+        <p>Data in transit is like valuable packages being shipped—they're vulnerable while moving and need protection during transport.</p>
+
+        <h3>Characteristics of Data in Transit</h3>
+        <ul>
+            <li><strong>Movement:</strong> Traveling between systems, networks, or locations</li>
+            <li><strong>Temporary:</strong> In motion for limited time periods</li>
+            <li><strong>Visibility:</strong> May pass through multiple systems and networks</li>
+            <li><strong>Threat profile:</strong> Interception, man-in-the-middle attacks, network eavesdropping</li>
+        </ul>
+
+        <h3>Protection Strategies</h3>
+        <div class="highlight-box">
+            <ul>
+                <li><strong>Encryption:</strong> TLS/SSL, VPNs, end-to-end encryption</li>
+                <li><strong>Authentication:</strong> Verify identity of communicating parties</li>
+                <li><strong>Integrity protection:</strong> Ensure data hasn't been modified during transport</li>
+                <li><strong>Secure protocols:</strong> Use protocols designed for secure communication</li>
+            </ul>
+        </div>
+
+        <h3>Common Transport Security Protocols</h3>
+        <div class="example-box">
+            <h5>TLS/SSL</h5>
+            <p>Web traffic, email, and application communications</p>
+        </div>
+
+        <div class="example-box">
+            <h5>IPSec</h5>
+            <p>Network-layer encryption for VPNs and site-to-site connections</p>
+        </div>
+
+        <div class="example-box">
+            <h5>SSH</h5>
+            <p>Secure remote access and file transfer</p>
+        </div>
+
+        <div class="example-box">
+            <h5>SFTP/FTPS</h5>
+            <p>Secure file transfer protocols</p>
+        </div>
+    </section>
+
+    <!-- Data in Use Section -->
+    <section id="data-in-use" class="section" style="display: none;">
+        <h2>Data in Use</h2>
+        <p>Data in use is like documents being examined by researchers—it's actively being processed and is vulnerable in ways that stored or transported data isn't.</p>
+
+        <h3>Characteristics of Data in Use</h3>
+        <ul>
+            <li><strong>Processing:</strong> Being actively accessed, modified, or analyzed</li>
+            <li><strong>Memory resident:</strong> Loaded into system memory for processing</li>
+            <li><strong>Application dependent:</strong> Protection depends on application security</li>
+            <li><strong>Threat profile:</strong> Memory dumps, application vulnerabilities, insider threats</li>
+        </ul>
+
+        <h3>Protection Strategies</h3>
+        <div class="highlight-box">
+            <ul>
+                <li><strong>Application security:</strong> Secure coding practices, input validation, output encoding</li>
+                <li><strong>Memory protection:</strong> Prevent unauthorized memory access and dumps</li>
+                <li><strong>Process isolation:</strong> Separate processes to limit impact of compromises</li>
+                <li><strong>Privileged access management:</strong> Control who can access processing systems</li>
+            </ul>
+        </div>
+
+        <h3>Emerging Technologies</h3>
+        <div class="example-box">
+            <h5>Homomorphic Encryption</h5>
+            <p>Perform computations on encrypted data without decrypting it</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Secure Enclaves</h5>
+            <p>Hardware-protected areas for sensitive processing</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Confidential Computing</h5>
+            <p>Process data without exposing it to the operating system</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Zero-Knowledge Proofs</h5>
+            <p>Verify information without revealing the information itself</p>
+        </div>
+    </section>
+
+    <!-- Data Sovereignty Section -->
+    <section id="data-sovereignty" class="section" style="display: none;">
+        <h2>Data Sovereignty</h2>
+        <p>Data sovereignty is like the legal principle that laws apply based on physical location—data is subject to the laws of the country where it's stored or processed.</p>
+
+        <h3>Key Principles</h3>
+        <ul>
+            <li><strong>Territorial jurisdiction:</strong> Countries can regulate data within their borders</li>
+            <li><strong>Legal compliance:</strong> Organizations must comply with local laws where data resides</li>
+            <li><strong>Government access:</strong> Local governments may have rights to access data in their jurisdiction</li>
+            <li><strong>Conflicting laws:</strong> Data may be subject to conflicting legal requirements</li>
+        </ul>
+
+        <h3>Implementation Challenges</h3>
+        <div class="highlight-box">
+            <ul>
+                <li><strong>Cloud computing:</strong> Data may be stored in unknown or changing locations</li>
+                <li><strong>Data movement:</strong> Data may cross multiple jurisdictions during processing</li>
+                <li><strong>Legal conflicts:</strong> Different countries may have conflicting requirements</li>
+                <li><strong>Compliance costs:</strong> Meeting multiple legal requirements increases complexity and cost</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Geolocation Requirements Section -->
+    <section id="geolocation" class="section" style="display: none;">
+        <h2>Geolocation Requirements</h2>
+        <p>Geolocation requirements specify where data can and cannot be stored or processed, like zoning laws that restrict what types of buildings can be constructed in different areas.</p>
+
+        <h3>Common Geolocation Requirements</h3>
+        <ul>
+            <li><strong>Data residency:</strong> Data must remain within specific geographic boundaries</li>
+            <li><strong>Processing restrictions:</strong> Data processing must occur in approved locations</li>
+            <li><strong>Transfer limitations:</strong> Restrictions on moving data across borders</li>
+            <li><strong>Local access:</strong> Requirements for local access to data by authorities</li>
+        </ul>
+
+        <h3>Examples of Geolocation Laws</h3>
+        <div class="example-box">
+            <h5>European GDPR</h5>
+            <p>Restrictions on transferring personal data outside the EU</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Russian Data Localization</h5>
+            <p>Personal data of Russian citizens must be stored in Russia</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Chinese Cybersecurity Law</h5>
+            <p>Critical information infrastructure data must stay in China</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Canadian PIPEDA</h5>
+            <p>Personal information may require consent for international transfers</p>
+        </div>
+
+        <h3>Compliance Strategies</h3>
+        <ul>
+            <li><strong>Data mapping:</strong> Understand where data is stored and processed</li>
+            <li><strong>Contractual controls:</strong> Include location requirements in cloud contracts</li>
+            <li><strong>Technical controls:</strong> Use technology to enforce geographic restrictions</li>
+            <li><strong>Legal mechanisms:</strong> Implement appropriate legal frameworks for data transfers</li>
+        </ul>
+    </section>
+
+    <!-- Data Transformation Section -->
+    <section id="data-transformation" class="section" style="display: none;">
+        <h2>Data Transformation Techniques</h2>
+
+        <h3>Data Masking</h3>
+        <p>Data masking is like using a black marker to redact sensitive information in documents—it obscures real data while maintaining the format and structure needed for testing or analysis.</p>
+
+        <h4>Masking Techniques</h4>
+        <ul>
+            <li><strong>Static masking:</strong> Create masked copies of databases for development and testing</li>
+            <li><strong>Dynamic masking:</strong> Mask data in real-time based on user permissions</li>
+            <li><strong>Format-preserving masking:</strong> Maintain data format while changing values</li>
+            <li><strong>Randomization:</strong> Replace sensitive values with random but realistic data</li>
+        </ul>
+
+        <h4>Masking Methods</h4>
+        <div class="example-box">
+            <h5>Substitution</h5>
+            <p>Replace sensitive data with fictitious but realistic values</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Shuffling</h5>
+            <p>Rearrange data within columns to break associations</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Character Masking</h5>
+            <p>Replace characters with X's or other symbols</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Encryption</h5>
+            <p>Use reversible encryption when original data may be needed</p>
+        </div>
+
+        <h3>Tokenization</h3>
+        <p>Tokenization is like using coat check tickets at a restaurant—you give your valuable coat to the attendant and receive a meaningless token that you can later use to retrieve your coat.</p>
+
+        <h4>Tokenization Process</h4>
+        <ol>
+            <li><strong>Sensitive data submission:</strong> Original sensitive data is sent to tokenization system</li>
+            <li><strong>Token generation:</strong> System generates a random, meaningless token</li>
+            <li><strong>Secure storage:</strong> Original data is stored securely in token vault</li>
+            <li><strong>Token return:</strong> Token is returned for use in place of original data</li>
+            <li><strong>Detokenization:</strong> When needed, token can be exchanged for original data</li>
+        </ol>
+
+        <h4>Types of Tokenization</h4>
+        <ul>
+            <li><strong>Format-preserving:</strong> Tokens maintain same format as original data</li>
+            <li><strong>Non-format-preserving:</strong> Tokens may have different format than original data</li>
+            <li><strong>Reversible:</strong> Tokens can be converted back to original data</li>
+            <li><strong>Irreversible:</strong> Tokens cannot be converted back (one-way tokenization)</li>
+        </ul>
+
+        <h3>Data Obfuscation</h3>
+        <p>Data obfuscation is like speaking in code or using technical jargon—the information is still there, but it's deliberately made unclear to unauthorized observers.</p>
+
+        <h4>Obfuscation Techniques</h4>
+        <ul>
+            <li><strong>Code obfuscation:</strong> Make software code difficult to understand</li>
+            <li><strong>Data scrambling:</strong> Rearrange or modify data to reduce clarity</li>
+            <li><strong>Steganography:</strong> Hide data within other data (like hiding messages in images)</li>
+            <li><strong>Statistical obfuscation:</strong> Add noise to data to prevent identification of individuals</li>
+        </ul>
+
+        <button class="quiz-button" onclick="startQuickQuiz('transform')">Test Data Transformation Knowledge</button>
+    </section>
+
+    <!-- Access Control Section -->
+    <section id="access-control" class="section" style="display: none;">
+        <h2>Access Control and Segmentation</h2>
+
+        <h3>Geographic Restrictions</h3>
+        <p>Geographic restrictions control data access based on physical location, like having different entry requirements for different countries.</p>
+
+        <h4>Implementation Methods</h4>
+        <ul>
+            <li><strong>IP-based restrictions:</strong> Block or allow access based on IP address location</li>
+            <li><strong>GPS-based restrictions:</strong> Use device location services to control access</li>
+            <li><strong>Legal frameworks:</strong> Use contracts and legal agreements to enforce restrictions</li>
+            <li><strong>Technical controls:</strong> Implement location-aware access controls</li>
+        </ul>
+
+        <h4>Challenges</h4>
+        <div class="highlight-box">
+            <ul>
+                <li><strong>VPN circumvention:</strong> Users can use VPNs to appear to be in different locations</li>
+                <li><strong>Mobile users:</strong> Travelers may need access from restricted locations</li>
+                <li><strong>Accuracy:</strong> Location detection may not be perfectly accurate</li>
+                <li><strong>Performance:</strong> Location checking can add latency to access requests</li>
+            </ul>
+        </div>
+
+        <h3>Data Segmentation</h3>
+        <p>Data segmentation is like organizing a library into different sections with different access requirements—children's books in one area, adult materials in another, and rare manuscripts in a restricted section.</p>
+
+        <h4>Network Segmentation</h4>
+        <ul>
+            <li><strong>Purpose:</strong> Isolate sensitive data from other network traffic</li>
+            <li><strong>Implementation:</strong> VLANs, firewalls, and access controls</li>
+            <li><strong>Benefits:</strong> Limits blast radius of security incidents</li>
+            <li><strong>Challenges:</strong> Complexity of managing multiple network segments</li>
+        </ul>
+
+        <h4>Database Segmentation</h4>
+        <ul>
+            <li><strong>Vertical segmentation:</strong> Split tables into columns with different sensitivity levels</li>
+            <li><strong>Horizontal segmentation:</strong> Split tables into rows based on data sensitivity</li>
+            <li><strong>Schema separation:</strong> Use different database schemas for different data types</li>
+            <li><strong>Instance separation:</strong> Use completely separate database instances</li>
+        </ul>
+
+        <h3>Permission Restrictions</h3>
+        <p>Permission restrictions control who can access what data and what they can do with it, like having different types of library cards that allow access to different sections and services.</p>
+
+        <h4>Access Control Models</h4>
+        <div class="example-box">
+            <h5>Discretionary Access Control (DAC)</h5>
+            <p>Data owners control access permissions</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Mandatory Access Control (MAC)</h5>
+            <p>System enforces access based on security labels</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Role-Based Access Control (RBAC)</h5>
+            <p>Access based on user roles and responsibilities</p>
+        </div>
+
+        <div class="example-box">
+            <h5>Attribute-Based Access Control (ABAC)</h5>
+            <p>Access based on multiple attributes and policies</p>
+        </div>
+
+        <h4>Permission Types</h4>
+        <ul>
+            <li><strong>Read:</strong> Ability to view or retrieve data</li>
+            <li><strong>Write:</strong> Ability to modify or update data</li>
+            <li><strong>Execute:</strong> Ability to run programs or scripts</li>
+            <li><strong>Delete:</strong> Ability to remove data</li>
+            <li><strong>Admin:</strong> Ability to change permissions and settings</li>
+        </ul>
+
+        <h4>Implementation Considerations</h4>
+        <div class="highlight-box">
+            <ul>
+                <li><strong>Principle of least privilege:</strong> Grant minimum necessary permissions</li>
+                <li><strong>Regular review:</strong> Periodically audit and update permissions</li>
+                <li><strong>Separation of duties:</strong> Require multiple people for sensitive operations</li>
+                <li><strong>Time-based access:</strong> Automatically expire permissions after specified time</li>
+            </ul>
+        </div>
+
+        <button class="quiz-button" onclick="startQuickQuiz('access')">Test Access Control Knowledge</button>
+    </section>
+
+    <script>
+        // Extended quiz questions
+        const extendedQuizzes = {
+            'ip': [
+                {
+                    question: "Which type of intellectual property provides temporary exclusive rights to inventions?",
+                    options: ["Trademarks", "Patents", "Copyrights", "Trade secrets"],
+                    correct: 1,
+                    explanation: "Patents provide temporary exclusive rights to inventions, typically for 20 years from the filing date."
+                }
+            ],
+            'transform': [
+                {
+                    question: "What is the main advantage of tokenization over encryption for payment data?",
+                    options: ["Better performance", "Reduced compliance scope", "Stronger security", "Lower cost"],
+                    correct: 1,
+                    explanation: "Tokenization reduces compliance scope because systems using tokens are often out of PCI DSS scope, as tokens are meaningless without access to the token vault."
+                }
+            ],
+            'access': [
+                {
+                    question: "Which access control model uses security labels enforced by the system?",
+                    options: ["DAC", "MAC", "RBAC", "ABAC"],
+                    correct: 1,
+                    explanation: "Mandatory Access Control (MAC) uses security labels that are enforced by the system, not controlled by data owners."
+                }
+            ]
+        };
+
+        // Merge with existing quizzes
+        Object.assign(quizzes, extendedQuizzes);
+    </script>

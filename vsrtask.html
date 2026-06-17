@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerability Scanner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #f0f0f0, #e8e8e8);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2d5016, #4a7c59);
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: #000;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            flex: 1;
+            min-width: 140px;
+            background: #000;
+            color: #00ff00;
+            border: none;
+            padding: 15px 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            border-right: 1px solid #333;
+        }
+
+        .nav-btn:last-child {
+            border-right: none;
+        }
+
+        .nav-btn:hover {
+            background: #2d5016;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: #4a7c59;
+            color: white;
+        }
+
+        .task-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            border-left: 5px solid #4a7c59;
+        }
+
+        .task-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #2d5016;
+        }
+
+        .task-title {
+            color: #2d5016;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .scan-controls {
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .target-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            background: #333;
+            color: #00ff00;
+            border: 2px solid #4a7c59;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin-right: 10px;
+        }
+
+        .scan-btn {
+            background: #2d5016;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .scan-btn:hover {
+            background: #4a7c59;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .results-container {
+            background: #000;
+            color: #00ff00;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+            border: 2px solid #4a7c59;
+        }
+
+        .vulnerability {
+            background: rgba(255, 0, 0, 0.1);
+            border-left: 4px solid #ff4444;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .vuln-high { border-left-color: #ff0000; background: rgba(255, 0, 0, 0.1); }
+        .vuln-medium { border-left-color: #ff8800; background: rgba(255, 136, 0, 0.1); }
+        .vuln-low { border-left-color: #ffaa00; background: rgba(255, 170, 0, 0.1); }
+
+        .analysis-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #2d5016;
+        }
+
+        .student-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            resize: vertical;
+            margin: 10px 0;
+        }
+
+        .student-input:focus {
+            border-color: #4a7c59;
+            outline: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2d5016, #4a7c59);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            color: #00ff00;
+            font-size: 1.1em;
+            margin: 20px 0;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { color: rgba(0, 255, 0, 0); text-shadow: .25em 0 0 rgba(0, 255, 0, 0), .5em 0 0 rgba(0, 255, 0, 0); }
+            40% { color: #00ff00; text-shadow: .25em 0 0 rgba(0, 255, 0, 0), .5em 0 0 rgba(0, 255, 0, 0); }
+            60% { text-shadow: .25em 0 0 #00ff00, .5em 0 0 rgba(0, 255, 0, 0); }
+            80%, 100% { text-shadow: .25em 0 0 #00ff00, .5em 0 0 #00ff00; }
+        }
+
+        .signature-box {
+            background: #2d5016;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            word-break: break-all;
+        }
+
+        .remediation-steps {
+            background: #e8f5e8;
+            border: 2px solid #4a7c59;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .remediation-steps h4 {
+            color: #2d5016;
+            margin-bottom: 10px;
+        }
+
+        .remediation-steps ol {
+            margin-left: 20px;
+        }
+
+        .remediation-steps li {
+            margin: 8px 0;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-btn {
+                min-width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #333;
+            }
+            
+            .target-input {
+                width: 100%;
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+            
+            .scan-btn {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Vulnerability Scanner Simulator</h1>
+            <p class="subtitle">FreshFlow Systsmes Compliance Program CMMC</p>
+        </header>
+
+        <nav>
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showTask(1)">Task 1: Misconfigurations</button>
+                <button class="nav-btn" onclick="showTask(2)">Task 2: Outdated Software</button>
+                <button class="nav-btn" onclick="showTask(3)">Task 3: Weak Passwords</button>
+                <button class="nav-btn" onclick="showTask(4)">Task 4: Missing Patches</button>
+                <button class="nav-btn" onclick="showTask(5)">Task 5: Open Ports</button>
+                <button class="nav-btn" onclick="showTask(6)">Task 6: Insecure Protocols</button>
+                <button class="nav-btn" onclick="showTask(7)">Task 7: Insecure Configs</button>
+            </div>
+        </nav>
+
+        <!-- Task 1: Misconfigurations -->
+        <div id="task1" class="task-container">
+            <div class="task-header">
+                <h2 class="task-title">Task 1: Scanning for Misconfigurations</h2>
+                <p><strong>Objective:</strong> Identify system misconfigurations that could lead to security vulnerabilities.</p>
+                <p><strong>Target System:</strong> Web Server (Apache 2.4.41 on Ubuntu 20.04)</p>
+            </div>
+
+            <div class="scan-controls">
+                <p>$ vuln-scanner --type=config --target=</p>
+                <input type="text" class="target-input" placeholder="Enter target IP (e.g., 192.168.1.100)" id="target1">
+                <button class="scan-btn" onclick="runScan(1)">Execute Scan</button>
+            </div>
+
+            <div id="progress1" class="progress-bar hidden">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div id="loading1" class="loading hidden">Scanning for misconfigurations</div>
+
+            <div id="results1" class="results-container hidden">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+
+            <div class="analysis-section">
+                <h3>Student Analysis Task:</h3>
+                <p>Analyze the scan results and provide:</p>
+                <ol>
+                    <li>Risk assessment of identified misconfigurations</li>
+                    <li>Potential impact on system security</li>
+                    <li>Recommended remediation steps</li>
+                </ol>
+                <textarea class="student-input" placeholder="Enter your analysis here..."></textarea>
+            </div>
+        </div>
+
+        <!-- Task 2: Outdated Software -->
+        <div id="task2" class="task-container hidden">
+            <div class="task-header">
+                <h2 class="task-title">Task 2: Scanning for Outdated Software</h2>
+                <p><strong>Objective:</strong> Identify software components that are running outdated versions with known vulnerabilities.</p>
+                <p><strong>Target System:</strong> Database Server (MySQL 5.7.25 on CentOS 7)</p>
+            </div>
+
+            <div class="scan-controls">
+                <p>$ vuln-scanner --type=software --target=</p>
+                <input type="text" class="target-input" placeholder="Enter target IP (e.g., 192.168.1.101)" id="target2">
+                <button class="scan-btn" onclick="runScan(2)">Execute Scan</button>
+            </div>
+
+            <div id="progress2" class="progress-bar hidden">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div id="loading2" class="loading hidden">Scanning for outdated software</div>
+
+            <div id="results2" class="results-container hidden">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+
+            <div class="analysis-section">
+                <h3>Student Analysis Task:</h3>
+                <p>Analyze the scan results and provide:</p>
+                <ol>
+                    <li>CVSS score interpretation for each vulnerability</li>
+                    <li>Exploitation likelihood assessment</li>
+                    <li>Update prioritization strategy</li>
+                </ol>
+                <textarea class="student-input" placeholder="Enter your analysis here..."></textarea>
+            </div>
+        </div>
+
+        <!-- Task 3: Weak Passwords -->
+        <div id="task3" class="task-container hidden">
+            <div class="task-header">
+                <h2 class="task-title">Task 3: Scanning for Weak Password Policies</h2>
+                <p><strong>Objective:</strong> Assess password strength and policy enforcement across the system.</p>
+                <p><strong>Target System:</strong> Domain Controller (Windows Server 2019)</p>
+            </div>
+
+            <div class="scan-controls">
+                <p>$ vuln-scanner --type=password --target=</p>
+                <input type="text" class="target-input" placeholder="Enter target IP (e.g., 192.168.1.102)" id="target3">
+                <button class="scan-btn" onclick="runScan(3)">Execute Scan</button>
+            </div>
+
+            <div id="progress3" class="progress-bar hidden">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div id="loading3" class="loading hidden">Scanning password policies</div>
+
+            <div id="results3" class="results-container hidden">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+
+            <div class="analysis-section">
+                <h3>Student Analysis Task:</h3>
+                <p>Analyze the scan results and provide:</p>
+                <ol>
+                    <li>Password policy compliance assessment</li>
+                    <li>Risk analysis of weak password practices</li>
+                    <li>Multi-factor authentication recommendations</li>
+                </ol>
+                <textarea class="student-input" placeholder="Enter your analysis here..."></textarea>
+            </div>
+        </div>
+
+        <!-- Task 4: Missing Patches -->
+        <div id="task4" class="task-container hidden">
+            <div class="task-header">
+                <h2 class="task-title">Task 4: Scanning for Missing Security Patches</h2>
+                <p><strong>Objective:</strong> Identify missing critical security updates and patches.</p>
+                <p><strong>Target System:</strong> File Server (Windows Server 2016)</p>
+            </div>
+
+            <div class="scan-controls">
+                <p>$ vuln-scanner --type=patches --target=</p>
+                <input type="text" class="target-input" placeholder="Enter target IP (e.g., 192.168.1.103)" id="target4">
+                <button class="scan-btn" onclick="runScan(4)">Execute Scan</button>
+            </div>
+
+            <div id="progress4" class="progress-bar hidden">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div id="loading4" class="loading hidden">Scanning for missing patches</div>
+
+            <div id="results4" class="results-container hidden">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+
+            <div class="analysis-section">
+                <h3>Student Analysis Task:</h3>
+                <p>Analyze the scan results and provide:</p>
+                <ol>
+                    <li>Critical patch prioritization matrix</li>
+                    <li>Patch deployment timeline recommendations</li>
+                    <li>Business continuity considerations</li>
+                </ol>
+                <textarea class="student-input" placeholder="Enter your analysis here..."></textarea>
+            </div>
+        </div>
+
+        <!-- Task 5: Open Ports and Services -->
+        <div id="task5" class="task-container hidden">
+            <div class="task-header">
+                <h2 class="task-title">Task 5: Scanning for Open Ports and Services</h2>
+                <p><strong>Objective:</strong> Identify open ports and running services that may present security risks.</p>
+                <p><strong>Target System:</strong> Web Application Server (Nginx on Debian 10)</p>
+            </div>
+
+            <div class="scan-controls">
+                <p>$ vuln-scanner --type=ports --target=</p>
+                <input type="text" class="target-input" placeholder="Enter target IP (e.g., 192.168.1.104)" id="target5">
+                <button class="scan-btn" onclick="runScan(5)">Execute Scan</button>
+            </div>
+
+            <div id="progress5" class="progress-bar hidden">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div id="loading5" class="loading hidden">Scanning open ports and services</div>
+
+            <div id="results5" class="results-container hidden">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+
+            <div class="analysis-section">
+                <h3>Student Analysis Task:</h3>
+                <p>Analyze the scan results and provide:</p>
+                <ol>
+                    <li>Service exposure risk assessment</li>
+                    <li>Unnecessary service identification</li>
+                    <li>Firewall rule recommendations</li>
+                </ol>
+                <textarea class="student-input" placeholder="Enter your analysis here..."></textarea>
+            </div>
+        </div>
+
+        <!-- Task 6: Insecure Network Protocols -->
+        <div id="task6" class="task-container hidden">
+            <div class="task-header">
+                <h2 class="task-title">Task 6: Scanning for Insecure Network Protocols</h2>
+                <p><strong>Objective:</strong> Detect usage of insecure or deprecated network protocols.</p>
+                <p><strong>Target System:</strong> Email Server (Postfix on Red Hat Enterprise Linux 8)</p>
+            </div>
+
+            <div class="scan-controls">
+                <p>$ vuln-scanner --type=protocols --target=</p>
+                <input type="text" class="target-input" placeholder="Enter target IP (e.g., 192.168.1.105)" id="target6">
+                <button class="scan-btn" onclick="runScan(6)">Execute Scan</button>
+            </div>
+
+            <div id="progress6" class="progress-bar hidden">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div id="loading6" class="loading hidden">Scanning network protocols</div>
+
+            <div id="results6" class="results-container hidden">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+
+            <div class="analysis-section">
+                <h3>Student Analysis Task:</h3>
+                <p>Analyze the scan results and provide:</p>
+                <ol>
+                    <li>Protocol security assessment</li>
+                    <li>Data in transit protection analysis</li>
+                    <li>Protocol upgrade recommendations</li>
+                </ol>
+                <textarea class="student-input" placeholder="Enter your analysis here..."></textarea>
+            </div>
+        </div>
+
+        <!-- Task 7: Insecure Configurations -->
+        <div id="task7" class="task-container hidden">
+            <div class="task-header">
+                <h2 class="task-title">Task 7: Scanning for Insecure Configurations</h2>
+                <p><strong>Objective:</strong> Identify security misconfigurations and hardening opportunities.</p>
+                <p><strong>Target System:</strong> Cloud Infrastructure (AWS EC2 Instance)</p>
+            </div>
+
+            <div class="scan-controls">
+                <p>$ vuln-scanner --type=secure-config --target=</p>
+                <input type="text" class="target-input" placeholder="Enter target IP (e.g., 192.168.1.106)" id="target7">
+                <button class="scan-btn" onclick="runScan(7)">Execute Scan</button>
+            </div>
+
+            <div id="progress7" class="progress-bar hidden">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div id="loading7" class="loading hidden">Scanning security configurations</div>
+
+            <div id="results7" class="results-container hidden">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+
+            <div class="analysis-section">
+                <h3>Student Analysis Task:</h3>
+                <p>Analyze the scan results and provide:</p>
+                <ol>
+                    <li>Security baseline compliance assessment</li>
+                    <li>Configuration hardening priority matrix</li>
+                    <li>Cloud security best practices review</li>
+                </ol>
+                <textarea class="student-input" placeholder="Enter your analysis here..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Vulnerability scan data for each task
+        const scanData = {
+            1: { // Misconfigurations
+                findings: [
+                    {
+                        severity: 'HIGH',
+                        cve: 'CVE-2023-1234',
+                        title: 'Apache Server-Status Information Disclosure',
+                        description: 'Server status page accessible without authentication',
+                        signature: 'HTTP/1.1 200 OK\nServer: Apache/2.4.41\nLocation: /server-status\nmod_status enabled: YES',
+                        port: '80',
+                        impact: 'Information disclosure, server configuration details exposed'
+                    },
+                    {
+                        severity: 'MEDIUM',
+                        cve: 'CVE-2023-5678',
+                        title: 'Directory Listing Enabled',
+                        description: 'Apache directory browsing enabled on /uploads/',
+                        signature: 'Options +Indexes\nDirectory: /var/www/html/uploads/\nListing: ENABLED',
+                        port: '80',
+                        impact: 'Potential sensitive file exposure through directory browsing'
+                    },
+                    {
+                        severity: 'LOW',
+                        cve: 'N/A',
+                        title: 'Server Version Information Disclosure',
+                        description: 'Apache version information exposed in HTTP headers',
+                        signature: 'Server: Apache/2.4.41 (Ubuntu)\nServerTokens: Full',
+                        port: '80',
+                        impact: 'Version fingerprinting aids targeted attacks'
+                    }
+                ]
+            },
+            2: { // Outdated Software
+                findings: [
+                    {
+                        severity: 'HIGH',
+                        cve: 'CVE-2023-0001',
+                        title: 'MySQL Remote Code Execution',
+                        description: 'Critical RCE vulnerability in MySQL 5.7.25',
+                        signature: 'MySQL Ver 5.7.25\nVulnerable to: CVE-2023-0001\nCVSS Score: 9.8',
+                        port: '3306',
+                        impact: 'Remote code execution with database privileges'
+                    },
+                    {
+                        severity: 'HIGH',
+                        cve: 'CVE-2022-9999',
+                        title: 'OpenSSL Heartbleed Vulnerability',
+                        description: 'OpenSSL 1.0.1f vulnerable to information disclosure',
+                        signature: 'OpenSSL 1.0.1f 6 Jan 2014\nHeartbleed: VULNERABLE\nTLS version: 1.2',
+                        port: '443',
+                        impact: 'Memory disclosure, private key compromise possible'
+                    },
+                    {
+                        severity: 'MEDIUM',
+                        cve: 'CVE-2023-8888',
+                        title: 'Outdated Linux Kernel',
+                        description: 'CentOS 7 running vulnerable kernel version',
+                        signature: 'Linux kernel 3.10.0-957.el7.x86_64\nKernel vulnerabilities: 15 found\nPrivilege escalation: POSSIBLE',
+                        port: 'N/A',
+                        impact: 'Local privilege escalation vulnerabilities'
+                    }
+                ]
+            },
+            3: { // Weak Passwords
+                findings: [
+                    {
+                        severity: 'HIGH',
+                        cve: 'N/A',
+                        title: 'Default Administrator Password',
+                        description: 'Default credentials detected on admin account',
+                        signature: 'Account: Administrator\nPassword: Password123!\nLast Changed: Never\nPolicy Compliance: FAILED',
+                        port: '3389',
+                        impact: 'Full system compromise through default credentials'
+                    },
+                    {
+                        severity: 'MEDIUM',
+                        cve: 'N/A',
+                        title: 'Weak Password Policy',
+                        description: 'Password policy does not meet security standards',
+                        signature: 'Min Length: 6 characters\nComplexity: DISABLED\nMax Age: Never expires\nLockout Policy: DISABLED',
+                        port: 'N/A',
+                        impact: 'Increased susceptibility to brute force attacks'
+                    },
+                    {
+                        severity: 'MEDIUM',
+                        cve: 'N/A',
+                        title: 'Password Reuse Detected',
+                        description: 'Multiple accounts using identical passwords',
+                        signature: 'Accounts: 12\nIdentical passwords: 5\nCommon patterns: 8\nDictionary words: 3',
+                        port: 'N/A',
+                        impact: 'Lateral movement facilitated by credential reuse'
+                    }
+                ]
+            },
+            4: { // Missing Patches
+                findings: [
+                    {
+                        severity: 'HIGH',
+                        cve: 'CVE-2023-9999',
+                        title: 'Critical Windows Security Update Missing',
+                        description: 'MS-2023-001 security update not installed',
+                        signature: 'KB5021233: NOT INSTALLED\nSeverity: Critical\nRemote Code Execution: YES\nAuthentication Required: NO',
+                        port: 'N/A',
+                        impact: 'Remote code execution without authentication'
+                    },
+                    {
+                        severity: 'HIGH',
+                        cve: 'CVE-2023-7777',
+                        title: 'SMBv1 Protocol Vulnerability',
+                        description: 'EternalBlue vulnerability patch missing',
+                        signature: 'SMBv1: ENABLED\nMS17-010: NOT PATCHED\nEternalBlue: VULNERABLE\nWannaCry: SUSCEPTIBLE',
+                        port: '445',
+                        impact: 'Worm propagation and ransomware infection risk'
+                    },
+                    {
+                        severity: 'MEDIUM',
+                        cve: 'CVE-2023-6666',
+                        title: 'Windows Defender Definition Outdated',
+                        description: 'Antivirus definitions are 45 days out of date',
+                        signature: 'Definition Version: 1.387.123.0\nLast Updated: 45 days ago\nReal-time Protection: ENABLED\nCloud Protection: DISABLED',
+                        port: 'N/A',
+                        impact: 'Reduced malware detection capabilities'
+                    }
+                ]
+            },
+            5: { // Open Ports
+                findings: [
+                    {
+                        severity: 'HIGH',
+                        cve: 'N/A',
+                        title: 'Unnecessary FTP Service Running',
+                        description: 'FTP service with anonymous access enabled',
+                        signature: 'Port 21: OPEN\nService: vsftpd 3.0.3\nAnonymous Login: ALLOWED\nSSL/TLS: DISABLED',
+                        port: '21',
+                        impact: 'Unauthorized file access and data exfiltration'
+                    },
+                    {
+                        severity: 'MEDIUM',
+                        cve: 'N/A',
+                        title: 'Telnet Service Active',
+                        description: 'Unencrypted Telnet service detected',
+                        signature: 'Port 23: OPEN\nService: telnetd\nEncryption: NONE\nAuthentication: Basic',
+                        port: '23',
+                        impact: 'Credential interception through unencrypted traffic'
+                    },
+                    {
+                        severity: 'LOW',
+                        cve: 'N/A',
+                        title: 'SNMP Service Exposed',
+                        description: 'SNMP service with default community string',
+                        signature: 'Port 161: OPEN\nService: snmpd\nCommunity: public\nVersion: v2c',
+                        port: '161',
+                        impact: 'Network device information disclosure'
+                    }
+                ]
+            },
+            6: { // Insecure Protocols
+                findings: [
+                    {
+                        severity: 'HIGH',
+                        cve: 'N/A',
+                        title: 'Unencrypted Email Traffic',
+                        description: 'SMTP service allows plaintext authentication',
+                        signature: 'SMTP: STARTTLS optional\nAuth Methods: PLAIN, LOGIN\nEncryption: Optional\nSMTP on port 25: OPEN',
+                        port: '25, 587',
+                        impact: 'Email credential interception and data exposure'
+                    },
+                    {
+                        severity: 'MEDIUM',
+                        cve: 'N/A',
+                        title: 'Weak SSL/TLS Configuration',
+                        description: 'Deprecated TLS versions and weak ciphers enabled',
+                        signature: 'TLS 1.0: ENABLED\nTLS 1.1: ENABLED\nWeak Ciphers: RC4, 3DES\nPerfect Forward Secrecy: DISABLED',
+                        port: '443',
+                        impact: 'Man-in-the-middle attacks and traffic decryption'
+                    },
+                    {
+                        severity: 'MEDIUM',
+                        cve: 'N/A',
+                        title: 'HTTP Instead of HTTPS',
+                        description: 'Web application accessible over unencrypted HTTP',
+                        signature: 'HTTP Port 80: ACCESSIBLE\nHTTPS Redirect: DISABLED\nSecure Cookies: NO\nHSTS Header: MISSING',
+                        port: '80',
+                        impact: 'Session hijacking and data interception'
+                    }
+                ]
+            },
+            7: { // Insecure Configurations
+                findings: [
+                    {
+                        severity: 'HIGH',
+                        cve: 'N/A',
+                        title: 'AWS Security Group Misconfiguration',
+                        description: 'Security group allows unrestricted inbound access',
+                        signature: 'Security Group: sg-12345678\nInbound Rule: 0.0.0.0/0 on port 22\nSSH Access: UNRESTRICTED\nSource: Any IP',
+                        port: '22',
+                        impact: 'Global SSH access increases brute force attack surface'
+                    },
+                    {
+                        severity: 'HIGH',
+                        cve: 'N/A',
+                        title: 'Excessive File Permissions',
+                        description: 'Sensitive files have world-readable permissions',
+                        signature: 'File: /etc/shadow\nPermissions: 644 (world-readable)\nOwner: root\nGroup: shadow',
+                        port: 'N/A',
+                        impact: 'Password hash exposure to all system users'
+                    },
+                    {
+                        severity: 'MEDIUM',
+                        cve: 'N/A',
+                        title: 'Logging Configuration Disabled',
+                        description: 'Security logging and monitoring disabled',
+                        signature: 'Auth.log: DISABLED\nSyslog: PARTIAL\nAudit Trail: NO\nLog Retention: 7 days',
+                        port: 'N/A',
+                        impact: 'Reduced incident detection and forensic capabilities'
+                    }
+                ]
+            }
+        };
+
+        // Function to show specific task
+        function showTask(taskNumber) {
+            // Hide all tasks
+            for (let i = 1; i <= 7; i++) {
+                document.getElementById(`task${i}`).classList.add('hidden');
+            }
+            
+            // Show selected task
+            document.getElementById(`task${taskNumber}`).classList.remove('hidden');
+            
+            // Update navigation buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Function to run vulnerability scan
+        function runScan(taskNumber) {
+            const targetInput = document.getElementById(`target${taskNumber}`);
+            const progressBar = document.getElementById(`progress${taskNumber}`);
+            const loading = document.getElementById(`loading${taskNumber}`);
+            const results = document.getElementById(`results${taskNumber}`);
+            
+            if (!targetInput.value.trim()) {
+                alert('Please enter a target IP address');
+                return;
+            }
+            
+            // Show loading and progress
+            progressBar.classList.remove('hidden');
+            loading.classList.remove('hidden');
+            results.classList.add('hidden');
+            
+            // Simulate scan progress
+            let progress = 0;
+            const progressFill = progressBar.querySelector('.progress-fill');
+            
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    
+                    // Show results after scan completion
+                    setTimeout(() => {
+                        displayResults(taskNumber, targetInput.value);
+                        progressBar.classList.add('hidden');
+                        loading.classList.add('hidden');
+                        results.classList.remove('hidden');
+                    }, 500);
+                }
+                progressFill.style.width = progress + '%';
+            }, 200);
+        }
+
+        // Function to display scan results
+        function displayResults(taskNumber, targetIP) {
+            const resultsContainer = document.getElementById(`results${taskNumber}`);
+            const findings = scanData[taskNumber].findings;
+            
+            let resultsHTML = `
+                <div style="color: #00ff00; margin-bottom: 15px;">
+                    ╔══════════════════════════════════════════════════════════════╗
+                    ║                    VULNERABILITY SCAN REPORT                 ║
+                    ╚══════════════════════════════════════════════════════════════╝
+                    
+                    Target: ${targetIP}
+                    Scan Date: ${new Date().toLocaleString()}
+                    Scanner: VulnScan Pro v3.2.1
+                    Scan Type: ${getTaskType(taskNumber)}
+                    
+                    ════════════════════════════════════════════════════════════════
+                    FINDINGS SUMMARY:
+                    ════════════════════════════════════════════════════════════════
+                    Total Vulnerabilities Found: ${findings.length}
+                    High Severity: ${findings.filter(f => f.severity === 'HIGH').length}
+                    Medium Severity: ${findings.filter(f => f.severity === 'MEDIUM').length}
+                    Low Severity: ${findings.filter(f => f.severity === 'LOW').length}
+                    
+                </div>
+            `;
+            
+            findings.forEach((finding, index) => {
+                const severityClass = `vuln-${finding.severity.toLowerCase()}`;
+                resultsHTML += `
+                    <div class="vulnerability ${severityClass}">
+                        <strong>[${finding.severity}] ${finding.title}</strong>
+                        <br>CVE: ${finding.cve} | Port: ${finding.port}
+                        <br><br>Description: ${finding.description}
+                        <br><br>Impact: ${finding.impact}
+                        
+                        <div class="signature-box">
+                            <strong>Vulnerability Signature:</strong><br>
+                            ${finding.signature.replace(/\n/g, '<br>')}
+                        </div>
+                        
+                        ${generateRemediation(finding, taskNumber)}
+                    </div>
+                `;
+            });
+            
+            resultsContainer.innerHTML = resultsHTML;
+        }
+
+        // Function to get task type description
+        function getTaskType(taskNumber) {
+            const types = {
+                1: 'Configuration Analysis',
+                2: 'Software Version Assessment',
+                3: 'Password Policy Evaluation',
+                4: 'Patch Management Audit',
+                5: 'Port and Service Discovery',
+                6: 'Protocol Security Analysis',
+                7: 'Security Configuration Review'
+            };
+            return types[taskNumber];
+        }
+
+        // Function to generate remediation steps
+        function generateRemediation(finding, taskNumber) {
+            const remediations = {
+                1: { // Misconfigurations
+                    'Apache Server-Status Information Disclosure': [
+                        'Disable mod_status module: a2dismod status',
+                        'Remove server-status location from configuration',
+                        'Implement access restrictions if monitoring needed',
+                        'Restart Apache service: systemctl restart apache2'
+                    ],
+                    'Directory Listing Enabled': [
+                        'Disable directory indexing: Options -Indexes',
+                        'Create index.html files in sensitive directories',
+                        'Review all virtual host configurations',
+                        'Test directory access after changes'
+                    ],
+                    'Server Version Information Disclosure': [
+                        'Set ServerTokens to Prod in apache2.conf',
+                        'Configure ServerSignature Off',
+                        'Remove version information from custom headers',
+                        'Implement security headers'
+                    ]
+                },
+                2: { // Outdated Software
+                    'MySQL Remote Code Execution': [
+                        'Upgrade MySQL to version 5.7.44 or later',
+                        'Apply vendor security patches immediately',
+                        'Implement network segmentation for database',
+                        'Enable MySQL audit logging'
+                    ],
+                    'OpenSSL Heartbleed Vulnerability': [
+                        'Upgrade OpenSSL to version 1.0.1g or later',
+                        'Regenerate all SSL certificates and keys',
+                        'Update all dependent applications',
+                        'Revoke compromised certificates'
+                    ],
+                    'Outdated Linux Kernel': [
+                        'Update kernel to latest stable version',
+                        'Enable automatic security updates',
+                        'Implement kernel live patching if available',
+                        'Schedule regular maintenance windows'
+                    ]
+                },
+                3: { // Weak Passwords
+                    'Default Administrator Password': [
+                        'Change default password immediately',
+                        'Implement strong password policy',
+                        'Enable multi-factor authentication',
+                        'Disable or rename default accounts'
+                    ],
+                    'Weak Password Policy': [
+                        'Set minimum password length to 12 characters',
+                        'Enable password complexity requirements',
+                        'Configure password expiration (90 days max)',
+                        'Implement account lockout policy'
+                    ],
+                    'Password Reuse Detected': [
+                        'Force password changes for affected accounts',
+                        'Implement password history restrictions',
+                        'Deploy privileged access management solution',
+                        'Conduct security awareness training'
+                    ]
+                },
+                4: { // Missing Patches
+                    'Critical Windows Security Update Missing': [
+                        'Install KB5021233 security update immediately',
+                        'Enable Windows Update automatic installation',
+                        'Configure WSUS for centralized patch management',
+                        'Test patches in staging environment first'
+                    ],
+                    'SMBv1 Protocol Vulnerability': [
+                        'Disable SMBv1 protocol completely',
+                        'Install MS17-010 security update',
+                        'Enable SMBv2/v3 with encryption',
+                        'Monitor for lateral movement attempts'
+                    ],
+                    'Windows Defender Definition Outdated': [
+                        'Update Windows Defender definitions',
+                        'Enable automatic definition updates',
+                        'Configure cloud-delivered protection',
+                        'Perform full system scan after update'
+                    ]
+                },
+                5: { // Open Ports
+                    'Unnecessary FTP Service Running': [
+                        'Disable anonymous FTP access',
+                        'Implement SFTP instead of FTP',
+                        'Configure firewall to block port 21',
+                        'Use secure file transfer alternatives'
+                    ],
+                    'Telnet Service Active': [
+                        'Disable Telnet service immediately',
+                        'Configure SSH for secure remote access',
+                        'Update firewall rules to block port 23',
+                        'Audit all remote access methods'
+                    ],
+                    'SNMP Service Exposed': [
+                        'Change default community strings',
+                        'Implement SNMPv3 with authentication',
+                        'Restrict SNMP access to management networks',
+                        'Disable SNMP if not required'
+                    ]
+                },
+                6: { // Insecure Protocols
+                    'Unencrypted Email Traffic': [
+                        'Enforce STARTTLS for all SMTP connections',
+                        'Disable plaintext authentication methods',
+                        'Implement opportunistic TLS encryption',
+                        'Configure email security policies'
+                    ],
+                    'Weak SSL/TLS Configuration': [
+                        'Disable TLS 1.0 and 1.1 protocols',
+                        'Remove weak cipher suites (RC4, 3DES)',
+                        'Enable Perfect Forward Secrecy',
+                        'Update SSL/TLS certificate management'
+                    ],
+                    'HTTP Instead of HTTPS': [
+                        'Implement HTTPS redirect for all traffic',
+                        'Configure HTTP Strict Transport Security',
+                        'Set secure flag on all cookies',
+                        'Update all internal links to HTTPS'
+                    ]
+                },
+                7: { // Insecure Configurations
+                    'AWS Security Group Misconfiguration': [
+                        'Restrict SSH access to specific IP ranges',
+                        'Implement bastion host for remote access',
+                        'Enable VPC flow logs for monitoring',
+                        'Regular review of security group rules'
+                    ],
+                    'Excessive File Permissions': [
+                        'Set proper permissions: chmod 640 /etc/shadow',
+                        'Implement principle of least privilege',
+                        'Regular audit of file permissions',
+                        'Use ACLs for granular access control'
+                    ],
+                    'Logging Configuration Disabled': [
+                        'Enable comprehensive security logging',
+                        'Configure centralized log management',
+                        'Implement log monitoring and alerting',
+                        'Set appropriate log retention policies'
+                    ]
+                }
+            };
+            
+            const taskRemediations = remediations[taskNumber];
+            const steps = taskRemediations[finding.title] || ['Consult vendor documentation', 'Apply security patches', 'Follow security best practices'];
+            
+            let remediationHTML = '<div class="remediation-steps"><h4>Recommended Remediation Steps:</h4><ol>';
+            steps.forEach(step => {
+                remediationHTML += `<li>${step}</li>`;
+            });
+            remediationHTML += '</ol></div>';
+            
+            return remediationHTML;
+        }
+
+        // Initialize the simulator
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Vulnerability Scanner Simulator loaded successfully');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompTIA Security+ Domain 4.2: Asset Management Study Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c5530, #4a7c59);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .navigation {
+            background-color: #f8f9fa;
+            border: 2px solid #2c5530;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .nav-dropdown {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid #2c5530;
+            border-radius: 5px;
+            background-color: white;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        .nav-dropdown:focus {
+            outline: none;
+            border-color: #4a7c59;
+            box-shadow: 0 0 5px rgba(76, 124, 89, 0.3);
+        }
+        
+        .content-section {
+            display: none;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .section-title {
+            color: #2c5530;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #4a7c59;
+            padding-bottom: 0.5rem;
+        }
+        
+        .subsection {
+            margin-bottom: 2rem;
+        }
+        
+        .subsection h3 {
+            color: #2c5530;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            background-color: #f0f4f1;
+            padding: 0.5rem 1rem;
+            border-left: 4px solid #4a7c59;
+        }
+        
+        .key-concept {
+            background-color: #e8f5e8;
+            border-left: 4px solid #2c5530;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .key-concept strong {
+            color: #2c5530;
+        }
+        
+        .analogy-box {
+            background-color: #f0f8ff;
+            border: 2px solid #4a7c59;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+        }
+        
+        .analogy-box::before {
+            content: "💡 Analogy: ";
+            font-weight: bold;
+            color: #2c5530;
+            font-style: normal;
+        }
+        
+        .quiz-container {
+            background-color: #f9f9f9;
+            border: 2px solid #2c5530;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .question {
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #2c5530;
+            font-size: 1.1rem;
+        }
+        
+        .answer-option {
+            display: block;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .answer-option:hover {
+            background-color: #f0f4f1;
+        }
+        
+        .answer-option input {
+            margin-right: 0.5rem;
+        }
+        
+        .check-answer-btn {
+            background-color: #2c5530;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .check-answer-btn:hover {
+            background-color: #4a7c59;
+        }
+        
+        .explanation {
+            display: none;
+            background-color: #e8f5e8;
+            border-left: 4px solid #2c5530;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .explanation.show {
+            display: block;
+        }
+        
+        .correct {
+            background-color: #d4edda !important;
+            border-color: #2c5530 !important;
+        }
+        
+        .incorrect {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+        }
+        
+        .lifecycle-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .lifecycle-step {
+            background-color: #4a7c59;
+            color: white;
+            padding: 1rem;
+            margin: 0.5rem;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 120px;
+            position: relative;
+        }
+        
+        .lifecycle-step::after {
+            content: "→";
+            position: absolute;
+            right: -20px;
+            color: #2c5530;
+            font-weight: bold;
+        }
+        
+        .lifecycle-step:last-child::after {
+            display: none;
+        }
+        
+        .progress-bar {
+            background-color: #e0e0e0;
+            height: 20px;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #2c5530, #4a7c59);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight {
+            background-color: #ffff99;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>CompTIA Security+ SY0-701</h1>
+        <p>Domain 4.2: Hardware, Software, and Data Asset Management</p>
+        <p>Interactive Study Guide & Practice Questions</p>
+    </div>
+    
+    <div class="container">
+        <div class="navigation">
+            <select class="nav-dropdown" id="navigationSelect">
+                <option value="">Select a Topic to Study</option>
+                <option value="overview">Asset Management Overview</option>
+                <option value="lifecycle">Asset Management Lifecycle</option>
+                <option value="procurement">Acquisition & Procurement</option>
+                <option value="assignment">Assignment & Accounting</option>
+                <option value="monitoring">Monitoring & Asset Tracking</option>
+                <option value="disposal">Disposal & Decommissioning</option>
+                <option value="practice-quiz">Practice Quiz</option>
+                <option value="exam-tips">Exam Tips & Key Takeaways</option>
+            </select>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <!-- Overview Section -->
+        <div id="overview" class="content-section">
+            <h2 class="section-title">Asset Management Overview</h2>
+            
+            <div class="analogy-box">
+                Asset management is like maintaining an inventory of everything valuable in your organization—you need to know what you have, where it is, who's responsible for it, and how to properly dispose of it when it's no longer needed.
+            </div>
+            
+            <div class="subsection">
+                <h3>What is Asset Management?</h3>
+                <p>Asset management in cybersecurity involves tracking and managing all IT assets throughout their entire lifecycle to ensure proper security controls are applied and maintained.</p>
+                
+                <div class="key-concept">
+                    <strong>Key Principle:</strong> You can't protect what you don't know you have. Effective asset management is crucial for security because unknown assets create security blind spots.
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3>Types of Assets</h3>
+                <ul>
+                    <li><strong>Hardware Assets:</strong> Physical devices, computers, network equipment, mobile devices</li>
+                    <li><strong>Software Assets:</strong> Applications, operating systems, licenses, patches</li>
+                    <li><strong>Data Assets:</strong> Databases, file shares, sensitive information repositories</li>
+                    <li><strong>Network Assets:</strong> Network devices, connections, services, protocols</li>
+                </ul>
+            </div>
+            
+            <div class="analogy-box">
+                Think of asset management like managing a library system. A library must track every book (asset), know where it's located (inventory), understand who has checked it out (ownership), and have procedures for removing damaged or outdated books (disposal).
+            </div>
+            
+            <div class="quiz-container">
+                <div class="question">Quick Check: Which of the following best describes why asset management is crucial for cybersecurity?</div>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q1" value="d"> D) Sales, marketing, production, and finance databases
+                </label>
+                <button class="check-answer-btn" onclick="checkAnswer('quiz-q1', 'd', 'The proprietary databases contain the most unique data and therefore would be the hardest to replace assets should they be lost. Next is the custom-made order fulfillment system as it is proprietary. The off-the-shelf software and hardware are the easiest and cheapest to replace.')">Check Answer</button>
+                <div class="explanation" id="quiz-q1-explanation"></div>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="question">2. A company has begun labeling all laptops with asset inventory stickers and associating them with employee IDs. Which of the following security benefits do these actions provide? (Choose TWO)</div>
+                <label class="answer-option">
+                    <input type="checkbox" name="quiz-q2" value="a"> A) If a security incident occurs on the device, the correct employee can be notified
+                </label>
+                <label class="answer-option">
+                    <input type="checkbox" name="quiz-q2" value="b"> B) The security team will be able to send user awareness training to the appropriate device
+                </label>
+                <label class="answer-option">
+                    <input type="checkbox" name="quiz-q2" value="c"> C) Users can be mapped to their devices when configuring software MFA tokens
+                </label>
+                <label class="answer-option">
+                    <input type="checkbox" name="quiz-q2" value="d"> D) User-based firewall policies can be correctly targeted to the appropriate laptops
+                </label>
+                <label class="answer-option">
+                    <input type="checkbox" name="quiz-q2" value="e"> E) Company data can be accounted for when the employee leaves the organization
+                </label>
+                <button class="check-answer-btn" onclick="checkMultipleAnswer('quiz-q2', ['a', 'e'], 'Asset labeling with employee IDs helps with incident response (notifying the correct employee) and data accountability during employee departure. The other options rely on technical identifiers rather than physical asset tags.')">Check Answer</button>
+                <div class="explanation" id="quiz-q2-explanation"></div>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="question">3. A cybersecurity team is implementing a comprehensive asset management program. Which of the following would be the FIRST step in establishing effective asset management?</div>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q3" value="a"> A) Implementing automated vulnerability scanning
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q3" value="b"> B) Conducting a comprehensive asset discovery and inventory
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q3" value="c"> C) Establishing asset disposal procedures
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q3" value="d"> D) Creating asset classification policies
+                </label>
+                <button class="check-answer-btn" onclick="checkAnswer('quiz-q3', 'b', 'You cannot manage what you do not know exists. Asset discovery and inventory must be the first step to identify all assets before any other management activities can be implemented.')">Check Answer</button>
+                <div class="explanation" id="quiz-q3-explanation"></div>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="question">4. An organization is evaluating vendors for a new network security appliance. Which of the following should be the PRIMARY security consideration during the procurement process?</div>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q4" value="a"> A) Vendor's marketing budget and brand recognition
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q4" value="b"> B) Lowest total cost of ownership
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q4" value="c"> C) Vendor's security certifications and patch management capabilities
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q4" value="d"> D) Fastest implementation timeline
+                </label>
+                <button class="check-answer-btn" onclick="checkAnswer('quiz-q4', 'c', 'Security certifications demonstrate the vendor\\'s commitment to security practices, and patch management capabilities are crucial for maintaining security over the asset\\'s lifecycle.')">Check Answer</button>
+                <div class="explanation" id="quiz-q4-explanation"></div>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="question">5. A mobile device needs to be securely disposed of after an employee leaves the company. The device contains encrypted corporate data. What is the MOST secure disposal method?</div>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q5" value="a"> A) Factory reset only
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q5" value="b"> B) Remote wipe followed by factory reset
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q5" value="c"> C) Physical destruction of the device
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q5" value="d"> D) Degaussing the device storage
+                </label>
+                <button class="check-answer-btn" onclick="checkAnswer('quiz-q5', 'c', 'Physical destruction provides the highest level of assurance that encrypted corporate data cannot be recovered, especially important when the device is leaving the organization\\'s control.')">Check Answer</button>
+                <div class="explanation" id="quiz-q5-explanation"></div>
+            </div>
+        </div>
+        
+        <!-- Exam Tips Section -->
+        <div id="exam-tips" class="content-section">
+            <h2 class="section-title">Exam Tips & Key Takeaways</h2>
+            
+            <div class="subsection">
+                <h3>What to Remember for the Exam</h3>
+                
+                <div class="key-concept">
+                    <strong>Asset Management Lifecycle:</strong> Know all six stages and what happens in each:
+                    <ol>
+                        <li>Acquisition/Procurement</li>
+                        <li>Deployment</li>
+                        <li>Operation</li>
+                        <li>Maintenance</li>
+                        <li>Retirement</li>
+                        <li>Disposal</li>
+                    </ol>
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Data Sanitization Methods:</strong>
+                    <ul>
+                        <li><span class="highlight">Overwriting:</span> Multiple passes of writing zeros/random data</li>
+                        <li><span class="highlight">Degaussing:</span> Works on magnetic drives, NOT SSDs</li>
+                        <li><span class="highlight">Physical Destruction:</span> Most secure method</li>
+                        <li><span class="highlight">SSD Secure Erase:</span> Built-in command for SSDs</li>
+                        <li><span class="highlight">Crypto Shredding:</span> Destroying encryption keys</li>
+                    </ul>
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Asset Classification Levels:</strong>
+                    <ul>
+                        <li>Public → Internal → Confidential → Restricted</li>
+                        <li>Higher classification = stronger security controls</li>
+                    </ul>
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Discovery Challenges:</strong>
+                    <ul>
+                        <li>Shadow IT (biggest modern challenge)</li>
+                        <li>Mobile devices</li>
+                        <li>Cloud assets</li>
+                        <li>IoT devices</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3>Common Exam Question Types</h3>
+                
+                <div class="key-concept">
+                    <strong>Scenario-Based Questions:</strong> You'll see scenarios describing asset management situations and need to identify the best approach or stage in the lifecycle.
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Best Practices Questions:</strong> Questions about proper procedures for asset tracking, disposal, or classification.
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Technology-Specific Questions:</strong> Questions about specific sanitization methods for different storage types (HDD vs SSD).
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3>Study Tips for Success</h3>
+                <ul>
+                    <li><span class="highlight">Memorize the lifecycle:</span> Know all six stages in order</li>
+                    <li><span class="highlight">Understand analogies:</span> Library system, hotel registry, workshop tools</li>
+                    <li><span class="highlight">Know disposal methods:</span> Which works for what type of storage</li>
+                    <li><span class="highlight">Practice scenarios:</span> Work through asset management situations</li>
+                    <li><span class="highlight">Review regulations:</span> Understand compliance requirements like NIST guidelines</li>
+                </ul>
+            </div>
+            
+            <div class="key-concept">
+                <strong>Final Exam Reminder:</strong> Domain 4.0 (Security Operations) represents 28% of the Security+ exam - the highest weighted domain. Asset management (4.2) is a crucial component of this domain, so thorough understanding is essential for exam success.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Navigation functionality
+        document.getElementById('navigationSelect').addEventListener('change', function() {
+            const selectedValue = this.value;
+            const sections = document.querySelectorAll('.content-section');
+            
+            // Hide all sections
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            if (selectedValue) {
+                const selectedSection = document.getElementById(selectedValue);
+                if (selectedSection) {
+                    selectedSection.classList.add('active');
+                    updateProgress(selectedValue);
+                }
+            }
+        });
+        
+        // Progress tracking
+        function updateProgress(section) {
+            const sections = ['overview', 'lifecycle', 'procurement', 'assignment', 'monitoring', 'disposal', 'practice-quiz', 'exam-tips'];
+            const currentIndex = sections.indexOf(section);
+            const progress = ((currentIndex + 1) / sections.length) * 100;
+            
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+        
+        // Quiz functionality
+        function checkAnswer(questionName, correctAnswer, explanation) {
+            const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+            const explanationDiv = document.getElementById(`${questionName}-explanation`);
+            const options = document.querySelectorAll(`input[name="${questionName}"]`);
+            
+            if (!selectedOption) {
+                alert('Please select an answer first!');
+                return;
+            }
+            
+            // Reset all option backgrounds
+            options.forEach(option => {
+                option.parentElement.classList.remove('correct', 'incorrect');
+            });
+            
+            // Highlight correct and incorrect answers
+            options.forEach(option => {
+                if (option.value === correctAnswer) {
+                    option.parentElement.classList.add('correct');
+                } else if (option.checked && option.value !== correctAnswer) {
+                    option.parentElement.classList.add('incorrect');
+                }
+            });
+            
+            // Show explanation
+            explanationDiv.innerHTML = `<strong>Explanation:</strong> ${explanation}`;
+            explanationDiv.classList.add('show');
+            
+            // Disable further changes
+            options.forEach(option => {
+                option.disabled = true;
+            });
+        }
+        
+        function checkMultipleAnswer(questionName, correctAnswers, explanation) {
+            const selectedOptions = document.querySelectorAll(`input[name="${questionName}"]:checked`);
+            const explanationDiv = document.getElementById(`${questionName}-explanation`);
+            const allOptions = document.querySelectorAll(`input[name="${questionName}"]`);
+            
+            if (selectedOptions.length === 0) {
+                alert('Please select at least one answer!');
+                return;
+            }
+            
+            // Check if selected answers match correct answers
+            const selectedValues = Array.from(selectedOptions).map(option => option.value);
+            const isCorrect = correctAnswers.length === selectedValues.length && 
+                            correctAnswers.every(answer => selectedValues.includes(answer));
+            
+            // Reset all option backgrounds
+            allOptions.forEach(option => {
+                option.parentElement.classList.remove('correct', 'incorrect');
+            });
+            
+            // Highlight answers
+            allOptions.forEach(option => {
+                if (correctAnswers.includes(option.value)) {
+                    option.parentElement.classList.add('correct');
+                } else if (option.checked) {
+                    option.parentElement.classList.add('incorrect');
+                }
+            });
+            
+            // Show explanation
+            explanationDiv.innerHTML = `<strong>Explanation:</strong> ${explanation}`;
+            explanationDiv.classList.add('show');
+            
+            // Disable further changes
+            allOptions.forEach(option => {
+                option.disabled = true;
+            });
+        }
+        
+        // Initialize with overview section
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('overview').classList.add('active');
+            updateProgress('overview');
+        });
+    </script>
+</body>
+</html>="overview-q1" value="a"> A) It helps reduce software licensing costs
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="overview-q1" value="b"> B) You cannot protect assets you don't know exist
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="overview-q1" value="c"> C) It improves network performance
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="overview-q1" value="d"> D) It reduces the need for backups
+                </label>
+                <button class="check-answer-btn" onclick="checkAnswer('overview-q1', 'b', 'Asset visibility is fundamental to security. Unknown assets create security blind spots and cannot be properly protected with security controls.')">Check Answer</button>
+                <div class="explanation" id="overview-q1-explanation"></div>
+            </div>
+        </div>
+        
+        <!-- Lifecycle Section -->
+        <div id="lifecycle" class="content-section">
+            <h2 class="section-title">Asset Management Lifecycle</h2>
+            
+            <div class="analogy-box">
+                Asset management follows a lifecycle approach, much like how a car has stages from purchase to disposal.
+            </div>
+            
+            <div class="lifecycle-diagram">
+                <div class="lifecycle-step">Acquisition</div>
+                <div class="lifecycle-step">Deployment</div>
+                <div class="lifecycle-step">Operation</div>
+                <div class="lifecycle-step">Maintenance</div>
+                <div class="lifecycle-step">Retirement</div>
+                <div class="lifecycle-step">Disposal</div>
+            </div>
+            
+            <div class="subsection">
+                <h3>Lifecycle Stages Explained</h3>
+                
+                <div class="key-concept">
+                    <strong>Acquisition/Procurement:</strong> Getting new assets with security considerations built into the selection process
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Deployment:</strong> Putting assets into service with proper security configurations
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Operation:</strong> Using assets for business purposes while maintaining security controls
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Maintenance:</strong> Keeping assets functioning properly with updates and patches
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Retirement:</strong> Removing assets from service when they're no longer needed
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Disposal:</strong> Securely getting rid of retired assets with proper data sanitization
+                </div>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="question">During which lifecycle stage should security configurations be initially applied to a new server?</div>
+                <label class="answer-option">
+                    <input type="radio" name="lifecycle-q1" value="a"> A) Acquisition
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="lifecycle-q1" value="b"> B) Deployment
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="lifecycle-q1" value="c"> C) Operation
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="lifecycle-q1" value="d"> D) Maintenance
+                </label>
+                <button class="check-answer-btn" onclick="checkAnswer('lifecycle-q1', 'b', 'Security configurations should be applied during deployment when the asset is being prepared for operational use.')">Check Answer</button>
+                <div class="explanation" id="lifecycle-q1-explanation"></div>
+            </div>
+        </div>
+        
+        <!-- Procurement Section -->
+        <div id="procurement" class="content-section">
+            <h2 class="section-title">Acquisition & Procurement</h2>
+            
+            <div class="analogy-box">
+                The acquisition process is like carefully choosing which tools to buy for a workshop—you need to consider not just functionality and cost, but also security implications and long-term maintenance requirements.
+            </div>
+            
+            <div class="subsection">
+                <h3>Security Considerations in Procurement</h3>
+                
+                <div class="key-concept">
+                    <strong>Vendor Assessment:</strong> Evaluate the security posture of potential vendors
+                    <ul>
+                        <li>Vendor security practices and certifications</li>
+                        <li>Supply chain security measures</li>
+                        <li>Incident history and response capabilities</li>
+                        <li>Support and patch management capabilities</li>
+                    </ul>
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Product Security Evaluation:</strong> Assess the security features of the product itself
+                    <ul>
+                        <li>Built-in security features and controls</li>
+                        <li>Update mechanisms and patch delivery</li>
+                        <li>Configuration options for security</li>
+                        <li>Integration with existing security tools</li>
+                    </ul>
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Compliance Requirements:</strong> Ensure products meet regulatory and organizational standards
+                    <ul>
+                        <li>Industry-specific compliance (HIPAA, PCI DSS, SOX)</li>
+                        <li>Security certifications (FIPS 140-2, Common Criteria)</li>
+                        <li>Audit capabilities and logging requirements</li>
+                        <li>Data protection and privacy controls</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3>Supply Chain Risk Management</h3>
+                <p>Organizations must consider security risks throughout the entire supply chain:</p>
+                <ul>
+                    <li><span class="highlight">Vendor diversity:</span> Avoid over-dependence on single vendors</li>
+                    <li><span class="highlight">Geographic considerations:</span> Understand manufacturing and support locations</li>
+                    <li><span class="highlight">Third-party components:</span> Identify risks in vendor's supply chain</li>
+                    <li><span class="highlight">Counterfeit protection:</span> Ensure products are genuine and untampered</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="question">Which of the following is MOST important when evaluating a vendor's security posture during procurement?</div>
+                <label class="answer-option">
+                    <input type="radio" name="procurement-q1" value="a"> A) Lowest cost proposal
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="procurement-q1" value="b"> B) Fastest delivery time
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="procurement-q1" value="c"> C) Security certifications and incident history
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="procurement-q1" value="d"> D) Marketing materials and presentations
+                </label>
+                <button class="check-answer-btn" onclick="checkAnswer('procurement-q1', 'c', 'Security certifications and incident history provide concrete evidence of a vendor\\'s security practices and reliability.')">Check Answer</button>
+                <div class="explanation" id="procurement-q1-explanation"></div>
+            </div>
+        </div>
+        
+        <!-- Assignment Section -->
+        <div id="assignment" class="content-section">
+            <h2 class="section-title">Assignment & Accounting</h2>
+            
+            <div class="analogy-box">
+                Assignment and accounting is like maintaining a detailed guest registry for a hotel—you need to know who has what room, when they checked in, and when they're supposed to check out.
+            </div>
+            
+            <div class="subsection">
+                <h3>Asset Ownership Models</h3>
+                
+                <div class="key-concept">
+                    <strong>Individual Ownership:</strong> Specific person responsible for an asset (like a laptop assigned to an employee)
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Departmental Ownership:</strong> Department responsible for shared assets (like a departmental printer)
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Centralized Ownership:</strong> IT department owns and manages all technology assets
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Hybrid Ownership:</strong> Combination of individual and departmental ownership
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3>Asset Classification</h3>
+                <p>Asset classification helps determine appropriate security controls and handling procedures:</p>
+                
+                <div class="key-concept">
+                    <strong>Classification Levels:</strong>
+                    <ul>
+                        <li><strong>Public:</strong> Assets that can be freely disclosed without harm</li>
+                        <li><strong>Internal:</strong> Assets for internal use but not publicly available</li>
+                        <li><strong>Confidential:</strong> Assets requiring protection from unauthorized disclosure</li>
+                        <li><strong>Restricted:</strong> Assets requiring the highest level of protection</li>
+                    </ul>
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Classification Factors:</strong>
+                    <ul>
+                        <li>Data sensitivity level</li>
+                        <li>Business criticality</li>
+                        <li>Regulatory requirements</li>
+                        <li>Required security controls</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="question">A company laptop containing customer financial data should be classified as:</div>
+                <label class="answer-option">
+                    <input type="radio" name="assignment-q1" value="a"> A) Public
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="assignment-q1" value="b"> B) Internal
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="assignment-q1" value="c"> C) Confidential
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="assignment-q1" value="d"> D) Restricted
+                </label>
+                <button class="check-answer-btn" onclick="checkAnswer('assignment-q1', 'c', 'Customer financial data is sensitive information that requires protection from unauthorized disclosure, making it Confidential.')">Check Answer</button>
+                <div class="explanation" id="assignment-q1-explanation"></div>
+            </div>
+        </div>
+        
+        <!-- Monitoring Section -->
+        <div id="monitoring" class="content-section">
+            <h2 class="section-title">Monitoring & Asset Tracking</h2>
+            
+            <div class="analogy-box">
+                Asset tracking is like having a GPS system for all your valuable items—you always know where they are and can track their movements.
+            </div>
+            
+            <div class="subsection">
+                <h3>Asset Discovery Methods</h3>
+                
+                <div class="key-concept">
+                    <strong>Network Scanning:</strong> Automated tools that scan network ranges for connected devices
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Agent-based Discovery:</strong> Software installed on devices to report back to central system
+                </div>
+                
+                <div class="key-concept">
+                    <strong>SNMP Polling:</strong> Querying network devices for configuration and status information
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Active Directory Integration:</strong> Leveraging existing directory services for computer information
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3>Discovery Challenges</h3>
+                <ul>
+                    <li><span class="highlight">Shadow IT:</span> Unauthorized devices and applications not in official inventories</li>
+                    <li><span class="highlight">Mobile devices:</span> Devices that connect intermittently or from different locations</li>
+                    <li><span class="highlight">Cloud assets:</span> Resources deployed in cloud environments outside traditional network boundaries</li>
+                    <li><span class="highlight">IoT devices:</span> Internet of Things devices that may use different protocols</li>
+                    <li><span class="highlight">Dynamic environments:</span> Environments where assets are frequently added, removed, or changed</li>
+                </ul>
+            </div>
+            
+            <div class="subsection">
+                <h3>Continuous Monitoring</h3>
+                <p>Modern asset management provides real-time visibility into asset status:</p>
+                <ul>
+                    <li>Configuration monitoring: Track changes to asset configurations</li>
+                    <li>Performance monitoring: Monitor asset health and performance metrics</li>
+                    <li>Security monitoring: Watch for security events and compliance violations</li>
+                    <li>Usage monitoring: Track how assets are being used and by whom</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="question">Which asset discovery challenge is MOST likely to occur in a modern corporate environment?</div>
+                <label class="answer-option">
+                    <input type="radio" name="monitoring-q1" value="a"> A) Traditional desktop computers
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="monitoring-q1" value="b"> B) Shadow IT and unauthorized cloud services
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="monitoring-q1" value="c"> C) Network printers
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="monitoring-q1" value="d"> D) Server hardware
+                </label>
+                <button class="check-answer-btn" onclick="checkAnswer('monitoring-q1', 'b', 'Shadow IT represents one of the biggest challenges in modern asset discovery because employees often use unauthorized cloud services and applications that bypass traditional network monitoring.')">Check Answer</button>
+                <div class="explanation" id="monitoring-q1-explanation"></div>
+            </div>
+        </div>
+        
+        <!-- Disposal Section -->
+        <div id="disposal" class="content-section">
+            <h2 class="section-title">Disposal & Decommissioning</h2>
+            
+            <div class="analogy-box">
+                Asset disposal is like safely disposing of hazardous materials—it requires special procedures to ensure no harmful residue remains. In cybersecurity, this means ensuring no sensitive data can be recovered from disposed assets.
+            </div>
+            
+            <div class="subsection">
+                <h3>Data Sanitization Methods</h3>
+                
+                <div class="key-concept">
+                    <strong>Overwriting (Data Wiping):</strong> Writing zeros or random data over entire drive multiple times
+                    <ul>
+                        <li>Single-pass or multi-pass overwriting</li>
+                        <li>DOD 5220.22-M standard compliance</li>
+                        <li>Verification of successful completion</li>
+                    </ul>
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Degaussing:</strong> Using powerful electromagnetic field to disrupt magnetic storage
+                    <ul>
+                        <li>Very effective for traditional magnetic hard drives</li>
+                        <li>Not effective for solid-state drives (SSDs)</li>
+                        <li>Requires specialized degaussing equipment</li>
+                    </ul>
+                </div>
+                
+                <div class="key-concept">
+                    <strong>Physical Destruction:</strong> Completely destroying the physical media
+                    <ul>
+                        <li>Shredding into small pieces</li>
+                        <li>Incineration at high temperatures</li>
+                        <li>Disintegration into component particles</li>
+                        <li>Pulverization into powder form</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3>SSD Sanitization Special Considerations</h3>
+                <div class="key-concept">
+                    <strong>SSDs require different approaches:</strong>
+                    <ul>
+                        <li><strong>Secure Erase Commands:</strong> ATA Secure Erase or NVMe Format</li>
+                        <li><strong>Encryption and Key Destruction:</strong> Encrypt entire SSD then securely delete encryption keys</li>
+                        <li><strong>Manufacturer Tools:</strong> Vendor-specific utilities for secure wiping</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3>Documentation Requirements</h3>
+                <ul>
+                    <li><span class="highlight">Sanitization Certificates:</span> Third-party verification of sanitization process</li>
+                    <li><span class="highlight">Chain of Custody:</span> Documentation of asset handling from collection to destruction</li>
+                    <li><span class="highlight">Method Documentation:</span> Record of sanitization methods used</li>
+                    <li><span class="highlight">Compliance Verification:</span> Confirmation that disposal met regulatory requirements</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="question">Which data sanitization method would be MOST effective for a solid-state drive (SSD)?</div>
+                <label class="answer-option">
+                    <input type="radio" name="disposal-q1" value="a"> A) Degaussing
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="disposal-q1" value="b"> B) Single-pass overwriting
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="disposal-q1" value="c"> C) ATA Secure Erase command
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="disposal-q1" value="d"> D) Simple file deletion
+                </label>
+                <button class="check-answer-btn" onclick="checkAnswer('disposal-q1', 'c', 'ATA Secure Erase is specifically designed for SSDs and instructs the drive to wipe all data using its built-in secure erase functionality. Degaussing does not work on SSDs.')">Check Answer</button>
+                <div class="explanation" id="disposal-q1-explanation"></div>
+            </div>
+        </div>
+        
+        <!-- Practice Quiz Section -->
+        <div id="practice-quiz" class="content-section">
+            <h2 class="section-title">Practice Quiz</h2>
+            <p>Test your knowledge with these CompTIA Security+ style questions:</p>
+            
+            <div class="quiz-container">
+                <div class="question">1. Below is a description of IT assets typically found in modern enterprises. Which of these has the highest value and therefore justifies the most significant effort to secure?</div>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q1" value="a"> A) Operating system that provides the foundation for application software
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q1" value="b"> B) Custom-made order fulfillment system
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name="quiz-q1" value="c"> C) Servers, routers, and power supplies
+                </label>
+                <label class="answer-option">
+                    <input type="radio" name

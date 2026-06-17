@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompTIA Security+ Study Guide 3.2 - Security Principles for Enterprise Infrastructure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Navigation Styles */
+        .nav-container {
+            width: 300px;
+            background-color: #2e7d32;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-title {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 2px solid #4caf50;
+            margin-bottom: 20px;
+        }
+
+        .nav-title h1 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .nav-title p {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-link:hover {
+            background-color: #4caf50;
+            border-left-color: #81c784;
+        }
+
+        .nav-link.active {
+            background-color: #4caf50;
+            border-left-color: #a5d6a7;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .dropdown-toggle::after {
+            content: '▼';
+            float: right;
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-toggle.open::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            display: none;
+            background-color: #1b5e20;
+            padding-left: 20px;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 8px 20px;
+            color: #e8f5e8;
+            text-decoration: none;
+            display: block;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #2e7d32;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 300px;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+
+        .content-section {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .section-header h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .section-header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .content-card h3 {
+            color: #2e7d32;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4caf50;
+        }
+
+        .content-card h4 {
+            color: #1b5e20;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .key-concepts {
+            background-color: #e8f5e8;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .key-concepts h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .concept-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .concept-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #c8e6c9;
+        }
+
+        .concept-list li:last-child {
+            border-bottom: none;
+        }
+
+        .concept-list li strong {
+            color: #2e7d32;
+        }
+
+        .quiz-section {
+            background-color: #f1f8e9;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .quiz-question {
+            margin-bottom: 20px;
+        }
+
+        .quiz-question h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .quiz-options {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .quiz-options li {
+            margin: 8px 0;
+        }
+
+        .quiz-options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .quiz-btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .quiz-btn:hover {
+            background-color: #2e7d32;
+        }
+
+        .quiz-result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .quiz-result.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .quiz-result.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #4caf50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .analogy-box {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .analogy-box h5 {
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="nav-container">
+            <div class="nav-title">
+                <h1>CompTIA Security+</h1>
+                <p>Study Guide 3.2</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" onclick="showSection('overview')">Overview</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(this)">Infrastructure Considerations</a>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item" onclick="showSection('device-placement')">Device Placement</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('security-zones')">Security Zones</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('attack-surface')">Attack Surface</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(this)">Network Architecture</a>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item" onclick="showSection('failure-modes')">Failure Modes</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('device-attributes')">Device Attributes</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(this)">Network Appliances</a>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item" onclick="showSection('jump-servers')">Jump Servers</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('proxy-servers')">Proxy Servers</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('ids-ips')">IDS/IPS</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('load-balancers')">Load Balancers</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('sensors')">Network Sensors</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(this)">Access Control</a>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item" onclick="showSection('port-security')">Port Security</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('eap')">EAP</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(this)">Firewall Technologies</a>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item" onclick="showSection('waf')">Web Application Firewalls</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('utm')">UTM</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('ngfw')">Next-Gen Firewalls</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('firewall-layers')">Firewall Layers</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" onclick="toggleDropdown(this)">VPN & Tunneling</a>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item" onclick="showSection('vpn-types')">VPN Types</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('tunneling')">Tunneling Protocols</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('sdwan')">SD-WAN</a>
+                        <a href="#" class="dropdown-item" onclick="showSection('sase')">SASE</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('control-selection')">Control Selection</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('practice-quiz')">Practice Quiz</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Overview Section -->
+            <section id="overview" class="content-section active">
+                <div class="section-header">
+                    <h2>Security Principles for Enterprise Infrastructure</h2>
+                    <p>Part 3.2 of CompTIA Security+ Certification</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Course Overview</h3>
+                    <p>This study guide covers the practical implementation of security controls in enterprise environments. You'll learn about device placement, network appliances, secure communications, and control selection.</p>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Key Analogy</h5>
+                        <p>Think of enterprise infrastructure security like designing security for a large corporate campus. You need guards at the gates (perimeter security), security checkpoints throughout buildings (network appliances), secure communication systems (encrypted communications), and policies that determine who can access what areas (access controls).</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h3>Learning Objectives</h3>
+                    <div class="key-concepts">
+                        <h4>After completing this study guide, you will be able to:</h4>
+                        <ul class="concept-list">
+                            <li><strong>Infrastructure Design:</strong> Understand strategic device placement and security zones</li>
+                            <li><strong>Network Architecture:</strong> Explain failure modes and device attributes</li>
+                            <li><strong>Security Appliances:</strong> Configure and deploy various network security devices</li>
+                            <li><strong>Access Control:</strong> Implement port security and authentication protocols</li>
+                            <li><strong>Firewall Technologies:</strong> Compare different firewall types and capabilities</li>
+                            <li><strong>VPN & Tunneling:</strong> Deploy secure communication solutions</li>
+                            <li><strong>Control Selection:</strong> Choose appropriate security controls for enterprise environments</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Device Placement Section -->
+            <section id="device-placement" class="content-section">
+                <div class="section-header">
+                    <h2>Device Placement Strategy</h2>
+                    <p>Strategic positioning of security devices for maximum effectiveness</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Device Placement Fundamentals</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>Strategic device placement is like positioning security cameras and guards throughout a facility—location determines effectiveness. Security devices must be positioned where they can monitor traffic, enforce policies, and respond to threats while minimizing performance impact.</p>
+                    </div>
+                    
+                    <h4>Key Placement Considerations</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Traffic Visibility:</strong> Devices must be able to see relevant network traffic</li>
+                            <li><strong>Policy Enforcement:</strong> Position where security policies can be effectively applied</li>
+                            <li><strong>Performance Impact:</strong> Minimize latency and throughput degradation</li>
+                            <li><strong>Redundancy:</strong> Avoid single points of failure</li>
+                            <li><strong>Management Access:</strong> Ensure devices can be properly monitored and managed</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Zones Section -->
+            <section id="security-zones" class="content-section">
+                <div class="section-header">
+                    <h2>Security Zones</h2>
+                    <p>Logical network segments with similar security requirements</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding Security Zones</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>Security zones are like different security areas in an airport—public areas, secured boarding areas, and restricted operational areas each have different access requirements and security controls.</p>
+                    </div>
+                    
+                    <h4>Common Security Zones</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Internet:</strong> Untrusted external networks</li>
+                            <li><strong>DMZ (Demilitarized Zone):</strong> Semi-trusted zone for public-facing services</li>
+                            <li><strong>Internal Network:</strong> Trusted internal corporate networks</li>
+                            <li><strong>Secure Zone:</strong> High-security areas for sensitive systems</li>
+                            <li><strong>Management Network:</strong> Dedicated network for system administration</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Zone Design Principles</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Least Privilege:</strong> Default deny with explicit allow rules between zones</li>
+                            <li><strong>Defense in Depth:</strong> Multiple security controls protecting each zone</li>
+                            <li><strong>Monitoring:</strong> All traffic between zones should be logged and analyzed</li>
+                            <li><strong>Segmentation:</strong> Zones should be isolated from each other by default</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Attack Surface Section -->
+            <section id="attack-surface" class="content-section">
+                <div class="section-header">
+                    <h2>Attack Surface Management</h2>
+                    <p>Identifying and reducing potential attack vectors</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding Attack Surface</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>Attack surface represents all the ways an attacker could potentially compromise your systems. It's like all the doors, windows, and other entry points in a building—the more entry points you have, the more you need to secure.</p>
+                    </div>
+                    
+                    <h4>Attack Surface Components</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Network Interfaces:</strong> Every network connection represents potential attack vectors</li>
+                            <li><strong>Services and Applications:</strong> Running software that could be exploited</li>
+                            <li><strong>User Access Points:</strong> Ways that users interact with systems</li>
+                            <li><strong>APIs and Integration Points:</strong> Interfaces between different systems</li>
+                            <li><strong>Physical Access Points:</strong> Locations where attackers could gain physical access</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Attack Surface Reduction Strategies</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Minimize Exposed Services:</strong> Only run necessary services and applications</li>
+                            <li><strong>Network Segmentation:</strong> Limit what attackers can access if they compromise one system</li>
+                            <li><strong>Access Controls:</strong> Restrict who can access what resources</li>
+                            <li><strong>Regular Assessment:</strong> Continuously identify and evaluate attack surface changes</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Failure Modes Section -->
+            <section id="failure-modes" class="content-section">
+                <div class="section-header">
+                    <h2>Failure Modes</h2>
+                    <p>How security devices behave when they fail</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding Failure Modes</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>When security devices fail, they must fail in a way that maintains either security or availability, but rarely both. This is like designing emergency systems—do you want doors to lock (fail-closed) or unlock (fail-open) during a power outage?</p>
+                    </div>
+                    
+                    <h4>Fail-Open</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Definition:</strong> System allows traffic to pass when security device fails</li>
+                            <li><strong>Advantage:</strong> Maintains network connectivity and business operations</li>
+                            <li><strong>Disadvantage:</strong> Potentially allows malicious traffic through unfiltered</li>
+                            <li><strong>Use Cases:</strong> When availability is more critical than security</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Fail-Closed</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Definition:</strong> System blocks traffic when security device fails</li>
+                            <li><strong>Advantage:</strong> Maintains security posture even during device failure</li>
+                            <li><strong>Disadvantage:</strong> Can cause service outages and business disruption</li>
+                            <li><strong>Use Cases:</strong> When security is more critical than availability</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Device Attributes Section -->
+            <section id="device-attributes" class="content-section">
+                <div class="section-header">
+                    <h2>Device Attributes</h2>
+                    <p>Understanding active vs passive and inline vs tap deployments</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Active vs Passive Devices</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>Active devices are like security guards who can take action—they can block traffic, modify packets, or send alerts. Passive devices are like security cameras—they observe and report but don't intervene.</p>
+                    </div>
+                    
+                    <div class="key-concepts">
+                        <h4>Device Types</h4>
+                        <ul class="concept-list">
+                            <li><strong>Active Devices:</strong> Firewalls, IPS, load balancers, proxies</li>
+                            <li><strong>Passive Devices:</strong> Network monitors, IDS, packet capture devices</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Inline vs Tap/Monitor Deployment</h4>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>Inline devices sit directly in the traffic path, like a checkpoint that all traffic must pass through. Tap devices receive copies of traffic for analysis, like having a security camera that watches traffic without interfering.</p>
+                    </div>
+                    
+                    <div class="key-concepts">
+                        <h4>Deployment Comparison</h4>
+                        <ul class="concept-list">
+                            <li><strong>Inline Advantages:</strong> Can block malicious traffic in real-time</li>
+                            <li><strong>Inline Disadvantages:</strong> Single point of failure, potential performance bottleneck</li>
+                            <li><strong>Tap Advantages:</strong> No impact on network performance or availability</li>
+                            <li><strong>Tap Disadvantages:</strong> Cannot stop attacks in real-time</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Jump Servers Section -->
+            <section id="jump-servers" class="content-section">
+                <div class="section-header">
+                    <h2>Jump Servers</h2>
+                    <p>Secure access control points for administrative access</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding Jump Servers</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>A jump server is like a security checkpoint that controls access to secure areas. Instead of giving everyone direct access to sensitive systems, users must first connect to a jump server, which then provides controlled access to target systems.</p>
+                    </div>
+                    
+                    <h4>Jump Server Benefits</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Centralized Access Control:</strong> Single point for managing remote access</li>
+                            <li><strong>Audit and Logging:</strong> All administrative activities can be logged</li>
+                            <li><strong>Credential Management:</strong> Reduces need to distribute administrative credentials</li>
+                            <li><strong>Network Segmentation:</strong> Provides controlled access across network boundaries</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Security Considerations</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Hardening:</strong> Must be highly secured since compromise affects all target systems</li>
+                            <li><strong>Multi-factor Authentication:</strong> Should require strong authentication</li>
+                            <li><strong>Session Recording:</strong> Administrative sessions should be recorded for audit</li>
+                            <li><strong>Access Controls:</strong> Principle of least privilege for user access</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Proxy Servers Section -->
+            <section id="proxy-servers" class="content-section">
+                <div class="section-header">
+                    <h2>Proxy Servers</h2>
+                    <p>Intermediary devices for secure communications</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding Proxy Servers</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>Proxy servers act as intermediaries between clients and servers, like a personal assistant who handles your communications with others. They can provide security, performance, and administrative benefits.</p>
+                    </div>
+                    
+                    <h4>Forward Proxy</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Function:</strong> Represents clients to servers</li>
+                            <li><strong>Use Cases:</strong> Content filtering, caching, anonymization</li>
+                            <li><strong>Security Benefits:</strong> Hide internal network structure, filter malicious content</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Reverse Proxy</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Function:</strong> Represents servers to clients</li>
+                            <li><strong>Use Cases:</strong> Load balancing, SSL termination, application acceleration</li>
+                            <li><strong>Security Benefits:</strong> Hide server details, DDoS protection, application security</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Proxy Security Features</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Content Filtering:</strong> Block access to malicious or inappropriate websites</li>
+                            <li><strong>Data Loss Prevention:</strong> Scan outbound traffic for sensitive data</li>
+                            <li><strong>Authentication:</strong> Require user authentication for internet access</li>
+                            <li><strong>Logging:</strong> Track user internet activity for security monitoring</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- IDS/IPS Section -->
+            <section id="ids-ips" class="content-section">
+                <div class="section-header">
+                    <h2>Intrusion Detection and Prevention Systems</h2>
+                    <p>Systems that detect and prevent malicious activities</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Intrusion Detection Systems (IDS)</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>IDS are like burglar alarms—they detect and alert on suspicious activity but don't actively prevent it. They monitor network traffic or host activity and generate alerts when they detect potential threats.</p>
+                    </div>
+                    
+                    <h4>Network-based IDS (NIDS)</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Deployment:</strong> Monitors network traffic at strategic points</li>
+                            <li><strong>Advantages:</strong> Can detect network-based attacks, minimal impact on hosts</li>
+                            <li><strong>Disadvantages:</strong> Cannot detect encrypted traffic content, may miss host-based attacks</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Host-based IDS (HIDS)</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Deployment:</strong> Installed on individual systems to monitor host activity</li>
+                            <li><strong>Advantages:</strong> Can detect system-level attacks, works with encrypted traffic</li>
+                            <li><strong>Disadvantages:</strong> Performance impact on hosts, requires management on each system</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Intrusion Prevention Systems (IPS)</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>IPS are like security guards who can take immediate action—they can detect threats and automatically block them. They combine the detection capabilities of IDS with the ability to actively prevent attacks.</p>
+                    </div>
+                    
+                    <h4>IPS Deployment Considerations</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Performance:</strong> Must process traffic at line speed without causing delays</li>
+                            <li><strong>False Positives:</strong> Incorrectly blocking legitimate traffic can disrupt business</li>
+                            <li><strong>Tuning:</strong> Requires ongoing adjustment to balance security and usability</li>
+                            <li><strong>Updates:</strong> Signature databases must be kept current to detect new threats</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Load Balancers Section -->
+            <section id="load-balancers" class="content-section">
+                <div class="section-header">
+                    <h2>Load Balancers</h2>
+                    <p>Distribute traffic and provide security benefits</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding Load Balancers</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>Load balancers distribute traffic across multiple servers, like a traffic controller directing cars to different lanes to prevent congestion. They provide both performance and security benefits.</p>
+                    </div>
+                    
+                    <h4>Load Balancing Methods</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Round-robin:</strong> Distributes requests equally across servers</li>
+                            <li><strong>Weighted Round-robin:</strong> Distributes based on server capacity</li>
+                            <li><strong>Least Connections:</strong> Sends requests to server with fewest active connections</li>
+                            <li><strong>Geographic:</strong> Routes based on client location</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Security Features of Load Balancers</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>SSL Termination:</strong> Handles encryption/decryption to reduce server load</li>
+                            <li><strong>DDoS Protection:</strong> Can absorb and filter malicious traffic</li>
+                            <li><strong>Health Checking:</strong> Removes failed servers from rotation</li>
+                            <li><strong>Application-layer Filtering:</strong> Can make routing decisions based on application content</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Network Sensors Section -->
+            <section id="sensors" class="content-section">
+                <div class="section-header">
+                    <h2>Network Sensors</h2>
+                    <p>Continuous monitoring and data collection</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding Network Sensors</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>Network sensors are like environmental monitoring systems that continuously collect data about network conditions. They provide visibility into network traffic, performance, and security events.</p>
+                    </div>
+                    
+                    <h4>Types of Network Sensors</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Flow Sensors:</strong> Collect metadata about network connections</li>
+                            <li><strong>Packet Capture Sensors:</strong> Record complete network packets for analysis</li>
+                            <li><strong>Application Sensors:</strong> Monitor specific application protocols</li>
+                            <li><strong>Threat Intelligence Sensors:</strong> Detect known malicious indicators</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Sensor Deployment Strategy</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Strategic Placement:</strong> Position sensors where they can see relevant traffic</li>
+                            <li><strong>Data Aggregation:</strong> Collect sensor data in centralized systems for analysis</li>
+                            <li><strong>Real-time Analysis:</strong> Process sensor data to detect immediate threats</li>
+                            <li><strong>Historical Analysis:</strong> Store sensor data for forensic investigation and trend analysis</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Port Security Section -->
+            <section id="port-security" class="content-section">
+                <div class="section-header">
+                    <h2>802.1X Port-Based Network Access Control</h2>
+                    <p>Controlling device access at the network port level</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding 802.1X</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>802.1X is like having ID card readers at every network port—devices must authenticate before they can access the network. This prevents unauthorized devices from connecting to network infrastructure.</p>
+                    </div>
+                    
+                    <h4>802.1X Components</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Supplicant:</strong> The device requesting network access</li>
+                            <li><strong>Authenticator:</strong> The network switch that controls access (usually a switch or wireless access point)</li>
+                            <li><strong>Authentication Server:</strong> The server that verifies credentials (usually RADIUS)</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>802.1X Benefits</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Device Authentication:</strong> Only authorized devices can access the network</li>
+                            <li><strong>Dynamic VLANs:</strong> Devices can be assigned to appropriate network segments</li>
+                            <li><strong>Accounting:</strong> Track which devices access the network and when</li>
+                            <li><strong>Certificate-based Authentication:</strong> Can use digital certificates instead of passwords</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EAP Section -->
+            <section id="eap" class="content-section">
+                <div class="section-header">
+                    <h2>Extensible Authentication Protocol (EAP)</h2>
+                    <p>Framework for various authentication methods</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding EAP</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>EAP provides a framework for authentication that can support various authentication methods. It's like having a universal key card system that can work with different types of locks.</p>
+                    </div>
+                    
+                    <h4>Common EAP Methods</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>EAP-TLS:</strong> Uses digital certificates for mutual authentication</li>
+                            <li><strong>EAP-TTLS:</strong> Creates encrypted tunnel for other authentication methods</li>
+                            <li><strong>PEAP:</strong> Protected EAP that encrypts authentication traffic</li>
+                            <li><strong>EAP-FAST:</strong> Fast authentication through secure tunneling</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- WAF Section -->
+            <section id="waf" class="content-section">
+                <div class="section-header">
+                    <h2>Web Application Firewalls (WAF)</h2>
+                    <p>Specialized protection for web applications</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding WAF</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>WAFs are specialized firewalls designed to protect web applications, like having security guards who understand specific threats against shopping malls versus office buildings.</p>
+                    </div>
+                    
+                    <h4>WAF Protection Capabilities</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>SQL Injection Protection:</strong> Blocks attempts to inject malicious database commands</li>
+                            <li><strong>Cross-site Scripting (XSS) Protection:</strong> Prevents injection of malicious scripts</li>
+                            <li><strong>Application-layer DDoS Protection:</strong> Blocks application-specific attack traffic</li>
+                            <li><strong>Data Loss Prevention:</strong> Prevents sensitive data from leaving web applications</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>WAF Deployment Models</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Network-based:</strong> Hardware appliances positioned in the network</li>
+                            <li><strong>Host-based:</strong> Software installed on web servers</li>
+                            <li><strong>Cloud-based:</strong> WAF services provided by cloud providers</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- UTM Section -->
+            <section id="utm" class="content-section">
+                <div class="section-header">
+                    <h2>Unified Threat Management (UTM)</h2>
+                    <p>All-in-one security appliances</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding UTM</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>UTM devices combine multiple security functions into a single appliance, like having a Swiss Army knife of security tools. While convenient, this approach has both advantages and disadvantages.</p>
+                    </div>
+                    
+                    <h4>UTM Components</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Firewall:</strong> Basic packet filtering and stateful inspection</li>
+                            <li><strong>Intrusion Prevention:</strong> Signature-based threat detection and blocking</li>
+                            <li><strong>Antivirus:</strong> Malware scanning of network traffic</li>
+                            <li><strong>Content Filtering:</strong> URL and content-based access control</li>
+                            <li><strong>VPN:</strong> Remote access and site-to-site connectivity</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>UTM Advantages vs Disadvantages</h4>
+                    <div class="key-concepts">
+                        <h4>Advantages</h4>
+                        <ul class="concept-list">
+                            <li><strong>Simplified Management:</strong> Single interface for multiple security functions</li>
+                            <li><strong>Cost Efficiency:</strong> Less expensive than separate appliances</li>
+                            <li><strong>Reduced Complexity:</strong> Fewer devices to manage and maintain</li>
+                        </ul>
+                        
+                        <h4>Disadvantages</h4>
+                        <ul class="concept-list">
+                            <li><strong>Single Point of Failure:</strong> One device failure affects all security functions</li>
+                            <li><strong>Performance Limitations:</strong> Multiple functions competing for resources</li>
+                            <li><strong>Best-of-breed Limitations:</strong> Individual functions may not be as capable as specialized devices</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- NGFW Section -->
+            <section id="ngfw" class="content-section">
+                <div class="section-header">
+                    <h2>Next-Generation Firewalls (NGFW)</h2>
+                    <p>Advanced firewalls with enhanced capabilities</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding NGFW</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>NGFWs combine traditional firewall capabilities with advanced threat detection, like upgrading from a simple door lock to a sophisticated access control system with biometric scanning and behavior analysis.</p>
+                    </div>
+                    
+                    <h4>NGFW Advanced Capabilities</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Application Awareness:</strong> Identify and control specific applications regardless of port</li>
+                            <li><strong>User Identification:</strong> Apply policies based on user identity, not just IP address</li>
+                            <li><strong>Threat Intelligence:</strong> Use external threat feeds to identify malicious traffic</li>
+                            <li><strong>SSL Inspection:</strong> Decrypt and inspect encrypted traffic for threats</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Deep Packet Inspection (DPI)</h4>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>DPI examines the actual content of network packets, not just headers. It's like having security guards who not only check IDs but also inspect the contents of bags and packages.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Firewall Layers Section -->
+            <section id="firewall-layers" class="content-section">
+                <div class="section-header">
+                    <h2>Layer 4 vs Layer 7 Firewalls</h2>
+                    <p>Understanding different firewall inspection levels</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Firewall Layer Comparison</h3>
+                    
+                    <h4>Layer 4 (Transport Layer) Firewalls</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Focus:</strong> IP addresses, ports, and connection state</li>
+                            <li><strong>Speed:</strong> Fast processing with minimal latency</li>
+                            <li><strong>Visibility:</strong> Limited to network and transport layer information</li>
+                            <li><strong>Use Cases:</strong> High-performance environments where speed is critical</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Layer 7 (Application Layer) Firewalls</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Focus:</strong> Application content and behavior</li>
+                            <li><strong>Capabilities:</strong> Can understand and control specific applications</li>
+                            <li><strong>Performance:</strong> Slower due to deep content inspection</li>
+                            <li><strong>Use Cases:</strong> Environments requiring fine-grained application control</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VPN Types Section -->
+            <section id="vpn-types" class="content-section">
+                <div class="section-header">
+                    <h2>Virtual Private Networks (VPN)</h2>
+                    <p>Secure tunnels over insecure networks</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding VPNs</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>VPNs create secure tunnels over insecure networks, like having a private, armored car service to travel through dangerous neighborhoods.</p>
+                    </div>
+                    
+                    <h4>Site-to-Site VPNs</h4>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>Site-to-site VPNs connect entire networks together securely, like building a private bridge between two islands. Organizations use these to connect branch offices to headquarters or to cloud services.</p>
+                    </div>
+                    
+                    <div class="key-concepts">
+                        <h4>Benefits</h4>
+                        <ul class="concept-list">
+                            <li><strong>Transparent Connectivity:</strong> Users access remote resources as if they were local</li>
+                            <li><strong>Cost-effective:</strong> Less expensive than dedicated private lines</li>
+                            <li><strong>Scalability:</strong> Easy to add new sites to the VPN network</li>
+                            <li><strong>Centralized Management:</strong> Single point of control for network policies</li>
+                        </ul>
+                        
+                        <h4>Challenges</h4>
+                        <ul class="concept-list">
+                            <li><strong>Internet Dependency:</strong> Relies on internet connectivity and performance</li>
+                            <li><strong>Complexity:</strong> Requires coordination between multiple sites</li>
+                            <li><strong>Split Tunneling:</strong> Managing traffic that should and shouldn't use the VPN</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Remote Access VPNs</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>Remote access VPNs allow individual users to connect securely to corporate networks from anywhere, like giving employees a secure teleporter to access the office from home.</p>
+                    </div>
+                    
+                    <h4>Remote Access VPN Types</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>SSL/TLS VPNs:</strong> Browser-based access requiring no client software</li>
+                            <li><strong>IPSec VPNs:</strong> Full network-layer connectivity requiring client software</li>
+                            <li><strong>Always-on VPNs:</strong> Automatically connect when user accesses corporate resources</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Remote Access Security Considerations</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Multi-factor Authentication:</strong> Require additional authentication factors</li>
+                            <li><strong>Device Compliance:</strong> Ensure connecting devices meet security standards</li>
+                            <li><strong>Network Access Control:</strong> Limit what remote users can access</li>
+                            <li><strong>Session Monitoring:</strong> Track and log remote user activities</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tunneling Section -->
+            <section id="tunneling" class="content-section">
+                <div class="section-header">
+                    <h2>Tunneling Protocols</h2>
+                    <p>Secure communication protocols for VPNs</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Transport Layer Security (TLS)</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>TLS is like having a secure diplomatic pouch for sending sensitive documents—it provides encryption, authentication, and integrity protection for communications.</p>
+                    </div>
+                    
+                    <h4>TLS Security Features</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Encryption:</strong> Protects data confidentiality during transmission</li>
+                            <li><strong>Authentication:</strong> Verifies identity of communicating parties</li>
+                            <li><strong>Integrity:</strong> Ensures data hasn't been modified during transmission</li>
+                            <li><strong>Forward Secrecy:</strong> Past communications remain secure even if keys are compromised</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>TLS Implementation Considerations</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Certificate Management:</strong> Proper PKI infrastructure required</li>
+                            <li><strong>Performance Impact:</strong> Encryption/decryption requires processing power</li>
+                            <li><strong>Version Management:</strong> Older TLS versions have known vulnerabilities</li>
+                            <li><strong>Cipher Suite Selection:</strong> Choose strong encryption algorithms</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Internet Protocol Security (IPSec)</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>IPSec provides security at the network layer, like having armored vehicles for all transportation rather than just securing individual packages.</p>
+                    </div>
+                    
+                    <h4>IPSec Modes</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Transport Mode:</strong> Encrypts only the data payload, headers remain visible</li>
+                            <li><strong>Tunnel Mode:</strong> Encrypts entire IP packet, providing complete privacy</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>IPSec Protocols</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Authentication Header (AH):</strong> Provides authentication and integrity</li>
+                            <li><strong>Encapsulating Security Payload (ESP):</strong> Provides encryption, authentication, and integrity</li>
+                            <li><strong>Internet Key Exchange (IKE):</strong> Manages security associations and key exchange</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SD-WAN Section -->
+            <section id="sdwan" class="content-section">
+                <div class="section-header">
+                    <h2>Software-Defined Wide Area Networks (SD-WAN)</h2>
+                    <p>Intelligent traffic management and routing</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding SD-WAN</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>SD-WAN is like having an intelligent traffic management system that can dynamically route vehicles based on traffic conditions, road quality, and destination priorities.</p>
+                    </div>
+                    
+                    <h4>SD-WAN Security Benefits</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Centralized Policy Management:</strong> Consistent security policies across all sites</li>
+                            <li><strong>Dynamic Path Selection:</strong> Route traffic based on security and performance requirements</li>
+                            <li><strong>Integrated Security:</strong> Built-in firewall, IPS, and other security functions</li>
+                            <li><strong>Zero-touch Provisioning:</strong> New sites can be deployed with minimal configuration</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>SD-WAN Security Challenges</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Internet Exposure:</strong> Increased reliance on internet connectivity</li>
+                            <li><strong>Complexity:</strong> More complex than traditional WAN architectures</li>
+                            <li><strong>Vendor Lock-in:</strong> Often proprietary solutions with limited interoperability</li>
+                            <li><strong>Skills Gap:</strong> Requires new skills and expertise</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SASE Section -->
+            <section id="sase" class="content-section">
+                <div class="section-header">
+                    <h2>Secure Access Service Edge (SASE)</h2>
+                    <p>Cloud-delivered networking and security services</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Understanding SASE</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>SASE combines networking and security functions into a cloud-delivered service, like having a comprehensive transportation and security service that handles everything from route planning to bodyguard services.</p>
+                    </div>
+                    
+                    <h4>SASE Components</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>SD-WAN:</strong> Software-defined wide area networking</li>
+                            <li><strong>Secure Web Gateway (SWG):</strong> Web content filtering and protection</li>
+                            <li><strong>Cloud Access Security Broker (CASB):</strong> Cloud application security</li>
+                            <li><strong>Zero Trust Network Access (ZTNA):</strong> Application-specific access controls</li>
+                            <li><strong>Firewall as a Service (FWaaS):</strong> Cloud-delivered firewall capabilities</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>SASE Benefits</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Simplified Architecture:</strong> Reduces complexity by combining multiple functions</li>
+                            <li><strong>Cloud-native:</strong> Designed for cloud and mobile-first environments</li>
+                            <li><strong>Global Presence:</strong> Provides consistent security regardless of user location</li>
+                            <li><strong>Scalability:</strong> Scales automatically based on demand</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>SASE Implementation Considerations</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Vendor Selection:</strong> Choose providers with comprehensive capabilities and global presence</li>
+                            <li><strong>Migration Planning:</strong> Carefully plan transition from existing infrastructure</li>
+                            <li><strong>Performance Requirements:</strong> Ensure service meets latency and bandwidth needs</li>
+                            <li><strong>Compliance:</strong> Verify provider meets regulatory and compliance requirements</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Control Selection Section -->
+            <section id="control-selection" class="content-section">
+                <div class="section-header">
+                    <h2>Selection of Effective Controls</h2>
+                    <p>Choosing the right security controls for your environment</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Control Selection Framework</h3>
+                    
+                    <div class="analogy-box">
+                        <h5>💡 Analogy</h5>
+                        <p>Selecting security controls is like choosing the right combination of locks, alarms, cameras, and guards for a facility—you need to consider threats, costs, and operational requirements.</p>
+                    </div>
+                    
+                    <h4>Risk-Based Approach</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Identify Assets:</strong> What needs to be protected?</li>
+                            <li><strong>Assess Threats:</strong> What are the likely attack vectors?</li>
+                            <li><strong>Evaluate Vulnerabilities:</strong> Where are the weaknesses?</li>
+                            <li><strong>Calculate Risk:</strong> What's the potential impact of successful attacks?</li>
+                            <li><strong>Select Controls:</strong> Choose controls that best mitigate identified risks</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Defense in Depth Strategy</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Preventive Controls:</strong> Stop attacks before they succeed</li>
+                            <li><strong>Detective Controls:</strong> Identify attacks in progress</li>
+                            <li><strong>Corrective Controls:</strong> Respond to and recover from attacks</li>
+                            <li><strong>Administrative Controls:</strong> Policies and procedures that govern security</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Control Effectiveness Measurement</h3>
+                    
+                    <h4>Metrics for Control Effectiveness</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Coverage:</strong> What percentage of threats does the control address?</li>
+                            <li><strong>Efficacy:</strong> How well does the control work when activated?</li>
+                            <li><strong>Efficiency:</strong> What's the cost-benefit ratio of the control?</li>
+                            <li><strong>Reliability:</strong> How consistently does the control function?</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Continuous Improvement</h4>
+                    <div class="key-concepts">
+                        <ul class="concept-list">
+                            <li><strong>Regular Assessment:</strong> Periodically evaluate control effectiveness</li>
+                            <li><strong>Threat Landscape Changes:</strong> Adjust controls as threats evolve</li>
+                            <li><strong>Technology Updates:</strong> Implement new capabilities as they become available</li>
+                            <li><strong>Lessons Learned:</strong> Incorporate insights from security incidents</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Practice Quiz Section -->
+            <section id="practice-quiz" class="content-section">
+                <div class="section-header">
+                    <h2>Practice Quiz</h2>
+                    <p>Test your knowledge of Security Principles for Enterprise Infrastructure</p>
+                </div>
+                
+                <div class="quiz-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="quiz-progress"></div>
+                    </div>
+                    
+                    <div class="quiz-question" data-question="1">
+                        <h4>Question 1: Which security zone is typically used for public-facing services?</h4>
+                        <ul class="quiz-options">
+                            <li><input type="radio" name="q1" value="a"> Internal network</li>
+                            <li><input type="radio" name="q1" value="b"> DMZ (Demilitarized Zone)</li>
+                            <li><input type="radio" name="q1" value="c"> Secure zone</li>
+                            <li><input type="radio" name="q1" value="d"> Management network</li>
+                        </ul>
+                        <div class="quiz-result" id="result1"></div>
+                    </div>
+                    
+                    <div class="quiz-question" data-question="2">
+                        <h4>Question 2: What happens when a fail-open device experiences a failure?</h4>
+                        <ul class="quiz-options">
+                            <li><input type="radio" name="q2" value="a"> All traffic is blocked</li>
+                            <li><input type="radio" name="q2" value="b"> Traffic continues to flow unfiltered</li>
+                            <li><input type="radio" name="q2" value="c"> Only encrypted traffic is allowed</li>
+                            <li><input type="radio" name="q2" value="d"> The device restarts automatically</li>
+                        </ul>
+                        <div class="quiz-result" id="result2"></div>
+                    </div>
+                    
+                    <div class="quiz-question" data-question="3">
+                        <h4>Question 3: Which type of device can take immediate action to block malicious traffic?</h4>
+                        <ul class="quiz-options">
+                            <li><input type="radio" name="q3" value="a"> IDS (Intrusion Detection System)</li>
+                            <li><input type="radio" name="q3" value="b"> Network monitor</li>
+                            <li><input type="radio" name="q3" value="c"> IPS (Intrusion Prevention System)</li>
+                            <li><input type="radio" name="q3" value="d"> Packet capture device</li>
+                        </ul>
+                        <div class="quiz-result" id="result3"></div>
+                    </div>
+                    
+                    <div class="quiz-question" data-question="4">
+                        <h4>Question 4: What is the primary purpose of a jump server?</h4>
+                        <ul class="quiz-options">
+                            <li><input type="radio" name="q4" value="a"> Load balancing web traffic</li>
+                            <li><input type="radio" name="q4" value="b"> Controlling administrative access to secure systems</li>
+                            <li><input type="radio" name="q4" value="c"> Filtering web content</li>
+                            <li><input type="radio" name="q4" value="d"> Encrypting network communications</li>
+                        </ul>
+                        <div class="quiz-result" id="result4"></div>
+                    </div>
+                    
+                    <div class="quiz-question" data-question="5">
+                        <h4>Question 5: Which EAP method uses digital certificates for mutual authentication?</h4>
+                        <ul class="quiz-options">
+                            <li><input type="radio" name="q5" value="a"> EAP-TTLS</li>
+                            <li><input type="radio" name="q5" value="b"> PEAP</li>
+                            <li><input type="radio" name="q5" value="c"> EAP-TLS</li>
+                            <li><input type="radio" name="q5" value="d"> EAP-FAST</li>
+                        </ul>
+                        <div class="quiz-result" id="result5"></div>
+                    </div>
+                    
+                    <div class="quiz-question" data-question="6">
+                        <h4>Question 6: What is a key disadvantage of UTM devices?</h4>
+                        <ul class="quiz-options">
+                            <li><input type="radio" name="q6" value="a"> They are too expensive</li>
+                            <li><input type="radio" name="q6" value="b"> They create a single point of failure</li>
+                            <li><input type="radio" name="q6" value="c"> They cannot filter web content</li>
+                            <li><input type="radio" name="q6" value="d"> They don't support VPN connections</li>
+                        </ul>
+                        <div class="quiz-result" id="result6"></div>
+                    </div>
+                    
+                    <div class="quiz-question" data-question="7">
+                        <h4>Question 7: Which NGFW capability allows policies based on user identity?</h4>
+                        <ul class="quiz-options">
+                            <li><input type="radio" name="q7" value="a"> Deep Packet Inspection</li>
+                            <li><input type="radio" name="q7" value="b"> User identification</li>
+                            <li><input type="radio" name="q7" value="c"> SSL inspection</li>
+                            <li><input type="radio" name="q7" value="d"> Application awareness</li>
+                        </ul>
+                        <div class="quiz-result" id="result7"></div>
+                    </div>
+                    
+                    <div class="quiz-question" data-question="8">
+                        <h4>Question 8: What type of VPN connects entire networks together?</h4>
+                        <ul class="quiz-options">
+                            <li><input type="radio" name="q8" value="a"> Remote access VPN</li>
+                            <li><input type="radio" name="q8" value="b"> SSL VPN</li>
+                            <li><input type="radio" name="q8" value="c"> Site-to-site VPN</li>
+                            <li><input type="radio" name="q8" value="d"> Always-on VPN</li>
+                        </ul>
+                        <div class="quiz-result" id="result8"></div>
+                    </div>
+                    
+                    <div class="quiz-question" data-question="9">
+                        <h4>Question 9: Which SASE component provides cloud application security?</h4>
+                        <ul class="quiz-options">
+                            <li><input type="radio" name="q9" value="a"> SD-WAN</li>
+                            <li><input type="radio" name="q9" value="b"> SWG (Secure Web Gateway)</li>
+                            <li><input type="radio" name="q9" value="c"> CASB (Cloud Access Security Broker)</li>
+                            <li><input type="radio" name="q9" value="d"> ZTNA (Zero Trust Network Access)</li>
+                        </ul>
+                        <div class="quiz-result" id="result9"></div>
+                    </div>
+                    
+                    <div class="quiz-question" data-question="10">
+                        <h4>Question 10: In the defense in depth strategy, what type of control identifies attacks in progress?</h4>
+                        <ul class="quiz-options">
+                            <li><input type="radio" name="q10" value="a"> Preventive controls</li>
+                            <li><input type="radio" name="q10" value="b"> Detective controls</li>
+                            <li><input type="radio" name="q10" value="c"> Corrective controls</li>
+                            <li><input type="radio" name="q10" value="d"> Administrative controls</li>
+                        </ul>
+                        <div class="quiz-result" id="result10"></div>
+                    </div>
+                    
+                    <button class="quiz-btn" onclick="checkAllAnswers()">Check All Answers</button>
+                    <button class="quiz-btn" onclick="resetQuiz()" style="margin-left: 10px;">Reset Quiz</button>
+                    
+                    <div id="final-score" style="margin-top: 20px; padding: 15px; border-radius: 5px; display: none;"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Quiz answers
+        const quizAnswers = {
+            q1: 'b', // DMZ
+            q2: 'b', // Traffic continues to flow unfiltered
+            q3: 'c', // IPS
+            q4: 'b', // Controlling administrative access
+            q5: 'c', // EAP-TLS
+            q6: 'b', // Single point of failure
+            q7: 'b', // User identification
+            q8: 'c', // Site-to-site VPN
+            q9: 'c', // CASB
+            q10: 'b' // Detective controls
+        };
+
+        const quizExplanations = {
+            q1: 'DMZ (Demilitarized Zone) is specifically designed for public-facing services that need to be accessible from the internet while maintaining some security separation from internal networks.',
+            q2: 'Fail-open devices prioritize availability over security, allowing traffic to continue flowing even when the security device fails, though this traffic will be unfiltered.',
+            q3: 'IPS (Intrusion Prevention Systems) can both detect and actively block malicious traffic in real-time, unlike IDS which only detects and alerts.',
+            q4: 'Jump servers act as secure intermediaries that control and monitor administrative access to sensitive systems, providing centralized access control and logging.',
+            q5: 'EAP-TLS uses digital certificates for both client and server authentication, providing strong mutual authentication without requiring passwords.',
+            q6: 'UTM devices combine multiple security functions in one appliance, creating a single point of failure where one device failure affects all security functions.',
+            q7: 'User identification allows NGFWs to apply security policies based on who the user is, not just their IP address or device.',
+            q8: 'Site-to-site VPNs create secure connections between entire networks, typically connecting branch offices to headquarters or connecting to cloud services.',
+            q9: 'CASB (Cloud Access Security Broker) provides security controls specifically for cloud applications and services.',
+            q10: 'Detective controls are designed to identify and alert on attacks that are currently in progress, allowing for rapid response.'
+        };
+
+        // Navigation functions
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update navigation
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+            
+            // Find and activate the corresponding nav link
+            const activeLink = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+
+        function toggleDropdown(element) {
+            const dropdown = element.nextElementSibling;
+            const isOpen = dropdown.classList.contains('show');
+            
+            // Close all dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+            document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+                toggle.classList.remove('open');
+            });
+            
+            // Toggle current dropdown
+            if (!isOpen) {
+                dropdown.classList.add('show');
+                element.classList.add('open');
+            }
+        }
+
+        // Quiz functions
+        function checkAnswer(questionNum) {
+            const selectedAnswer = document.querySelector(`input[name="q${questionNum}"]:checked`);
+            const resultDiv = document.getElementById(`result${questionNum}`);
+            
+            if (!selectedAnswer) {
+                resultDiv.innerHTML = 'Please select an answer.';
+                resultDiv.className = 'quiz-result incorrect';
+                resultDiv.style.display = 'block';
+                return false;
+            }
+            
+            const isCorrect = selectedAnswer.value === quizAnswers[`q${questionNum}`];
+            const explanation = quizExplanations[`q${questionNum}`];
+            
+            if (isCorrect) {
+                resultDiv.innerHTML = `✓ Correct! ${explanation}`;
+                resultDiv.className = 'quiz-result correct';
+            } else {
+                resultDiv.innerHTML = `✗ Incorrect. ${explanation}`;
+                resultDiv.className = 'quiz-result incorrect';
+            }
+            
+            resultDiv.style.display = 'block';
+            return isCorrect;
+        }
+
+        function checkAllAnswers() {
+            let correctCount = 0;
+            const totalQuestions = Object.keys(quizAnswers).length;
+            
+            for (let i = 1; i <= totalQuestions; i++) {
+                if (checkAnswer(i)) {
+                    correctCount++;
+                }
+            }
+            
+            // Update progress bar
+            const progressFill = document.getElementById('quiz-progress');
+            const percentage = (correctCount / totalQuestions) * 100;
+            progressFill.style.width = percentage + '%';
+            
+            // Show final score
+            const finalScoreDiv = document.getElementById('final-score');
+            const grade = getGrade(percentage);
+            
+            finalScoreDiv.innerHTML = `
+                <h4>Quiz Complete!</h4>
+                <p><strong>Score: ${correctCount}/${totalQuestions} (${percentage.toFixed(1)}%)</strong></p>
+                <p><strong>Grade: ${grade}</strong></p>
+                <p>${getScoreMessage(percentage)}</p>
+            `;
+            
+            if (percentage >= 70) {
+                finalScoreDiv.style.backgroundColor = '#d4edda';
+                finalScoreDiv.style.color = '#155724';
+                finalScoreDiv.style.border = '1px solid #c3e6cb';
+            } else {
+                finalScoreDiv.style.backgroundColor = '#f8d7da';
+                finalScoreDiv.style.color = '#721c24';
+                finalScoreDiv.style.border = '1px solid #f5c6cb';
+            }
+            
+            finalScoreDiv.style.display = 'block';
+        }
+
+        function getGrade(percentage) {
+            if (percentage >= 90) return 'A';
+            if (percentage >= 80) return 'B';
+            if (percentage >= 70) return 'C';
+            if (percentage >= 60) return 'D';
+            return 'F';
+        }
+
+        function getScoreMessage(percentage) {
+            if (percentage >= 90) {
+                return 'Excellent! You have a strong understanding of enterprise infrastructure security principles.';
+            } else if (percentage >= 80) {
+                return 'Good work! You have a solid grasp of the material with room for minor improvements.';
+            } else if (percentage >= 70) {
+                return 'Passing grade. Review the areas where you missed questions to strengthen your knowledge.';
+            } else {
+                return 'You may want to review the study material and retake the quiz to improve your understanding.';
+            }
+        }
+
+        function resetQuiz() {
+            // Clear all radio button selections
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            
+            // Hide all results
+            document.querySelectorAll('.quiz-result').forEach(result => {
+                result.style.display = 'none';
+            });
+            
+            // Reset progress bar
+            document.getElementById('quiz-progress').style.width = '0%';
+            
+            // Hide final score
+            document.getElementById('final-score').style.display = 'none';
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show overview section by default
+            showSection('overview');
+            
+            // Add click handlers for dropdown items
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Close dropdown after selection
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                        menu.classList.remove('show');
+                    });
+                    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+                        toggle.classList.remove('open');
+                    });
+                });
+            });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+                document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+                    toggle.classList.remove('open');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+                

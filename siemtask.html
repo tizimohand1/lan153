@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshFlow Systems SIEM Analysis Assignment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #e8f5e8 50%, #f0f8f0 100%);
+            color: #2d4a3e;
+            height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #2d4a3e 0%, #1a2e22 100%);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #4a7c59;
+        }
+
+        .logo h2 {
+            color: #4a7c59;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 12px 15px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-left: 4px solid transparent;
+            color: white;
+            text-decoration: none;
+            border-radius: 0 25px 25px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(74, 124, 89, 0.3);
+            border-left-color: #4a7c59;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #4a7c59;
+            border-left-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .task-section {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            border-left: 6px solid #4a7c59;
+        }
+
+        .task-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-header {
+            background: linear-gradient(90deg, #2d4a3e, #4a7c59);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .task-header h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .task-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .instructions {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4a7c59;
+        }
+
+        .instructions h4 {
+            color: #2d4a3e;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .questions {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .question label {
+            font-weight: bold;
+            color: #2d4a3e;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .question input, .question textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .question input:focus, .question textarea:focus {
+            outline: none;
+            border-color: #4a7c59;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+        }
+
+        .question textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+
+        .nav-btn.prev {
+            background: #6c757d;
+            color: white;
+        }
+
+        .nav-btn.prev:hover {
+            background: #5a6268;
+            transform: translateX(-3px);
+        }
+
+        .nav-btn.next {
+            background: #4a7c59;
+            color: white;
+        }
+
+        .nav-btn.next:hover {
+            background: #3a5c49;
+            transform: translateX(3px);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a7c59, #2d4a3e);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .assignment-info {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            border-left: 6px solid #4a7c59;
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 3px solid #4a7c59;
+        }
+
+        .info-card strong {
+            color: #2d4a3e;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .points-display {
+            background: #2d4a3e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .save-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4a7c59;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .save-indicator.show {
+            opacity: 1;
+        }
+
+        .rubric-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .rubric-table th, .rubric-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .rubric-table th {
+            background: #2d4a3e;
+            color: white;
+            font-weight: bold;
+        }
+
+        .rubric-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .completion-status {
+            float: right;
+            background: #17a2b8;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .completion-status.completed {
+            background: #28a745;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <h2>🏭 FreshFlow Systems</h2>
+            <p>SIEM Analysis Assignment</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <button class="nav-item active" onclick="showTask('overview')">📋 Assignment Overview</button>
+        <button class="nav-item" onclick="showTask('task1')">Task 1: System Events <span class="completion-status" id="status1">0/4</span></button>
+        <button class="nav-item" onclick="showTask('task2')">Task 2: Security Events <span class="completion-status" id="status2">0/4</span></button>
+        <button class="nav-item" onclick="showTask('task3')">Task 3: Process Control <span class="completion-status" id="status3">0/4</span></button>
+        <button class="nav-item" onclick="showTask('task4')">Task 4: Custom Logs <span class="completion-status" id="status4">0/4</span></button>
+        <button class="nav-item" onclick="showTask('task5')">Task 5: Alarms & Alerts <span class="completion-status" id="status5">0/4</span></button>
+        <button class="nav-item" onclick="showTask('task6')">Task 6: Network Events <span class="completion-status" id="status6">0/4</span></button>
+        <button class="nav-item" onclick="showTask('task7')">Task 7: Auto-Generation <span class="completion-status" id="status7">0/4</span></button>
+        <button class="nav-item" onclick="showTask('task8')">Task 8: Cyber Attack <span class="completion-status" id="status8">0/5</span></button>
+        <button class="nav-item" onclick="showTask('task9')">Task 9: Equipment Failure <span class="completion-status" id="status9">0/4</span></button>
+        <button class="nav-item" onclick="showTask('task10')">Task 10: Comprehensive <span class="completion-status" id="status10">0/6</span></button>
+        <button class="nav-item" onclick="showTask('grading')">📊 Grading Rubric</button>
+    </div>
+
+    <div class="main-content">
+        <div class="save-indicator" id="saveIndicator">Progress Saved ✓</div>
+
+        <!-- Overview Section -->
+        <div class="task-section active" id="overview">
+            <div class="assignment-info">
+                <h1 style="color: #2d4a3e; margin-bottom: 20px;">FreshFlow Systems SIEM Analysis Assignment</h1>
+                <p style="font-size: 18px; color: #666; margin-bottom: 20px;"><strong>Industrial Cybersecurity & SIEM Monitoring</strong></p>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <strong>Student Name</strong>
+                        <input type="text" id="studentName" placeholder="Enter your name..." style="margin-top: 5px;">
+                    </div>
+                    <div class="info-card">
+                        <strong>Date</strong>
+                        <span id="currentDate"></span>
+                    </div>
+                    <div class="info-card">
+                        <strong>Course</strong>
+                        Industrial Cybersecurity
+                    </div>
+                    <div class="info-card">
+                        <strong>Total Points</strong>
+                        100 Points
+                    </div>
+                    <div class="info-card">
+                        <strong>Time Limit</strong>
+                        90 Minutes
+                    </div>
+                    <div class="info-card">
+                        <strong>Assignment Type</strong>
+                        SIEM Log Analysis Lab
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: #e8f5e8; border-radius: 10px;">
+                    <h3 style="color: #2d4a3e; margin-bottom: 15px;">Assignment Overview</h3>
+                    <p style="line-height: 1.6;">You are a Security Operations Center (SOC) analyst for FreshFlow Systems, a food processing and distribution facility in Chicago, IL. Your task is to use the FreshFlow Systems SIEM Simulator to generate, analyze, and interpret various security and operational events. This assignment will test your ability to operate SIEM tools and understand industrial control system security.</p>
+                </div>
+
+                <div style="margin-top: 20px; padding: 20px; background: #fff3cd; border-radius: 10px; border-left: 4px solid #ffc107;">
+                    <h4 style="color: #856404; margin-bottom: 15px;">Pre-Lab Instructions</h4>
+                    <ol style="color: #856404;">
+                        <li>Open the FreshFlow Systems SIEM Simulator in a separate tab/window</li>
+                        <li>Familiarize yourself with the control panel and log display</li>
+                        <li>Note the equipment profile information in the upper left panel</li>
+                        <li>Ensure the timestamp is updating correctly</li>
+                        <li>Return to this assignment page to begin the tasks</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" disabled>Previous</button>
+                <button class="nav-btn next" onclick="showTask('task1')">Start Assignment</button>
+            </div>
+        </div>
+
+        <!-- Task 1 -->
+        <div class="task-section" id="task1">
+            <div class="task-header">
+                <h2>Task 1: System Event Analysis</h2>
+                <div class="points-display">10 Points</div>
+                <p>Generate and analyze system-level events</p>
+            </div>
+
+            <div class="instructions">
+                <h4>Instructions:</h4>
+                <ol>
+                    <li>Set Log Event Type to "System Events"</li>
+                    <li>Set Severity Level to "INFO"</li>
+                    <li>Select Equipment: "SCADA-01 (SCADA Master Station)"</li>
+                    <li>Generate 5 different log entries by clicking "Generate Log Entry" five times</li>
+                    <li>Observe the log format and content</li>
+                </ol>
+            </div>
+
+            <div class="questions">
+                <h4 style="color: #2d4a3e; margin-bottom: 20px;">Questions:</h4>
+                
+                <div class="question">
+                    <label>a) Record the IP address of the SCADA Master Station:</label>
+                    <input type="text" id="task1_q1" placeholder="Enter IP address...">
+                </div>
+
+                <div class="question">
+                    <label>b) List three different types of system events that were generated:</label>
+                    <input type="text" id="task1_q2a" placeholder="1. First system event type...">
+                    <input type="text" id="task1_q2b" placeholder="2. Second system event type..." style="margin-top: 10px;">
+                    <input type="text" id="task1_q2c" placeholder="3. Third system event type..." style="margin-top: 10px;">
+                </div>
+
+                <div class="question">
+                    <label>c) What information is included in each log entry's timestamp format?</label>
+                    <textarea id="task1_q3" placeholder="Describe the timestamp format and information included..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>d) What EventID range was used for these entries?</label>
+                    <input type="text" id="task1_q4" placeholder="Enter EventID range...">
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" onclick="showTask('overview')">Previous</button>
+                <button class="nav-btn next" onclick="showTask('task2')">Next Task</button>
+            </div>
+        </div>
+
+        <!-- Task 2 -->
+        <div class="task-section" id="task2">
+            <div class="task-header">
+                <h2>Task 2: Security Event Monitoring</h2>
+                <div class="points-display">10 Points</div>
+                <p>Identify and analyze security-related events</p>
+            </div>
+
+            <div class="instructions">
+                <h4>Instructions:</h4>
+                <ol>
+                    <li>Change Log Event Type to "Security Events"</li>
+                    <li>Set Severity Level to "WARNING"</li>
+                    <li>Select Equipment: "FW-DMZ01 (DMZ Firewall)"</li>
+                    <li>Generate 3 log entries</li>
+                    <li>Change Severity to "CRITICAL" and generate 2 more entries</li>
+                </ol>
+            </div>
+
+            <div class="questions">
+                <h4 style="color: #2d4a3e; margin-bottom: 20px;">Questions:</h4>
+                
+                <div class="question">
+                    <label>a) What is the IP address of the DMZ Firewall?</label>
+                    <input type="text" id="task2_q1" placeholder="Enter IP address...">
+                </div>
+
+                <div class="question">
+                    <label>b) Compare the WARNING vs CRITICAL security events. What differences do you observe in:</label>
+                    <textarea id="task2_q2a" placeholder="Message content differences..." style="margin-bottom: 10px;"></textarea>
+                    <textarea id="task2_q2b" placeholder="Visual appearance differences..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>c) List two specific security threats mentioned in the generated logs:</label>
+                    <input type="text" id="task2_q3a" placeholder="1. First security threat...">
+                    <input type="text" id="task2_q3b" placeholder="2. Second security threat..." style="margin-top: 10px;">
+                </div>
+
+                <div class="question">
+                    <label>d) Why would firewall logs be crucial for security monitoring?</label>
+                    <textarea id="task2_q4" placeholder="Explain the importance of firewall logs..."></textarea>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" onclick="showTask('task1')">Previous</button>
+                <button class="nav-btn next" onclick="showTask('task3')">Next Task</button>
+            </div>
+        </div>
+
+        <!-- Task 3 -->
+        <div class="task-section" id="task3">
+            <div class="task-header">
+                <h2>Task 3: Process Control Analysis</h2>
+                <div class="points-display">10 Points</div>
+                <p>Monitor industrial process operations</p>
+            </div>
+
+            <div class="instructions">
+                <h4>Instructions:</h4>
+                <ol>
+                    <li>Set Log Event Type to "Process Control"</li>
+                    <li>Set Severity Level to "INFO"</li>
+                    <li>Test each of these equipment types (generate 2 logs for each):
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>PLC-TANK01 (Tank Level PLC)</li>
+                            <li>PUMP-01 (Primary Circulation Pump)</li>
+                            <li>SENSOR-T01 (Temperature Sensor T-01)</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="questions">
+                <h4 style="color: #2d4a3e; margin-bottom: 20px;">Questions:</h4>
+                
+                <div class="question">
+                    <label>a) Record the IP addresses:</label>
+                    <input type="text" id="task3_q1a" placeholder="Tank Level PLC IP address...">
+                    <input type="text" id="task3_q1b" placeholder="Primary Circulation Pump IP address..." style="margin-top: 10px;">
+                    <input type="text" id="task3_q1c" placeholder="Temperature Sensor IP address..." style="margin-top: 10px;">
+                </div>
+
+                <div class="question">
+                    <label>b) What types of process measurements were displayed in the logs?</label>
+                    <textarea id="task3_q2" placeholder="Describe the process measurements observed..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>c) Why is monitoring process control equipment critical for both safety and security?</label>
+                    <textarea id="task3_q3" placeholder="Explain the importance for safety and security..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>d) What could happen if these process control logs showed anomalous readings?</label>
+                    <textarea id="task3_q4" placeholder="Describe potential consequences of anomalous readings..."></textarea>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" onclick="showTask('task2')">Previous</button>
+                <button class="nav-btn next" onclick="showTask('task4')">Next Task</button>
+            </div>
+        </div>
+
+        <!-- Task 4 -->
+        <div class="task-section" id="task4">
+            <div class="task-header">
+                <h2>Task 4: Custom Log Generation</h2>
+                <div class="points-display">10 Points</div>
+                <p>Create specific security scenarios using custom messages</p>
+            </div>
+
+            <div class="instructions">
+                <h4>Instructions:</h4>
+                <ol>
+                    <li>Set Severity Level to "ERROR"</li>
+                    <li>Select Equipment: "HMI-OP01 (Operator HMI Terminal)"</li>
+                    <li>Use the Custom Message field to create these specific log entries:
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>"Unauthorized access attempt to production controls"</li>
+                            <li>"Operator credentials compromised - immediate lockout required"</li>
+                            <li>"Suspicious HMI command sequence detected"</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="questions">
+                <h4 style="color: #2d4a3e; margin-bottom: 20px;">Questions:</h4>
+                
+                <div class="question">
+                    <label>a) What is the IP address of the Operator HMI Terminal?</label>
+                    <input type="text" id="task4_q1" placeholder="Enter IP address...">
+                </div>
+
+                <div class="question">
+                    <label>b) How does the custom message feature help in security training scenarios?</label>
+                    <textarea id="task4_q2" placeholder="Explain the benefits of custom message feature..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>c) Record the EventID numbers generated for your three custom messages:</label>
+                    <input type="text" id="task4_q3a" placeholder="1. EventID for first message...">
+                    <input type="text" id="task4_q3b" placeholder="2. EventID for second message..." style="margin-top: 10px;">
+                    <input type="text" id="task4_q3c" placeholder="3. EventID for third message..." style="margin-top: 10px;">
+                </div>
+
+                <div class="question">
+                    <label>d) Why would an HMI terminal be a high-value target for attackers?</label>
+                    <textarea id="task4_q4" placeholder="Explain why HMI terminals are attractive targets..."></textarea>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" onclick="showTask('task3')">Previous</button>
+                <button class="nav-btn next" onclick="showTask('task5')">Next Task</button>
+            </div>
+        </div>
+
+        <!-- Task 5 -->
+        <div class="task-section" id="task5">
+            <div class="task-header">
+                <h2>Task 5: Alarm and Alert Analysis</h2>
+                <div class="points-display">10 Points</div>
+                <p>Understand critical alarm scenarios</p>
+            </div>
+
+            <div class="instructions">
+                <h4>Instructions:</h4>
+                <ol>
+                    <li>Set Log Event Type to "Alarms & Alerts"</li>
+                    <li>Set Severity Level to "CRITICAL"</li>
+                    <li>Select Equipment: "VALVE-CV01 (Control Valve CV-01)"</li>
+                    <li>Generate 4 alarm entries</li>
+                    <li>Change to Equipment: "RTU-FIELD01 (Remote Terminal Unit)" and generate 3 more</li>
+                </ol>
+            </div>
+
+            <div class="questions">
+                <h4 style="color: #2d4a3e; margin-bottom: 20px;">Questions:</h4>
+                
+                <div class="question">
+                    <label>a) List three different types of alarms that were generated:</label>
+                    <input type="text" id="task5_q1a" placeholder="1. First alarm type...">
+                    <input type="text" id="task5_q1b" placeholder="2. Second alarm type..." style="margin-top: 10px;">
+                    <input type="text" id="task5_q1c" placeholder="3. Third alarm type..." style="margin-top: 10px;">
+                </div>
+
+                <div class="question">
+                    <label>b) What is the significance of CRITICAL severity alarms in an industrial environment?</label>
+                    <textarea id="task5_q2" placeholder="Explain the significance of CRITICAL alarms..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>c) Compare alarms from the Control Valve vs Remote Terminal Unit. What differences do you notice?</label>
+                    <textarea id="task5_q3" placeholder="Compare and contrast the alarm types..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>d) How quickly should operators respond to CRITICAL alarms?</label>
+                    <textarea id="task5_q4" placeholder="Describe response time expectations..."></textarea>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" onclick="showTask('task4')">Previous</button>
+                <button class="nav-btn next" onclick="showTask('task6')">Next Task</button>
+            </div>
+        </div>
+
+        <!-- Task 6 -->
+        <div class="task-section" id="task6">
+            <div class="task-header">
+                <h2>Task 6: Network Event Investigation</h2>
+                <div class="points-display">10 Points</div>
+                <p>Analyze network-related security events</p>
+            </div>
+
+            <div class="instructions">
+                <h4>Instructions:</h4>
+                <ol>
+                    <li>Set Log Event Type to "Network Events"</li>
+                    <li>Set Severity Level to "WARNING"</li>
+                    <li>Select Equipment: "SW-CORE01 (Core Network Switch)"</li>
+                    <li>Generate 5 network event logs</li>
+                    <li>Monitor the statistics panel and record the current counts</li>
+                </ol>
+            </div>
+
+            <div class="questions">
+                <h4 style="color: #2d4a3e; margin-bottom: 20px;">Questions:</h4>
+                
+                <div class="question">
+                    <label>a) Current Statistics (after completing all tasks so far):</label>
+                    <input type="text" id="task6_q1a" placeholder="Total Logs count...">
+                    <input type="text" id="task6_q1b" placeholder="Errors count..." style="margin-top: 10px;">
+                    <input type="text" id="task6_q1c" placeholder="Warnings count..." style="margin-top: 10px;">
+                    <input type="text" id="task6_q1d" placeholder="Critical count..." style="margin-top: 10px;">
+                </div>
+
+                <div class="question">
+                    <label>b) What types of network issues were identified in the logs?</label>
+                    <textarea id="task6_q2" placeholder="Describe the network issues observed..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>c) Why is network monitoring essential in industrial control systems?</label>
+                    <textarea id="task6_q3" placeholder="Explain the importance of network monitoring..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>d) What IP address is assigned to the Core Network Switch?</label>
+                    <input type="text" id="task6_q4" placeholder="Enter IP address...">
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" onclick="showTask('task5')">Previous</button>
+                <button class="nav-btn next" onclick="showTask('task7')">Next Task</button>
+            </div>
+        </div>
+
+        <!-- Task 7 -->
+        <div class="task-section" id="task7">
+            <div class="task-header">
+                <h2>Task 7: Auto-Generation Monitoring</h2>
+                <div class="points-display">10 Points</div>
+                <p>Experience real-time SIEM monitoring</p>
+            </div>
+
+            <div class="instructions">
+                <h4>Instructions:</h4>
+                <ol>
+                    <li>Click "Start Auto-Generate" button</li>
+                    <li>Monitor the log display for 60 seconds</li>
+                    <li>Observe how different log types, severities, and equipment are automatically selected</li>
+                    <li>Click "Stop Auto-Generate" to end the automatic generation</li>
+                    <li>Note the final statistics</li>
+                </ol>
+            </div>
+
+            <div class="questions">
+                <h4 style="color: #2d4a3e; margin-bottom: 20px;">Questions:</h4>
+                
+                <div class="question">
+                    <label>a) Approximately how many logs were generated during the 60-second auto-generation period?</label>
+                    <input type="text" id="task7_q1" placeholder="Enter approximate count...">
+                </div>
+
+                <div class="question">
+                    <label>b) What is the advantage of auto-generation mode for SIEM training?</label>
+                    <textarea id="task7_q2" placeholder="Explain the training advantages..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>c) How does the visual color coding help analysts quickly identify severity levels?</label>
+                    <textarea id="task7_q3" placeholder="Describe the color coding benefits..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>d) Final Statistics after auto-generation:</label>
+                    <input type="text" id="task7_q4a" placeholder="Total Logs count...">
+                    <input type="text" id="task7_q4b" placeholder="Errors count..." style="margin-top: 10px;">
+                    <input type="text" id="task7_q4c" placeholder="Warnings count..." style="margin-top: 10px;">
+                    <input type="text" id="task7_q4d" placeholder="Critical count..." style="margin-top: 10px;">
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" onclick="showTask('task6')">Previous</button>
+                <button class="nav-btn next" onclick="showTask('task8')">Next Task</button>
+            </div>
+        </div>
+
+        <!-- Task 8 -->
+        <div class="task-section" id="task8">
+            <div class="task-header">
+                <h2>Task 8: Scenario Simulation - Cyber Attack</h2>
+                <div class="points-display">15 Points</div>
+                <p>Analyze a coordinated cyber attack scenario</p>
+            </div>
+
+            <div class="instructions">
+                <h4>Instructions:</h4>
+                <ol>
+                    <li>Select "Cyber Attack Simulation" from the Scenario dropdown</li>
+                    <li>Click "Run Scenario"</li>
+                    <li>Watch the sequence of events as they appear</li>
+                    <li>Analyze the progression and timeline of the attack</li>
+                </ol>
+            </div>
+
+            <div class="questions">
+                <h4 style="color: #2d4a3e; margin-bottom: 20px;">Questions:</h4>
+                
+                <div class="question">
+                    <label>a) List the sequence of events in the cyber attack scenario:</label>
+                    <input type="text" id="task8_q1a" placeholder="1. First event in attack sequence...">
+                    <input type="text" id="task8_q1b" placeholder="2. Second event in attack sequence..." style="margin-top: 10px;">
+                    <input type="text" id="task8_q1c" placeholder="3. Third event in attack sequence..." style="margin-top: 10px;">
+                    <input type="text" id="task8_q1d" placeholder="4. Fourth event in attack sequence..." style="margin-top: 10px;">
+                    <input type="text" id="task8_q1e" placeholder="5. Fifth event in attack sequence..." style="margin-top: 10px;">
+                </div>
+
+                <div class="question">
+                    <label>b) What was the timeline/spacing between each event in the attack?</label>
+                    <textarea id="task8_q2" placeholder="Describe the timing between events..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>c) Which types of security controls appeared to respond to the attack?</label>
+                    <textarea id="task8_q3" placeholder="List and describe security controls that responded..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>d) How could a SOC analyst use this type of log sequence to understand attack progression?</label>
+                    <textarea id="task8_q4" placeholder="Explain how SOC analysts would analyze this sequence..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>e) What indicators suggest this was a coordinated attack rather than isolated incidents?</label>
+                    <textarea id="task8_q5" placeholder="Identify coordination indicators..."></textarea>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" onclick="showTask('task7')">Previous</button>
+                <button class="nav-btn next" onclick="showTask('task9')">Next Task</button>
+            </div>
+        </div>
+
+        <!-- Task 9 -->
+        <div class="task-section" id="task9">
+            <div class="task-header">
+                <h2>Task 9: Scenario Simulation - Equipment Failure</h2>
+                <div class="points-display">10 Points</div>
+                <p>Understand operational incident response</p>
+            </div>
+
+            <div class="instructions">
+                <h4>Instructions:</h4>
+                <ol>
+                    <li>Clear all existing logs using the "Clear All Logs" button</li>
+                    <li>Select "Equipment Failure" from the Scenario dropdown</li>
+                    <li>Click "Run Scenario"</li>
+                    <li>Document the failure sequence and recovery process</li>
+                </ol>
+            </div>
+
+            <div class="questions">
+                <h4 style="color: #2d4a3e; margin-bottom: 20px;">Questions:</h4>
+                
+                <div class="question">
+                    <label>a) What equipment failed in this scenario?</label>
+                    <textarea id="task9_q1" placeholder="Identify the failed equipment..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>b) Describe the sequence of events from failure to recovery:</label>
+                    <input type="text" id="task9_q2a" placeholder="1. Initial failure event...">
+                    <input type="text" id="task9_q2b" placeholder="2. System response..." style="margin-top: 10px;">
+                    <input type="text" id="task9_q2c" placeholder="3. Mitigation action..." style="margin-top: 10px;">
+                    <input type="text" id="task9_q2d" placeholder="4. Recovery step..." style="margin-top: 10px;">
+                    <input type="text" id="task9_q2e" placeholder="5. Final resolution..." style="margin-top: 10px;">
+                </div>
+
+                <div class="question">
+                    <label>c) How did the system respond to mitigate the equipment failure?</label>
+                    <textarea id="task9_q3" placeholder="Describe system mitigation responses..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>d) What role does SIEM play in operational incident response versus security incidents?</label>
+                    <textarea id="task9_q4" placeholder="Compare SIEM role in operational vs security incidents..."></textarea>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" onclick="showTask('task8')">Previous</button>
+                <button class="nav-btn next" onclick="showTask('task10')">Next Task</button>
+            </div>
+        </div>
+
+        <!-- Task 10 -->
+        <div class="task-section" id="task10">
+            <div class="task-header">
+                <h2>Task 10: Comprehensive Analysis and Maintenance</h2>
+                <div class="points-display">15 Points</div>
+                <p>Demonstrate understanding of maintenance operations and log analysis</p>
+            </div>
+
+            <div class="instructions">
+                <h4>Instructions:</h4>
+                <ol>
+                    <li>Select "Planned Maintenance" from the Scenario dropdown</li>
+                    <li>Run the maintenance scenario</li>
+                    <li>After completion, manually generate 3 "Audit Logs" with "SUCCESS" severity</li>
+                    <li>Generate 2 "Compliance Events" with "INFO" severity</li>
+                    <li>Analyze the complete log picture</li>
+                </ol>
+            </div>
+
+            <div class="questions">
+                <h4 style="color: #2d4a3e; margin-bottom: 20px;">Questions:</h4>
+                
+                <div class="question">
+                    <label>a) How does planned maintenance affect normal system operations based on the logs?</label>
+                    <textarea id="task10_q1" placeholder="Describe maintenance impact on operations..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>b) List the maintenance activities that were logged:</label>
+                    <input type="text" id="task10_q2a" placeholder="1. First maintenance activity...">
+                    <input type="text" id="task10_q2b" placeholder="2. Second maintenance activity..." style="margin-top: 10px;">
+                    <input type="text" id="task10_q2c" placeholder="3. Third maintenance activity..." style="margin-top: 10px;">
+                </div>
+
+                <div class="question">
+                    <label>c) Why are audit logs important during maintenance windows?</label>
+                    <textarea id="task10_q3" placeholder="Explain importance of audit logs during maintenance..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>d) How do compliance events relate to maintenance activities in industrial settings?</label>
+                    <textarea id="task10_q4" placeholder="Describe relationship between compliance and maintenance..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label>e) Final Exercise Statistics:</label>
+                    <input type="text" id="task10_q5a" placeholder="Total Logs count...">
+                    <input type="text" id="task10_q5b" placeholder="Errors count..." style="margin-top: 10px;">
+                    <input type="text" id="task10_q5c" placeholder="Warnings count..." style="margin-top: 10px;">
+                    <input type="text" id="task10_q5d" placeholder="Critical count..." style="margin-top: 10px;">
+                </div>
+
+                <div class="question">
+                    <label>f) Reflection: Based on your experience with this SIEM simulator, describe three key insights about industrial cybersecurity monitoring:</label>
+                    <textarea id="task10_q6a" placeholder="1. First key insight..." style="margin-bottom: 10px;"></textarea>
+                    <textarea id="task10_q6b" placeholder="2. Second key insight..." style="margin-bottom: 10px;"></textarea>
+                    <textarea id="task10_q6c" placeholder="3. Third key insight..."></textarea>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" onclick="showTask('task9')">Previous</button>
+                <button class="nav-btn next" onclick="showTask('grading')">View Grading</button>
+            </div>
+        </div>
+
+        <!-- Grading Rubric -->
+        <div class="task-section" id="grading">
+            <div class="task-header">
+                <h2>Grading Rubric</h2>
+                <p>Assessment criteria and point distribution</p>
+            </div>
+
+            <div class="assignment-info">
+                <table class="rubric-table">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Points</th>
+                            <th>Criteria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Tasks 1-3</td>
+                            <td>30</td>
+                            <td>Correct execution of basic SIEM operations and accurate observation of log formats</td>
+                        </tr>
+                        <tr>
+                            <td>Tasks 4-6</td>
+                            <td>30</td>
+                            <td>Proper use of custom messages, alarm analysis, and network monitoring</td>
+                        </tr>
+                        <tr>
+                            <td>Task 7</td>
+                            <td>10</td>
+                            <td>Understanding of auto-generation and real-time monitoring concepts</td>
+                        </tr>
+                        <tr>
+                            <td>Tasks 8-9</td>
+                            <td>25</td>
+                            <td>Comprehensive scenario analysis and incident response understanding</td>
+                        </tr>
+                        <tr>
+                            <td>Task 10</td>
+                            <td>15</td>
+                            <td>Integration of multiple SIEM functions and reflective analysis</td>
+                        </tr>
+                        <tr style="background: #e8f5e8; font-weight: bold;">
+                            <td>Total</td>
+                            <td>110</td>
+                            <td>Extra credit opportunities available for exceptional analysis</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 30px; padding: 20px; background: #e8f5e8; border-radius: 10px;">
+                    <h3 style="color: #2d4a3e; margin-bottom: 15px;">Submission Requirements</h3>
+                    <ul style="line-height: 1.8;">
+                        <li>Complete all questions with detailed, thoughtful responses</li>
+                        <li>Include specific examples from your log observations</li>
+                        <li>Submit within the 90-minute time limit</li>
+                        <li>Demonstrate understanding of both cybersecurity and industrial operations concepts</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 20px; padding: 20px; background: #fff3cd; border-radius: 10px;">
+                    <h3 style="color: #856404; margin-bottom: 15px;">Additional Notes</h3>
+                    <ul style="color: #856404; line-height: 1.8;">
+                        <li>Pay attention to IP addresses, EventIDs, and timestamp formats</li>
+                        <li>Consider the relationship between different types of events</li>
+                        <li>Think about real-world implications of the scenarios</li>
+                        <li>Use proper cybersecurity terminology in your responses</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="nav-btn prev" onclick="showTask('task10')">Previous</button>
+                <button class="nav-btn next" onclick="exportAnswers()" style="background: #28a745;">Export Answers</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTask = 'overview';
+        const tasks = ['overview', 'task1', 'task2', 'task3', 'task4', 'task5', 'task6', 'task7', 'task8', 'task9', 'task10', 'grading'];
+        const taskQuestionCounts = {
+            'task1': 4, 'task2': 4, 'task3': 4, 'task4': 4, 'task5': 4,
+            'task6': 4, 'task7': 4, 'task8': 5, 'task9': 4, 'task10': 6
+        };
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+            loadProgress();
+            updateProgress();
+            
+            // Add event listeners for auto-save
+            document.addEventListener('input', function(e) {
+                if (e.target.type === 'text' || e.target.type === 'textarea') {
+                    saveProgress();
+                    showSaveIndicator();
+                }
+            });
+        });
+
+        function showTask(taskId) {
+            // Hide all task sections
+            document.querySelectorAll('.task-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected task
+            document.getElementById(taskId).classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+            
+            currentTask = taskId;
+            updateProgress();
+            saveProgress();
+        }
+
+        function updateProgress() {
+            const currentIndex = tasks.indexOf(currentTask);
+            const progressPercentage = (currentIndex / (tasks.length - 1)) * 100;
+            document.getElementById('progressFill').style.width = progressPercentage + '%';
+            
+            // Update completion status for each task
+            Object.keys(taskQuestionCounts).forEach(taskId => {
+                updateTaskCompletion(taskId);
+            });
+        }
+
+        function updateTaskCompletion(taskId) {
+            const totalQuestions = taskQuestionCounts[taskId];
+            let completedQuestions = 0;
+            
+            // Count completed questions for this task
+            const inputs = document.querySelectorAll(`#${taskId} input, #${taskId} textarea`);
+            inputs.forEach(input => {
+                if (input.value.trim() !== '') {
+                    completedQuestions++;
+                }
+            });
+            
+            // Update status display
+            const statusElement = document.getElementById(`status${taskId.replace('task', '')}`);
+            if (statusElement) {
+                statusElement.textContent = `${completedQuestions}/${totalQuestions}`;
+                statusElement.className = completedQuestions === totalQuestions ? 'completion-status completed' : 'completion-status';
+            }
+        }
+
+        function saveProgress() {
+            const formData = {};
+            
+            // Save student name
+            const studentName = document.getElementById('studentName');
+            if (studentName) {
+                formData.studentName = studentName.value;
+            }
+            
+            // Save all form inputs
+            document.querySelectorAll('input, textarea').forEach(input => {
+                if (input.id) {
+                    formData[input.id] = input.value;
+                }
+            });
+            
+            formData.currentTask = currentTask;
+            formData.lastSaved = new Date().toISOString();
+            
+            try {
+                localStorage.setItem('freshflow_assignment_progress', JSON.stringify(formData));
+            } catch (e) {
+                console.log('Progress saving not available in this environment');
+            }
+        }
+
+        function loadProgress() {
+            try {
+                const savedData = localStorage.getItem('freshflow_assignment_progress');
+                if (savedData) {
+                    const formData = JSON.parse(savedData);
+                    
+                    // Restore form values
+                    Object.keys(formData).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element && key !== 'currentTask' && key !== 'lastSaved') {
+                            element.value = formData[key];
+                        }
+                    });
+                    
+                    // Restore current task if saved
+                    if (formData.currentTask && formData.currentTask !== 'overview') {
+                        showTask(formData.currentTask);
+                    }
+                }
+            } catch (e) {
+                console.log('Progress loading not available in this environment');
+            }
+        }
+
+        function showSaveIndicator() {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
+        function exportAnswers() {
+            const studentName = document.getElementById('studentName').value || 'Student';
+            const currentDate = new Date().toLocaleDateString();
+            
+            let exportText = `FreshFlow Systems SIEM Analysis Assignment - ${studentName}\n`;
+            exportText += `Date: ${currentDate}\n`;
+            exportText += `=`.repeat(60) + '\n\n';
+            
+            // Export all task answers
+            Object.keys(taskQuestionCounts).forEach(taskId => {
+                const taskNumber = taskId.replace('task', '');
+                exportText += `TASK ${taskNumber} ANSWERS:\n`;
+                exportText += `-`.repeat(20) + '\n';
+                
+                const inputs = document.querySelectorAll(`#${taskId} input, #${taskId} textarea`);
+                inputs.forEach((input, index) => {
+                    const label = input.closest('.question').querySelector('label').textContent;
+                    exportText += `${label}\n`;
+                    exportText += `Answer: ${input.value || '[Not answered]'}\n\n`;
+                });
+                
+                exportText += '\n';
+            });
+            
+            // Create and download the file
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `FreshFlow_SIEM_Assignment_${studentName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            alert('Assignment answers exported successfully!');
+        }
+    </script>
+</body>
+</html>
