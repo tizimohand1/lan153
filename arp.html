@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARP Poisoning Educational Simulator</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #2c3e50, #34495e);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .network-topology {
+            background: #f8f9fa;
+            border: 2px solid #27ae60;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .arp-tables {
+            background: #f8f9fa;
+            border: 2px solid #2980b9;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .device {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid;
+        }
+
+        .device:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .computer {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
+        .router {
+            background: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+
+        .attacker {
+            background: #2c3e50;
+            color: white;
+            border-color: #1a252f;
+        }
+
+        .attacker.active {
+            background: #e67e22;
+            border-color: #d35400;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .connection {
+            position: absolute;
+            height: 3px;
+            background: transparent;
+            transform-origin: left center;
+        }
+
+        .connection.poisoned {
+            background: #e74c3c;
+            animation: flow 1s infinite;
+        }
+
+        @keyframes flow {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .arp-table {
+            background: white;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .arp-table h3 {
+            background: #34495e;
+            color: white;
+            margin: 0;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .arp-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .arp-table th,
+        .arp-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 12px;
+        }
+
+        .arp-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .poisoned-entry {
+            background: #ffebee !important;
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        .controls {
+            grid-column: 1 / -1;
+            background: #2c3e50;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .controls h3 {
+            color: white;
+            margin: 0 0 15px 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .input-group input {
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .input-group label {
+            color: white;
+            min-width: 100px;
+        }
+
+        .log {
+            grid-column: 1 / -1;
+            background: #1a1a1a;
+            color: #00ff00;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log h3 {
+            color: #00ff00;
+            margin: 0 0 10px 0;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 3px 0;
+            border-left: 3px solid #00ff00;
+            padding-left: 10px;
+        }
+
+        .log-entry.attack {
+            border-left-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .log-entry.warning {
+            border-left-color: #ffaa00;
+            color: #ffaa00;
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-normal { background: #27ae60; }
+        .status-compromised { background: #e74c3c; }
+        .status-attacking { background: #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ ARP Poisoning Educational Simulator</h1>
+            <p>Learn how ARP (Address Resolution Protocol) poisoning attacks work and how to detect them</p>
+        </div>
+
+        <div class="main-content">
+            <div class="network-topology">
+                <h3 style="margin: 0 0 20px 0; color: #27ae60;">🌐 Network Topology</h3>
+                
+                <!-- Network devices -->
+                <div class="device computer tooltip" id="computer1" style="top: 50px; left: 50px;" 
+                     data-tooltip="Computer A - IP: 192.168.1.10">
+                    💻<br>PC-A
+                </div>
+                
+                <div class="device computer tooltip" id="computer2" style="top: 104px; left: 50px;" 
+                     data-tooltip="Computer B - IP: 192.168.1.20">
+                    💻<br>PC-B
+                </div>
+                
+                <div class="device router tooltip" id="router" style="top: 29px; left: 300px;" 
+                     data-tooltip="Router/Gateway - IP: 192.168.1.1">
+                    🔧<br>Router
+                </div>
+                
+                <div class="device attacker tooltip" id="attacker" style="top: -46px; left: 200px;" 
+                     data-tooltip="Attacker Machine - IP: 192.168.1.99">
+                    ☠️<br>Attacker
+                </div>
+
+                <!-- Network connections -->
+                <div class="connection" id="conn1" style="top: 90px; left: 130px; width: 90px; transform: rotate(0deg);"></div>
+                <div class="connection" id="conn2" style="top: 144px; left: 130px; width: 90px; transform: rotate(0deg);"></div>
+                <div class="connection" id="conn3" style="top: 69px; left: 130px; width: 90px; transform: rotate(90deg);"></div>
+                <div class="connection" id="conn4" style="top: -6px; left: 280px; width: 90px; transform: rotate(45deg);"></div>
+                <div class="connection" id="conn5" style="top: 104px; left: 280px; width: 90px; transform: rotate(-45deg);"></div>
+            </div>
+
+            <div class="arp-tables">
+                <h3 style="margin: 0 0 20px 0; color: #2980b9;">📋 ARP Tables</h3>
+                
+                <div class="arp-table">
+                    <h3><span class="status-indicator status-normal" id="pc-a-status"></span>Computer A ARP Table</h3>
+                    <table id="arp-table-a">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th>MAC Address</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="arp-entries-a">
+                            <tr>
+                                <td>192.168.1.1</td>
+                                <td>aa:bb:cc:dd:ee:01</td>
+                                <td>Dynamic</td>
+                            </tr>
+                            <tr>
+                                <td>192.168.1.20</td>
+                                <td>aa:bb:cc:dd:ee:02</td>
+                                <td>Dynamic</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="arp-table">
+                    <h3><span class="status-indicator status-normal" id="pc-b-status"></span>Computer B ARP Table</h3>
+                    <table id="arp-table-b">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th>MAC Address</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="arp-entries-b">
+                            <tr>
+                                <td>192.168.1.1</td>
+                                <td>aa:bb:cc:dd:ee:01</td>
+                                <td>Dynamic</td>
+                            </tr>
+                            <tr>
+                                <td>192.168.1.10</td>
+                                <td>aa:bb:cc:dd:ee:10</td>
+                                <td>Dynamic</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="controls">
+                <h3>🎮 Attack Controls</h3>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="resetNetwork()">🔄 Reset Network</button>
+                    <button class="btn btn-danger" onclick="performArpPoisoning()">⚡ Execute ARP Poisoning</button>
+                    <button class="btn btn-warning" onclick="detectAttack()">🔍 Detect Attack</button>
+                    <button class="btn btn-success" onclick="mitigateAttack()">🛡️ Mitigate Attack</button>
+                </div>
+
+                <div class="input-group">
+                    <label>Target IP:</label>
+                    <input type="text" id="target-ip" value="192.168.1.1" placeholder="e.g., 192.168.1.1">
+                    <label>Fake MAC:</label>
+                    <input type="text" id="fake-mac" value="aa:bb:cc:dd:ee:99" placeholder="e.g., aa:bb:cc:dd:ee:99">
+                </div>
+
+                <div class="input-group">
+                    <label>Victim:</label>
+                    <select id="victim-select">
+                        <option value="both">Both Computers</option>
+                        <option value="pc-a">Computer A</option>
+                        <option value="pc-b">Computer B</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="log">
+                <h3>📜 Network Activity Log</h3>
+                <div id="log-content">
+                    <div class="log-entry">[SYSTEM] Network initialized. All devices operational.</div>
+                    <div class="log-entry">[INFO] ARP tables populated with legitimate entries.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isAttacking = false;
+        let attackActive = false;
+
+        const originalArpTables = {
+            'pc-a': [
+                {ip: '192.168.1.1', mac: 'aa:bb:cc:dd:ee:01', type: 'Dynamic'},
+                {ip: '192.168.1.20', mac: 'aa:bb:cc:dd:ee:02', type: 'Dynamic'}
+            ],
+            'pc-b': [
+                {ip: '192.168.1.1', mac: 'aa:bb:cc:dd:ee:01', type: 'Dynamic'},
+                {ip: '192.168.1.10', mac: 'aa:bb:cc:dd:ee:10', type: 'Dynamic'}
+            ]
+        };
+
+        function addLogEntry(message, type = 'info') {
+            const logContent = document.getElementById('log-content');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `[${timestamp}] ${message}`;
+            logContent.appendChild(entry);
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+
+        function updateArpTable(device, entries) {
+            const tableBody = document.getElementById(`arp-entries-${device}`);
+            tableBody.innerHTML = '';
+            
+            entries.forEach(entry => {
+                const row = document.createElement('tr');
+                if (entry.poisoned) {
+                    row.className = 'poisoned-entry';
+                }
+                row.innerHTML = `
+                    <td>${entry.ip}</td>
+                    <td>${entry.mac}</td>
+                    <td>${entry.type}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateDeviceStatus(device, status) {
+            const statusIndicator = document.getElementById(`${device}-status`);
+            statusIndicator.className = `status-indicator status-${status}`;
+        }
+
+        function performArpPoisoning() {
+            if (attackActive) {
+                addLogEntry('Attack already in progress!', 'warning');
+                return;
+            }
+
+            const targetIp = document.getElementById('target-ip').value;
+            const fakeMac = document.getElementById('fake-mac').value;
+            const victim = document.getElementById('victim-select').value;
+
+            // Validate inputs
+            if (!targetIp || !fakeMac) {
+                addLogEntry('Please specify target IP and fake MAC address!', 'warning');
+                return;
+            }
+
+            attackActive = true;
+            isAttacking = true;
+
+            // Visual effects
+            document.getElementById('attacker').classList.add('active');
+            const connections = document.querySelectorAll('.connection');
+            connections.forEach(conn => conn.classList.add('poisoned'));
+
+            addLogEntry(`ATTACK INITIATED: ARP Poisoning targeting ${targetIp}`, 'attack');
+            addLogEntry(`Attacker sending fake ARP replies with MAC ${fakeMac}`, 'attack');
+
+            // Poison ARP tables
+            setTimeout(() => {
+                if (victim === 'both' || victim === 'pc-a') {
+                    const poisonedTableA = originalArpTables['pc-a'].map(entry => {
+                        if (entry.ip === targetIp) {
+                            addLogEntry(`PC-A ARP table poisoned: ${targetIp} now maps to ${fakeMac}`, 'attack');
+                            updateDeviceStatus('pc-a', 'compromised');
+                            return {...entry, mac: fakeMac, type: 'Dynamic*', poisoned: true};
+                        }
+                        return entry;
+                    });
+                    updateArpTable('a', poisonedTableA);
+                }
+
+                if (victim === 'both' || victim === 'pc-b') {
+                    const poisonedTableB = originalArpTables['pc-b'].map(entry => {
+                        if (entry.ip === targetIp) {
+                            addLogEntry(`PC-B ARP table poisoned: ${targetIp} now maps to ${fakeMac}`, 'attack');
+                            updateDeviceStatus('pc-b', 'compromised');
+                            return {...entry, mac: fakeMac, type: 'Dynamic*', poisoned: true};
+                        }
+                        return entry;
+                    });
+                    updateArpTable('b', poisonedTableB);
+                }
+
+                addLogEntry('ARP POISONING SUCCESSFUL: Traffic being intercepted!', 'attack');
+                addLogEntry('Attacker can now perform Man-in-the-Middle attacks', 'attack');
+            }, 1500);
+        }
+
+        function detectAttack() {
+            if (!attackActive) {
+                addLogEntry('No attack detected. Network appears normal.', 'info');
+                return;
+            }
+
+            addLogEntry('SECURITY ALERT: Suspicious ARP activity detected!', 'warning');
+            addLogEntry('Detection method: Multiple MAC addresses for same IP', 'warning');
+            addLogEntry('Recommendation: Investigate ARP tables for inconsistencies', 'warning');
+            
+            // Simulate detection tools
+            setTimeout(() => {
+                addLogEntry('ARP monitoring tool: Duplicate IP-MAC mappings found', 'warning');
+                addLogEntry('Potential ARP spoofing attack in progress', 'warning');
+            }, 1000);
+        }
+
+        function mitigateAttack() {
+            if (!attackActive) {
+                addLogEntry('No active attack to mitigate.', 'info');
+                return;
+            }
+
+            addLogEntry('MITIGATION: Implementing countermeasures...', 'info');
+            
+            // Simulate mitigation steps
+            setTimeout(() => {
+                addLogEntry('Step 1: Clearing ARP caches...', 'info');
+                setTimeout(() => {
+                    addLogEntry('Step 2: Implementing static ARP entries...', 'info');
+                    setTimeout(() => {
+                        addLogEntry('Step 3: Enabling ARP inspection...', 'info');
+                        setTimeout(() => {
+                            resetNetwork();
+                            addLogEntry('MITIGATION SUCCESSFUL: Network restored to secure state', 'info');
+                        }, 1000);
+                    }, 1000);
+                }, 1000);
+            }, 1000);
+        }
+
+        function resetNetwork() {
+            attackActive = false;
+            isAttacking = false;
+
+            // Reset visual effects
+            document.getElementById('attacker').classList.remove('active');
+            const connections = document.querySelectorAll('.connection');
+            connections.forEach(conn => conn.classList.remove('poisoned'));
+
+            // Reset ARP tables
+            updateArpTable('a', originalArpTables['pc-a']);
+            updateArpTable('b', originalArpTables['pc-b']);
+
+            // Reset device status
+            updateDeviceStatus('pc-a', 'normal');
+            updateDeviceStatus('pc-b', 'normal');
+
+            addLogEntry('NETWORK RESET: All devices restored to original state', 'info');
+            addLogEntry('ARP tables cleared and repopulated with legitimate entries', 'info');
+        }
+
+        // Add click handlers for devices
+        document.getElementById('computer1').onclick = () => {
+            addLogEntry('Computer A selected - IP: 192.168.1.10, MAC: aa:bb:cc:dd:ee:10', 'info');
+        };
+
+        document.getElementById('computer2').onclick = () => {
+            addLogEntry('Computer B selected - IP: 192.168.1.20, MAC: aa:bb:cc:dd:ee:02', 'info');
+        };
+
+        document.getElementById('router').onclick = () => {
+            addLogEntry('Router selected - IP: 192.168.1.1 (Gateway), MAC: aa:bb:cc:dd:ee:01', 'info');
+        };
+
+        document.getElementById('attacker').onclick = () => {
+            if (attackActive) {
+                addLogEntry('Attacker machine currently executing ARP poisoning attack', 'attack');
+            } else {
+                addLogEntry('Attacker machine - IP: 192.168.1.99, MAC: aa:bb:cc:dd:ee:99', 'info');
+            }
+        };
+
+        // Educational information
+        function showEducationalInfo() {
+            addLogEntry('=== ARP POISONING EDUCATIONAL INFO ===', 'info');
+            addLogEntry('ARP maps IP addresses to MAC addresses on local networks', 'info');
+            addLogEntry('ARP has no authentication - any device can respond to requests', 'info');
+            addLogEntry('Attackers send fake ARP replies to poison victim ARP tables', 'info');
+            addLogEntry('This allows Man-in-the-Middle attacks and traffic interception', 'info');
+            addLogEntry('Detection: Look for duplicate MAC addresses or suspicious ARP traffic', 'info');
+            addLogEntry('Mitigation: Static ARP entries, ARP inspection, network segmentation', 'info');
+        }
+
+        // Initialize the simulation with educational info
+        setTimeout(showEducationalInfo, 2000);
+    </script>
+</body>
+</html>

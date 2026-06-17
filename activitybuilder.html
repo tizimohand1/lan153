@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Course Simulator Prompt Builder</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1a1a1a;
+            --primary-green: #2e7d32;
+            --light-green: #e8f5e9;
+            --accent-green: #4caf50;
+            --border-color: #cccccc;
+            --dark-gray: #333333;
+            --shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--dark-gray);
+            color: var(--bg-color);
+            padding: 1.5rem 2rem;
+            border-bottom: 5px solid var(--primary-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header h1::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 24px;
+            background-color: var(--accent-green);
+            border-radius: 2px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: #bbbbbb;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: calc(100vh - 85px);
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Left Panel - Form */
+        .form-panel {
+            padding: 2rem;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            max-height: calc(100vh - 85px);
+            background-color: var(--bg-color);
+        }
+
+        /* Right Panel - Preview */
+        .preview-panel {
+            padding: 2rem;
+            background-color: var(--light-green);
+            overflow-y: auto;
+            max-height: calc(100vh - 85px);
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark-gray);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+        }
+
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: #ffffff;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-green);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1b5e20;
+        }
+
+        .btn-secondary {
+            background-color: var(--dark-gray);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #1a1a1a;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--dark-gray);
+            color: var(--dark-gray);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .prompt-output-container {
+            flex-grow: 1;
+            position: relative;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #promptPreview {
+            width: 100%;
+            height: 100%;
+            min-height: 450px;
+            padding: 1.25rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            border: none;
+            resize: none;
+            background: transparent;
+            color: var(--text-color);
+            outline: none;
+            white-space: pre-wrap;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--dark-gray);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 4px solid var(--accent-green);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .form-panel, .preview-panel {
+                max-height: none;
+                overflow-y: visible;
+            }
+            .preview-panel {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>AI Simulator Prompt Engine</h1>
+            <p>Faculty Toolkit for Interactive Learning</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="form-panel">
+            <div class="panel-title">
+                <span>Configuration Parameters</span>
+                <button class="btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;" onclick="loadExample()">⚡ Load Example</button>
+            </div>
+            
+            <form id="promptForm">
+                <div class="form-group">
+                    <label for="simulatorType">Simulator Framework Type</label>
+                    <select id="simulatorType" oninput="updatePrompt()">
+                        <option value="Technical troubleshooting simulator">Technical troubleshooting simulator</option>
+                        <option value="Cybersecurity incident response simulator">Cybersecurity incident response simulator</option>
+                        <option value="SOC analyst simulator">SOC analyst simulator</option>
+                        <option value="Networking configuration simulator">Networking configuration simulator</option>
+                        <option value="Secure coding simulator">Secure coding simulator</option>
+                        <option value="Cloud administration simulator">Cloud administration simulator</option>
+                        <option value="Network Security Controls Simulator">Network Security Controls Simulator</option>
+                        <option value="Encryption (symmetrical/Asymmetrical) and Hashing Simulator">Encryption (symmetrical/Asymmetrical) and Hashing Simulator</option>
+                        <option value="Vulnerability Identification Scan Simulator">Vulnerability Identification Scan Simulator</option>
+                        <option value="Operational Technologies Architecture Simulator">Operational Technologies Architecture Simulator</option>
+                        <option value="Firewall Simulator">Firewall Simulator</option>
+                        <option value="IDS/IPS System Simulator">IDS/IPS System Simulator</option>
+                        <option value="Identity & Access Management System Simulator">Identity & Access Management System Simulator</option>
+                        <option value="Asset Inventory Simulator">Asset Inventory Simulator</option>
+                        <option value="Vulnerability Scan & Incident Response Simulator">Vulnerability Scan & Incident Response Simulator</option>
+                        <option value="Security Governance & Policy Simulator">Security Governance & Policy Simulator</option>
+                        <option value="Risk Management & Analysis Simulator">Risk Management & Analysis Simulator</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="courseTitle">Course Title / Context</label>
+                    <input type="text" id="courseTitle" placeholder="e.g., Advanced Network Security, Ethical Hacking" oninput="updatePrompt()">
+                </div>
+
+                <div class="form-group">
+                    <label for="targetAudience">Target Learner Profile</label>
+                    <input type="text" id="targetAudience" placeholder="e.g., Junior IT Majors, Cyber Operations Seniors" oninput="updatePrompt()">
+                </div>
+
+                <div class="form-group">
+                    <label for="coreObjective">Primary Learning Objective</label>
+                    <textarea id="coreObjective" placeholder="What specific skill, protocol, or incident lifecycle process should the student master through this simulation?" oninput="updatePrompt()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="scenarioConfig">Scenario Settings & Technical Details</label>
+                    <textarea id="scenarioConfig" placeholder="Detail the architecture, system vulnerabilities, network infrastructure, or compliance standards involved (e.g., AWS, Linux, OWASP Top 10, NIST framework)." oninput="updatePrompt()"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="difficulty">Progression & Complexity Rules</label>
+                    <select id="difficulty" oninput="updatePrompt()">
+                        <option value="Guided / Introductory (Provides hints, gentle difficulty ramp)">Guided / Introductory</option>
+                        <option value="Intermediate (Standard production environment challenges, minimal scaffolding)">Intermediate</option>
+                        <option value="Advanced / Adversarial (Dynamic chaos elements, time-critical constraints, full sandbox logic)">Advanced / Adversarial</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="feedbackMechanism">Evaluation & Assessment Strategy</label>
+                    <textarea id="feedbackMechanism" placeholder="How should the AI evaluate answers? Provide strict mitigation criteria, dynamic score tracking, hint penalties, or post-incident review requirements." oninput="updatePrompt()"></textarea>
+                </div>
+            </form>
+            
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                <button class="btn-secondary" onclick="resetForm()">🔄 Reset Parameters</button>
+            </div>
+        </div>
+
+        <div class="preview-panel">
+            <div class="panel-title">Generated Prompt Preview</div>
+            
+            <div class="toolbar">
+                <button class="btn-primary" onclick="copyPrompt()">📋 Copy Prompt</button>
+                <button class="btn-secondary" onclick="downloadPrompt()">💾 Download as TXT</button>
+            </div>
+
+            <div class="prompt-output-container">
+                <textarea id="promptPreview" readonly></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="notification">Prompt copied to clipboard!</div>
+
+    <script>
+        function updatePrompt() {
+            const simulatorType = document.getElementById('simulatorType').value;
+            const courseTitle = document.getElementById('courseTitle').value || '[Insert Course Title]';
+            const targetAudience = document.getElementById('targetAudience').value || '[Insert Learner Profile]';
+            const coreObjective = document.getElementById('coreObjective').value || '[Insert Primary Learning Objective]';
+            const scenarioConfig = document.getElementById('scenarioConfig').value || '[Insert Scenario Architecture and Constraints]';
+            const difficulty = document.getElementById('difficulty').value;
+            const feedbackMechanism = document.getElementById('feedbackMechanism').value || '[Insert Evaluation Criteria/Scoring Rules]';
+
+            const generatedPrompt = `You are an advanced, adaptive educational engine specializing in creating high-fidelity interactive training environments. Your goal is to act as a **${simulatorType}** tailored for a course titled **"${courseTitle}"**, designed for **${targetAudience}**.
+
+### 1. CORE ROLE & ENVIRONMENT MODE
+* **Role Configuration:** You operate strictly as an interactive text-based educational sandbox engine. 
+* **Interface Rule:** Never break character, explain your AI backend mechanics, or provide the entire solution upfront unless explicitly commanded by system-level keys.
+* **Complexity Level:** ${difficulty}
+
+### 2. PRIMARY INSTRUCTIONAL OBJECTIVE
+The core competency the student must demonstrate is:
+> ${coreObjective}
+
+### 3. TECHNICAL SCENARIO ARCHITECTURE & INITIATION
+Initialize a realistic scenario using the following environment, protocols, and infrastructural constraints:
+${scenarioConfig}
+
+### 4. SIMULATION WORKFLOW & INTERACTION LOGIC
+1.  **Initialization:** Present a realistic technical brief or system alert notification indicating the system's baseline status or structural failure state.
+2.  **Turn-by-Turn Execution:** Await user technical commands, diagnostic checks, configuration adjustments, or mitigation selections. 
+3.  **State Management:** Maintain an implicit state matrix tracking network topology modifications, compromised assets, system patches, and error logs based on user actions. Respond dynamically with systemic consequences for incorrect inputs.
+4.  **Formatting Outputs:** Present logs, terminal outputs, packets, or configuration files within strict raw markdown code blocks.
+
+### 5. FEEDBACK, EVALUATION & GRADING STRATEGY
+Evaluate performance and guide the user dynamically via the following framework:
+${feedbackMechanism}
+
+---
+**STIMULUS INITIALIZATION COMMAND:** Begin the exercise by presenting the operational ecosystem's initial state, immediate technical logs, and the first prompt asking the learner for their initial deployment or investigative action.`;
+
+            document.getElementById('promptPreview').value = generatedPrompt;
+        }
+
+        function copyPrompt() {
+            const previewTextArea = document.getElementById('promptPreview');
+            previewTextArea.select();
+            previewTextArea.setSelectionRange(0, 99999); /* For mobile devices */
+            
+            navigator.clipboard.writeText(previewTextArea.value).then(() => {
+                showToast("Prompt copied to clipboard successfully!");
+            }).catch(() => {
+                showToast("Failed to copy. Please manually select and copy text.");
+            });
+        }
+
+        function downloadPrompt() {
+            const text = document.getElementById('promptPreview').value;
+            const type = document.getElementById('simulatorType').value.replace(/\s+/g, '-').toLowerCase();
+            const filename = `ai-${type}-prompt.txt`;
+            
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            showToast("Downloading prompt text file...");
+        }
+
+        function resetForm() {
+            if (confirm("Are you sure you want to clear all inputs? Your current work will be lost.")) {
+                document.getElementById('promptForm').reset();
+                updatePrompt();
+                showToast("Form fields reset.");
+            }
+        }
+
+        function loadExample() {
+            document.getElementById('simulatorType').value = "Cybersecurity incident response simulator";
+            document.getElementById('courseTitle').value = "CYS 410: Enterprise Incident Response & Defense";
+            document.getElementById('targetAudience').value = "Senior Cybersecurity undergraduates familiar with Linux CLI and Wireshark";
+            document.getElementById('coreObjective').value = "Identify unauthorized privilege escalation, isolate the affected Linux host, and analyze authentication logs to discover the persistence mechanism used by the threat actor.";
+            document.getElementById('scenarioConfig').value = "An Ubuntu 22.04 LTS production web server running an Apache API gateway. Splunk forwarder is configured. Attack vector involves a suspected CVE exploit leading to a web shell injection. The attacker is actively moving laterally across a /24 subnet infrastructure.";
+            document.getElementById('difficulty').value = "Advanced / Adversarial (Dynamic chaos elements, time-critical constraints, full sandbox logic)";
+            document.getElementById('feedbackMechanism').value = "Judge inputs strictly based on correct incident handling order (Containment before eradication). Deduct points for reckless steps like rebooting production servers without backing up volatility frames. Output a comprehensive 'Incident Assessment Metrics' report at completion.";
+            
+            updatePrompt();
+            showToast("Loaded cybersecurity sample configuration!");
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize with default template text on startup
+        window.onload = function() {
+            updatePrompt();
+        };
+    </script>
+</body>
+</html>

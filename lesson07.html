@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 7: Identity & Access Management | CompTIA Security+ SY0-701</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS — consistent with lessons 1–9
+   ============================================================ */
+:root {
+  --bg:          #ffffff;
+  --bg-soft:     #f7f9f7;
+  --bg-card:     #ffffff;
+  --border:      #d8e4d8;
+  --border-dark: #b2ccb2;
+  --text:        #111111;
+  --text-mid:    #3a4a3a;
+  --text-muted:  #5c6e5c;
+  --green-dark:  #1b5e20;
+  --green:       #2e7d32;
+  --green-mid:   #388e3c;
+  --green-light: #4caf50;
+  --green-pale:  #e8f5e9;
+  --green-pale2: #c8e6c9;
+  --red:         #b71c1c;
+  --red-pale:    #ffebee;
+  --red-mid:     #c62828;
+  --blue:        #1565c0;
+  --blue-pale:   #e3f2fd;
+  --purple:      #6a1b9a;
+  --purple-pale: #f3e5f5;
+  --amber:       #e65100;
+  --amber-pale:  #fff3e0;
+  --teal:        #00695c;
+  --teal-pale:   #e0f2f1;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.13);
+  --radius:      10px;
+  --radius-lg:   16px;
+}
+[data-theme="dark"] {
+  --bg:          #0e120e;
+  --bg-soft:     #141a14;
+  --bg-card:     #1a221a;
+  --border:      #2a3a2a;
+  --border-dark: #3a4e3a;
+  --text:        #e8f0e8;
+  --text-mid:    #b8ccb8;
+  --text-muted:  #7a9a7a;
+  --green-dark:  #81c784;
+  --green:       #4caf50;
+  --green-mid:   #66bb6a;
+  --green-light: #a5d6a7;
+  --green-pale:  #1a2e1a;
+  --green-pale2: #1e3a1e;
+  --red:         #ef9a9a;
+  --red-pale:    #2a1010;
+  --red-mid:     #ef9a9a;
+  --blue:        #90caf9;
+  --blue-pale:   #0d1f35;
+  --purple:      #ce93d8;
+  --purple-pale: #1f0d2a;
+  --amber:       #ffcc80;
+  --amber-pale:  #2a1a00;
+  --teal:        #80cbc4;
+  --teal-pale:   #0d2520;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.30);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.40);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.50);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.65; font-size: 16px;
+  transition: background 0.3s, color 0.3s;
+}
+h1,h2,h3,h4 { line-height: 1.25; font-weight: 700; }
+a { color: var(--green); text-decoration: none; }
+a:hover { text-decoration: underline; }
+ul { padding-left: 1.4em; }
+li { margin-bottom: 0.35em; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header {
+  background: var(--green-dark); color: #fff;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+.header-inner {
+  max-width: 1180px; margin: 0 auto; padding: 14px 24px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.brand-icon {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px; letter-spacing: -0.5px; color: #fff; flex-shrink: 0;
+}
+.brand-info h1 { font-size: 1rem; font-weight: 700; }
+.brand-info p  { font-size: 0.74rem; opacity: 0.7; margin-top: 1px; }
+.header-right  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lesson-badge {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+  color: #fff; font-size: 0.7rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.07em;
+}
+.nav-link {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px;
+  transition: background 0.2s; text-decoration: none; display: inline-block;
+}
+.nav-link:hover { background: rgba(255,255,255,0.25); text-decoration: none; }
+.theme-btn {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: background 0.2s;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* ============================================================
+   HERO — amber-tinted for "identity/access" domain feel
+   ============================================================ */
+.hero {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 42%, #e6510022 100%);
+  color: #fff; padding: 48px 24px 40px;
+  position: relative; overflow: hidden;
+}
+.hero::after {
+  content: '07';
+  position: absolute; right: 40px; bottom: -10px;
+  font-size: 120px; font-weight: 900;
+  opacity: 0.07; line-height: 1; pointer-events: none;
+}
+.hero-inner { max-width: 860px; margin: 0 auto; }
+.hero-eyebrow {
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; opacity: 0.8; margin-bottom: 10px;
+}
+.hero h2 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+.hero-sub { font-size: 1rem; opacity: 0.85; max-width: 640px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.hero-tag {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+  font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page-body { max-width: 1180px; margin: 0 auto; padding: 36px 24px 64px; }
+.section-gap { margin-bottom: 48px; }
+.section-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--green);
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--green-pale2);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: block; width: 4px; height: 16px;
+  background: var(--green); border-radius: 2px;
+}
+
+/* ============================================================
+   OBJECTIVES
+   ============================================================ */
+.objectives-box {
+  background: var(--green-pale); border: 1px solid var(--green-pale2);
+  border-left: 5px solid var(--green); border-radius: var(--radius); padding: 24px 28px;
+}
+.objectives-box h3 { color: var(--green-dark); margin-bottom: 12px; font-size: 1rem; }
+.objectives-box li { margin-bottom: 8px; color: var(--text-mid); font-size: 0.93rem; }
+.objectives-box li::marker { color: var(--green); }
+
+/* ============================================================
+   KEY TERMS
+   ============================================================ */
+.terms-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;
+}
+.term-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+}
+.term-name { font-weight: 700; font-size: 0.88rem; color: var(--green-dark); margin-bottom: 4px; }
+.term-def  { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; }
+
+/* ============================================================
+   INTRO CARD
+   ============================================================ */
+.intro-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 5px solid var(--green-light);
+  border-radius: var(--radius-lg); padding: 28px 32px; box-shadow: var(--shadow-sm);
+}
+.intro-card p { color: var(--text-mid); font-size: 0.97rem; line-height: 1.75; }
+.intro-card p + p { margin-top: 12px; }
+
+/* ============================================================
+   FLIP CARDS
+   ============================================================ */
+.flip-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;
+}
+.flip-wrapper { perspective: 1000px; height: 240px; cursor: pointer; }
+.flip-inner {
+  position: relative; width: 100%; height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4,0.2,0.2,1);
+  transform-style: preserve-3d;
+}
+.flip-wrapper.flipped .flip-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back {
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-lg); padding: 24px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border: 1px solid var(--border); box-shadow: var(--shadow-md);
+}
+.flip-front { background: var(--bg-card); }
+.flip-back  { background: var(--green-dark); color: #fff; transform: rotateY(180deg); }
+.flip-num   { font-size: 2.5rem; font-weight: 900; color: var(--green-pale2); line-height: 1; }
+.flip-front h3 { font-size: 1.05rem; color: var(--green-dark); margin-bottom: 6px; }
+.flip-front p  { font-size: 0.82rem; color: var(--text-muted); }
+.flip-hint { font-size: 0.7rem; color: var(--text-muted); }
+.flip-back h3  { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; opacity: 0.9; }
+.flip-back p   { font-size: 0.82rem; opacity: 0.85; line-height: 1.55; flex: 1; }
+.flip-back a.dive-link {
+  display: inline-block; background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 0.78rem; font-weight: 700;
+  padding: 6px 14px; border-radius: 20px; text-decoration: none;
+  transition: background 0.2s; margin-top: 10px; align-self: flex-start;
+}
+.flip-back a.dive-link:hover { background: rgba(255,255,255,0.28); }
+.flip-card-actions {
+  display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; align-self: flex-start;
+}
+.flip-card-actions a {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 0.75rem; font-weight: 700;
+  padding: 5px 12px; border-radius: 20px; text-decoration: none;
+  transition: background 0.2s; cursor: pointer;
+}
+.flip-card-actions a:hover { background: rgba(255,255,255,0.28); text-decoration: none; }
+
+/* ============================================================
+   TOPIC SECTIONS
+   ============================================================ */
+.topic-section {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  margin-bottom: 28px; box-shadow: var(--shadow-sm);
+}
+.topic-header {
+  background: var(--green); color: #fff;
+  padding: 18px 28px; display: flex; align-items: center; gap: 14px;
+}
+.topic-header-num {
+  width: 36px; height: 36px; background: rgba(0,0,0,0.2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 900; flex-shrink: 0;
+}
+.topic-header h3 { font-size: 1.1rem; }
+.topic-header p  { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+.topic-body { padding: 28px; }
+.topic-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 18px; }
+.topic-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 18px; }
+
+.concept-block {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.concept-block h4 {
+  font-size: 0.92rem; color: var(--green-dark);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.concept-icon {
+  width: 24px; height: 24px; background: var(--green-pale2);
+  border-radius: 6px; display: inline-flex; align-items: center;
+  justify-content: center; font-size: 13px;
+}
+.concept-block p, .concept-block ul { font-size: 0.87rem; color: var(--text-mid); line-height: 1.6; }
+
+/* Color-border concept cards */
+.ctrl-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius); padding: 16px;
+}
+.ctrl-card.blue   { border-left-color: var(--blue); }
+.ctrl-card.purple { border-left-color: var(--purple); }
+.ctrl-card.amber  { border-left-color: var(--amber); }
+.ctrl-card.teal   { border-left-color: var(--teal); }
+.ctrl-card.red    { border-left-color: var(--red); }
+.ctrl-card h4 {
+  font-size: 0.9rem; margin-bottom: 8px; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.ctrl-card p, .ctrl-card ul { font-size: 0.84rem; color: var(--text-mid); line-height: 1.55; }
+.ctrl-card ul { margin-top: 6px; }
+
+/* Joiner-Mover-Leaver phases strip */
+.jml-strip {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border); margin-top: 14px;
+}
+.jml-phase {
+  padding: 14px 16px; text-align: center; font-size: 0.84rem; line-height: 1.5;
+}
+.jml-phase strong { display: block; font-size: 1rem; margin-bottom: 3px; }
+.jml-green  { background: var(--green-pale); color: var(--green-dark); border-right: 1px solid var(--border); }
+.jml-amber  { background: var(--amber-pale); color: var(--amber);      border-right: 1px solid var(--border); }
+.jml-red    { background: var(--red-pale);   color: var(--red-mid); }
+
+/* SSO vs Federation comparison */
+.compare-table {
+  width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.84rem;
+}
+.compare-table th {
+  padding: 9px 14px; text-align: left; font-size: 0.79rem; letter-spacing: 0.04em; color: #fff;
+}
+.th-green  { background: var(--green-dark); }
+.th-amber  { background: var(--amber); }
+.th-label  { background: var(--bg-soft); color: var(--text-mid); }
+.compare-table td {
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-mid); vertical-align: top;
+}
+.compare-table tr:nth-child(even) td { background: var(--bg-soft); }
+.compare-table tr:hover td { background: var(--green-pale); }
+
+/* Callouts */
+.callout {
+  background: var(--green-pale); border-left: 4px solid var(--green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout strong { color: var(--green-dark); }
+.callout-amber {
+  background: var(--amber-pale); border-left: 4px solid var(--amber);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-amber strong { color: var(--amber); }
+.callout-blue {
+  background: var(--blue-pale); border-left: 4px solid var(--blue);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-blue strong { color: var(--blue); }
+.callout-red {
+  background: var(--red-pale); border-left: 4px solid var(--red);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-red strong { color: var(--red-mid); }
+.callout-purple {
+  background: var(--purple-pale); border-left: 4px solid var(--purple);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-purple strong { color: var(--purple); }
+
+/* ============================================================
+   ACTIVITIES — common
+   ============================================================ */
+.activity-box {
+  background: var(--bg-card); border: 2px solid var(--green-pale2);
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md);
+}
+.activity-header {
+  background: var(--green-dark); color: #fff;
+  padding: 16px 24px; display: flex; align-items: center; gap: 12px;
+}
+.activity-badge {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+  font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.activity-header h3 { font-size: 1rem; }
+.activity-header p  { font-size: 0.8rem; opacity: 0.8; margin-top: 2px; }
+.activity-body { padding: 24px; }
+.activity-instructions {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 16px;
+  font-size: 0.85rem; color: var(--text-mid); margin-bottom: 20px;
+}
+.activity-result {
+  margin-top: 14px; padding: 12px 16px; border-radius: var(--radius);
+  font-size: 0.88rem; font-weight: 600; display: none;
+}
+.result-pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.result-fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.activity-actions { margin-top: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--green-dark); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--green); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--bg-soft); color: var(--text);
+  border: 1px solid var(--border-dark); padding: 10px 22px;
+  border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: var(--border); }
+
+/* ============================================================
+   ACTIVITY 1 — DRAG & DROP (IAM concept sort)
+   ============================================================ */
+.drag-pool {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 20px; min-height: 56px;
+  background: var(--bg-soft); border: 1px dashed var(--border-dark);
+  border-radius: var(--radius); padding: 12px;
+}
+.drag-item {
+  background: var(--green-dark); color: #fff;
+  padding: 7px 13px; border-radius: 20px;
+  font-size: 0.79rem; font-weight: 600;
+  cursor: grab; user-select: none;
+  transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.drag-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.drag-item.dragging { opacity: 0.35; }
+.drop-zones-3 {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+}
+.drop-zone {
+  border: 2px dashed var(--border-dark); border-radius: var(--radius);
+  padding: 12px; min-height: 110px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.drop-zone.drag-over { border-color: var(--green); background: var(--green-pale); }
+.drop-zone-label {
+  font-size: 0.74rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-muted);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.dz-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dropped-item {
+  display: inline-block; padding: 4px 11px; border-radius: 20px;
+  font-size: 0.75rem; font-weight: 600; margin: 3px;
+}
+.dropped-item.correct   { background: var(--green-pale2); color: var(--green-dark); border: 1px solid var(--green); }
+.dropped-item.incorrect { background: var(--red-pale); color: var(--red); border: 1px solid var(--red); animation: shake 0.35s; }
+.dropped-item .rm { margin-left: 5px; cursor: pointer; opacity: 0.6; }
+.dropped-item .rm:hover { opacity: 1; }
+@keyframes shake {
+  0%,100%{ transform:translateX(0); }
+  20%{ transform:translateX(-5px); }
+  40%{ transform:translateX(5px); }
+  60%{ transform:translateX(-3px); }
+  80%{ transform:translateX(3px); }
+}
+
+/* ============================================================
+   ACTIVITY 2 — SCENARIO ANALYZER
+   ============================================================ */
+.scenario-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.scenario-tab {
+  background: var(--bg-soft); border: 1px solid var(--border-dark);
+  color: var(--text-mid); padding: 8px 16px; border-radius: 20px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.scenario-tab.active, .scenario-tab:hover {
+  background: var(--green-dark); color: #fff; border-color: var(--green-dark);
+}
+.scenario-panel { display: none; }
+.scenario-panel.active { display: block; }
+.scenario-desc-box {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px; margin-bottom: 16px;
+}
+.scenario-title { font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 6px; }
+.scenario-body  { font-size: 0.88rem; color: var(--text-mid); line-height: 1.6; }
+.sc-questions { display: flex; flex-direction: column; gap: 12px; }
+.sc-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.sc-q-text { font-size: 0.9rem; font-weight: 600; margin-bottom: 10px; color: var(--text); }
+.sc-opts { display: flex; flex-direction: column; gap: 7px; }
+.sc-opt {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 12px; background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: 8px;
+  cursor: pointer; font-size: 0.86rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.sc-opt:hover { background: var(--green-pale); border-color: var(--green-light); }
+.sc-opt input { flex-shrink: 0; margin-top: 2px; accent-color: var(--green); }
+.sc-opt.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.sc-opt.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.sc-fb {
+  margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+  font-size: 0.84rem; display: none;
+}
+.sc-fb.show { display: block; }
+.sc-fb.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.sc-fb.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+.quiz-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 16px; transition: border-color 0.3s;
+}
+.quiz-q.answered-correct { border-color: var(--green); background: var(--green-pale); }
+.quiz-q.answered-wrong   { border-color: var(--red);   background: var(--red-pale); }
+.q-num  { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+.q-text { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.45; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-option {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px; background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  cursor: pointer; font-size: 0.88rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.q-option:hover { background: var(--green-pale); border-color: var(--green-light); }
+.q-option input[type="radio"] { margin-top: 1px; flex-shrink: 0; accent-color: var(--green); }
+.q-option.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.q-option.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.q-feedback { margin-top: 12px; padding: 12px 16px; border-radius: var(--radius); font-size: 0.85rem; line-height: 1.55; display: none; }
+.q-feedback.show { display: block; }
+.q-feedback.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.q-feedback.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.quiz-submit-row { margin-top: 20px; display: flex; align-items: center; gap: 14px; }
+#quiz-result {
+  padding: 18px 24px; border-radius: var(--radius-lg);
+  font-size: 1rem; font-weight: 700; display: none; margin-top: 20px;
+}
+.quiz-pass { background: var(--green-pale); color: var(--green-dark); border: 2px solid var(--green-pale2); }
+.quiz-fail { background: var(--red-pale); color: var(--red); border: 2px solid #ffcdd2; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.page-footer {
+  background: var(--bg-soft); border-top: 1px solid var(--border);
+  padding: 24px; text-align: center; font-size: 0.78rem; color: var(--text-muted);
+}
+.footer-nav { display: flex; justify-content: center; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
+.footer-nav a { color: var(--green); font-weight: 600; font-size: 0.85rem; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .hero h2 { font-size: 1.4rem; }
+  .topic-grid, .topic-grid-3, .drop-zones-3, .jml-strip { grid-template-columns: 1fr; }
+  .flip-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="brand-icon">S+</div>
+      <div class="brand-info">
+        <h1>CompTIA Security+ SY0-701</h1>
+        <p>Lesson 7 of 12 &mdash; Identity &amp; Access Management</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="lesson-badge">Day 7</span>
+      <a href="index.html" class="nav-link">&#8592; Course Home</a>
+      <a href="lesson06.html" class="nav-link">&#8592; Lesson 6</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Lesson 7 &mdash; Security Operations (28% of exam)</div>
+    <h2>Identity &amp; Access Management</h2>
+    <p class="hero-sub">Authentication factors, MFA, SSO, federation, the AAA framework, access control models, privilege creep, the Joiner-Mover-Leaver lifecycle, and Privileged Access Management — controlling who can access what, when, and for how long.</p>
+    <div class="hero-meta">
+      <span class="hero-tag">📖 3 Topics</span>
+      <span class="hero-tag">🎯 2 Activities</span>
+      <span class="hero-tag">📝 5-Question Quiz</span>
+      <span class="hero-tag">⏱ ~60 min</span>
+      <span class="hero-tag">Domain: Security Operations</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE BODY
+     ============================================================ -->
+<div class="page-body">
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="section-gap">
+    <div class="section-label">Learning Objectives</div>
+    <div class="objectives-box">
+      <h3>By the end of this lesson, you will be able to:</h3>
+      <ul>
+        <li>Explain the AAA framework — Authentication, Authorization, and Accounting — and describe how RADIUS and TACACS+ implement it in enterprise environments.</li>
+        <li>Compare the five authentication factor types and identify which combinations constitute true Multi-Factor Authentication versus weak single-category implementations.</li>
+        <li>Distinguish Single Sign-On (SSO) from Identity Federation and explain the protocols — Kerberos, SAML, OAuth 2.0, and OIDC — associated with each.</li>
+        <li>Differentiate access control models (DAC, MAC, RBAC, ABAC) and select the appropriate model for a described organizational context.</li>
+        <li>Explain the Joiner-Mover-Leaver lifecycle and describe the security failures — privilege creep and orphaned accounts — that occur when it is poorly managed.</li>
+        <li>Describe Privileged Access Management (PAM) capabilities — credential vaulting, just-in-time access, session recording, and credential rotation — and justify their use for protecting administrative accounts.</li>
+        <li>Apply IAM principles to a real-world scenario, identifying control gaps and recommending appropriate identity governance controls.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- KEY TERMS -->
+  <div class="section-gap">
+    <div class="section-label">Key Terms</div>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">AAA (Authentication, Authorization, Accounting)</div>
+        <div class="term-def">The three-pillar framework underpinning enterprise access control. Authentication proves identity; Authorization grants rights; Accounting records activity. Implemented via RADIUS or TACACS+ in network access scenarios.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">MFA (Multi-Factor Authentication)</div>
+        <div class="term-def">Requiring credentials from two or more distinct factor categories. A password + a PIN is NOT MFA (both are Type 1: Something you know). A password + a hardware token IS MFA (Type 1 + Type 2).</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">SSO (Single Sign-On)</div>
+        <div class="term-def">One authentication event grants access to multiple integrated systems within a single organizational trust boundary. Implemented via Kerberos and LDAP in Active Directory environments.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">RBAC (Role-Based Access Control)</div>
+        <div class="term-def">A model that assigns permissions to defined job roles rather than individual users. When a user changes positions, role reassignment automatically adjusts their permissions — reducing privilege creep.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">PAM (Privileged Access Management)</div>
+        <div class="term-def">A security solution that vaults, controls, and audits elevated administrative credentials through credential vaulting, just-in-time access, session recording, and automated credential rotation.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Deprovisioning</div>
+        <div class="term-def">The systematic revocation of all access rights, session tokens, credentials, and accounts when a user exits or transfers. Failure to deprovision creates orphaned accounts — active accounts with no legitimate owner.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Privilege Creep</div>
+        <div class="term-def">The gradual accumulation of access rights beyond what a user's current role requires — typically caused by adding new permissions without revoking old ones during role changes. Also called permission sprawl.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Federation</div>
+        <div class="term-def">Identity trust established across organizational boundaries, allowing users to authenticate with their home organization's credentials and access external systems. Implemented via SAML, OAuth 2.0, and OpenID Connect (OIDC).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="section-gap">
+    <div class="section-label">Topic Introduction</div>
+    <div class="intro-card">
+      <p>Every security control you have studied so far — firewalls, IDS/IPS, DLP, endpoint protection — ultimately protects resources from people who should not have access to them. Identity and Access Management is the discipline that defines <em>who</em> those people are, <em>what</em> they are allowed to do, and <em>when</em> their access should end. Without strong IAM, every other security control can be bypassed by an attacker who obtains a valid credential.</p>
+      <p>IAM is one of the most heavily tested areas of the Security+ exam because it combines technical mechanisms (MFA, SSO, Kerberos) with organizational processes (user provisioning, access reviews, offboarding). The scenario questions in this domain test your ability to identify IAM failures in realistic situations — a user who still has access six months after changing departments, an admin account with persistent privileges that should be temporary, a contractor who left but whose VPN account is still active. By the end of this lesson, you will recognize these patterns instantly and know exactly which control addresses each failure.</p>
+    </div>
+  </div>
+
+  <!-- OPENING SCENARIO -->
+  <div class="section-gap">
+    <div class="section-label">Opening Scenario</div>
+    <div style="background:var(--bg-card);border:2px dashed var(--green);border-radius:var(--radius-lg);padding:24px 28px;">
+      <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:10px;">🧩 The Joiner-Mover-Leaver Problem — Dr. Chen's Hospital</div>
+      <p style="font-size:0.92rem;color:var(--text-mid);line-height:1.7;margin-bottom:14px;">A hospital network administrator notices that Dr. Chen — who transferred from Oncology to the Emergency Department six months ago — still has full access to the oncology patient database, chemotherapy medication orders, and the departmental budget system. Last week, she was assigned ED access on top of her existing rights. Meanwhile, a former IT contractor who left the organization in January still has an active VPN account with no owner.</p>
+      <p style="font-size:0.88rem;color:var(--text-mid);margin-bottom:14px;"><strong style="color:var(--text);">Discussion prompt:</strong> What IAM principles were violated? What could go wrong? Which controls should have prevented each failure?</p>
+      <div class="jml-strip">
+        <div class="jml-phase jml-green"><strong>🟢 Joiner</strong>New hire provisioned with role-appropriate, minimum required access via an IdP onboarding workflow</div>
+        <div class="jml-phase jml-amber"><strong>🟡 Mover</strong>Transfer — old role access is NOT revoked, new role access is added → privilege creep and permission sprawl</div>
+        <div class="jml-phase jml-red"><strong>🔴 Leaver</strong>Departure without deprovisioning → orphaned account — a standing attack surface for any attacker who finds the credentials</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLIP CARDS -->
+  <div class="section-gap">
+    <div class="section-label">Topic Navigation — Click a Card to Explore</div>
+    <div class="flip-grid">
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">01</div>
+              <h3>AAA Framework &amp; Authentication Factors</h3>
+              <p>The three pillars of access control — and the five factor types that define what MFA really means.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>AAA &amp; Authentication</h3>
+              <p>AAA: prove who you are (Authentication), determine what you can do (Authorization), log what you did (Accounting). MFA requires credentials from two distinct factor categories. Password + PIN = NOT MFA. Password + TOTP token = MFA.</p>
+            </div>
+            <img src="lesson07-part01.png" alt="AAA & Authentication Factors preview" style="width:100%;border-radius:6px;margin-top:10px;border:1px solid rgba(255,255,255,0.2);">
+            <div class="flip-card-actions">
+              <a href="lesson07-part01.png" target="_blank">&#128065; Open</a>
+              <a href="lesson07-part01.png" download="lesson07-part01.png">&#8595; Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">02</div>
+              <h3>SSO, Federation &amp; Access Control Models</h3>
+              <p>One credential for many systems — and the protocols (Kerberos, SAML, OAuth) that enable trust within and across organizational boundaries.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>SSO, Federation &amp; Access Control</h3>
+              <p>SSO = single org (Kerberos/LDAP). Federation = cross-org (SAML, OAuth 2.0, OIDC). DAC, MAC, RBAC, ABAC each assign permissions differently — RBAC aligns to job roles and is most exam-tested. Least privilege limits blast radius of any compromise.</p>
+            </div>
+            <img src="lesson07-part02.png" alt="SSO, Federation & Access Control Models preview" style="width:100%;border-radius:6px;margin-top:10px;border:1px solid rgba(255,255,255,0.2);">
+            <div class="flip-card-actions">
+              <a href="lesson07-part02.png" target="_blank">&#128065; Open</a>
+              <a href="lesson07-part02.png" download="lesson07-part02.png">&#8595; Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">03</div>
+              <h3>Identity Lifecycle &amp; PAM</h3>
+              <p>Joiner-Mover-Leaver governance, privilege creep prevention, orphaned account risk, and Privileged Access Management for protecting admin credentials.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Lifecycle &amp; PAM</h3>
+              <p>The Joiner-Mover-Leaver lifecycle must revoke old access during moves and all access on departure. Orphaned accounts are standing attack surfaces. PAM vaults admin credentials, enforces JIT access, records sessions, and rotates passwords automatically after each use.</p>
+            </div>
+            <img src="lesson07-part03.png" alt="Identity Lifecycle & PAM preview" style="width:100%;border-radius:6px;margin-top:10px;border:1px solid rgba(255,255,255,0.2);">
+            <div class="flip-card-actions">
+              <a href="lesson07-part03.png" target="_blank">&#128065; Open</a>
+              <a href="lesson07-part03.png" download="lesson07-part03.png">&#8595; Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 1 — AAA & AUTHENTICATION
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 1 Content</div>
+    <div class="topic-section">
+      <div class="topic-header">
+        <div class="topic-header-num">1</div>
+        <div>
+          <h3>AAA Framework &amp; Authentication Factors</h3>
+          <p>The foundational access control model and the five types of authentication credentials</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Every enterprise access decision is governed by the AAA framework. Before any resource is accessed, a system must answer three questions: who is this user? what are they allowed to do? and what did they do while they were here? Authentication, Authorization, and Accounting each answer one of these questions.</p>
+
+        <div class="callout">
+          <strong>Analogy — Hotel Check-In:</strong> AAA maps perfectly to checking into a hotel. Presenting your ID at the front desk is <strong>Authentication</strong> — proving you are who you claim to be. Getting a room-specific key card that only opens your floor's elevator and your room is <strong>Authorization</strong> — you are granted access to only what you are entitled to. The hotel's electronic lock system recording every time your card is used (and when) is <strong>Accounting</strong> — an audit trail of your activity. If any of the three fail, security breaks down.
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:22px;margin-bottom:14px;">The AAA Framework</h4>
+        <div class="topic-grid">
+          <div class="ctrl-card blue">
+            <h4>🔐 Authentication — Proving Identity</h4>
+            <p>The process of verifying that a user, device, or system is who or what it claims to be. Authentication happens before any authorization decision can be made.</p>
+            <ul>
+              <li><strong>What it answers:</strong> Are you who you say you are?</li>
+              <li><strong>Methods:</strong> Passwords, biometrics, certificates, hardware tokens, smart cards</li>
+              <li><strong>Protocols:</strong> Kerberos, LDAP, RADIUS, TACACS+, SAML, OAuth</li>
+              <li><strong>Failure risk:</strong> Credential theft, brute force, phishing, credential stuffing</li>
+            </ul>
+          </div>
+          <div class="ctrl-card teal">
+            <h4>🛡️ Authorization — Granting Rights</h4>
+            <p>Determining what an authenticated identity is permitted to do. Authorization is not the same as authentication — a fully authenticated user may still be denied access if they lack the required permissions.</p>
+            <ul>
+              <li><strong>What it answers:</strong> What are you allowed to do?</li>
+              <li><strong>Models:</strong> RBAC, ABAC, MAC, DAC</li>
+              <li><strong>Principle:</strong> Least Privilege — grant only the minimum permissions required</li>
+              <li><strong>Common failure:</strong> Over-provisioning, privilege creep, excessive group memberships</li>
+            </ul>
+          </div>
+          <div class="ctrl-card purple">
+            <h4>📋 Accounting — Recording Activity</h4>
+            <p>Logging and auditing what authenticated, authorized users actually do — creating the audit trail that supports forensic investigation, compliance reporting, and insider threat detection.</p>
+            <ul>
+              <li><strong>What it answers:</strong> What did you do while you were here?</li>
+              <li><strong>Outputs:</strong> Audit logs, SIEM events, session recordings, access reports</li>
+              <li><strong>RADIUS vs. TACACS+:</strong> Both implement AAA. TACACS+ separates the three functions and encrypts the entire payload — preferred for network device administration. RADIUS encrypts only the password field.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">The Five Authentication Factor Types</h4>
+        <div class="topic-grid">
+          <div class="concept-block">
+            <h4><span class="concept-icon">🔑</span> Factor Types — MFA Requires Different Categories</h4>
+            <p>MFA is not simply "two passwords." It requires credentials from two or more <em>distinct</em> factor categories. Combining factors from the same category is two-step verification, not true multi-factor authentication.</p>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
+              <div style="padding:8px 14px;border-radius:8px;background:var(--blue-pale);border:1px solid var(--blue);font-size:0.82rem;">
+                <strong style="color:var(--blue);">Type 1 — Something you KNOW:</strong> Password, PIN, passphrase, security question. Most common; most attacked.
+              </div>
+              <div style="padding:8px 14px;border-radius:8px;background:var(--green-pale);border:1px solid var(--green);font-size:0.82rem;">
+                <strong style="color:var(--green-dark);">Type 2 — Something you HAVE:</strong> TOTP authenticator app, FIDO2 hardware key (YubiKey), smart card, RSA token, PIV card.
+              </div>
+              <div style="padding:8px 14px;border-radius:8px;background:var(--purple-pale);border:1px solid var(--purple);font-size:0.82rem;">
+                <strong style="color:var(--purple);">Type 3 — Something you ARE:</strong> Fingerprint, iris scan, facial recognition, voice recognition (biometrics).
+              </div>
+              <div style="padding:8px 14px;border-radius:8px;background:var(--amber-pale);border:1px solid var(--amber);font-size:0.82rem;">
+                <strong style="color:var(--amber);">Type 4 — Something you DO:</strong> Keystroke dynamics, gait analysis, mouse movement patterns (behavioral biometrics).
+              </div>
+              <div style="padding:8px 14px;border-radius:8px;background:var(--teal-pale);border:1px solid var(--teal);font-size:0.82rem;">
+                <strong style="color:var(--teal);">Type 5 — Somewhere you ARE:</strong> GPS geolocation, IP address geolocation, network context (connected to corporate Wi-Fi).
+              </div>
+            </div>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">⚠️</span> MFA Exam Traps &amp; Attack Resistance</h4>
+            <p><strong>Password + PIN = NOT MFA</strong> — both are Type 1 (Something you know). Two facts are not two factors.</p>
+            <p style="margin-top:8px;"><strong>Password + SMS code = Weak MFA</strong> — SMS is Type 2 but vulnerable to SIM-swapping. Attackers convince the mobile carrier to transfer your number to a SIM they control.</p>
+            <p style="margin-top:8px;"><strong>Password + TOTP app = Strong MFA</strong> — Time-based One-Time Passwords generated locally are not interceptable via SIM-swap.</p>
+            <p style="margin-top:8px;"><strong>Password + FIDO2 hardware key = Strongest MFA</strong> — Phishing-resistant. The key performs a cryptographic challenge-response that is domain-bound — a fake login page cannot steal a FIDO2 response.</p>
+            <div class="callout-amber" style="margin-top:10px;">
+              <strong>Exam tip:</strong> CompTIA frequently asks which combination constitutes MFA. Always verify the factor categories are different. Also know that passwordless authentication (FIDO2/WebAuthn) still qualifies as MFA when it combines device possession with biometric verification.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 2 — SSO, FEDERATION & ACCESS CONTROL MODELS
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 2 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-dark);">
+        <div class="topic-header-num">2</div>
+        <div>
+          <h3>SSO, Federation &amp; Access Control Models</h3>
+          <p>Authenticate once, access many — and choose the right permission model for your organization</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Users authenticating to dozens of systems individually creates password fatigue, reuse, and weak credentials. SSO and Federation solve this — but with different scopes and different risk profiles. Access control models determine how permissions are assigned once a user is authenticated.</p>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">SSO vs. Identity Federation</h4>
+        <div class="topic-grid">
+          <div class="ctrl-card">
+            <h4>🏢 SSO — Single Sign-On (Within One Organization)</h4>
+            <p>One authentication event grants access to multiple systems within a single trust boundary — typically an Active Directory domain. The user logs in once; Kerberos tickets or LDAP sessions are used to access integrated internal systems transparently.</p>
+            <ul>
+              <li><strong>Protocols:</strong> Kerberos (Active Directory), LDAP</li>
+              <li><strong>Scope:</strong> Single organization, single domain</li>
+              <li><strong>Benefit:</strong> Eliminates password fatigue; reduces password reuse; centralizes authentication management</li>
+              <li><strong>Risk:</strong> Single point of failure — if the SSO provider is compromised, all integrated systems are compromised simultaneously. MFA on the SSO login is non-negotiable.</li>
+            </ul>
+          </div>
+          <div class="ctrl-card blue">
+            <h4>✈️ Federation — Cross-Organizational Identity Trust</h4>
+            <p>Identity trust extended across organizational boundaries — a user authenticates with their home organization's Identity Provider (IdP) and can access external services (Service Providers / SPs) without separate credentials.</p>
+            <ul>
+              <li><strong>Protocols:</strong> SAML 2.0 (enterprise apps), OAuth 2.0 (API authorization), OpenID Connect / OIDC (authentication layer on OAuth)</li>
+              <li><strong>Example:</strong> "Login with Google" — Google is the IdP; the third-party app is the SP</li>
+              <li><strong>Example:</strong> University student using campus credentials to access research databases from other institutions</li>
+              <li><strong>Risk:</strong> Trust chain attacks — if the IdP is compromised, all federated SPs are compromised</li>
+            </ul>
+          </div>
+        </div>
+
+        <table class="compare-table" style="margin-top:16px;">
+          <thead>
+            <tr>
+              <th class="th-label" style="width:20%">Feature</th>
+              <th class="th-green">SSO</th>
+              <th class="th-amber">Federation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Scope</strong></td><td>Single organization / domain</td><td>Cross-organization, cloud services</td></tr>
+            <tr><td><strong>Primary protocols</strong></td><td>Kerberos, LDAP</td><td>SAML, OAuth 2.0, OIDC</td></tr>
+            <tr><td><strong>Key risk</strong></td><td>Single point of authentication failure</td><td>Trust chain compromise via IdP</td></tr>
+            <tr><td><strong>Best analogy</strong></td><td>Master key for all doors in your building</td><td>TSA PreCheck trusted across all airlines</td></tr>
+          </tbody>
+        </table>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Access Control Models</h4>
+        <div class="topic-grid">
+          <div class="ctrl-card amber">
+            <h4>📋 DAC — Discretionary Access Control</h4>
+            <p>The resource owner decides who has access. Each object (file, folder) has an Access Control List (ACL) that the owner controls.</p>
+            <ul>
+              <li><strong>Example:</strong> Windows NTFS file permissions — the file owner can grant or revoke access to anyone</li>
+              <li><strong>Strength:</strong> Flexible; owner-managed</li>
+              <li><strong>Weakness:</strong> Owners may grant too broadly; no central oversight; permissions drift over time</li>
+            </ul>
+          </div>
+          <div class="ctrl-card red">
+            <h4>🔒 MAC — Mandatory Access Control</h4>
+            <p>Access is controlled by the system based on security labels and clearance levels. Users cannot override the system's access decisions — even resource owners cannot grant access beyond their clearance level.</p>
+            <ul>
+              <li><strong>Example:</strong> Military classification systems (Top Secret, Secret, Confidential) — a Secret-cleared user cannot access Top Secret documents even if the TS document owner wants them to</li>
+              <li><strong>Strength:</strong> Highest security; no discretion</li>
+              <li><strong>Weakness:</strong> Inflexible; complex administration</li>
+            </ul>
+          </div>
+          <div class="ctrl-card">
+            <h4>👥 RBAC — Role-Based Access Control</h4>
+            <p>Permissions are assigned to job roles; users inherit permissions through role membership. Role changes automatically adjust access — the most common model in enterprise environments and the most tested on Security+.</p>
+            <ul>
+              <li><strong>Example:</strong> Hospital — "Nurse" role has medication dispensing rights; "Billing Clerk" role has financial records access. A nurse promoted to billing manager has their role changed, not individual permissions adjusted.</li>
+              <li><strong>Strength:</strong> Scalable; easy to manage; naturally enforces least privilege by job function</li>
+            </ul>
+          </div>
+          <div class="ctrl-card purple">
+            <h4>🎯 ABAC — Attribute-Based Access Control</h4>
+            <p>Access decisions are based on attributes — characteristics of the user, resource, and environment evaluated at access time. More granular than RBAC.</p>
+            <ul>
+              <li><strong>Example:</strong> A policy that says "Doctors can access patient records only during their scheduled shift, only from the hospital's network, and only for patients assigned to their department"</li>
+              <li><strong>Strength:</strong> Highly granular; dynamic (time, location, context-aware)</li>
+              <li><strong>Weakness:</strong> Complex to configure and audit; rule explosion in large environments</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout-blue">
+          <strong>Least Privilege &amp; Need-to-Know — The Access Control Foundation:</strong> Regardless of which model is used, two principles should always guide access decisions. <strong>Least Privilege:</strong> grant only the minimum permissions required to perform the specific job function — nothing more. <strong>Need-to-Know:</strong> even if a user's clearance level permits access, they should only access information relevant to their current duties. A billing clerk may have the clearance to view patient records but has no need-to-know and should not have access. The blast radius of any account compromise is directly limited by how strictly these principles were enforced.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 3 — IDENTITY LIFECYCLE & PAM
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 3 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-mid);">
+        <div class="topic-header-num">3</div>
+        <div>
+          <h3>Identity Lifecycle &amp; Privileged Access Management</h3>
+          <p>Provisioning, privilege creep, deprovisioning, orphaned accounts, and protecting the crown jewels of the environment</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Identity governance answers the question: <em>does the right person still have the right access for the right reason?</em> This question must be answered continuously — not just at hire — because identities change throughout their lifecycle. Privileged accounts demand an additional tier of control because compromising an admin account gives an attacker far greater access than any other initial foothold.</p>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">The Joiner-Mover-Leaver Lifecycle</h4>
+        <div class="topic-grid">
+          <div class="ctrl-card">
+            <h4>🟢 Joiner — Provisioning New Access</h4>
+            <p>When a new user joins, access should be provisioned through a documented workflow using role-based templates — not manual, ad-hoc assignment. The provisioning process must enforce least privilege from day one.</p>
+            <ul>
+              <li><strong>IdP-driven provisioning:</strong> Use an Identity Provider (Azure AD, Okta, Google Workspace) with SCIM to automate account creation across all integrated systems</li>
+              <li><strong>Role templates:</strong> A "Junior Analyst" template includes exactly the access that role requires — no more</li>
+              <li><strong>Time-bounded access:</strong> Contractors receive accounts with automatic expiry dates — the account ceases to function on the last day of the contract</li>
+              <li><strong>Formal approval:</strong> Access provisioning requires manager and security approval, documented in a ticketing system for audit evidence</li>
+            </ul>
+          </div>
+          <div class="ctrl-card amber">
+            <h4>🟡 Mover — Managing Role Changes</h4>
+            <p>When a user transfers departments or changes roles, the correct process is: <strong>remove old role access FIRST (or simultaneously), then add new role access</strong>. Adding new access without removing old access creates privilege creep — and every mover event compounds it.</p>
+            <ul>
+              <li><strong>Privilege creep example:</strong> An employee who has worked in IT, Finance, and HR over 5 years may have accumulated all three departments' permissions — a significant insider threat risk</li>
+              <li><strong>Access reviews (recertification):</strong> Periodic formal review where managers certify that each employee's current access is still appropriate — quarterly for privileged access, annually for standard</li>
+              <li><strong>Separation of duties:</strong> Roles should be designed so no single user can complete a high-risk transaction alone (e.g., approving and processing a vendor payment)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="ctrl-card red" style="margin-top:16px;">
+          <h4>🔴 Leaver — Deprovisioning &amp; Orphaned Accounts</h4>
+          <p>Deprovisioning is time-critical. The moment an employee's departure is known — whether voluntary resignation or termination — the deprovisioning process should begin immediately, not wait until their final physical day. The correct order of operations:</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px;">
+            <div>
+              <p style="font-size:0.85rem;font-weight:700;color:var(--text);margin-bottom:8px;">Immediate actions (same day as departure notice):</p>
+              <ul style="font-size:0.83rem;color:var(--text-mid);">
+                <li>Disable the account (not delete — preserve forensic access)</li>
+                <li>Revoke all active sessions and cached tokens</li>
+                <li>Revoke VPN, remote access, and cloud credentials</li>
+                <li>Remove from privileged groups immediately</li>
+                <li>Notify IT and security teams</li>
+              </ul>
+            </div>
+            <div>
+              <p style="font-size:0.85rem;font-weight:700;color:var(--text);margin-bottom:8px;">Post-departure (within 30 days):</p>
+              <ul style="font-size:0.83rem;color:var(--text-mid);">
+                <li>Archive email and file data per retention policy</li>
+                <li>Transfer ownership of critical files/systems</li>
+                <li>Review audit logs for anomalous pre-departure activity</li>
+                <li>Delete the account after retention period expires</li>
+                <li>Update emergency contact lists and documentation</li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout-red" style="margin-top:12px;">
+            <strong>Orphaned Account Risk:</strong> An orphaned account is an active account with no current legitimate owner — typically from a departed employee, a project that ended, or a contractor whose engagement concluded. Orphaned accounts are among the most attractive targets for attackers: they have legitimate access, generate no unusual behavior alerts (no legitimate owner to notice suspicious activity), and may have accumulated permissions never formally reviewed.
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Privileged Access Management (PAM)</h4>
+        <div class="topic-grid">
+          <div class="concept-block">
+            <h4><span class="concept-icon">🏦</span> Why PAM Is Critical</h4>
+            <p>Privileged accounts — domain administrators, root accounts, service accounts, database administrators — are the highest-value targets in any environment. A threat actor who obtains a privileged credential gains the ability to access or modify any system that account can reach. Standard MFA and access controls are insufficient — privileged accounts require their own security tier.</p>
+            <ul style="margin-top:8px;">
+              <li>Domain admin credentials enable access to every Windows system in the domain</li>
+              <li>Service accounts often have excessive permissions and never expire</li>
+              <li>Privileged accounts are primary targets for Pass-the-Hash, Kerberoasting, and credential stuffing</li>
+              <li>Manual credential management creates inconsistency and audit gaps</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">🔐</span> PAM Core Capabilities</h4>
+            <ul style="margin-top:6px;">
+              <li><strong>Credential Vaulting:</strong> All privileged passwords are stored in an encrypted vault — admins never see the actual password; they check out a session. Eliminates password-sharing and credential theft via screenshot or keylogger</li>
+              <li><strong>Just-in-Time (JIT) Access:</strong> Privileged access exists only for the duration of a specific approved task — 15 minutes, 2 hours — then automatically expires. Eliminates persistent admin credentials</li>
+              <li><strong>Session Recording:</strong> Full video capture and keystroke logging of every privileged session — evidence for forensic investigation and compliance audits. Admins who know their sessions are recorded self-police</li>
+              <li><strong>Credential Rotation:</strong> Passwords are automatically changed after each use or on a defined schedule. Defeats Pass-the-Hash and replay attacks — even if a hash was captured, the underlying password has already changed</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout-purple">
+          <strong>Analogy — The Bank Vault Key:</strong> Think of PAM like accessing a bank vault. You don't get to keep the vault key — you check it out from the key custodian (credential vaulting), your access window is scheduled for a specific 15-minute window (JIT access), two authorized witnesses are present and the entire access is video-recorded (session recording), and the vault combination is changed the moment you leave (credential rotation). No single person has unchecked, persistent, unobserved access to the vault. PAM applies this same rigor to your most sensitive IT systems.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 1 — DRAG & DROP: IAM CONCEPT SORT
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 1</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 1</span>
+        <div>
+          <h3>IAM Concept Sort — Drag &amp; Drop</h3>
+          <p>Classify each IAM control or concept into its correct category</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Each chip describes an IAM control, scenario, or technique. Drag it to the category it BEST belongs to. Submit for graded feedback. Click × to return a chip to the pool.
+        </div>
+
+        <div class="drag-pool" id="dp7">
+          <div class="drag-item" draggable="true" data-answer="Authentication" id="d7-1">FIDO2 hardware security key</div>
+          <div class="drag-item" draggable="true" data-answer="Authorization" id="d7-2">Nurse role grants medication access</div>
+          <div class="drag-item" draggable="true" data-answer="Accounting" id="d7-3">SIEM logs every privileged login</div>
+          <div class="drag-item" draggable="true" data-answer="PAM" id="d7-4">JIT access expires after 15 minutes</div>
+          <div class="drag-item" draggable="true" data-answer="Lifecycle" id="d7-5">Contractor account auto-expires on last day</div>
+          <div class="drag-item" draggable="true" data-answer="Authentication" id="d7-6">Fingerprint + PIN login to workstation</div>
+          <div class="drag-item" draggable="true" data-answer="Authorization" id="d7-7">MAC clearance label controls file access</div>
+          <div class="drag-item" draggable="true" data-answer="PAM" id="d7-8">Admin password rotated after every session</div>
+          <div class="drag-item" draggable="true" data-answer="Lifecycle" id="d7-9">Disabling account immediately on resignation</div>
+          <div class="drag-item" draggable="true" data-answer="Accounting" id="d7-10">Session recording of DBA database changes</div>
+        </div>
+
+        <div class="drop-zones-3" style="grid-template-columns:repeat(5,1fr);">
+          <div class="drop-zone" id="zone7-Authentication" data-zone="Authentication">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--blue);"></span> Authentication</div>
+          </div>
+          <div class="drop-zone" id="zone7-Authorization" data-zone="Authorization">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--teal);"></span> Authorization</div>
+          </div>
+          <div class="drop-zone" id="zone7-Accounting" data-zone="Accounting">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--purple);"></span> Accounting</div>
+          </div>
+          <div class="drop-zone" id="zone7-PAM" data-zone="PAM">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--amber);"></span> PAM</div>
+          </div>
+          <div class="drop-zone" id="zone7-Lifecycle" data-zone="Lifecycle">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--green);"></span> Identity Lifecycle</div>
+          </div>
+        </div>
+
+        <div class="activity-actions">
+          <button class="btn-primary" onclick="checkAct7()">Check Answers</button>
+          <button class="btn-secondary" onclick="resetAct7()">Reset</button>
+        </div>
+        <div class="activity-result" id="act7-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 2 — IAM SCENARIO ANALYZER
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 2</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 2</span>
+        <div>
+          <h3>IAM Scenario Analyzer</h3>
+          <p>Select a real-world IAM scenario and identify the correct control, failure type, or remediation</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Select a scenario tab. Read the situation, then answer each question individually for graded feedback with detailed explanations.
+        </div>
+
+        <div class="scenario-tabs">
+          <button class="scenario-tab active" onclick="showSc(0,this)">Scenario A: Privilege Creep</button>
+          <button class="scenario-tab" onclick="showSc(1,this)">Scenario B: Contractor Offboarding</button>
+          <button class="scenario-tab" onclick="showSc(2,this)">Scenario C: Admin Account Risk</button>
+        </div>
+
+        <!-- Scenario A -->
+        <div class="scenario-panel active" id="sc-0">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🟡 Scenario A: Five Years of Accumulated Access</div>
+            <div class="scenario-body">During a quarterly access review at a regional bank, the IAM team discovers that Sarah, a senior analyst, has accumulated the following access rights over her 5-year career: (1) read access to the trading floor network from her first role in IT support, (2) write access to the loan origination database from her second role in lending, (3) full admin rights to the HR management system from a 6-month project deployment, and (4) her current role's permissions as a financial compliance analyst. Sarah's manager confirms she only needs the compliance analyst permissions for her current role.</div>
+          </div>
+          <div class="sc-questions">
+
+            <div class="sc-q" id="scq-a1">
+              <div class="sc-q-text">Q1: What IAM failure does this scenario describe, and what is the MOST direct remediation?</div>
+              <div class="sc-opts">
+                <label class="sc-opt"><input type="radio" name="sca1" value="A"> Privilege escalation — Sarah exploited a vulnerability to gain unauthorized elevated access</label>
+                <label class="sc-opt"><input type="radio" name="sca1" value="B"> Privilege creep — accumulated rights from previous roles were never revoked. Remediate by conducting an access recertification review and removing all permissions not required for Sarah's current compliance analyst role</label>
+                <label class="sc-opt"><input type="radio" name="sca1" value="C"> Orphaned account — Sarah's account has no legitimate owner and should be disabled immediately</label>
+                <label class="sc-opt"><input type="radio" name="sca1" value="D"> Separation of duties violation — Sarah's combined access allows her to commit financial fraud alone</label>
+              </div>
+              <div class="sc-fb" id="scq-a1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkSc('scq-a1','B','sca1','✅ Correct! This is privilege creep (also called permission accumulation or privilege sprawl) — Sarah has legitimately accumulated access rights over time as her role changed, but old access was never revoked during each move. She is a current employee with a legitimate account (not an orphaned account). She did not exploit anything (not privilege escalation). The direct remediation is a formal access recertification: the IAM team presents her current access list to her manager, who confirms what is actually needed for her current role, and all unneeded permissions are revoked. Going forward, RBAC with strict move-triggers (remove old role before adding new) would prevent recurrence.','❌ Correct answer: B — Privilege creep. Sarah\'s account is active and legitimate — she is a current employee (not orphaned). She did not exploit anything to gain access (not escalation). Each permission was legitimately granted at the time. The problem is that the Mover process (each time she changed roles) added new access without removing old access, creating cumulative over-permission. The fix is access recertification — a formal review that revokes any permission not justified by the current role.')">Submit</button></div>
+            </div>
+
+            <div class="sc-q" id="scq-a2">
+              <div class="sc-q-text">Q2: Which process, if properly implemented during each of Sarah's role changes, would have PREVENTED this situation?</div>
+              <div class="sc-opts">
+                <label class="sc-opt"><input type="radio" name="sca2" value="A"> Multi-Factor Authentication enforcement — requiring MFA for each system login would have limited access attempts</label>
+                <label class="sc-opt"><input type="radio" name="sca2" value="B"> Role-Based Access Control with a provisioning workflow that explicitly revokes the previous role's permissions before or simultaneously with granting the new role's permissions during each job transfer</label>
+                <label class="sc-opt"><input type="radio" name="sca2" value="C"> Mandatory Access Control — using security clearance levels would have prevented cross-departmental access accumulation</label>
+                <label class="sc-opt"><input type="radio" name="sca2" value="D"> Just-in-Time access — requiring Sarah to request elevated access each time she needed to use a system</label>
+              </div>
+              <div class="sc-fb" id="scq-a2-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkSc('scq-a2','B','sca2','✅ Correct! RBAC with a proper Mover workflow directly prevents privilege creep. The workflow should automatically remove the previous role\'s permission set when a new role is assigned — not simply add the new role on top. In identity management systems like Okta or Azure AD, this is configured as a "role transfer" trigger that deactivates the old role assignment in the same transaction that activates the new one. MFA controls authentication, not permission accumulation. MAC requires a complete security architecture redesign. JIT is applicable to privileged access but would be operationally disruptive for standard role-based access.','❌ Correct answer: B — RBAC with an explicit Mover de-provisioning workflow. The root cause is that role changes only added new permissions without removing old ones. RBAC with a properly configured provisioning workflow treats role changes as an atomic operation: remove old role permissions + add new role permissions in one step. MFA is an authentication control, not an authorization control. MAC is for classification-based environments. JIT applies to privileged access, not standard role-based access for regular employees.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Scenario B -->
+        <div class="scenario-panel" id="sc-1">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🔴 Scenario B: The Forgotten Contractor</div>
+            <div class="scenario-body">Six months after a penetration test engagement ended, the security team discovers that the external penetration testing firm's service account still has active VPN credentials and read access to three network segments, including the segment containing the PCI-scoped payment processing servers. A review of VPN logs shows no activity on this account in 5 months. The original project manager who contracted the pen test firm has since changed departments, and nobody currently owns the relationship with that vendor.</div>
+          </div>
+          <div class="sc-questions">
+
+            <div class="sc-q" id="scq-b1">
+              <div class="sc-q-text">Q1: What type of account does this service account represent, and what is the CORRECT immediate action?</div>
+              <div class="sc-opts">
+                <label class="sc-opt"><input type="radio" name="scb1" value="A"> A privileged account that should be transferred to the current security team manager for ongoing use</label>
+                <label class="sc-opt"><input type="radio" name="scb1" value="B"> An orphaned account — an active account with no legitimate current owner. Disable it immediately; do not delete until forensic review of account activity is completed</label>
+                <label class="sc-opt"><input type="radio" name="scb1" value="C"> A service account that should remain active in case the pen test vendor is engaged again in the future</label>
+                <label class="sc-opt"><input type="radio" name="scb1" value="D"> A shared account that should be reassigned to the new project manager</label>
+              </div>
+              <div class="sc-fb" id="scq-b1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkSc('scq-b1','B','scb1','✅ Correct! This is an orphaned account — an active account that no longer has a legitimate current owner. The pen test engagement ended, the original project manager moved departments, and the account was never formally deprovisioned. The immediate action is to DISABLE (not delete) the account to prevent unauthorized use. Forensic review of the account\'s activity logs should be completed before deletion — the account may have been used without authorization during the 5-month gap, and deletion would destroy that evidence. If the vendor is engaged again in the future, new credentials should be provisioned through a formal access request process with automatic expiry.','❌ Correct answer: B — orphaned account; disable immediately. Keeping the account active "for future use" is an active security risk — it is an unlocked door that no current employee is watching. Transferring ownership does not address the fundamental problem (unneeded external access still exists). Shared accounts are always a security anti-pattern — individual accountability is lost. An orphaned account must be disabled immediately, with logs preserved for forensic review before deletion.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Scenario C -->
+        <div class="scenario-panel" id="sc-2">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🔵 Scenario C: The Always-On Admin Account</div>
+            <div class="scenario-body">A financial services company's four database administrators (DBAs) each have their own persistent domain admin accounts that they use for all daily tasks — including reading email, browsing the web, and conducting database maintenance. These accounts never expire. Passwords were last changed 14 months ago. There is no session recording on any database connections made with these credentials. During a recent tabletop exercise, the IR team realized that if any DBA's credentials were compromised (via phishing, for example), an attacker would immediately have full domain admin access across the entire environment.</div>
+          </div>
+          <div class="sc-questions">
+
+            <div class="sc-q" id="scq-c1">
+              <div class="sc-q-text">Q1: Which PAM implementation BEST addresses the security risks described in this scenario?</div>
+              <div class="sc-opts">
+                <label class="sc-opt"><input type="radio" name="scc1" value="A"> Require DBAs to change their domain admin passwords every 90 days and enable MFA on those accounts</label>
+                <label class="sc-opt"><input type="radio" name="scc1" value="B"> Implement PAM with credential vaulting (DBAs never hold credentials directly), JIT access provisioning (admin rights activated only for approved maintenance windows), session recording (all DB connections captured), and credential rotation (passwords change automatically after each use)</label>
+                <label class="sc-opt"><input type="radio" name="scc1" value="C"> Create a separate "admin workstation" that DBAs must use for all privileged operations, connected to a separate network VLAN</label>
+                <label class="sc-opt"><input type="radio" name="scc1" value="D"> Require DBAs to submit a ticket for every database maintenance task and have their manager approve it before they can proceed</label>
+              </div>
+              <div class="sc-fb" id="scq-c1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkSc('scq-c1','B','scc1','✅ Correct! PAM directly addresses every risk in this scenario: (1) Credential vaulting means DBAs never possess the actual domain admin passwords — even if their workstation is compromised via phishing, there are no credentials to steal. (2) JIT access means the domain admin rights only exist during an approved maintenance window — persistent admin exposure is eliminated. (3) Session recording provides forensic evidence of all privileged activity for compliance and investigation. (4) Credential rotation after each use means a captured hash or credential is immediately invalidated. Option A (password rotation + MFA) is an improvement but still leaves persistent admin credentials that can be phished. Option C (admin workstation) is a good supplementary control but does not address credential persistence or session recording. Option D (ticket approval) is a process control but not a technical enforcement — DBAs could still use their persistent credentials without a ticket.','❌ Correct answer: B — full PAM implementation. The scenario describes persistent admin credentials used for daily non-admin tasks — a significant risk because credential phishing gives immediate domain admin access. Password rotation (A) leaves the credential persistent and stealable; better passwords on a bad architecture is insufficient. An admin workstation (C) is a useful compensating control but does not eliminate credential persistence or provide JIT/session recording. The ticket system (D) is a paper trail, not a technical enforcement — the credentials still exist and can be used outside the ticket process. PAM eliminates the credential theft risk by removing direct credential possession from the admins entirely.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       QUIZ — 5 QUESTIONS
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Lesson 7 Quiz — 5 Questions</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Assessment</span>
+        <div>
+          <h3>Knowledge Check: Identity &amp; Access Management</h3>
+          <p>Select the best answer for each question, then submit for graded feedback</p>
+        </div>
+      </div>
+      <div class="activity-body">
+
+        <!-- Q1 -->
+        <div class="quiz-q" id="q1">
+          <div class="q-num">Question 1 of 5</div>
+          <div class="q-text">A user logs into their corporate laptop by entering a PIN, then approving a push notification on their registered smartphone. The security team claims this is Multi-Factor Authentication. Is this claim correct, and why?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q1" value="A"> Yes — two separate verification steps were used, which satisfies the definition of MFA regardless of factor type</label>
+            <label class="q-option"><input type="radio" name="q1" value="B"> No — a PIN and a push notification are both Type 1 (Something you know) and therefore constitute single-factor authentication with two steps</label>
+            <label class="q-option"><input type="radio" name="q1" value="C"> Yes — a PIN (Something you know) combined with a smartphone push notification (Something you have) uses two different factor categories and constitutes true MFA</label>
+            <label class="q-option"><input type="radio" name="q1" value="D"> No — MFA requires at least three factor types to be compliant with enterprise security standards</label>
+          </div>
+          <div class="q-feedback" id="q1-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-q" id="q2">
+          <div class="q-num">Question 2 of 5</div>
+          <div class="q-text">A university wants its students to access research databases hosted by partner institutions using their campus credentials. Which technology BEST enables this cross-organizational identity trust?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q2" value="A"> SSO using Kerberos — students authenticate once to their campus Active Directory and access all systems</label>
+            <label class="q-option"><input type="radio" name="q2" value="B"> Identity Federation using SAML — the university's IdP issues identity assertions trusted by partner institution service providers</label>
+            <label class="q-option"><input type="radio" name="q2" value="C"> PAM — the university vaults partner institution credentials and issues them to students on request</label>
+            <label class="q-option"><input type="radio" name="q2" value="D"> RBAC — assigning a "Research Student" role automatically grants access to partner databases</label>
+          </div>
+          <div class="q-feedback" id="q2-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-q" id="q3">
+          <div class="q-num">Question 3 of 5</div>
+          <div class="q-text">A healthcare organization stores patient records classified at different sensitivity levels. Access to Top Secret-equivalent patient records cannot be granted by department managers — only the system's classification labels determine access, and no user can override these decisions. Which access control model is the organization using?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q3" value="A"> DAC — the resource owner (the patient) controls who accesses their records</label>
+            <label class="q-option"><input type="radio" name="q3" value="B"> RBAC — access is determined by the user's job role in the healthcare system</label>
+            <label class="q-option"><input type="radio" name="q3" value="C"> MAC — the system enforces access based on mandatory sensitivity labels and clearance levels that no individual can override</label>
+            <label class="q-option"><input type="radio" name="q3" value="D"> ABAC — access is determined by patient, provider, time, and location attributes evaluated dynamically</label>
+          </div>
+          <div class="q-feedback" id="q3-feedback"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-q" id="q4">
+          <div class="q-num">Question 4 of 5</div>
+          <div class="q-text">A security audit reveals that a database administrator (DBA) used their persistent domain admin account to approve their own vacation request, order office supplies, read personal email, and perform database maintenance — all with the same credential on the same workstation. Which two security principles are MOST clearly violated by this arrangement?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q4" value="A"> Non-repudiation and Integrity — the DBA may have tampered with records without traceability</label>
+            <label class="q-option"><input type="radio" name="q4" value="B"> Least Privilege and Separation of Duties — using a domain admin account for daily non-privileged tasks expands the attack surface unnecessarily, and a single account combining administrative and routine access removes accountability boundaries</label>
+            <label class="q-option"><input type="radio" name="q4" value="C"> Confidentiality and Availability — personal email use on an admin workstation could expose sensitive data</label>
+            <label class="q-option"><input type="radio" name="q4" value="D"> Authentication and Accounting — using one account for multiple purposes makes logging ambiguous</label>
+          </div>
+          <div class="q-feedback" id="q4-feedback"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-q" id="q5">
+          <div class="q-num">Question 5 of 5</div>
+          <div class="q-text">An organization is onboarding a third-party cloud migration consultant who needs temporary access to specific AWS S3 buckets for 45 days. The consultant will work remotely. Which combination of IAM controls BEST addresses this scenario from a Security+ perspective?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q5" value="A"> Add the consultant to the existing "Cloud Engineers" Active Directory group to give them appropriate access alongside permanent staff</label>
+            <label class="q-option"><input type="radio" name="q5" value="B"> Provide the consultant with a senior engineer's credentials so they can work independently without creating a new account</label>
+            <label class="q-option"><input type="radio" name="q5" value="C"> Create a dedicated contractor account with: access scoped to only the specific S3 buckets needed (least privilege), account expiration set to 45 days, MFA required for all logins, and all activity logged to CloudTrail for audit purposes</label>
+            <label class="q-option"><input type="radio" name="q5" value="D"> Allow the consultant to use their personal AWS account and set up a cross-account IAM role with full S3 access for the engagement duration</label>
+          </div>
+          <div class="q-feedback" id="q5-feedback"></div>
+        </div>
+
+        <div class="quiz-submit-row">
+          <button class="btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          <button class="btn-secondary" onclick="resetQuiz()">Reset</button>
+        </div>
+        <div id="quiz-result"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-body -->
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<div class="page-footer">
+  <div class="footer-nav">
+    <a href="index.html">← Course Home</a>
+    <a href="lesson06.html">← Lesson 6: Network &amp; Infrastructure Security</a>
+    <a href="lesson07-part01.html">Topic 1 Deep Dive</a>
+    <a href="lesson07-part02.html">Topic 2 Deep Dive</a>
+    <a href="lesson07-part03.html">Topic 3 Deep Dive</a>
+    <a href="lesson08.html">Next: Security Operations &amp; Monitoring →</a>
+  </div>
+  CompTIA Security+ SY0-701 &nbsp;|&nbsp; Lesson 7: Identity &amp; Access Management &nbsp;|&nbsp; Moraine Valley Community College
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ---- THEME ---- */
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+  localStorage.setItem('secplus-theme', next);
+}
+(function () {
+  const saved = localStorage.getItem('secplus-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Light';
+  }
+})();
+
+/* ============================================================
+   ACTIVITY 1 — DRAG & DROP
+   ============================================================ */
+let drag7 = null;
+
+document.querySelectorAll('#dp7 .drag-item').forEach(item => {
+  item.addEventListener('dragstart', e => {
+    drag7 = item.id;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  item.addEventListener('dragend', () => item.classList.remove('dragging'));
+});
+
+document.querySelectorAll('[id^="zone7-"]').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const item = document.getElementById(drag7);
+    if (!item) return;
+    const isCorrect = item.dataset.answer === zone.dataset.zone;
+    const chip = document.createElement('span');
+    chip.className = 'dropped-item ' + (isCorrect ? 'correct' : 'incorrect');
+    chip.dataset.itemId = drag7;
+    const lbl = item.textContent.length > 36 ? item.textContent.substring(0, 36) + '…' : item.textContent;
+    chip.innerHTML = lbl + ' <span class="rm">×</span>';
+    chip.querySelector('.rm').addEventListener('click', () => returnItem7(drag7, chip));
+    zone.appendChild(chip);
+    item.style.display = 'none';
+    document.getElementById('act7-result').style.display = 'none';
+  });
+});
+
+function returnItem7(id, chip) {
+  const item = document.getElementById(id);
+  if (item) item.style.display = '';
+  chip.remove();
+}
+
+function checkAct7() {
+  let correct = 0, total = 0;
+  document.querySelectorAll('[id^="zone7-"]').forEach(zone => {
+    zone.querySelectorAll('.dropped-item').forEach(chip => {
+      total++;
+      const item = document.getElementById(chip.dataset.itemId);
+      if (item && item.dataset.answer === zone.dataset.zone) {
+        chip.className = 'dropped-item correct'; correct++;
+      } else {
+        chip.className = 'dropped-item incorrect';
+        chip.style.animation = 'none'; void chip.offsetWidth; chip.style.animation = '';
+      }
+    });
+  });
+  const res = document.getElementById('act7-result');
+  res.style.display = 'block';
+  if (total === 0) { res.className = 'activity-result result-fail'; res.textContent = 'Sort at least one concept before checking.'; return; }
+  if (correct === total && total === 10) {
+    res.className = 'activity-result result-pass';
+    res.textContent = '✅ Perfect! All 10 IAM concepts correctly classified. You understand the distinction between Authentication, Authorization, Accounting, PAM, and Identity Lifecycle.';
+  } else {
+    res.className = 'activity-result result-fail';
+    res.textContent = `${correct}/${total} correct. Red chips are misclassified. Key distinctions: Authentication = prove identity; Authorization = grant permissions; Accounting = log activity; PAM = privileged account controls; Lifecycle = provisioning/deprovisioning events.`;
+  }
+}
+
+function resetAct7() {
+  document.querySelectorAll('[id^="zone7-"] .dropped-item').forEach(chip => returnItem7(chip.dataset.itemId, chip));
+  document.getElementById('act7-result').style.display = 'none';
+}
+
+/* ============================================================
+   ACTIVITY 2 — SCENARIO ANALYZER
+   ============================================================ */
+function showSc(idx, btn) {
+  document.querySelectorAll('.scenario-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function checkSc(qId, correct, radioName, passMsg, failMsg) {
+  const qDiv = document.getElementById(qId);
+  const selected = qDiv.querySelector(`input[name="${radioName}"]:checked`);
+  const fb = document.getElementById(qId + '-fb');
+  qDiv.querySelectorAll('input').forEach(r => r.disabled = true);
+  qDiv.querySelector('button').disabled = true;
+  if (!selected) { fb.className = 'sc-fb show fail'; fb.textContent = '⚠️ Please select an answer first.'; return; }
+  const isCorrect = selected.value === correct;
+  qDiv.querySelectorAll('.sc-opt').forEach(opt => {
+    if (opt.querySelector('input').value === correct) opt.classList.add('correct');
+    else if (opt.querySelector('input').value === selected.value && !isCorrect) opt.classList.add('wrong');
+  });
+  fb.className = 'sc-fb show ' + (isCorrect ? 'pass' : 'fail');
+  fb.textContent = isCorrect ? passMsg : failMsg;
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+const qA = { q1: 'C', q2: 'B', q3: 'C', q4: 'B', q5: 'C' };
+const qFB = {
+  q1: {
+    correct: "✅ Correct! A PIN is Type 1 (Something you know). Approving a smartphone push notification requires the user to physically possess their registered smartphone — that is Type 2 (Something you have). Using credentials from two different factor categories constitutes true Multi-Factor Authentication. MFA does not require three factors — two distinct categories suffice. The key test is whether the factors come from different categories: if an attacker steals the PIN but does not have the smartphone, they cannot authenticate.",
+    wrong:   "❌ Correct answer: C. MFA requires credentials from two DIFFERENT factor categories — not just two verification steps. A PIN (Type 1: Something you know) + a push notification requiring smartphone possession (Type 2: Something you have) = true MFA. Two passwords or two PINs would be two instances of the same factor type (Type 1 + Type 1), which is two-step verification but NOT MFA. The smartphone push notification qualifies as Type 2 because the user must physically possess the registered device to approve it."
+  },
+  q2: {
+    correct: "✅ Correct! Identity Federation using SAML is designed exactly for this scenario — establishing identity trust across organizational boundaries. The university is the Identity Provider (IdP); the partner institutions' databases are Service Providers (SPs). SAML allows the university to vouch for the student's identity, and the partner institutions accept that assertion without requiring separate credentials. SSO with Kerberos only works within a single organization's trust boundary — Kerberos tickets are not trusted by external organizations. PAM is for privileged credential management, not cross-org identity trust. RBAC is an authorization model that would operate after federation is established.",
+    wrong:   "❌ Correct answer: B — Identity Federation using SAML. Federation is specifically designed for cross-organizational identity trust. SSO (Kerberos/LDAP) only functions within a single organization's domain — external institutions would not trust campus Kerberos tickets. PAM manages privileged credentials, not end-user cross-org authentication. RBAC is an authorization model that determines what a user can do once authenticated — it is not an authentication or federation mechanism."
+  },
+  q3: {
+    correct: "✅ Correct! Mandatory Access Control (MAC) is the model where the system — not resource owners or managers — controls access based on mandatory sensitivity labels and subject clearance levels. No individual user can grant access beyond what the classification label permits, even to their own resources. This describes the scenario precisely: classification labels determine access and managers cannot override. DAC gives resource owners control; RBAC assigns permissions to job roles; ABAC uses dynamic attribute evaluation. MAC is most commonly associated with government and military classification systems, but is also used in high-security commercial environments.",
+    wrong:   "❌ Correct answer: C — MAC (Mandatory Access Control). The defining characteristic of MAC is that access decisions are controlled by the system based on mandatory labels — individual users and managers cannot override them. DAC gives the resource owner discretion. RBAC uses job role assignments that administrators can modify. ABAC uses dynamic attribute evaluation. When a scenario states that 'no user or manager can override access decisions — only the classification labels control access,' that is definitionally MAC."
+  },
+  q4: {
+    correct: "✅ Correct! Two principles are violated: (1) Least Privilege — a domain admin account has far more permissions than are needed for reading email, approving vacation, or ordering supplies. Using the most privileged credential for the least privileged tasks dramatically expands the attack surface. If the DBA clicks a phishing link while browsing with their domain admin account, the attacker immediately has domain admin rights. (2) Separation of Duties — a single account with admin rights across multiple business functions means one compromised credential allows actions across the entire organization that should require different roles and oversight.",
+    wrong:   "❌ Correct answer: B — Least Privilege and Separation of Duties. The DBA should have a standard, least-privilege account for daily non-admin tasks (email, HR self-service, ordering supplies) and a separate, PAM-vaulted, JIT-elevated admin account for database maintenance. Using the domain admin credential for everything means any compromise — via a phishing link in email, a malicious browser extension, or a drive-by download — immediately grants full domain admin access. Separation of Duties and Least Privilege are the core principles violated."
+  },
+  q5: {
+    correct: "✅ Correct! This answer applies all four critical IAM principles for contractor access: (1) Least Privilege — only the specific S3 buckets needed, not broad cloud admin access; (2) Time-bound access — account expires automatically on day 45, enforcing deprovisioning without relying on a manual process; (3) MFA — required for all logins, especially important for remote access; (4) Audit logging via CloudTrail — provides accounting for all actions taken. Adding the consultant to an existing engineer group (A) grants too much access (violates least privilege) and creates accountability issues. Sharing credentials (B) destroys individual accountability. Cross-account role with full S3 access (D) violates least privilege.",
+    wrong:   "❌ Correct answer: C — dedicated contractor account with scoped access, expiration, MFA, and audit logging. Option A adds the consultant to a group designed for permanent staff with broader permissions — violates least privilege and complicates offboarding. Option B (shared credentials) destroys individual accountability and is a security anti-pattern. Option D (personal AWS account with full S3 access) violates least privilege and removes organizational control over the access. The correct approach uses a dedicated, scoped, time-bounded, MFA-enforced, audited account — addressing every element of the contractor access risk profile."
+  }
+};
+
+function submitQuiz() {
+  let score = 0;
+  Object.keys(qA).forEach(qid => {
+    const selected = document.querySelector(`input[name="${qid}"]:checked`);
+    const qDiv = document.getElementById(qid);
+    const fb = document.getElementById(qid + '-feedback');
+    qDiv.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+    if (!selected) {
+      fb.className = 'q-feedback show fail';
+      fb.innerHTML = '⚠️ No answer selected. ' + qFB[qid].wrong;
+      qDiv.className = 'quiz-q answered-wrong';
+      return;
+    }
+    const isCorrect = selected.value === qA[qid];
+    if (isCorrect) score++;
+    qDiv.className = 'quiz-q ' + (isCorrect ? 'answered-correct' : 'answered-wrong');
+    fb.className = 'q-feedback show ' + (isCorrect ? 'pass' : 'fail');
+    fb.innerHTML = qFB[qid][isCorrect ? 'correct' : 'wrong'];
+    qDiv.querySelectorAll('.q-option').forEach(opt => {
+      const v = opt.querySelector('input').value;
+      if (v === qA[qid]) opt.classList.add('correct');
+      else if (selected && v === selected.value && !isCorrect) opt.classList.add('wrong');
+    });
+  });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'block';
+  const pct = Math.round((score / 5) * 100);
+  if (score >= 4) {
+    result.className = 'quiz-pass';
+    result.innerHTML = `🎉 <strong>Excellent! ${score}/5 (${pct}%)</strong> — Strong command of IAM concepts, access control models, and identity lifecycle management. Ready for Lesson 8: Security Operations &amp; Monitoring. <a href="lesson08.html" style="color:var(--green-dark);font-weight:700;margin-left:8px;">Next Lesson →</a>`;
+  } else {
+    result.className = 'quiz-fail';
+    result.innerHTML = `📚 <strong>${score}/5 (${pct}%)</strong> — Review the feedback above. Focus on: MFA factor categories vs. two-step verification (Q1), SSO vs. Federation scope and protocols (Q2), access control model selection (Q3), Least Privilege and Separation of Duties (Q4), and contractor access best practices (Q5). The IAM Concept Sort and Scenario Analyzer activities are good review resources.`;
+  }
+  result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetQuiz() {
+  document.querySelectorAll('.quiz-q').forEach(q => q.className = 'quiz-q');
+  document.querySelectorAll('input[type="radio"]').forEach(r => { r.checked = false; r.disabled = false; });
+  document.querySelectorAll('.q-option').forEach(o => o.classList.remove('correct', 'wrong'));
+  document.querySelectorAll('.q-feedback').forEach(f => { f.className = 'q-feedback'; f.innerHTML = ''; });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'none'; result.className = '';
+}
+</script>
+</body>
+</html>

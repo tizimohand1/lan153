@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshFlow Systems - Access Control Matrix Training</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            color: black;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d5016, #4a7c23);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .nav-container {
+            background: #f8f9fa;
+            border-bottom: 3px solid #4a7c23;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 0 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #4a7c23, #2d5016);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 120px;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #5a8c33, #3d6526);
+        }
+
+        .nav-button.active {
+            background: linear-gradient(135deg, #6aa03f, #4a7c23);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .task-card:hover {
+            border-color: #4a7c23;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .task-header {
+            background: linear-gradient(135deg, #4a7c23, #2d5016);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .task-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .matrix-container {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 12px;
+            background: white;
+        }
+
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .matrix-table th {
+            background: linear-gradient(45deg, #2d5016, #4a7c23);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .matrix-table .role-header {
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 15px;
+            min-width: 150px;
+        }
+
+        .permission-cell {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .permission-cell:hover {
+            transform: scale(1.1);
+            z-index: 5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .permission-read { background: #e8f5e8; color: #2e7d32; }
+        .permission-write { background: #fff3e0; color: #ef6c00; }
+        .permission-execute { background: #e3f2fd; color: #1565c0; }
+        .permission-admin { background: #fce4ec; color: #c2185b; }
+        .permission-deny { background: #ffebee; color: #d32f2f; }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .control-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 150px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group select {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #4a7c23;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 124, 35, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #4a7c23, #2d5016);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(74, 124, 35, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 124, 35, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #218838);
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .report-section {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .audit-log {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 8px;
+            margin: 5px 0;
+            border-left: 4px solid #4a7c23;
+            background: white;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+        }
+
+        .log-timestamp {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            border-left: 4px solid #4a7c23;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .company-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 2px solid #4a7c23;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2d5016;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .matrix-table {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏭 FreshFlow Systems</h1>
+        <p>Access Control Matrix Training - Cybersecurity Audit Preparation</p>
+    </div>
+
+    <div class="nav-container">
+        <div class="nav">
+            <button class="nav-button active" onclick="showSection('overview')">Company Overview</button>
+            <button class="nav-button" onclick="showSection('task1')">Task 1: Data Retrieval</button>
+            <button class="nav-button" onclick="showSection('task2')">Task 2: Modify Permissions</button>
+            <button class="nav-button" onclick="showSection('task3')">Task 3: Remove Users</button>
+            <button class="nav-button" onclick="showSection('task4')">Task 4: Add Users</button>
+            <button class="nav-button" onclick="showSection('task5')">Task 5: Generate Report</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Company Overview Section -->
+        <div id="overview" class="content-section active">
+            <div class="task-card">
+                <div class="task-header">
+                    <h2>🏢 FreshFlow Systems - Company Profile</h2>
+                    <p>Understanding the organization before managing access controls</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Learning Objective:</h3>
+                    <p>Students will learn how organizational structure, business processes, and compliance requirements influence access control matrix design and implementation in cybersecurity audit preparation.</p>
+                </div>
+
+                <div class="company-stats">
+                    <div class="stat-card">
+                        <div class="stat-value">64</div>
+                        <div class="stat-label">Total Employees</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">125%</div>
+                        <div class="stat-label">Annual Growth</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Facilities</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">89</div>
+                        <div class="stat-label">Total Assets</div>
+                    </div>
+                </div>
+
+                <h3>🎯 Business Operations</h3>
+                <p><strong>Industry:</strong> Automated food packaging systems for fresh produce</p>
+                <p><strong>Founded:</strong> 2018 in Lima, Ohio</p>
+                <p><strong>Key Systems:</strong> ERP, CRM, 12 PLCs, HMI stations, warehouse management, financial systems</p>
+
+                <h3>👥 Executive Leadership</h3>
+                <ul>
+                    <li><strong>CEO:</strong> Carla Jennings</li>
+                    <li><strong>COO:</strong> Marcus Lee</li>
+                    <li><strong>CISO:</strong> Dr. Nia Clarke</li>
+                    <li><strong>Finance Director:</strong> Elaine Harper</li>
+                </ul>
+
+                <h3>🏭 Facility Locations</h3>
+                <ul>
+                    <li><strong>Headquarters:</strong> 1247 Industrial Parkway - Executive offices, R&D, IT operations (22 staff)</li>
+                    <li><strong>Packaging Facility:</strong> 1251 Industrial Parkway - Automated lines, PLCs, HMI (28 staff)</li>
+                    <li><strong>Warehouse:</strong> 1255 Industrial Parkway - Inventory, shipping, RFID (14 staff)</li>
+                </ul>
+
+                <h3>🔒 Security Context</h3>
+                <p><strong>Compliance Requirements:</strong> FDA food safety regulations, financial data protection, export compliance</p>
+                <p><strong>Key Security Concerns:</strong> Operational technology (OT) security, intellectual property protection, financial data integrity</p>
+                <p><strong>Risk Profile:</strong> High growth company with mixed IT/OT environment requiring strong access controls</p>
+            </div>
+        </div>
+
+        <!-- Task 1: Data Retrieval -->
+        <div id="task1" class="content-section">
+            <div class="task-card">
+                <div class="task-header">
+                    <h2>📊 Task 1: Access Control Matrix Data Retrieval</h2>
+                    <p>Learn to extract and analyze permission data for audit documentation</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Scenario:</h3>
+                    <p>You are preparing for a cybersecurity audit. The auditor has requested specific information about user access permissions. Use the queries below to extract data from the access control matrix.</p>
+                </div>
+
+                <div class="control-section">
+                    <div class="form-group">
+                        <label for="queryUser">Query by Employee:</label>
+                        <select id="queryUser">
+                            <option value="">Select Employee</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="querySystem">Query by System:</label>
+                        <select id="querySystem">
+                            <option value="">Select System</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="queryPermission">Permission Level:</label>
+                        <select id="queryPermission">
+                            <option value="">All Permissions</option>
+                            <option value="A">Admin</option>
+                            <option value="W">Write</option>
+                            <option value="R">Read</option>
+                            <option value="-">Denied</option>
+                        </select>
+                    </div>
+                    <button onclick="executeQuery()">Execute Query</button>
+                    <button onclick="showAllAccess()">Show All Access</button>
+                </div>
+
+                <div id="queryResults" class="report-section">
+                    <h3>Query Results</h3>
+                    <p>Select criteria above and click "Execute Query" to see results.</p>
+                </div>
+
+                <div class="matrix-container">
+                    <h3>📋 Current Access Control Matrix</h3>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color permission-admin"></div>
+                            <span>Admin (A) - Full control</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color permission-write"></div>
+                            <span>Write (W) - Modify access</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color permission-read"></div>
+                            <span>Read (R) - View only</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color permission-deny"></div>
+                            <span>Deny (-) - No access</span>
+                        </div>
+                    </div>
+                    <table class="matrix-table" id="task1Matrix">
+                        <!-- Matrix content will be generated dynamically -->
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task 2: Modify Permissions -->
+        <div id="task2" class="content-section">
+            <div class="task-card">
+                <div class="task-header">
+                    <h2>✏️ Task 2: Modify User Permissions</h2>
+                    <p>Practice changing access permissions based on business requirements</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Scenario:</h3>
+                    <p>Regina Moore (OT Systems Engineer) has been promoted to OT Systems Manager and needs elevated access to PLC systems. Jason Trujillo (Network Administrator) requires temporary admin access to the firewall for maintenance. Update the matrix accordingly.</p>
+                </div>
+
+                <div class="control-section">
+                    <div class="form-group">
+                        <label for="modifyUser">Select Employee:</label>
+                        <select id="modifyUser">
+                            <option value="">Choose employee</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modifySystem">Select System:</label>
+                        <select id="modifySystem">
+                            <option value="">Choose system</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPermission">New Permission:</label>
+                        <select id="newPermission">
+                            <option value="A">Admin (A)</option>
+                            <option value="W">Write (W)</option>
+                            <option value="R">Read (R)</option>
+                            <option value="-">Deny (-)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="justification">Justification:</label>
+                        <input type="text" id="justification" placeholder="Business reason for change">
+                    </div>
+                    <button onclick="updatePermission()">Update Permission</button>
+                    <button onclick="resetTask2()">Reset Task</button>
+                </div>
+
+                <div class="matrix-container">
+                    <table class="matrix-table" id="task2Matrix">
+                        <!-- Matrix content will be generated dynamically -->
+                    </table>
+                </div>
+
+                <div class="audit-log">
+                    <h3>📝 Change Log</h3>
+                    <div id="task2Log">
+                        <p>Permission changes will be logged here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task 3: Remove Users -->
+        <div id="task3" class="content-section">
+            <div class="task-card">
+                <div class="task-header">
+                    <h2>🚫 Task 3: Remove User Access</h2>
+                    <p>Practice removing users who no longer need access</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Scenario:</h3>
+                    <p>Two employees are leaving FreshFlow Systems: Mike Chen (IT Support) is transferring to another department and should lose all system access. Sarah Williams (Former Contract Coordinator) has resigned and needs complete access removal. Ensure audit trail compliance.</p>
+                </div>
+
+                <div class="control-section">
+                    <div class="form-group">
+                        <label for="removeUser">Select User to Remove:</label>
+                        <select id="removeUser">
+                            <option value="">Choose user</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="removalReason">Removal Reason:</label>
+                        <select id="removalReason">
+                            <option value="termination">Employment Termination</option>
+                            <option value="transfer">Department Transfer</option>
+                            <option value="role_change">Role Change</option>
+                            <option value="security_breach">Security Breach</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="effectiveDate">Effective Date:</label>
+                        <input type="date" id="effectiveDate">
+                    </div>
+                    <button onclick="removeUserAccess()">Remove All Access</button>
+                    <button onclick="showRemovedUsers()">Show Removed Users</button>
+                    <button onclick="resetTask3()">Reset Task</button>
+                </div>
+
+                <div class="matrix-container">
+                    <table class="matrix-table" id="task3Matrix">
+                        <!-- Matrix content will be generated dynamically -->
+                    </table>
+                </div>
+
+                <div class="audit-log">
+                    <h3>🗑️ Removal Log</h3>
+                    <div id="task3Log">
+                        <p>User removals will be logged here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task 4: Add Users -->
+        <div id="task4" class="content-section">
+            <div class="task-card">
+                <div class="task-header">
+                    <h2>➕ Task 4: Add New Users</h2>
+                    <p>Practice adding new employees with appropriate access levels</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Scenario:</h3>
+                    <p>FreshFlow Systems is hiring new staff: Maria Rodriguez (Quality Control Manager) needs access to production systems and reporting tools. David Kim (IT Security Analyst) requires security monitoring tool access. Apply the principle of least privilege.</p>
+                </div>
+
+                <div class="control-section">
+                    <div class="form-group">
+                        <label for="newUserName">Employee Name:</label>
+                        <input type="text" id="newUserName" placeholder="Enter full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="newUserRole">Job Role:</label>
+                        <select id="newUserRole">
+                            <option value="">Select role</option>
+                            <option value="Quality Control Manager">Quality Control Manager</option>
+                            <option value="IT Security Analyst">IT Security Analyst</option>
+                            <option value="Production Supervisor">Production Supervisor</option>
+                            <option value="Finance Analyst">Finance Analyst</option>
+                            <option value="Custom">Custom Role</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="customRole">Custom Role:</label>
+                        <input type="text" id="customRole" placeholder="Enter custom role">
+                    </div>
+                    <div class="form-group">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <button onclick="addNewUser()">Add Employee</button>
+                    <button onclick="resetTask4()">Reset Task</button>
+                </div>
+
+                <div class="control-section">
+                    <h4>Set System Permissions for New User:</h4>
+                    <div class="form-group">
+                        <label for="permissionUser">Employee:</label>
+                        <select id="permissionUser">
+                            <option value="">Select employee</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="permissionSystem">System:</label>
+                        <select id="permissionSystem">
+                            <option value="">Select system</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="permissionLevel">Permission:</label>
+                        <select id="permissionLevel">
+                            <option value="A">Admin (A)</option>
+                            <option value="W">Write (W)</option>
+                            <option value="R">Read (R)</option>
+                            <option value="-">Deny (-)</option>
+                        </select>
+                    </div>
+                    <button onclick="setUserPermission()">Set Permission</button>
+                    <button onclick="applyRoleTemplate()">Apply Role Template</button>
+                </div>
+
+                <div class="matrix-container">
+                    <table class="matrix-table" id="task4Matrix">
+                        <!-- Matrix content will be generated dynamically -->
+                    </table>
+                </div>
+
+                <div class="audit-log">
+                    <h3>👤 New User Log</h3>
+                    <div id="task4Log">
+                        <p>New user additions will be logged here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task 5: Generate Report -->
+        <div id="task5" class="content-section">
+            <div class="task-card">
+                <div class="task-header">
+                    <h2>📋 Task 5: Generate Summary Report</h2>
+                    <p>Create comprehensive audit documentation and compliance reports</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Scenario:</h3>
+                    <p>The cybersecurity audit is tomorrow. Generate various reports to demonstrate compliance with access control requirements. Include risk analysis, compliance gaps, and recommendations.</p>
+                </div>
+
+                <div class="control-section">
+                    <div class="form-group">
+                        <label for="reportType">Report Type:</label>
+                        <select id="reportType">
+                            <option value="compliance">Compliance Summary</option>
+                            <option value="risk">Risk Assessment</option>
+                            <option value="access">Access Rights Report</option>
+                            <option value="audit">Audit Trail</option>
+                            <option value="executive">Executive Summary</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportPeriod">Time Period:</label>
+                        <select id="reportPeriod">
+                            <option value="current">Current State</option>
+                            <option value="30days">Last 30 Days</option>
+                            <option value="90days">Last 90 Days</option>
+                        </select>
+                    </div>
+                    <button onclick="generateReport()">Generate Report</button>
+                    <button onclick="exportReport()">Export Report</button>
+                    <button onclick="viewMetrics()">View Metrics</button>
+                </div>
+
+                <div id="reportOutput" class="report-section">
+                    <h3>📊 Report Output</h3>
+                    <p>Select report type and click "Generate Report" to see results.</p>
+                </div>
+
+                <div class="matrix-container">
+                    <h3>📈 Access Control Metrics Dashboard</h3>
+                    <div class="company-stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalUsers">0</div>
+                            <div class="stat-label">Active Users</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalSystems">0</div>
+                            <div class="stat-label">Protected Systems</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="adminAccess">0</div>
+                            <div class="stat-label">Admin Permissions</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="complianceScore">0%</div>
+                            <div class="stat-label">Compliance Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="audit-log">
+                    <h3>📋 Complete Audit Trail</h3>
+                    <div id="completeAuditLog">
+                        <p>All system changes and access modifications will be shown here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for permission details -->
+    <div id="permissionModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Permission Details</h3>
+            <div id="modalContent"></div>
+            <button onclick="saveModalPermission()" class="btn-success">Save Changes</button>
+        </div>
+    </div>
+
+    <script>
+        // Initial data structures based on FreshFlow Systems
+        let employees = [
+            'Carla Jennings', 'Marcus Lee', 'Dr. Nia Clarke', 'Elaine Harper',
+            'Jason Trujillo', 'Regina Moore', 'Rachel Li', 'Mike Chen',
+            'Sarah Williams', 'Jennifer Martinez', 'Robert Johnson', 'Lisa Zhang',
+            'Carlos Rodriguez', 'Amanda Foster', 'Kevin Brown'
+        ];
+
+        let systems = [
+            'ERP System', 'CRM Database', 'Financial Management', 'Email System',
+            'PLC Controls', 'HMI Stations', 'Production Database', 'Quality Control System',
+            'Warehouse Management', 'RFID Tracking', 'Security Cameras', 'Firewall Admin',
+            'Network Monitoring', 'Backup Systems', 'File Server'
+        ];
+
+        let roles = {
+            'Carla Jennings': 'CEO',
+            'Marcus Lee': 'COO', 
+            'Dr. Nia Clarke': 'CISO',
+            'Elaine Harper': 'Finance Director',
+            'Jason Trujillo': 'Network Administrator',
+            'Regina Moore': 'OT Systems Engineer',
+            'Rachel Li': 'Compliance Officer',
+            'Mike Chen': 'IT Support',
+            'Sarah Williams': 'Contract Coordinator',
+            'Jennifer Martinez': 'Production Supervisor',
+            'Robert Johnson': 'Quality Inspector',
+            'Lisa Zhang': 'Warehouse Manager',
+            'Carlos Rodriguez': 'Maintenance Tech',
+            'Amanda Foster': 'HR Manager',
+            'Kevin Brown': 'Sales Manager'
+        };
+
+        let accessMatrix = {};
+        let auditLog = [];
+        let removedUsers = [];
+        let currentUser = 'student';
+
+        // Initialize the matrix with realistic permissions for FreshFlow Systems
+        function initializeMatrix() {
+            accessMatrix = {};
+            
+            employees.forEach(employee => {
+                accessMatrix[employee] = {};
+                systems.forEach(system => {
+                    accessMatrix[employee][system] = getDefaultPermission(employee, system);
+                });
+            });
+
+            updateAllMatrices();
+            updateDropdowns();
+            logAudit('Training session initialized with FreshFlow Systems access matrix');
+        }
+
+        function getDefaultPermission(employee, system) {
+            const role = roles[employee];
+            
+            // CEO - broad business access, limited technical
+            if (role === 'CEO') {
+                if (['ERP System', 'CRM Database', 'Financial Management', 'Email System'].includes(system)) return 'A';
+                if (['Production Database', 'Quality Control System', 'Warehouse Management'].includes(system)) return 'R';
+                return '-';
+            }
+            
+            // COO - operational systems focus
+            if (role === 'COO') {
+                if (['ERP System', 'Production Database', 'Quality Control System', 'Warehouse Management'].includes(system)) return 'A';
+                if (['CRM Database', 'Email System', 'RFID Tracking'].includes(system)) return 'W';
+                return 'R';
+            }
+            
+            // CISO - security and IT systems
+            if (role === 'CISO') {
+                if (['Firewall Admin', 'Network Monitoring', 'Security Cameras', 'Backup Systems'].includes(system)) return 'A';
+                if (['Email System', 'File Server', 'ERP System'].includes(system)) return 'W';
+                return 'R';
+            }
+            
+            // Finance Director - financial systems
+            if (role === 'Finance Director') {
+                if (['Financial Management', 'ERP System'].includes(system)) return 'A';
+                if (['Email System', 'CRM Database'].includes(system)) return 'W';
+                return 'R';
+            }
+            
+            // Network Administrator - IT infrastructure
+            if (role === 'Network Administrator') {
+                if (['Network Monitoring', 'Firewall Admin', 'Email System', 'File Server', 'Backup Systems'].includes(system)) return 'A';
+                if (['Security Cameras'].includes(system)) return 'W';
+                return 'R';
+            }
+            
+            // OT Systems Engineer - operational technology
+            if (role === 'OT Systems Engineer') {
+                if (['PLC Controls', 'HMI Stations'].includes(system)) return 'A';
+                if (['Production Database', 'Quality Control System'].includes(system)) return 'W';
+                if (['Network Monitoring'].includes(system)) return 'R';
+                return '-';
+            }
+            
+            // Production Supervisor - production systems
+            if (role === 'Production Supervisor') {
+                if (['Production Database', 'Quality Control System', 'HMI Stations'].includes(system)) return 'W';
+                if (['PLC Controls', 'Email System'].includes(system)) return 'R';
+                return '-';
+            }
+            
+            // Contract Coordinator - business systems
+            if (role === 'Contract Coordinator') {
+                if (['CRM Database', 'Email System'].includes(system)) return 'W';
+                if (['ERP System'].includes(system)) return 'R';
+                return '-';
+            }
+            
+            // Default permissions for other roles
+            if (['IT Support'].includes(role)) {
+                if (['Email System', 'File Server'].includes(system)) return 'W';
+                if (['Network Monitoring', 'Backup Systems'].includes(system)) return 'R';
+                return '-';
+            }
+            
+            // Basic access for operational staff
+            if (['Quality Inspector', 'Warehouse Manager', 'Maintenance Tech'].includes(role)) {
+                if (system === 'Email System') return 'R';
+                if (role === 'Quality Inspector' && ['Quality Control System', 'Production Database'].includes(system)) return 'R';
+                if (role === 'Warehouse Manager' && ['Warehouse Management', 'RFID Tracking'].includes(system)) return 'W';
+                return '-';
+            }
+            
+            // Administrative staff
+            if (['HR Manager', 'Sales Manager'].includes(role)) {
+                if (['Email System'].includes(system)) return 'W';
+                if (role === 'Sales Manager' && ['CRM Database'].includes(system)) return 'W';
+                return '-';
+            }
+            
+            return '-'; // Default deny
+        }
+
+        function renderMatrix(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            let html = '<thead><tr><th class="role-header">Employee (Role)</th>';
+            
+            systems.forEach(system => {
+                html += `<th title="${system}">${system}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            employees.forEach(employee => {
+                if (removedUsers.includes(employee)) return; // Skip removed users
+                
+                const role = roles[employee] || 'Unknown';
+                html += `<tr><td class="role-header">${employee}<br><small>(${role})</small></td>`;
+                systems.forEach(system => {
+                    const permission = accessMatrix[employee] && accessMatrix[employee][system] || '-';
+                    const cellClass = `permission-cell permission-${getPermissionClass(permission)}`;
+                    html += `<td class="${cellClass}" onclick="editPermission('${employee}', '${system}')" 
+                             title="Employee: ${employee}&#10;System: ${system}&#10;Permission: ${getPermissionName(permission)}">${permission}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</tbody>';
+            container.innerHTML = html;
+        }
+
+        function getPermissionClass(permission) {
+            switch(permission) {
+                case 'R': return 'read';
+                case 'W': return 'write';
+                case 'A': return 'admin';
+                default: return 'deny';
+            }
+        }
+
+        function getPermissionName(permission) {
+            switch(permission) {
+                case 'R': return 'Read Only';
+                case 'W': return 'Read/Write';
+                case 'A': return 'Administrator';
+                default: return 'Denied';
+            }
+        }
+
+        function updateAllMatrices() {
+            renderMatrix('task1Matrix');
+            renderMatrix('task2Matrix');
+            renderMatrix('task3Matrix');
+            renderMatrix('task4Matrix');
+        }
+
+        function updateDropdowns() {
+            // Update all dropdowns with current employees and systems
+            const userDropdowns = ['queryUser', 'modifyUser', 'removeUser', 'permissionUser'];
+            const systemDropdowns = ['querySystem', 'modifySystem', 'permissionSystem'];
+            
+            userDropdowns.forEach(id => {
+                const dropdown = document.getElementById(id);
+                if (dropdown) {
+                    const currentValue = dropdown.value;
+                    dropdown.innerHTML = '<option value="">Select Employee</option>';
+                    employees.forEach(employee => {
+                        if (!removedUsers.includes(employee)) {
+                            const option = document.createElement('option');
+                            option.value = employee;
+                            option.textContent = `${employee} (${roles[employee] || 'Unknown'})`;
+                            if (employee === currentValue) option.selected = true;
+                            dropdown.appendChild(option);
+                        }
+                    });
+                }
+            });
+            
+            systemDropdowns.forEach(id => {
+                const dropdown = document.getElementById(id);
+                if (dropdown) {
+                    const currentValue = dropdown.value;
+                    dropdown.innerHTML = '<option value="">Select System</option>';
+                    systems.forEach(system => {
+                        const option = document.createElement('option');
+                        option.value = system;
+                        option.textContent = system;
+                        if (system === currentValue) option.selected = true;
+                        dropdown.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        // Task 1: Data Retrieval Functions
+        function executeQuery() {
+            const user = document.getElementById('queryUser').value;
+            const system = document.getElementById('querySystem').value;
+            const permission = document.getElementById('queryPermission').value;
+            const results = document.getElementById('queryResults');
+            
+            let html = '<h3>📊 Query Results</h3>';
+            let matches = [];
+            
+            employees.forEach(employee => {
+                if (removedUsers.includes(employee)) return;
+                
+                systems.forEach(sys => {
+                    const perm = accessMatrix[employee] && accessMatrix[employee][sys] || '-';
+                    
+                    let match = true;
+                    if (user && employee !== user) match = false;
+                    if (system && sys !== system) match = false;
+                    if (permission && perm !== permission) match = false;
+                    
+                    if (match) {
+                        matches.push({
+                            employee: employee,
+                            role: roles[employee],
+                            system: sys,
+                            permission: perm
+                        });
+                    }
+                });
+            });
+            
+            if (matches.length === 0) {
+                html += '<p>No matches found for the specified criteria.</p>';
+            } else {
+                html += `<p><strong>Found ${matches.length} matching access entries:</strong></p>`;
+                html += '<table class="matrix-table"><thead><tr><th>Employee</th><th>Role</th><th>System</th><th>Permission</th></tr></thead><tbody>';
+                matches.forEach(match => {
+                    const permClass = getPermissionClass(match.permission);
+                    html += `<tr>
+                        <td>${match.employee}</td>
+                        <td>${match.role}</td>
+                        <td>${match.system}</td>
+                        <td class="permission-${permClass}">${match.permission} - ${getPermissionName(match.permission)}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+            }
+            
+            results.innerHTML = html;
+            logAudit(`Query executed: User=${user||'All'}, System=${system||'All'}, Permission=${permission||'All'} - ${matches.length} results`);
+        }
+
+        function showAllAccess() {
+            const results = document.getElementById('queryResults');
+            let html = '<h3>📊 Complete Access Control Matrix Summary</h3>';
+            
+            let totalPermissions = 0;
+            let permissionCounts = { 'A': 0, 'W': 0, 'R': 0, '-': 0 };
+            
+            employees.forEach(employee => {
+                if (removedUsers.includes(employee)) return;
+                systems.forEach(system => {
+                    const perm = accessMatrix[employee] && accessMatrix[employee][system] || '-';
+                    permissionCounts[perm]++;
+                    totalPermissions++;
+                });
+            });
+            
+            html += '<div class="company-stats">';
+            html += `<div class="stat-card"><div class="stat-value">${permissionCounts['A']}</div><div class="stat-label">Admin Permissions</div></div>`;
+            html += `<div class="stat-card"><div class="stat-value">${permissionCounts['W']}</div><div class="stat-label">Write Permissions</div></div>`;
+            html += `<div class="stat-card"><div class="stat-value">${permissionCounts['R']}</div><div class="stat-label">Read Permissions</div></div>`;
+            html += `<div class="stat-card"><div class="stat-value">${permissionCounts['-']}</div><div class="stat-label">Denied Access</div></div>`;
+            html += '</div>';
+            
+            const activeUsers = employees.filter(emp => !removedUsers.includes(emp));
+            html += `<p><strong>Summary:</strong> ${activeUsers.length} active users with access to ${systems.length} systems (${totalPermissions} total permission entries)</p>`;
+            
+            results.innerHTML = html;
+            logAudit('Complete access matrix summary displayed');
+        }
+
+        // Task 2: Modify Permissions Functions
+        function updatePermission() {
+            const user = document.getElementById('modifyUser').value;
+            const system = document.getElementById('modifySystem').value;
+            const newPerm = document.getElementById('newPermission').value;
+            const justification = document.getElementById('justification').value;
+            
+            if (!user || !system) {
+                alert('Please select both user and system.');
+                return;
+            }
+            
+            if (!justification.trim()) {
+                alert('Please provide justification for this permission change.');
+                return;
+            }
+            
+            const oldPerm = accessMatrix[user] && accessMatrix[user][system] || '-';
+            
+            if (!accessMatrix[user]) accessMatrix[user] = {};
+            accessMatrix[user][system] = newPerm;
+            
+            updateAllMatrices();
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <div class="log-timestamp">${new Date().toLocaleString()}</div>
+                <div><strong>${user}</strong> access to <strong>${system}</strong> changed from <strong>${oldPerm}</strong> to <strong>${newPerm}</strong></div>
+                <div><em>Justification: ${justification}</em></div>
+            `;
+            
+            document.getElementById('task2Log').appendChild(logEntry);
+            
+            logAudit(`Permission updated: ${user} → ${system} from ${oldPerm} to ${newPerm}. Reason: ${justification}`);
+            
+            // Clear form
+            document.getElementById('justification').value = '';
+        }
+
+        function resetTask2() {
+            initializeMatrix();
+            document.getElementById('task2Log').innerHTML = '<p>Permission changes will be logged here...</p>';
+            document.getElementById('justification').value = '';
+        }
+
+        // Task 3: Remove Users Functions
+        function removeUserAccess() {
+            const user = document.getElementById('removeUser').value;
+            const reason = document.getElementById('removalReason').value;
+            const effectiveDate = document.getElementById('effectiveDate').value;
+            
+            if (!user) {
+                alert('Please select a user to remove.');
+                return;
+            }
+            
+            if (!effectiveDate) {
+                alert('Please specify an effective date.');
+                return;
+            }
+            
+            // Add to removed users list
+            if (!removedUsers.includes(user)) {
+                removedUsers.push(user);
+            }
+            
+            // Log the removal
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <div class="log-timestamp">${new Date().toLocaleString()}</div>
+                <div><strong>${user}</strong> (${roles[user]}) - All access removed</div>
+                <div><em>Reason: ${reason.replace('_', ' ').toUpperCase()}</em></div>
+                <div><em>Effective Date: ${effectiveDate}</em></div>
+            `;
+            
+            document.getElementById('task3Log').appendChild(logEntry);
+            
+            updateAllMatrices();
+            updateDropdowns();
+            
+            logAudit(`User removed: ${user} (${roles[user]}) - Reason: ${reason}, Effective: ${effectiveDate}`);
+        }
+
+        function showRemovedUsers() {
+            if (removedUsers.length === 0) {
+                alert('No users have been removed yet.');
+                return;
+            }
+            
+            let message = 'Removed Users:\n\n';
+            removedUsers.forEach(user => {
+                message += `• ${user} (${roles[user] || 'Unknown Role'})\n`;
+            });
+            
+            alert(message);
+        }
+
+        function resetTask3() {
+            removedUsers = [];
+            initializeMatrix();
+            document.getElementById('task3Log').innerHTML = '<p>User removals will be logged here...</p>';
+            document.getElementById('effectiveDate').value = '';
+        }
+
+        // Task 4: Add Users Functions
+        function addNewUser() {
+            const name = document.getElementById('newUserName').value.trim();
+            const roleSelect = document.getElementById('newUserRole').value;
+            const customRole = document.getElementById('customRole').value.trim();
+            const startDate = document.getElementById('startDate').value;
+            
+            if (!name) {
+                alert('Please enter the employee name.');
+                return;
+            }
+            
+            if (!roleSelect) {
+                alert('Please select a job role.');
+                return;
+            }
+            
+            if (roleSelect === 'Custom' && !customRole) {
+                alert('Please enter a custom role.');
+                return;
+            }
+            
+            if (!startDate) {
+                alert('Please specify a start date.');
+                return;
+            }
+            
+            if (employees.includes(name)) {
+                alert('An employee with this name already exists.');
+                return;
+            }
+            
+            const finalRole = roleSelect === 'Custom' ? customRole : roleSelect;
+            
+            // Add to employees list
+            employees.push(name);
+            roles[name] = finalRole;
+            
+            // Initialize with default permissions (all denied initially)
+            accessMatrix[name] = {};
+            systems.forEach(system => {
+                accessMatrix[name][system] = '-';
+            });
+            
+            updateAllMatrices();
+            updateDropdowns();
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <div class="log-timestamp">${new Date().toLocaleString()}</div>
+                <div><strong>${name}</strong> added as <strong>${finalRole}</strong></div>
+                <div><em>Start Date: ${startDate}</em></div>
+                <div><em>Initial Status: All access denied (requires permission assignment)</em></div>
+            `;
+            
+            document.getElementById('task4Log').appendChild(logEntry);
+            
+            logAudit(`New user added: ${name} (${finalRole}) - Start Date: ${startDate}`);
+            
+            // Clear form
+            document.getElementById('newUserName').value = '';
+            document.getElementById('newUserRole').value = '';
+            document.getElementById('customRole').value = '';
+            document.getElementById('startDate').value = '';
+        }
+
+        function setUserPermission() {
+            const user = document.getElementById('permissionUser').value;
+            const system = document.getElementById('permissionSystem').value;
+            const permission = document.getElementById('permissionLevel').value;
+            
+            if (!user || !system) {
+                alert('Please select both user and system.');
+                return;
+            }
+            
+            const oldPerm = accessMatrix[user] && accessMatrix[user][system] || '-';
+            
+            if (!accessMatrix[user]) accessMatrix[user] = {};
+            accessMatrix[user][system] = permission;
+            
+            updateAllMatrices();
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <div class="log-timestamp">${new Date().toLocaleString()}</div>
+                <div><strong>${user}</strong> permission set: <strong>${system}</strong> = <strong>${permission}</strong></div>
+            `;
+            
+            document.getElementById('task4Log').appendChild(logEntry);
+            
+            logAudit(`Permission set: ${user} → ${system} = ${permission}`);
+        }
+
+        function applyRoleTemplate() {
+            const user = document.getElementById('permissionUser').value;
+            
+            if (!user) {
+                alert('Please select a user first.');
+                return;
+            }
+            
+            const role = roles[user];
+            
+            // Apply role-based permissions
+            systems.forEach(system => {
+                const defaultPerm = getDefaultPermission(user, system);
+                accessMatrix[user][system] = defaultPerm;
+            });
+            
+            updateAllMatrices();
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <div class="log-timestamp">${new Date().toLocaleString()}</div>
+                <div><strong>${user}</strong> - Role template applied for <strong>${role}</strong></div>
+                <div><em>Standard permissions assigned based on job role</em></div>
+            `;
+            
+            document.getElementById('task4Log').appendChild(logEntry);
+            
+            logAudit(`Role template applied: ${user} (${role})`);
+        }
+
+        function resetTask4() {
+            // Remove any users added during this task (keep original employees)
+            const originalEmployees = [
+                'Carla Jennings', 'Marcus Lee', 'Dr. Nia Clarke', 'Elaine Harper',
+                'Jason Trujillo', 'Regina Moore', 'Rachel Li', 'Mike Chen',
+                'Sarah Williams', 'Jennifer Martinez', 'Robert Johnson', 'Lisa Zhang',
+                'Carlos Rodriguez', 'Amanda Foster', 'Kevin Brown'
+            ];
+            
+            employees = [...originalEmployees];
+            
+            // Reset roles to original
+            roles = {
+                'Carla Jennings': 'CEO',
+                'Marcus Lee': 'COO', 
+                'Dr. Nia Clarke': 'CISO',
+                'Elaine Harper': 'Finance Director',
+                'Jason Trujillo': 'Network Administrator',
+                'Regina Moore': 'OT Systems Engineer',
+                'Rachel Li': 'Compliance Officer',
+                'Mike Chen': 'IT Support',
+                'Sarah Williams': 'Contract Coordinator',
+                'Jennifer Martinez': 'Production Supervisor',
+                'Robert Johnson': 'Quality Inspector',
+                'Lisa Zhang': 'Warehouse Manager',
+                'Carlos Rodriguez': 'Maintenance Tech',
+                'Amanda Foster': 'HR Manager',
+                'Kevin Brown': 'Sales Manager'
+            };
+            
+            initializeMatrix();
+            document.getElementById('task4Log').innerHTML = '<p>New user additions will be logged here...</p>';
+            
+            // Clear form fields
+            document.getElementById('newUserName').value = '';
+            document.getElementById('newUserRole').value = '';
+            document.getElementById('customRole').value = '';
+            document.getElementById('startDate').value = '';
+        }
+
+        // Task 5: Generate Report Functions
+        function generateReport() {
+            const reportType = document.getElementById('reportType').value;
+            const reportPeriod = document.getElementById('reportPeriod').value;
+            const outputDiv = document.getElementById('reportOutput');
+            
+            let html = '<h3>📋 ';
+            
+            switch(reportType) {
+                case 'compliance':
+                    html += 'Compliance Summary Report</h3>';
+                    html += generateComplianceReport();
+                    break;
+                case 'risk':
+                    html += 'Risk Assessment Report</h3>';
+                    html += generateRiskReport();
+                    break;
+                case 'access':
+                    html += 'Access Rights Report</h3>';
+                    html += generateAccessReport();
+                    break;
+                case 'audit':
+                    html += 'Audit Trail Report</h3>';
+                    html += generateAuditReport();
+                    break;
+                case 'executive':
+                    html += 'Executive Summary Report</h3>';
+                    html += generateExecutiveReport();
+                    break;
+                default:
+                    html += 'Report</h3><p>Please select a report type.</p>';
+            }
+            
+            outputDiv.innerHTML = html;
+            logAudit(`Report generated: ${reportType} (${reportPeriod})`);
+        }
+
+        function generateComplianceReport() {
+            const activeUsers = employees.filter(emp => !removedUsers.includes(emp));
+            let totalPerms = 0;
+            let adminPerms = 0;
+            let writePerms = 0;
+            let readPerms = 0;
+            let deniedPerms = 0;
+            
+            activeUsers.forEach(employee => {
+                systems.forEach(system => {
+                    const perm = accessMatrix[employee] && accessMatrix[employee][system] || '-';
+                    totalPerms++;
+                    switch(perm) {
+                        case 'A': adminPerms++; break;
+                        case 'W': writePerms++; break;
+                        case 'R': readPerms++; break;
+                        default: deniedPerms++; break;
+                    }
+                });
+            });
+            
+            const adminPercent = ((adminPerms / totalPerms) * 100).toFixed(1);
+            const complianceScore = adminPercent < 15 ? 95 : (adminPercent < 25 ? 85 : 75);
+            
+            let html = `
+                <div class="info-box">
+                    <h4>🎯 Compliance Status: ${complianceScore}%</h4>
+                    <p><strong>Report Period:</strong> Current State</p>
+                    <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                
+                <h4>📊 Permission Distribution</h4>
+                <div class="company-stats">
+                    <div class="stat-card">
+                        <div class="stat-value">${adminPerms}</div>
+                        <div class="stat-label">Admin (${adminPercent}%)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${writePerms}</div>
+                        <div class="stat-label">Write (${((writePerms/totalPerms)*100).toFixed(1)}%)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${readPerms}</div>
+                        <div class="stat-label">Read (${((readPerms/totalPerms)*100).toFixed(1)}%)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${deniedPerms}</div>
+                        <div class="stat-label">Denied (${((deniedPerms/totalPerms)*100).toFixed(1)}%)</div>
+                    </div>
+                </div>
+                
+                <h4>✅ Compliance Checks</h4>
+                <ul>
+                    <li><strong>Principle of Least Privilege:</strong> ${adminPercent < 15 ? '✅ COMPLIANT' : '⚠️ REVIEW NEEDED'} (${adminPercent}% admin access)</li>
+                    <li><strong>Access Documentation:</strong> ✅ COMPLIANT (All access logged and justified)</li>
+                    <li><strong>Regular Reviews:</strong> ✅ COMPLIANT (Training session demonstrates process)</li>
+                    <li><strong>Segregation of Duties:</strong> ✅ COMPLIANT (No single user has universal access)</li>
+                </ul>
+                
+                <h4>📋 Recommendations</h4>
+                <ul>
+                    <li>Implement quarterly access reviews</li>
+                    <li>Establish automated access provisioning based on job roles</li>
+                    <li>Deploy privileged access management (PAM) solution</li>
+                    <li>Conduct regular security awareness training</li>
+                </ul>
+            `;
+            
+            return html;
+        }
+
+        function generateRiskReport() {
+            const activeUsers = employees.filter(emp => !removedUsers.includes(emp));
+            const criticalSystems = ['Financial Management', 'PLC Controls', 'Production Database'];
+            
+            let highRiskUsers = [];
+            activeUsers.forEach(employee => {
+                let adminCount = 0;
+                let criticalAccess = 0;
+                
+                systems.forEach(system => {
+                    const perm = accessMatrix[employee] && accessMatrix[employee][system] || '-';
+                    if (perm === 'A') adminCount++;
+                    if (criticalSystems.includes(system) && ['A', 'W'].includes(perm)) criticalAccess++;
+                });
+                
+                if (adminCount > 5 || criticalAccess > 2) {
+                    highRiskUsers.push({
+                        name: employee,
+                        role: roles[employee],
+                        adminCount: adminCount,
+                        criticalAccess: criticalAccess
+                    });
+                }
+            });
+            
+            let html = `
+                <div class="info-box">
+                    <h4>⚠️ Risk Assessment Summary</h4>
+                    <p><strong>Critical Systems Identified:</strong> ${criticalSystems.length}</p>
+                    <p><strong>High-Risk Users:</strong> ${highRiskUsers.length}</p>
+                    <p><strong>Assessment Date:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                
+                <h4>🎯 Critical Systems</h4>
+                <table class="matrix-table">
+                    <thead><tr><th>System</th><th>Users with Access</th><th>Risk Level</th></tr></thead>
+                    <tbody>
+            `;
+            
+            criticalSystems.forEach(system => {
+                let userCount = 0;
+                activeUsers.forEach(employee => {
+                    const perm = accessMatrix[employee] && accessMatrix[employee][system] || '-';
+                    if (perm !== '-') userCount++;
+                });
+                
+                const riskLevel = userCount > 8 ? 'High' : userCount > 4 ? 'Medium' : 'Low';
+                const riskClass = riskLevel === 'High' ? 'risk-high' : riskLevel === 'Medium' ? 'risk-medium' : 'risk-low';
+                
+                html += `<tr>
+                    <td>${system}</td>
+                    <td>${userCount} users</td>
+                    <td><span class="risk-badge ${riskClass}">${riskLevel}</span></td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            
+            if (highRiskUsers.length > 0) {
+                html += `
+                    <h4>⚠️ High-Risk Users</h4>
+                    <table class="matrix-table">
+                        <thead><tr><th>Employee</th><th>Role</th><th>Admin Permissions</th><th>Critical System Access</th></tr></thead>
+                        <tbody>
+                `;
+                
+                highRiskUsers.forEach(user => {
+                    html += `<tr>
+                        <td>${user.name}</td>
+                        <td>${user.role}</td>
+                        <td>${user.adminCount}</td>
+                        <td>${user.criticalAccess}</td>
+                    </tr>`;
+                });
+                
+                html += '</tbody></table>';
+            }
+            
+            html += `
+                <h4>📋 Risk Mitigation Recommendations</h4>
+                <ul>
+                    <li>Review and reduce excessive administrative privileges</li>
+                    <li>Implement multi-factor authentication for critical systems</li>
+                    <li>Establish monitoring for privileged account activities</li>
+                    <li>Conduct background checks for users with critical system access</li>
+                    <li>Implement just-in-time access for administrative functions</li>
+                </ul>
+            `;
+            
+            return html;
+        }
+
+        function generateAccessReport() {
+            const activeUsers = employees.filter(emp => !removedUsers.includes(emp));
+            
+            let html = `
+                <div class="info-box">
+                    <h4>👥 Access Rights Summary</h4>
+                    <p><strong>Active Users:</strong> ${activeUsers.length}</p>
+                    <p><strong>Protected Systems:</strong> ${systems.length}</p>
+                    <p><strong>Removed Users:</strong> ${removedUsers.length}</p>
+                </div>
+                
+                <h4>📊 Access by Role</h4>
+                <table class="matrix-table">
+                    <thead><tr><th>Role</th><th>Users</th><th>Avg Permissions</th><th>Admin Access</th></tr></thead>
+                    <tbody>
+            `;
+            
+            const roleStats = {};
+            activeUsers.forEach(employee => {
+                const role = roles[employee];
+                if (!roleStats[role]) {
+                    roleStats[role] = { users: [], totalPerms: 0, adminPerms: 0 };
+                }
+                roleStats[role].users.push(employee);
+                
+                systems.forEach(system => {
+                    const perm = accessMatrix[employee] && accessMatrix[employee][system] || '-';
+                    if (perm !== '-') roleStats[role].totalPerms++;
+                    if (perm === 'A') roleStats[role].adminPerms++;
+                });
+            });
+            
+            Object.keys(roleStats).forEach(role => {
+                const stats = roleStats[role];
+                const avgPerms = (stats.totalPerms / stats.users.length).toFixed(1);
+                
+                html += `<tr>
+                    <td>${role}</td>
+                    <td>${stats.users.length}</td>
+                    <td>${avgPerms}</td>
+                    <td>${stats.adminPerms}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            
+            if (removedUsers.length > 0) {
+                html += `
+                    <h4>🚫 Recently Removed Users</h4>
+                    <ul>
+                `;
+                removedUsers.forEach(user => {
+                    html += `<li>${user} (${roles[user] || 'Unknown Role'})</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            return html;
+        }
+
+        function generateAuditReport() {
+            let html = `
+                <div class="info-box">
+                    <h4>📋 Audit Trail Summary</h4>
+                    <p><strong>Total Logged Events:</strong> ${auditLog.length}</p>
+                    <p><strong>Report Period:</strong> Training Session</p>
+                </div>
+                
+                <h4>📝 Recent Activity</h4>
+                <div class="audit-log">
+            `;
+            
+            if (auditLog.length === 0) {
+                html += '<p>No audit events recorded yet.</p>';
+            } else {
+                auditLog.slice(-10).reverse().forEach(entry => {
+                    html += `<div class="log-entry">
+                        <div class="log-timestamp">${entry.timestamp}</div>
+                        <div>${entry.action}</div>
+                    </div>`;
+                });
+            }
+            
+            html += `
+                </div>
+                
+                <h4>📊 Activity Summary</h4>
+                <ul>
+                    <li>Permission modifications: ${auditLog.filter(e => e.action.includes('Permission')).length}</li>
+                    <li>User additions: ${auditLog.filter(e => e.action.includes('added')).length}</li>
+                    <li>User removals: ${auditLog.filter(e => e.action.includes('removed')).length}</li>
+                    <li>Query operations: ${auditLog.filter(e => e.action.includes('Query')).length}</li>
+                    <li>Report generations: ${auditLog.filter(e => e.action.includes('Report')).length}</li>
+                </ul>
+            `;
+            
+            return html;
+        }
+
+        function generateExecutiveReport() {
+            const activeUsers = employees.filter(emp => !removedUsers.includes(emp));
+            let totalPerms = 0;
+            let adminPerms = 0;
+            
+            activeUsers.forEach(employee => {
+                systems.forEach(system => {
+                    const perm = accessMatrix[employee] && accessMatrix[employee][system] || '-';
+                    if (perm !== '-') totalPerms++;
+                    if (perm === 'A') adminPerms++;
+                });
+            });
+            
+            const adminPercent = totalPerms > 0 ? ((adminPerms / totalPerms) * 100).toFixed(1) : 0;
+            const complianceScore = adminPercent < 15 ? 95 : (adminPercent < 25 ? 85 : 75);
+            
+            let html = `
+                <div class="info-box">
+                    <h4>🎯 Executive Summary</h4>
+                    <p><strong>Overall Security Posture:</strong> ${complianceScore >= 90 ? 'Strong' : complianceScore >= 80 ? 'Good' : 'Needs Improvement'}</p>
+                    <p><strong>Compliance Score:</strong> ${complianceScore}%</p>
+                </div>
+                
+                <h4>📈 Key Metrics</h4>
+                <div class="company-stats">
+                    <div class="stat-card">
+                        <div class="stat-value">${activeUsers.length}</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${systems.length}</div>
+                        <div class="stat-label">Protected Systems</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${adminPercent}%</div>
+                        <div class="stat-label">Admin Access</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${auditLog.length}</div>
+                        <div class="stat-label">Audit Events</div>
+                    </div>
+                </div>
+                
+                <h4>✅ Strengths</h4>
+                <ul>
+                    <li>Comprehensive access control matrix implementation</li>
+                    <li>Clear role-based access control structure</li>
+                    <li>Detailed audit logging and documentation</li>
+                    <li>Regular review and update processes</li>
+                </ul>
+                
+                <h4>⚠️ Areas for Improvement</h4>
+                <ul>
+                    <li>Consider implementing automated access reviews</li>
+                    <li>Enhance monitoring for privileged access activities</li>
+                    <li>Develop formal access request and approval workflows</li>
+                    <li>Establish regular penetration testing of access controls</li>
+                </ul>
+                
+                <h4>📋 Strategic Recommendations</h4>
+                <ul>
+                    <li><strong>Short-term (1-3 months):</strong> Implement MFA for all administrative accounts</li>
+                    <li><strong>Medium-term (3-6 months):</strong> Deploy privileged access management solution</li>
+                    <li><strong>Long-term (6-12 months):</strong> Integrate with identity governance platform</li>
+                </ul>
+            `;
+            
+            return html;
+        }
+
+        function exportReport() {
+            const reportType = document.getElementById('reportType').value;
+            const reportContent = document.getElementById('reportOutput').innerHTML;
+            
+            if (!reportContent || reportContent.includes('Select report type')) {
+                alert('Please generate a report first.');
+                return;
+            }
+            
+            // Create a more formatted version for export
+            const exportContent = `
+FreshFlow Systems - Access Control Matrix Report
+Generated: ${new Date().toLocaleString()}
+Report Type: ${reportType.charAt(0).toUpperCase() + reportType.slice(1)}
+
+${reportContent.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ').trim()}
+
+---
+This report was generated as part of cybersecurity audit preparation training.
+FreshFlow Systems Access Control Matrix Training Module
+            `.trim();
+            
+            const blob = new Blob([exportContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `FreshFlow_${reportType}_Report_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            logAudit(`Report exported: ${reportType}`);
+        }
+
+        function viewMetrics() {
+            const activeUsers = employees.filter(emp => !removedUsers.includes(emp));
+            let totalPerms = 0;
+            let adminPerms = 0;
+            
+            activeUsers.forEach(employee => {
+                systems.forEach(system => {
+                    const perm = accessMatrix[employee] && accessMatrix[employee][system] || '-';
+                    if (perm !== '-') totalPerms++;
+                    if (perm === 'A') adminPerms++;
+                });
+            });
+            
+            const adminPercent = totalPerms > 0 ? ((adminPerms / totalPerms) * 100).toFixed(1) : 0;
+            const complianceScore = adminPercent < 15 ? 95 : (adminPercent < 25 ? 85 : 75);
+            
+            document.getElementById('totalUsers').textContent = activeUsers.length;
+            document.getElementById('totalSystems').textContent = systems.length;
+            document.getElementById('adminAccess').textContent = adminPerms;
+            document.getElementById('complianceScore').textContent = complianceScore + '%';
+            
+            updateCompleteAuditLog();
+        }
+
+        function updateCompleteAuditLog() {
+            const logDiv = document.getElementById('completeAuditLog');
+            
+            if (auditLog.length === 0) {
+                logDiv.innerHTML = '<p>No audit events recorded yet.</p>';
+                return;
+            }
+            
+            let html = '';
+            auditLog.slice(-20).reverse().forEach(entry => {
+                html += `<div class="log-entry">
+                    <div class="log-timestamp">${entry.timestamp}</div>
+                    <div>${entry.action}</div>
+                </div>`;
+            });
+            
+            logDiv.innerHTML = html;
+        }
+
+        // Utility Functions
+        function logAudit(action) {
+            const timestamp = new Date().toLocaleString();
+            auditLog.push({ timestamp, action, user: currentUser });
+            
+            // Keep only last 100 entries
+            if (auditLog.length > 100) {
+                auditLog = auditLog.slice(-100);
+            }
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update navigation buttons
+            const buttons = document.querySelectorAll('.nav-button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function editPermission(employee, system) {
+            // This function can be used for direct matrix editing if needed
+            const currentPermission = accessMatrix[employee] && accessMatrix[employee][system] || '-';
+            
+            const modal = document.getElementById('permissionModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalContent.innerHTML = `
+                <p><strong>Employee:</strong> ${employee}</p>
+                <p><strong>Role:</strong> ${roles[employee] || 'Unknown'}</p>
+                <p><strong>System:</strong> ${system}</p>
+                <p><strong>Current Permission:</strong> ${getPermissionName(currentPermission)}</p>
+                <div style="margin: 20px 0;">
+                    <label for="modalNewPermission">New Permission:</label>
+                    <select id="modalNewPermission" style="margin-left: 10px; padding: 5px;">
+                        <option value="-" ${currentPermission === '-' ? 'selected' : ''}>Deny (-)</option>
+                        <option value="R" ${currentPermission === 'R' ? 'selected' : ''}>Read (R)</option>
+                        <option value="W" ${currentPermission === 'W' ? 'selected' : ''}>Write (W)</option>
+                        <option value="A" ${currentPermission === 'A' ? 'selected' : ''}>Admin (A)</option>
+                    </select>
+                </div>
+                <input type="hidden" id="modalEmployee" value="${employee}">
+                <input type="hidden" id="modalSystem" value="${system}">
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function saveModalPermission() {
+            const employee = document.getElementById('modalEmployee').value;
+            const system = document.getElementById('modalSystem').value;
+            const newPermission = document.getElementById('modalNewPermission').value;
+            
+            const oldPermission = accessMatrix[employee] && accessMatrix[employee][system] || '-';
+            
+            if (!accessMatrix[employee]) accessMatrix[employee] = {};
+            accessMatrix[employee][system] = newPermission;
+            
+            updateAllMatrices();
+            document.getElementById('permissionModal').style.display = 'none';
+            
+            logAudit(`Direct edit: ${employee} → ${system} from ${oldPermission} to ${newPermission}`);
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMatrix();
+            
+            // Set current date as default for date inputs
+            const today = new Date().toISOString().split('T')[0];
+            const dateInputs = document.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(input => {
+                if (!input.value) input.value = today;
+            });
+            
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                const modal = document.getElementById('permissionModal');
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            };
+            
+            // Close modal with X button
+            document.querySelector('.close').onclick = function() {
+                document.getElementById('permissionModal').style.display = 'none';
+            };
+            
+            logAudit('FreshFlow Systems Access Control Matrix Training session started');
+        });
+
+        // Add some CSS classes for risk badges
+        const style = document.createElement('style');
+        style.textContent = `
+            .risk-badge {
+                padding: 0.3rem 0.8rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+            
+            .risk-high {
+                background-color: #dc3545;
+                color: white;
+            }
+            
+            .risk-medium {
+                background-color: #ffc107;
+                color: black;
+            }
+            
+            .risk-low {
+                background-color: #28a745;
+                color: white;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

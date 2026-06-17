@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMMC 2.0 Access Control Matrix - ACME Technology Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header h1 {
+            color: #1e3c72;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .header .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .compliance-status {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        
+        .status-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .status-item h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .control-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .control-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        .control-group select, .control-group input, .control-group button {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .control-group select:focus, .control-group input:focus {
+            border-color: #2a5298;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+        
+        button {
+            background: linear-gradient(45deg, #2a5298, #1e3c72);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(42, 82, 152, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(42, 82, 152, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #218838);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .matrix-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        
+        .matrix-table th {
+            background: linear-gradient(45deg, #2a5298, #1e3c72);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .matrix-table .role-header {
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 15px;
+            min-width: 150px;
+        }
+        
+        .permission-cell {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .permission-cell:hover {
+            transform: scale(1.1);
+            z-index: 5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .permission-read { background: #e8f5e8; color: #2e7d32; }
+        .permission-write { background: #fff3e0; color: #ef6c00; }
+        .permission-execute { background: #e3f2fd; color: #1565c0; }
+        .permission-admin { background: #fce4ec; color: #c2185b; }
+        .permission-deny { background: #ffebee; color: #d32f2f; }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .asset-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .asset-category {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .asset-category h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #2a5298;
+            padding-bottom: 8px;
+        }
+        
+        .asset-list {
+            list-style: none;
+        }
+        
+        .asset-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .asset-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .asset-id {
+            font-weight: 600;
+            color: #2a5298;
+            font-size: 0.9rem;
+        }
+        
+        .network-zones {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .zone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .zone-item {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .zone-cui { background: linear-gradient(45deg, #d32f2f, #b71c1c); }
+        .zone-management { background: linear-gradient(45deg, #1976d2, #0d47a1); }
+        .zone-guest { background: linear-gradient(45deg, #388e3c, #2e7d32); }
+        .zone-ot { background: linear-gradient(45deg, #f57c00, #ef6c00); }
+        
+        .audit-log {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .log-entry {
+            padding: 10px;
+            margin: 8px 0;
+            border-left: 4px solid #2a5298;
+            background: #f8f9fa;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .log-timestamp {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .control-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .matrix-table {
+                font-size: 11px;
+            }
+            
+            .matrix-table th, .matrix-table td {
+                padding: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ CMMC 2.0 Access Control Matrix</h1>
+            <div class="subtitle">ACME Technology Services Corporation - Training Environment</div>
+            <div class="compliance-status">
+                <div class="status-item">
+                    <h3>CMMC Level 2</h3>
+                    <div>Target Compliance</div>
+                </div>
+                <div class="status-item">
+                    <h3>NIST 800-171</h3>
+                    <div>110 Controls</div>
+                </div>
+                <div class="status-item">
+                    <h3>64 Employees</h3>
+                    <div>16 Role Types</div>
+                </div>
+                <div class="status-item">
+                    <h3>4 Network Zones</h3>
+                    <div>Segmented Access</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="asset-categories">
+            <div class="asset-category">
+                <h3>🔒 CUI Assets (In-Scope)</h3>
+                <ul class="asset-list">
+                    <li>Primary Data Server <span class="asset-id">CUI-001</span></li>
+                    <li>Azure Cloud Backup <span class="asset-id">CUI-002</span></li>
+                    <li>Contract Coordinator Workstations <span class="asset-id">CUI-003-005</span></li>
+                    <li>CISO Management Workstation <span class="asset-id">CUI-006</span></li>
+                    <li>Secure File Server <span class="asset-id">CUI-007</span></li>
+                </ul>
+            </div>
+            <div class="asset-category">
+                <h3>🔧 Security Protection Assets</h3>
+                <ul class="asset-list">
+                    <li>Enterprise Firewall <span class="asset-id">SPA-001</span></li>
+                    <li>VPN Gateway <span class="asset-id">SPA-002</span></li>
+                    <li>Endpoint Protection <span class="asset-id">SPA-004</span></li>
+                    <li>SIEM Tools <span class="asset-id">SPA-005</span></li>
+                    <li>Badge Access Control <span class="asset-id">SPA-006</span></li>
+                </ul>
+            </div>
+            <div class="asset-category">
+                <h3>⚠️ Contractor Risk Managed</h3>
+                <ul class="asset-list">
+                    <li>IT Support Workstations <span class="asset-id">CRMA-001-003</span></li>
+                    <li>Secure Printers <span class="asset-id">CRMA-004</span></li>
+                    <li>Warehouse Inventory System <span class="asset-id">CRMA-005</span></li>
+                </ul>
+            </div>
+            <div class="asset-category">
+                <h3>🚫 Out-of-Scope Assets</h3>
+                <ul class="asset-list">
+                    <li>Personal Laptops <span class="asset-id">OOS-001</span></li>
+                    <li>HR Systems <span class="asset-id">OOS-002</span></li>
+                    <li>Marketing Systems <span class="asset-id">OOS-003</span></li>
+                    <li>Guest Wi-Fi <span class="asset-id">OOS-004</span></li>
+                    <li>Facility Management <span class="asset-id">OOS-005</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="network-zones">
+            <h2>🌐 Network Zone Segmentation</h2>
+            <div class="zone-grid">
+                <div class="zone-item zone-cui">
+                    <h3>CUI Zone</h3>
+                    <p>Secure access to CUI assets</p>
+                </div>
+                <div class="zone-item zone-management">
+                    <h3>Management Zone</h3>
+                    <p>Admin & IT operations</p>
+                </div>
+                <div class="zone-item zone-guest">
+                    <h3>Guest Network</h3>
+                    <p>Isolated from internal systems</p>
+                </div>
+                <div class="zone-item zone-ot">
+                    <h3>OT Network</h3>
+                    <p>Building control systems</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h2>🎛️ Instructor Controls</h2>
+            <div class="control-section">
+                <div class="control-group">
+                    <label for="roleSelect">Add New Role:</label>
+                    <input type="text" id="newRole" placeholder="Enter role name">
+                </div>
+                <div class="control-group">
+                    <label for="assetSelect">Add New Asset:</label>
+                    <input type="text" id="newAsset" placeholder="Enter asset name">
+                </div>
+                <button onclick="addRole()" class="btn-success">Add Role</button>
+                <button onclick="addAsset()" class="btn-success">Add Asset</button>
+                <button onclick="generateReport()" class="btn-primary">Generate Compliance Report</button>
+                <button onclick="exportMatrix()" class="btn-primary">Export Matrix</button>
+                <button onclick="resetMatrix()" class="btn-danger">Reset to Default</button>
+            </div>
+            
+            <div class="control-section">
+                <div class="control-group">
+                    <label for="filterRole">Filter by Role:</label>
+                    <select id="filterRole">
+                        <option value="">All Roles</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="filterAsset">Filter by Asset Type:</label>
+                    <select id="filterAsset">
+                        <option value="">All Assets</option>
+                        <option value="CUI">CUI Assets</option>
+                        <option value="SPA">Security Protection</option>
+                        <option value="CRMA">Contractor Risk Managed</option>
+                        <option value="OOS">Out-of-Scope</option>
+                    </select>
+                </div>
+                <button onclick="applyFilters()">Apply Filters</button>
+                <button onclick="clearFilters()">Clear Filters</button>
+            </div>
+        </div>
+
+        <div class="matrix-container">
+            <h2>📊 Access Control Matrix</h2>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color permission-read"></div>
+                    <span>Read (R) - View only access</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color permission-write"></div>
+                    <span>Write (W) - Modify content</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color permission-execute"></div>
+                    <span>Execute (E) - Run operations</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color permission-admin"></div>
+                    <span>Admin (A) - Full control</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color permission-deny"></div>
+                    <span>Deny (-) - No access</span>
+                </div>
+            </div>
+
+            <table class="matrix-table" id="accessMatrix">
+                <!-- Matrix content will be generated dynamically -->
+            </table>
+        </div>
+
+        <div class="audit-log">
+            <h2>📋 Audit Log</h2>
+            <div id="auditEntries">
+                <!-- Audit entries will be added dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for permission details -->
+    <div id="permissionModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Permission Details</h3>
+            <div id="modalContent"></div>
+            <button onclick="savePermission()" class="btn-success">Save Changes</button>
+        </div>
+    </div>
+
+    <script>
+        // Initial data structures
+        let roles = [
+            'CEO', 'CISO', 'CFO', 'Network Security Director', 'Information Systems Director',
+            'Sales Manager', 'Salesperson', 'IT Staff', 'Contract Coordinator',
+            'Office Administrator', 'Management', 'Support Staff', 'Warehouse Staff',
+            'Facility Maintenance', 'HR', 'Marketing Specialist'
+        ];
+
+        let assets = [
+            // CUI Assets
+            'CUI-001: Primary Data Server', 'CUI-002: Azure Cloud Backup',
+            'CUI-003: Contract Coordinator WS1', 'CUI-004: Contract Coordinator WS2',
+            'CUI-005: Contract Coordinator WS3', 'CUI-006: CISO Management WS',
+            'CUI-007: Secure File Server',
+            
+            // Security Protection Assets
+            'SPA-001: Enterprise Firewall', 'SPA-002: VPN Gateway',
+            'SPA-004: Endpoint Protection', 'SPA-005: SIEM Tools',
+            'SPA-006: Badge Access Control',
+            
+            // Contractor Risk Managed Assets
+            'CRMA-001: IT Support WS1', 'CRMA-002: IT Support WS2',
+            'CRMA-003: Management Laptop', 'CRMA-004: Secure Printers',
+            'CRMA-005: Warehouse Inventory',
+            
+            // Network Zones
+            'ZONE-CUI: CUI Network Zone', 'ZONE-MGMT: Management Zone',
+            'ZONE-GUEST: Guest Network', 'ZONE-OT: OT Network'
+        ];
+
+        let accessMatrix = {};
+        let auditLog = [];
+        let currentUser = 'instructor';
+        let currentRole = '';
+        let currentAsset = '';
+
+        // Initialize the matrix with default permissions based on CMMC 2.0 requirements
+        function initializeMatrix() {
+            // Clear existing matrix
+            accessMatrix = {};
+            
+            roles.forEach(role => {
+                accessMatrix[role] = {};
+                assets.forEach(asset => {
+                    // Default permissions based on role and asset type
+                    accessMatrix[role][asset] = getDefaultPermission(role, asset);
+                });
+            });
+
+            // Apply principle of least privilege
+            applyLeastPrivilege();
+            renderMatrix();
+            updateFilters();
+            logAudit('System initialized with default CMMC 2.0 compliant permissions');
+        }
+
+        function getDefaultPermission(role, asset) {
+            const assetType = asset.split(':')[0];
+            
+            // CEO and CISO have broad access but still restricted for CUI
+            if (role === 'CEO' || role === 'CISO') {
+                if (assetType.startsWith('CUI')) return 'A';
+                if (assetType.startsWith('SPA')) return 'A';
+                if (assetType.startsWith('CRMA')) return 'W';
+                if (assetType.startsWith('ZONE-CUI')) return 'A';
+                if (assetType.startsWith('ZONE-MGMT')) return 'A';
+                return 'R';
+            }
+            
+            // Network Security Director - security-focused access
+            if (role === 'Network Security Director') {
+                if (assetType.startsWith('SPA')) return 'A';
+                if (assetType.startsWith('CUI')) return 'W';
+                if (assetType.startsWith('ZONE')) return 'A';
+                return 'R';
+            }
+            
+            // Information Systems Director - IT infrastructure focus
+            if (role === 'Information Systems Director') {
+                if (assetType.startsWith('SPA')) return 'A';
+                if (assetType.startsWith('CRMA')) return 'A';
+                if (assetType.startsWith('ZONE-MGMT')) return 'A';
+                if (assetType.startsWith('CUI')) return 'R';
+                return 'W';
+            }
+            
+            // Contract Coordinators - need CUI access for their work
+            if (role === 'Contract Coordinator') {
+                if (assetType.startsWith('CUI')) return 'W';
+                if (assetType.startsWith('ZONE-CUI')) return 'W';
+                if (assetType.startsWith('CRMA-004')) return 'W'; // Secure printers
+                return 'R';
+            }
+            
+            // IT Staff - technical access but limited CUI
+            if (role === 'IT Staff') {
+                if (assetType.startsWith('CRMA')) return 'W';
+                if (assetType.startsWith('SPA')) return 'W';
+                if (assetType.startsWith('ZONE-MGMT')) return 'W';
+                if (assetType.startsWith('CUI')) return 'R';
+                return 'R';
+            }
+            
+            // Sales roles - limited business access
+            if (role === 'Sales Manager' || role === 'Salesperson') {
+                if (assetType.startsWith('ZONE-GUEST')) return 'W';
+                if (assetType.startsWith('CRMA-004')) return 'R'; // Printers
+                return '-';
+            }
+            
+            // Warehouse Staff - operational systems only
+            if (role === 'Warehouse Staff') {
+                if (assetType.startsWith('CRMA-005')) return 'W'; // Warehouse inventory
+                if (assetType.startsWith('ZONE-GUEST')) return 'R';
+                return '-';
+            }
+            
+            // Support and administrative roles
+            if (role === 'Office Administrator' || role === 'Support Staff') {
+                if (assetType.startsWith('ZONE-GUEST')) return 'W';
+                if (assetType.startsWith('CRMA-004')) return 'W'; // Printers
+                return '-';
+            }
+            
+            // HR and Marketing - very limited access
+            if (role === 'HR' || role === 'Marketing Specialist') {
+                if (assetType.startsWith('ZONE-GUEST')) return 'R';
+                return '-';
+            }
+            
+            // Management - business access
+            if (role === 'Management') {
+                if (assetType.startsWith('ZONE-GUEST')) return 'W';
+                if (assetType.startsWith('CRMA')) return 'R';
+                return 'R';
+            }
+            
+            // CFO - financial and business systems
+            if (role === 'CFO') {
+                if (assetType.startsWith('CUI')) return 'R';
+                if (assetType.startsWith('ZONE-MGMT')) return 'W';
+                return 'R';
+            }
+            
+            // Facility Maintenance - building systems only
+            if (role === 'Facility Maintenance') {
+                if (assetType.startsWith('ZONE-OT')) return 'W';
+                if (assetType.startsWith('ZONE-GUEST')) return 'R';
+                return '-';
+            }
+            
+            // Default deny
+            return '-';
+        }
+
+        function applyLeastPrivilege() {
+            // Ensure no one has unnecessary admin access
+            roles.forEach(role => {
+                assets.forEach(asset => {
+                    const permission = accessMatrix[role][asset];
+                    if (permission === 'A' && !needsAdminAccess(role, asset)) {
+                        accessMatrix[role][asset] = 'W';
+                    }
+                });
+            });
+        }
+
+        function needsAdminAccess(role, asset) {
+            const assetType = asset.split(':')[0];
+            
+            // Only certain roles need admin access to specific assets
+            if (role === 'CEO' || role === 'CISO') return true;
+            if (role === 'Network Security Director' && assetType.startsWith('SPA')) return true;
+            if (role === 'Information Systems Director' && 
+                (assetType.startsWith('SPA') || assetType.startsWith('CRMA'))) return true;
+            
+            return false;
+        }
+
+        function renderMatrix() {
+            const matrix = document.getElementById('accessMatrix');
+            let html = '<thead><tr><th class="role-header">Role</th>';
+            
+            // Header row with assets
+            assets.forEach(asset => {
+                const shortName = asset.split(':')[1] || asset.split(':')[0];
+                html += `<th title="${asset}">${shortName.trim()}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            // Data rows
+            roles.forEach(role => {
+                html += `<tr><td class="role-header">${role}</td>`;
+                assets.forEach(asset => {
+                    const permission = accessMatrix[role][asset] || '-';
+                    const cellClass = `permission-cell permission-${getPermissionClass(permission)}`;
+                    html += `<td class="${cellClass}" onclick="editPermission('${role}', '${asset}')" 
+                             title="Role: ${role}&#10;Asset: ${asset}&#10;Permission: ${getPermissionName(permission)}">${permission}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</tbody>';
+            matrix.innerHTML = html;
+        }
+
+        function getPermissionClass(permission) {
+            switch(permission) {
+                case 'R': return 'read';
+                case 'W': return 'write';
+                case 'E': return 'execute';
+                case 'A': return 'admin';
+                default: return 'deny';
+            }
+        }
+
+        function getPermissionName(permission) {
+            switch(permission) {
+                case 'R': return 'Read Only';
+                case 'W': return 'Read/Write';
+                case 'E': return 'Execute';
+                case 'A': return 'Administrator';
+                default: return 'Denied';
+            }
+        }
+
+        function editPermission(role, asset) {
+            currentRole = role;
+            currentAsset = asset;
+            
+            const modal = document.getElementById('permissionModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            const currentPermission = accessMatrix[role][asset] || '-';
+            
+            modalContent.innerHTML = `
+                <p><strong>Role:</strong> ${role}</p>
+                <p><strong>Asset:</strong> ${asset}</p>
+                <p><strong>Current Permission:</strong> ${getPermissionName(currentPermission)}</p>
+                <div style="margin: 20px 0;">
+                    <label for="newPermission">New Permission:</label>
+                    <select id="newPermission" style="margin-left: 10px; padding: 5px;">
+                        <option value="-" ${currentPermission === '-' ? 'selected' : ''}>Deny (-)</option>
+                        <option value="R" ${currentPermission === 'R' ? 'selected' : ''}>Read (R)</option>
+                        <option value="W" ${currentPermission === 'W' ? 'selected' : ''}>Write (W)</option>
+                        <option value="E" ${currentPermission === 'E' ? 'selected' : ''}>Execute (E)</option>
+                        <option value="A" ${currentPermission === 'A' ? 'selected' : ''}>Admin (A)</option>
+                    </select>
+                </div>
+                <div style="margin: 15px 0;">
+                    <label for="justification">Justification:</label>
+                    <textarea id="justification" placeholder="Enter justification for this permission change..." 
+                              style="width: 100%; height: 60px; margin-top: 5px; padding: 8px;"></textarea>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function savePermission() {
+            const newPermission = document.getElementById('newPermission').value;
+            const justification = document.getElementById('justification').value;
+            
+            if (!justification.trim()) {
+                alert('Please provide a justification for this permission change.');
+                return;
+            }
+            
+            const oldPermission = accessMatrix[currentRole][currentAsset];
+            accessMatrix[currentRole][currentAsset] = newPermission;
+            
+            logAudit(`Permission changed: ${currentRole} → ${currentAsset} from ${oldPermission} to ${newPermission}. Justification: ${justification}`);
+            
+            renderMatrix();
+            document.getElementById('permissionModal').style.display = 'none';
+        }
+
+        function addRole() {
+            const newRole = document.getElementById('newRole').value.trim();
+            if (!newRole) {
+                alert('Please enter a role name.');
+                return;
+            }
+            
+            if (roles.includes(newRole)) {
+                alert('This role already exists.');
+                return;
+            }
+            
+            roles.push(newRole);
+            accessMatrix[newRole] = {};
+            
+            // Set default permissions for new role
+            assets.forEach(asset => {
+                accessMatrix[newRole][asset] = '-'; // Default to deny
+            });
+            
+            document.getElementById('newRole').value = '';
+            renderMatrix();
+            updateFilters();
+            logAudit(`New role added: ${newRole}`);
+        }
+
+        function addAsset() {
+            const newAsset = document.getElementById('newAsset').value.trim();
+            if (!newAsset) {
+                alert('Please enter an asset name.');
+                return;
+            }
+            
+            if (assets.includes(newAsset)) {
+                alert('This asset already exists.');
+                return;
+            }
+            
+            assets.push(newAsset);
+            
+            // Set default permissions for new asset
+            roles.forEach(role => {
+                accessMatrix[role][newAsset] = '-'; // Default to deny
+            });
+            
+            document.getElementById('newAsset').value = '';
+            renderMatrix();
+            updateFilters();
+            logAudit(`New asset added: ${newAsset}`);
+        }
+
+        function updateFilters() {
+            const roleFilter = document.getElementById('filterRole');
+            const currentRoleValue = roleFilter.value;
+            
+            roleFilter.innerHTML = '<option value="">All Roles</option>';
+            roles.forEach(role => {
+                const option = document.createElement('option');
+                option.value = role;
+                option.textContent = role;
+                if (role === currentRoleValue) option.selected = true;
+                roleFilter.appendChild(option);
+            });
+        }
+
+        function applyFilters() {
+            const roleFilter = document.getElementById('filterRole').value;
+            const assetFilter = document.getElementById('filterAsset').value;
+            
+            const matrix = document.getElementById('accessMatrix');
+            const rows = matrix.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const roleCell = row.querySelector('.role-header');
+                const roleName = roleCell.textContent;
+                
+                let showRow = true;
+                
+                if (roleFilter && roleName !== roleFilter) {
+                    showRow = false;
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+            
+            // Filter columns based on asset type
+            const headerCells = matrix.querySelectorAll('th:not(.role-header)');
+            const dataCells = matrix.querySelectorAll('tbody tr');
+            
+            headerCells.forEach((header, index) => {
+                const asset = assets[index];
+                let showColumn = true;
+                
+                if (assetFilter && !asset.startsWith(assetFilter)) {
+                    showColumn = false;
+                }
+                
+                header.style.display = showColumn ? '' : 'none';
+                
+                dataCells.forEach(row => {
+                    const cells = row.querySelectorAll('td:not(.role-header)');
+                    if (cells[index]) {
+                        cells[index].style.display = showColumn ? '' : 'none';
+                    }
+                });
+            });
+            
+            logAudit(`Filters applied - Role: ${roleFilter || 'All'}, Asset: ${assetFilter || 'All'}`);
+        }
+
+        function clearFilters() {
+            document.getElementById('filterRole').value = '';
+            document.getElementById('filterAsset').value = '';
+            
+            const matrix = document.getElementById('accessMatrix');
+            const allCells = matrix.querySelectorAll('th, td');
+            
+            allCells.forEach(cell => {
+                cell.style.display = '';
+            });
+            
+            logAudit('All filters cleared');
+        }
+
+        function generateReport() {
+            let report = 'CMMC 2.0 Access Control Matrix Compliance Report\n';
+            report += '=' .repeat(50) + '\n\n';
+            report += `Generated: ${new Date().toLocaleString()}\n`;
+            report += `Total Roles: ${roles.length}\n`;
+            report += `Total Assets: ${assets.length}\n\n`;
+            
+            // Count permissions by type
+            let permissionCounts = { 'A': 0, 'W': 0, 'E': 0, 'R': 0, '-': 0 };
+            let totalPermissions = 0;
+            
+            roles.forEach(role => {
+                assets.forEach(asset => {
+                    const permission = accessMatrix[role][asset];
+                    permissionCounts[permission]++;
+                    totalPermissions++;
+                });
+            });
+            
+            report += 'Permission Distribution:\n';
+            report += `- Admin (A): ${permissionCounts['A']} (${(permissionCounts['A']/totalPermissions*100).toFixed(1)}%)\n`;
+            report += `- Write (W): ${permissionCounts['W']} (${(permissionCounts['W']/totalPermissions*100).toFixed(1)}%)\n`;
+            report += `- Execute (E): ${permissionCounts['E']} (${(permissionCounts['E']/totalPermissions*100).toFixed(1)}%)\n`;
+            report += `- Read (R): ${permissionCounts['R']} (${(permissionCounts['R']/totalPermissions*100).toFixed(1)}%)\n`;
+            report += `- Deny (-): ${permissionCounts['-']} (${(permissionCounts['-']/totalPermissions*100).toFixed(1)}%)\n\n`;
+            
+            // Check for compliance issues
+            report += 'Compliance Analysis:\n';
+            let issues = [];
+            
+            // Check for excessive admin permissions
+            const adminPercentage = (permissionCounts['A'] / totalPermissions) * 100;
+            if (adminPercentage > 10) {
+                issues.push(`High percentage of admin permissions (${adminPercentage.toFixed(1)}%)`);
+            }
+            
+            // Check for roles with too much access
+            roles.forEach(role => {
+                let adminCount = 0;
+                assets.forEach(asset => {
+                    if (accessMatrix[role][asset] === 'A') adminCount++;
+                });
+                if (adminCount > assets.length * 0.3) {
+                    issues.push(`Role "${role}" has admin access to ${adminCount} assets`);
+                }
+            });
+            
+            if (issues.length === 0) {
+                report += '✅ No compliance issues detected\n';
+            } else {
+                report += '⚠️ Issues detected:\n';
+                issues.forEach(issue => {
+                    report += `- ${issue}\n`;
+                });
+            }
+            
+            // Show report in modal
+            const modal = document.getElementById('permissionModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalContent.innerHTML = `
+                <h3>Compliance Report</h3>
+                <pre style="white-space: pre-wrap; background: #f5f5f5; padding: 15px; border-radius: 5px; font-size: 12px;">${report}</pre>
+            `;
+            
+            modal.style.display = 'block';
+            
+            // Replace save button with download button
+            const saveBtn = modal.querySelector('button');
+            saveBtn.textContent = 'Download Report';
+            saveBtn.onclick = () => {
+                downloadReport(report);
+                modal.style.display = 'none';
+                saveBtn.textContent = 'Save Changes';
+                saveBtn.onclick = savePermission;
+            };
+            
+            logAudit('Compliance report generated');
+        }
+
+        function downloadReport(report) {
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `CMMC_Access_Control_Report_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function exportMatrix() {
+            let csv = 'Role,' + assets.join(',') + '\n';
+            
+            roles.forEach(role => {
+                let row = role + ',';
+                row += assets.map(asset => accessMatrix[role][asset] || '-').join(',');
+                csv += row + '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ACME_Access_Control_Matrix_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            logAudit('Access control matrix exported');
+        }
+
+        function resetMatrix() {
+            if (confirm('Are you sure you want to reset the matrix to default settings? This will lose all custom changes.')) {
+                initializeMatrix();
+                logAudit('Matrix reset to default configuration');
+            }
+        }
+
+        function logAudit(action) {
+            const timestamp = new Date().toLocaleString();
+            auditLog.unshift({ timestamp, action, user: currentUser });
+            
+            // Keep only last 100 entries
+            if (auditLog.length > 100) {
+                auditLog = auditLog.slice(0, 100);
+            }
+            
+            updateAuditDisplay();
+        }
+
+        function updateAuditDisplay() {
+            const auditDiv = document.getElementById('auditEntries');
+            auditDiv.innerHTML = '';
+            
+            auditLog.slice(0, 10).forEach(entry => {
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                logEntry.innerHTML = `
+                    <div class="log-timestamp">${entry.timestamp} - ${entry.user}</div>
+                    <div>${entry.action}</div>
+                `;
+                auditDiv.appendChild(logEntry);
+            });
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMatrix();
+            
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                const modal = document.getElementById('permissionModal');
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            };
+            
+            // Close modal with X button
+            document.querySelector('.close').onclick = function() {
+                document.getElementById('permissionModal').style.display = 'none';
+            };
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAN-153 Course Information</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px 30px;
+        }
+
+        .card {
+            background: white;
+            border: 2px solid #e8f5e8;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.15);
+            border-color: #4caf50;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #000000, #333333);
+            color: white;
+            padding: 20px;
+            font-size: 1.3em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .detail-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #2e7d32;
+            min-width: 140px;
+            margin-right: 15px;
+        }
+
+        .detail-value {
+            color: #333;
+            flex: 1;
+        }
+
+        .office-hours {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .office-hours h4 {
+            color: #2e7d32;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+
+        .hours-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .hour-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .day {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .time {
+            color: #666;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .contact-item:hover {
+            background: #e8f5e8;
+            transform: translateX(5px);
+        }
+
+        .contact-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            color: #4caf50;
+        }
+
+        .important-dates {
+            background: linear-gradient(135deg, #fff3e0, #f3e5f5);
+            border: 2px solid #4caf50;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .important-dates h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .date-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #000;
+        }
+
+        .date-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .date-value {
+            color: #2e7d32;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .hours-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        .content-sections {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            padding: 0 30px 40px;
+        }
+
+        .lab-item, .exercise-item, .exam-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .lab-item:hover, .exercise-item:hover, .exam-item:hover {
+            background: #e8f5e8;
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
+        }
+
+        .final-project {
+            background: linear-gradient(135deg, #fff3e0, #f3e5f5) !important;
+            border-left-color: #2e7d32 !important;
+            font-weight: 600;
+            border-left-width: 6px !important;
+        }
+
+        .final-exam {
+            background: linear-gradient(135deg, #ffebee, #f3e5f5) !important;
+            border-left-color: #000000 !important;
+            font-weight: 600;
+            border-left-width: 6px !important;
+        }
+
+        @media (min-width: 1024px) {
+            .content-sections {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-sections {
+                padding: 0 20px 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>LAN-153</h1>
+            <p class="subtitle">Course Information & Details</p>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="emoji">📋</span>
+                    Course Details
+                </div>
+                <div class="card-body">
+                    <div class="detail-item">
+                        <span class="detail-label">Course Number:</span>
+                        <span class="detail-value">LAN-153</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Credit Hours:</span>
+                        <span class="detail-value">3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Contact Hours:</span>
+                        <span class="detail-value">4 (2 Lecture + 2 Lab)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Prerequisite:</span>
+                        <span class="detail-value">LAN-122 or consent of instructor</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="emoji">👨‍🏫</span>
+                    Instructor Information
+                </div>
+                <div class="card-body">
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <span class="emoji">👤</span>
+                            <strong>John Sands</strong>
+                        </div>
+                        <div class="contact-item">
+                            <span class="emoji">📍</span>
+                            Office: T518
+                        </div>
+                        <div class="contact-item">
+                            <span class="emoji">📞</span>
+                            708-974-5426
+                        </div>
+                        <div class="contact-item">
+                            <span class="emoji">📧</span>
+                            sands@morainevalley.edu
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding: 0 30px 40px;">
+            <div class="important-dates">
+                <h3><span class="emoji">🕒</span>Important Dates</h3>
+                <div class="date-item">
+                    <span class="date-label">First Day:</span>
+                    <span class="date-value">August 18, 2025</span>
+                </div>
+                <div class="date-item">
+                    <span class="date-label">Last Day:</span>
+                    <span class="date-value">October 10, 2025</span>
+                </div>
+                <div class="date-item">
+                    <span class="date-label">Final Exam:</span>
+                    <span class="date-value">October 6, 2025</span>
+                </div>
+            </div>
+
+            <div class="office-hours">
+                <h4><span class="emoji">🕒</span>Office Hours</h4>
+                <div class="hours-grid">
+                    <div class="hour-item">
+                        <span class="day">Monday:</span>
+                        <span class="time">5:00 PM</span>
+                    </div>
+                    <div class="hour-item">
+                        <span class="day">Tuesday:</span>
+                        <span class="time">12:00 PM</span>
+                    </div>
+                    <div class="hour-item">
+                        <span class="day">Wednesday:</span>
+                        <span class="time">12:00 PM</span>
+                    </div>
+                    <div class="hour-item">
+                        <span class="day">Thursday:</span>
+                        <span class="time">6:00 PM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Content Sections -->
+        <div class="content-sections">
+            <div class="card">
+                <div class="card-header">
+                    <span class="emoji">🔬</span>
+                    Course Labs
+                </div>
+                <div class="card-body">
+                    <div class="lab-item">Lab 01A: Analyze and Differentiate Types of Malware and Application Attacks</div>
+                    <div class="lab-item">Lab 01B: Cryptography Concepts</div>
+                    <div class="lab-item">Lab 02A: Password Cracking with Linux and Windows</div>
+                    <div class="lab-item">Lab 03A: Investigating ARP Poisoning</div>
+                    <div class="lab-item">Lab 04A: Configuring a Network-Based Firewall</div>
+                    <div class="lab-item">Lab 04B: Performing Active Reconnaissance</div>
+                    <div class="lab-item">Lab 05A: Capturing Network Traffic</div>
+                    <div class="lab-item">Lab 05B: Identifying & Analyzing Network/Host Intrusion Detection Alerts</div>
+                    <div class="lab-item">Lab 06: Wireless Networking Attack and Mitigation Techniques</div>
+                    <div class="lab-item">Lab 07: Implementing Common Protocols and Services for Basic Security</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="emoji">📝</span>
+                    Course Exercises
+                </div>
+                <div class="card-body">
+                    <div class="exercise-item">Exercise 1: FreshFlow Systems Cybersecurity Controls</div>
+                    <div class="exercise-item">Exercise 2: Using Hashing Tools</div>
+                    <div class="exercise-item">Exercise 3: NIST SP800-171 Domains</div>
+                    <div class="exercise-item">Exercise 4: Asset Inventory & Categorization Report</div>
+                    <div class="exercise-item">Exercise 5: Access Control Matrix</div>
+                    <div class="exercise-item">Exercise 6: Vulnerability Scan Reports</div>
+                    <div class="exercise-item">Exercise 7: Incident Response Plan (IRP)</div>
+                    <div class="exercise-item final-project">Final Project</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="emoji">📊</span>
+                    Course Exams
+                </div>
+                <div class="card-body">
+                    <div class="exam-item">Domain 1 - General Security Concepts</div>
+                    <div class="exam-item">Domain 2 - Threats, Vulnerabilities, and Mitigations</div>
+                    <div class="exam-item">Domain 3: Security Architecture</div>
+                    <div class="exam-item">Domain 4: Security Operations</div>
+                    <div class="exam-item">Domain 5: Security Program Management and Oversight</div>
+                    <div class="exam-item final-exam">Final Exam</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

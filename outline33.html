@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Architecture Curriculum - Interactive Outline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
+            color: black;
+            line-height: 1.6;
+        }
+
+        .header {
+            background-color: #2e7d32;
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-container {
+            position: relative;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-btn {
+            background-color: #1b5e20;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            min-width: 250px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-btn:hover {
+            background-color: #388e3c;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 250px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown.show .dropdown-content {
+            display: block;
+        }
+
+        .arrow {
+            transition: transform 0.3s;
+        }
+
+        .dropdown.show .arrow {
+            transform: rotate(180deg);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            display: none;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            color: #2e7d32;
+            border-bottom: 3px solid #2e7d32;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .section h3 {
+            color: #1b5e20;
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.2rem;
+        }
+
+        .section h4 {
+            color: #2e7d32;
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .objectives, .key-terms, .concepts, .outline {
+            margin-bottom: 2rem;
+        }
+
+        .objectives h3, .key-terms h3, .concepts h3, .outline h3 {
+            background-color: #e8f5e8;
+            padding: 0.8rem;
+            border-radius: 5px;
+            border-left: 4px solid #2e7d32;
+        }
+
+        ul {
+            margin-left: 2rem;
+            margin-top: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .key-term {
+            font-weight: bold;
+            color: #1b5e20;
+        }
+
+        .definition {
+            margin-left: 1rem;
+            font-style: italic;
+        }
+
+        .time-duration {
+            color: #2e7d32;
+            font-weight: bold;
+            float: right;
+        }
+
+        .welcome {
+            text-align: center;
+            padding: 3rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        .welcome h2 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+
+        .welcome p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 1rem;
+            }
+            
+            .dropdown-btn {
+                min-width: 200px;
+                font-size: 14px;
+            }
+            
+            .section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Security Architecture Curriculum</h1>
+        <p>Interactive Outline and Course Navigation</p>
+        
+        <div class="nav-container">
+            <div class="dropdown" id="mainDropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown()">
+                    Select Course Section
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" onclick="showSection('welcome')">Course Overview</a>
+                    <a href="#" onclick="showSection('section1')">3.1: Security Implications of Architecture Models</a>
+                    <a href="#" onclick="showSection('section2')">3.2: Security Principles for Enterprise Infrastructure</a>
+                    <a href="#" onclick="showSection('section3')">3.3: Data Protection Concepts and Strategies</a>
+                    <a href="#" onclick="showSection('section4')">3.4: Resilience and Recovery in Security Architecture</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="welcome" class="section active">
+            <div class="welcome">
+                <h2>Welcome to Security Architecture Curriculum</h2>
+                <p>This interactive outline covers four comprehensive modules on security architecture, from cloud computing models to resilience planning. Use the dropdown menu above to navigate through each section and explore detailed learning objectives, key concepts, and course outlines.</p>
+            </div>
+        </div>
+
+        <div id="section1" class="section">
+            <h2>3.1: Security Implications of Different Architecture Models</h2>
+            
+            <div class="objectives">
+                <h3>Learning Objectives</h3>
+                <p>Students will be able to:</p>
+                <ul>
+                    <li>Analyze security implications of cloud, edge, and fog computing architectures</li>
+                    <li>Evaluate the security considerations of virtualization and containerization</li>
+                    <li>Assess architecture models based on availability, cost, scalability, and risk factors</li>
+                    <li>Compare centralized vs. decentralized architecture security implications</li>
+                </ul>
+            </div>
+
+            <div class="key-terms">
+                <h3>Key Terms</h3>
+                <ul>
+                    <li><span class="key-term">Cloud Computing:</span> <span class="definition">On-demand delivery of computing services over the internet</span></li>
+                    <li><span class="key-term">Edge Computing:</span> <span class="definition">Computing performed at or near the data source rather than in centralized cloud</span></li>
+                    <li><span class="key-term">Fog Computing:</span> <span class="definition">Decentralized computing infrastructure extending cloud capabilities to edge devices</span></li>
+                    <li><span class="key-term">Thin Client:</span> <span class="definition">Lightweight computer dependent on server for processing</span></li>
+                    <li><span class="key-term">Containerization:</span> <span class="definition">OS-level virtualization for deploying applications in isolated environments</span></li>
+                    <li><span class="key-term">Microservices:</span> <span class="definition">Architectural approach using small, independent services</span></li>
+                    <li><span class="key-term">Infrastructure as Code (IaC):</span> <span class="definition">Managing infrastructure through machine-readable definition files</span></li>
+                    <li><span class="key-term">Serverless:</span> <span class="definition">Cloud computing model where cloud provider manages server infrastructure</span></li>
+                </ul>
+            </div>
+
+            <div class="concepts">
+                <h3>Key Concepts</h3>
+                
+                <h4>Architecture and Infrastructure Models</h4>
+                <ul>
+                    <li><strong>Cloud Computing Models:</strong> Shared responsibility matrix, hybrid considerations, third-party vendors</li>
+                    <li><strong>Infrastructure Approaches:</strong> IaC, serverless computing, microservices architecture</li>
+                    <li><strong>Network Infrastructure:</strong> Physical isolation, logical segmentation, software-defined networking</li>
+                    <li><strong>Computing Models:</strong> On-premises, centralized vs. decentralized, containerization, virtualization</li>
+                    <li><strong>Specialized Systems:</strong> IoT devices, ICS/SCADA, RTOS, embedded systems</li>
+                </ul>
+
+                <h4>Architecture Considerations</h4>
+                <ul>
+                    <li><strong>Operational Factors:</strong> Availability, resilience, responsiveness, scalability</li>
+                    <li><strong>Business Factors:</strong> Cost, ease of deployment, risk transference, ease of recovery</li>
+                    <li><strong>Technical Factors:</strong> Patch availability, inability to patch, power requirements, compute resources</li>
+                </ul>
+            </div>
+
+            <div class="outline">
+                <h3>Detailed Outline</h3>
+                <ul>
+                    <li>3.1.1 Introduction to Architecture Models <span class="time-duration">(45 minutes)</span></li>
+                    <li>3.1.2 Cloud Computing Security <span class="time-duration">(60 minutes)</span></li>
+                    <li>3.1.3 Edge and Fog Computing <span class="time-duration">(45 minutes)</span></li>
+                    <li>3.1.4 Modern Infrastructure Concepts <span class="time-duration">(60 minutes)</span></li>
+                    <li>3.1.5 Network Infrastructure Security <span class="time-duration">(45 minutes)</span></li>
+                    <li>3.1.6 Specialized System Architectures <span class="time-duration">(60 minutes)</span></li>
+                    <li>3.1.7 Architecture Assessment Framework <span class="time-duration">(45 minutes)</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="section2" class="section">
+            <h2>3.2: Security Principles for Enterprise Infrastructure</h2>
+            
+            <div class="objectives">
+                <h3>Learning Objectives</h3>
+                <p>Students will be able to:</p>
+                <ul>
+                    <li>Apply security principles to device placement and network design</li>
+                    <li>Configure network appliances for optimal security</li>
+                    <li>Implement secure communication protocols</li>
+                    <li>Select effective security controls for enterprise environments</li>
+                </ul>
+            </div>
+
+            <div class="key-terms">
+                <h3>Key Terms</h3>
+                <ul>
+                    <li><span class="key-term">Security Zones:</span> <span class="definition">Network segments with similar security requirements</span></li>
+                    <li><span class="key-term">Attack Surface:</span> <span class="definition">Total points where unauthorized access can occur</span></li>
+                    <li><span class="key-term">Fail-open:</span> <span class="definition">System defaults to allowing access when failure occurs</span></li>
+                    <li><span class="key-term">Fail-closed:</span> <span class="definition">System defaults to denying access when failure occurs</span></li>
+                    <li><span class="key-term">Jump Server:</span> <span class="definition">Intermediary server for accessing secure network segments</span></li>
+                    <li><span class="key-term">IPS/IDS:</span> <span class="definition">Intrusion Prevention/Detection Systems</span></li>
+                    <li><span class="key-term">WAF:</span> <span class="definition">Web Application Firewall protecting web applications</span></li>
+                    <li><span class="key-term">NGFW:</span> <span class="definition">Next-Generation Firewall with advanced inspection capabilities</span></li>
+                </ul>
+            </div>
+
+            <div class="concepts">
+                <h3>Key Concepts</h3>
+                
+                <h4>Infrastructure Considerations</h4>
+                <ul>
+                    <li><strong>Device Placement Strategy:</strong> Strategic positioning, data flow consideration, performance impact</li>
+                    <li><strong>Security Zones:</strong> Network segmentation, DMZ implementation, internal protection</li>
+                    <li><strong>Attack Surface Management:</strong> Vector identification, asset inventory, continuous monitoring</li>
+                </ul>
+
+                <h4>Network Appliances and Security Devices</h4>
+                <ul>
+                    <li><strong>Access Control Infrastructure:</strong> Jump servers, proxy servers, network sensors</li>
+                    <li><strong>Intrusion Prevention:</strong> IPS/IDS deployment, detection methods, monitoring strategies</li>
+                    <li><strong>Load Balancing:</strong> Traffic distribution, SSL termination, health checking</li>
+                    <li><strong>Firewall Technologies:</strong> WAF, UTM, NGFW, Layer 4 vs Layer 7 filtering</li>
+                </ul>
+            </div>
+
+            <div class="outline">
+                <h3>Detailed Outline</h3>
+                <ul>
+                    <li>3.2.1 Infrastructure Security Planning <span class="time-duration">(60 minutes)</span></li>
+                    <li>3.2.2 Attack Surface Management <span class="time-duration">(45 minutes)</span></li>
+                    <li>3.2.3 Network Security Appliances <span class="time-duration">(90 minutes)</span></li>
+                    <li>3.2.4 Access Control Infrastructure <span class="time-duration">(60 minutes)</span></li>
+                    <li>3.2.5 Secure Communication Protocols <span class="time-duration">(75 minutes)</span></li>
+                    <li>3.2.6 Modern Network Architecture <span class="time-duration">(60 minutes)</span></li>
+                    <li>3.2.7 Control Selection and Implementation <span class="time-duration">(45 minutes)</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="section3" class="section">
+            <h2>3.3: Data Protection Concepts and Strategies</h2>
+            
+            <div class="objectives">
+                <h3>Learning Objectives</h3>
+                <p>Students will be able to:</p>
+                <ul>
+                    <li>Classify data according to sensitivity and regulatory requirements</li>
+                    <li>Implement appropriate data protection methods</li>
+                    <li>Apply data security controls based on data states</li>
+                    <li>Understand data sovereignty and geolocation implications</li>
+                </ul>
+            </div>
+
+            <div class="key-terms">
+                <h3>Key Terms</h3>
+                <ul>
+                    <li><span class="key-term">Data at Rest:</span> <span class="definition">Data stored on persistent storage media</span></li>
+                    <li><span class="key-term">Data in Transit:</span> <span class="definition">Data moving between systems or networks</span></li>
+                    <li><span class="key-term">Data in Use:</span> <span class="definition">Data being actively processed or accessed</span></li>
+                    <li><span class="key-term">Data Sovereignty:</span> <span class="definition">Legal concept that data is subject to laws of country where located</span></li>
+                    <li><span class="key-term">Encryption:</span> <span class="definition">Converting data into unreadable format without decryption key</span></li>
+                    <li><span class="key-term">Tokenization:</span> <span class="definition">Replacing sensitive data with non-sensitive tokens</span></li>
+                    <li><span class="key-term">PII:</span> <span class="definition">Personally Identifiable Information</span></li>
+                    <li><span class="key-term">PHI:</span> <span class="definition">Protected Health Information</span></li>
+                </ul>
+            </div>
+
+            <div class="concepts">
+                <h3>Key Concepts</h3>
+                
+                <h4>Data Types and Classifications</h4>
+                <ul>
+                    <li><strong>Data Categories:</strong> Regulated data, trade secrets, intellectual property, legal information</li>
+                    <li><strong>Classification Levels:</strong> Public, sensitive, confidential, restricted, private, critical</li>
+                </ul>
+
+                <h4>Data Protection Methods</h4>
+                <ul>
+                    <li><strong>Cryptographic Protection:</strong> Encryption, hashing, key management</li>
+                    <li><strong>Data Transformation:</strong> Masking, tokenization, obfuscation</li>
+                    <li><strong>Access Controls:</strong> Geographic restrictions, segmentation, permission restrictions</li>
+                </ul>
+            </div>
+
+            <div class="outline">
+                <h3>Detailed Outline</h3>
+                <ul>
+                    <li>3.3.1 Data Classification and Types <span class="time-duration">(60 minutes)</span></li>
+                    <li>3.3.2 Data States and Security Controls <span class="time-duration">(75 minutes)</span></li>
+                    <li>3.3.3 Data Sovereignty and Compliance <span class="time-duration">(45 minutes)</span></li>
+                    <li>3.3.4 Cryptographic Data Protection <span class="time-duration">(90 minutes)</span></li>
+                    <li>3.3.5 Data Transformation Techniques <span class="time-duration">(60 minutes)</span></li>
+                    <li>3.3.6 Access Control and Segmentation <span class="time-duration">(60 minutes)</span></li>
+                    <li>3.3.7 Data Loss Prevention <span class="time-duration">(45 minutes)</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="section4" class="section">
+            <h2>3.4: Resilience and Recovery in Security Architecture</h2>
+            
+            <div class="objectives">
+                <h3>Learning Objectives</h3>
+                <p>Students will be able to:</p>
+                <ul>
+                    <li>Design high availability systems with appropriate redundancy</li>
+                    <li>Implement disaster recovery and business continuity solutions</li>
+                    <li>Plan and execute resilience testing procedures</li>
+                    <li>Configure backup and recovery systems</li>
+                </ul>
+            </div>
+
+            <div class="key-terms">
+                <h3>Key Terms</h3>
+                <ul>
+                    <li><span class="key-term">High Availability (HA):</span> <span class="definition">System operational continuity with minimal downtime</span></li>
+                    <li><span class="key-term">Hot Site:</span> <span class="definition">Fully operational backup facility ready for immediate use</span></li>
+                    <li><span class="key-term">Warm Site:</span> <span class="definition">Partially configured backup facility requiring setup time</span></li>
+                    <li><span class="key-term">Cold Site:</span> <span class="definition">Basic backup facility requiring full configuration</span></li>
+                    <li><span class="key-term">RTO:</span> <span class="definition">Recovery Time Objective - maximum acceptable downtime</span></li>
+                    <li><span class="key-term">RPO:</span> <span class="definition">Recovery Point Objective - maximum acceptable data loss</span></li>
+                    <li><span class="key-term">Failover:</span> <span class="definition">Automatic switching to backup system during failure</span></li>
+                </ul>
+            </div>
+
+            <div class="concepts">
+                <h3>Key Concepts</h3>
+                
+                <h4>High Availability Design</h4>
+                <ul>
+                    <li><strong>Load Balancing vs. Clustering:</strong> Traffic distribution, server grouping, failover configurations</li>
+                    <li><strong>Redundancy Strategies:</strong> Hardware, software, network, and data redundancy</li>
+                </ul>
+
+                <h4>Site Considerations</h4>
+                <ul>
+                    <li><strong>Disaster Recovery Sites:</strong> Hot, warm, and cold site implementations</li>
+                    <li><strong>Geographic Distribution:</strong> Dispersion benefits, regulatory considerations, connectivity</li>
+                </ul>
+
+                <h4>Platform and Service Diversity</h4>
+                <ul>
+                    <li><strong>Platform Diversity:</strong> Vendor diversity, technology diversity, OS diversity</li>
+                    <li><strong>Multi-cloud Strategies:</strong> Provider diversity, hybrid approaches, inter-cloud connectivity</li>
+                </ul>
+            </div>
+
+            <div class="outline">
+                <h3>Detailed Outline</h3>
+                <ul>
+                    <li>3.4.1 High Availability Architecture <span class="time-duration">(75 minutes)</span></li>
+                    <li>3.4.2 Disaster Recovery Planning <span class="time-duration">(90 minutes)</span></li>
+                    <li>3.4.3 Business Continuity Management <span class="time-duration">(60 minutes)</span></li>
+                    <li>3.4.4 Platform and Service Diversity <span class="time-duration">(45 minutes)</span></li>
+                    <li>3.4.5 Capacity Planning and Resource Management <span class="time-duration">(60 minutes)</span></li>
+                    <li>3.4.6 Resilience Testing and Validation <span class="time-duration">(75 minutes)</span></li>
+                    <li>3.4.7 Backup and Recovery Implementation <span class="time-duration">(90 minutes)</span></li>
+                    <li>3.4.8 Power and Infrastructure Resilience <span class="time-duration">(45 minutes)</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown() {
+            document.getElementById("mainDropdown").classList.toggle("show");
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Close dropdown
+            document.getElementById("mainDropdown").classList.remove("show");
+
+            // Update dropdown button text
+            const button = document.querySelector('.dropdown-btn');
+            const sectionTitles = {
+                'welcome': 'Course Overview',
+                'section1': '3.1: Security Implications of Architecture Models',
+                'section2': '3.2: Security Principles for Enterprise Infrastructure', 
+                'section3': '3.3: Data Protection Concepts and Strategies',
+                'section4': '3.4: Resilience and Recovery in Security Architecture'
+            };
+            
+            const newText = sectionTitles[sectionId] || 'Select Course Section';
+            button.childNodes[0].textContent = newText + ' ';
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                const dropdown = document.getElementById("mainDropdown");
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

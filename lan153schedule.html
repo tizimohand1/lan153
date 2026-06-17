@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAN153 Security+ Class Schedule</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
+            color: black;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #2d5a27, #4a7c59);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            padding: 3px;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #2d5a27, #4a7c59);
+            height: 20px;
+            border-radius: 7px;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .week-container {
+            background: white;
+            border: 2px solid #2d5a27;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .week-container:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .week-header {
+            background: linear-gradient(135deg, #2d5a27, #4a7c59);
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .week-header:hover {
+            background: linear-gradient(135deg, #1f3d1a, #2d5a27);
+        }
+
+        .week-title {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .week-progress {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .toggle-icon {
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+        }
+
+        .week-content {
+            display: none;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .week-content.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 1000px;
+            }
+        }
+
+        .domain-header {
+            background: #4a7c59;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .content-section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #2d5a27;
+            font-weight: bold;
+            font-size: 1.05em;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #2d5a27;
+            padding-bottom: 5px;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .item:hover {
+            background: #f0f8f0;
+            border-color: #4a7c59;
+        }
+
+        .item.completed {
+            background: #e8f5e8;
+            border-color: #4a7c59;
+            text-decoration: line-through;
+            opacity: 0.8;
+        }
+
+        .item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+            accent-color: #2d5a27;
+        }
+
+        .item-text {
+            flex: 1;
+        }
+
+        .item-type {
+            font-size: 0.8em;
+            background: #2d5a27;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: #f0f8f0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #4a7c59;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2d5a27;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .reset-btn {
+            background: #2d5a27;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #1f3d1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>LAN153 Security+ Class Schedule</h1>
+        <p>Moraine Valley Community College</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-number" id="totalItems">0</div>
+            <div class="stat-label">Total Items</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" id="completedItems">0</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" id="completionPercentage">0%</div>
+            <div class="stat-label">Progress</div>
+        </div>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+    </div>
+
+    <button class="reset-btn" onclick="resetProgress()">Reset All Progress</button>
+
+    <div id="schedule">
+        <!-- Week 1 -->
+        <div class="week-container">
+            <div class="week-header" onclick="toggleWeek(1)">
+                <div>
+                    <div class="week-title">Week 1</div>
+                    <div class="week-progress" id="week1-progress">0/7 completed</div>
+                </div>
+                <span class="toggle-icon" id="week1-icon">▼</span>
+            </div>
+            <div class="week-content" id="week1-content">
+                <div class="domain-header">Domain 1 - General Security Concepts (12%)</div>
+                
+                <div class="content-section">
+                    <div class="section-title">Study Guides</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 1.1 - Security Controls: The Foundation of Cybersecurity</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 1.2 - Fundamental Security Concepts</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 1.3 - Change Management and Security Impact</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 1.4 - Cryptographic Solutions: The Mathematics of Security</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-title">Labs & Exercises</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Lab 02: Analyze and Differentiate Types of Malware and Application Attacks</span>
+                        <span class="item-type">Lab</span>
+                    </div>
+                        <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exercise 1: Cybersecurity Controls</span>
+                        <span class="item-type">Exercise</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-title">Assessment</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">No Exam Prepare for Exam 1: Domain 1</span>
+                        <span class="item-type">Exam</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 2 -->
+        <div class="week-container">
+            <div class="week-header" onclick="toggleWeek(2)">
+                <div>
+                    <div class="week-title">Week 2</div>
+                    <div class="week-progress" id="week2-progress">0/6 completed</div>
+                </div>
+                <span class="toggle-icon" id="week2-icon">▼</span>
+            </div>
+            <div class="week-content" id="week2-content">
+                <div class="domain-header">Domain 2 - Threats, Vulnerabilities, and Mitigations (22%)</div>
+                
+                <div class="content-section">
+                    <div class="section-title">Study Guides</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 2.1 - Threat Actors and Motivations: Know Your Enemy</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 2.2 - Threat Vectors and Attack Surfaces: Pathways to Compromise</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 2.3 - Types of Vulnerabilities</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-title">Labs & Exercises</div>
+                      <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Lab 14: Cryptography Concepts</span>
+                        <span class="item-type">Lab</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exercise 2: Using Hashing Tools</span>
+                        <span class="item-type">Exercise</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-title">Assessment</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exam 1: Domain 1</span>
+                        <span class="item-type">Exam</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 3 -->
+        <div class="week-container">
+            <div class="week-header" onclick="toggleWeek(3)">
+                <div>
+                    <div class="week-title">Week 3</div>
+                    <div class="week-progress" id="week3-progress">0/8 completed</div>
+                </div>
+                <span class="toggle-icon" id="week3-icon">▼</span>
+            </div>
+            <div class="week-content" id="week3-content">
+                <div class="domain-header">Domain 3: Security Architecture (18%)</div>
+                
+                <div class="content-section">
+                    <div class="section-title">Study Guides</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 3.1 - Security Implications of Different Architecture Models</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 3.2 - Security Principles for Enterprise Infrastructure</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 3.3 - Data Protection Concepts and Strategies</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 3.4 - Resilience and Recovery in Security Architecture</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                </div>
+                <div class="content-section">
+                    <div class="section-title">Labs & Exercises</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Lab 04: Investigating ARP Poisoning</span>
+                        <span class="item-type">Lab</span>
+                    </div>
+                     <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Lab 17:Configuring a Network-Based Firewall </span>
+                        <span class="item-type">Lab</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exercise 3: NIST SP800-171 Domains</span>
+                        <span class="item-type">Exercise</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-title">Assessment</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Prepare for Exam 2: Domain 2</span>
+                        <span class="item-type">Exam</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 4 -->
+        <div class="week-container">
+            <div class="week-header" onclick="toggleWeek(4)">
+                <div>
+                    <div class="week-title">Week 4</div>
+                    <div class="week-progress" id="week4-progress">0/5 completed</div>
+                </div>
+                <span class="toggle-icon" id="week4-icon">▼</span>
+            </div>
+            <div class="week-content" id="week4-content">
+                <div class="domain-header">Domain 4: Security Operations (28%)</div>
+                
+                <div class="content-section">
+                    <div class="section-title">Study Guides</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide Part 4.1 - Common Security Techniques for Computing Resources</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide Part 4.2 - Hardware, Software, and Data Asset Management</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide Part 4.3 - Vulnerability Management</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-title">Labs & Exercises</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Lab 07: Performing Active Reconnaissance</span>
+                        <span class="item-type">Lab</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exercise 4: Asset Inventory & Categorization Report</span>
+                        <span class="item-type">Exercise</span>
+                    </div>
+                    <div class="content-section">
+                    <div class="section-title">Assessment</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exam 2: Domain 2</span>
+                        <span class="item-type">Exam</span>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 5 -->
+        <div class="week-container">
+            <div class="week-header" onclick="toggleWeek(5)">
+                <div>
+                    <div class="week-title">Week 5</div>
+                    <div class="week-progress" id="week5-progress">0/9 completed</div>
+                </div>
+                <span class="toggle-icon" id="week5-icon">▼</span>
+            </div>
+            <div class="week-content" id="week5-content">
+                <div class="domain-header">Domain 4: Security Operations (28%) Continued...</div>
+                
+                <div class="content-section">
+                    <div class="section-title">Study Guides</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide Part 4.4 - Security Alerting and Monitoring</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide Part 4.5 - Enterprise Capabilities Enhancement</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide Part 4.6 - Identity and Access Management</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide Part 4.7 - Automation and Orchestration</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide Part 4.8 - Incident Response Activities</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-title">Labs & Exercises</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Lab 22: Capturing Network Traffic</span>
+                        <span class="item-type">Lab</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Lab 08: Identifying & Analyzing Network/Host Intrusion Detection Alerts</span>
+                        <span class="item-type">Lab</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exercise 5: Access Control Matrix</span>
+                        <span class="item-type">Exercise</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-title">Assessment</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exam 3: Domain 3</span>
+                        <span class="item-type">Exam</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 6 -->
+        <div class="week-container">
+            <div class="week-header" onclick="toggleWeek(6)">
+                <div>
+                    <div class="week-title">Week 6</div>
+                    <div class="week-progress" id="week6-progress">0/5 completed</div>
+                </div>
+                <span class="toggle-icon" id="week6-icon">▼</span>
+            </div>
+            <div class="week-content" id="week6-content">
+                <div class="domain-header">Domain 5: Security Program Management and Oversight (20%)</div>
+                
+                <div class="content-section">
+                    <div class="section-title">Study Guides</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 5.1 - Elements of Effective Security Governance</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 5.2 - Risk Management Process</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 5.3 - Third-Party Risk Assessment and Management</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-title">Labs & Exercises</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Lab 18: Wireless Networking Attack and Mitigation Techniques</span>
+                        <span class="item-type">Lab</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exercise 6: Vulnerability Scan Reports</span>
+                        <span class="item-type">Exercise</span>
+                    </div>
+                     <div class="content-section">
+                    <div class="section-title">Assessment</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exam 4: Domain 4</span>
+                        <span class="item-type">Exam</span>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 7 -->
+        <div class="week-container">
+            <div class="week-header" onclick="toggleWeek(7)">
+                <div>
+                    <div class="week-title">Week 7</div>
+                    <div class="week-progress" id="week7-progress">0/6 completed</div>
+                </div>
+                <span class="toggle-icon" id="week7-icon">▼</span>
+            </div>
+            <div class="week-content" id="week7-content">
+                <div class="domain-header">Domain 5: Security Program Management and Oversight (20%) Continued...</div>
+                
+                <div class="content-section">
+                    <div class="section-title">Study Guides</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 5.4 - Security Compliance</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 5.5 - Types and Purposes of Audits and Assessments</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Study Guide 5.6 - Security Awareness Practices</span>
+                        <span class="item-type">Study</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-title">Labs & Exercises</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Lab 01: Using Security Information and Event Management </span>
+                        <span class="item-type">Lab</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exercise 7: Incident Response Plan (IRP)</span>
+                        <span class="item-type">Exercise</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-title">Assessment</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Exam 5: Domain 5</span>
+                        <span class="item-type">Exam</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 8 -->
+        <div class="week-container">
+            <div class="week-header" onclick="toggleWeek(8)">
+                <div>
+                    <div class="week-title">Week 8</div>
+                    <div class="week-progress" id="week8-progress">0/2 completed</div>
+                </div>
+                <span class="toggle-icon" id="week8-icon">▼</span>
+            </div>
+            <div class="week-content" id="week8-content">
+                <div class="domain-header">Final Assessments</div>
+                
+                <div class="content-section">
+                    <div class="section-title">Final Week</div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Final Exam</span>
+                        <span class="item-type">Exam</span>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="item-text">Final Project</span>
+                        <span class="item-type">Project</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load saved progress from localStorage on page load
+        window.onload = function() {
+            loadProgress();
+            updateProgress();
+            updateWeekProgress();
+        };
+
+        function toggleWeek(weekNum) {
+            const content = document.getElementById(`week${weekNum}-content`);
+            const icon = document.getElementById(`week${weekNum}-icon`);
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.textContent = '▼';
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('active');
+                icon.textContent = '▲';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const completedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            
+            const total = checkboxes.length;
+            const completed = completedCheckboxes.length;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            // Update main statistics
+            document.getElementById('totalItems').textContent = total;
+            document.getElementById('completedItems').textContent = completed;
+            document.getElementById('completionPercentage').textContent = percentage + '%';
+            
+            // Update progress bar
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = percentage + '%';
+            progressFill.textContent = percentage + '%';
+            
+            // Update item styling
+            checkboxes.forEach(checkbox => {
+                const item = checkbox.closest('.item');
+                if (checkbox.checked) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            });
+
+            // Update week progress
+            updateWeekProgress();
+            
+            // Save progress
+            saveProgress();
+        }
+
+        function updateWeekProgress() {
+            for (let week = 1; week <= 8; week++) {
+                const weekContent = document.getElementById(`week${week}-content`);
+                if (weekContent) {
+                    const weekCheckboxes = weekContent.querySelectorAll('input[type="checkbox"]');
+                    const weekCompleted = weekContent.querySelectorAll('input[type="checkbox"]:checked');
+                    
+                    const weekTotal = weekCheckboxes.length;
+                    const weekCompletedCount = weekCompleted.length;
+                    
+                    const progressElement = document.getElementById(`week${week}-progress`);
+                    if (progressElement) {
+                        progressElement.textContent = `${weekCompletedCount}/${weekTotal} completed`;
+                    }
+                }
+            }
+        }
+
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const progress = [];
+            
+            checkboxes.forEach((checkbox, index) => {
+                progress.push(checkbox.checked);
+            });
+            
+            // Store in memory (since localStorage is not available in Claude artifacts)
+            window.savedProgress = progress;
+        }
+
+        function loadProgress() {
+            // Load from memory (since localStorage is not available in Claude artifacts)
+            if (window.savedProgress) {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                
+                checkboxes.forEach((checkbox, index) => {
+                    if (window.savedProgress[index] !== undefined) {
+                        checkbox.checked = window.savedProgress[index];
+                    }
+                });
+            }
+        }
+
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // Clear saved progress
+                window.savedProgress = [];
+                
+                updateProgress();
+            }
+        }
+    </script>
+</body>
+</html>

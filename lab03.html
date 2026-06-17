@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThreatSim — Social Engineering Tactics Simulator</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:         #0d0d0f;
+  --bg-2:       #121218;
+  --bg-3:       #18181f;
+  --bg-4:       #1e1e28;
+  --border:     #2a2a3a;
+  --border-hi:  #3a3a55;
+
+  --red:        #ff3d5a;
+  --red-dim:    rgba(255,61,90,.12);
+  --amber:      #ffaa00;
+  --amber-dim:  rgba(255,170,0,.10);
+  --green:      #00e57a;
+  --green-dim:  rgba(0,229,122,.10);
+  --blue:       #4d8fff;
+  --blue-dim:   rgba(77,143,255,.10);
+  --purple:     #b06dff;
+  --purple-dim: rgba(176,109,255,.12);
+  --cyan:       #00cfff;
+  --cyan-dim:   rgba(0,207,255,.10);
+
+  --text:       #dde4f0;
+  --text-2:     #8892a8;
+  --text-3:     #454d5e;
+
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+  --display: 'Syne', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── HEADER ─── */
+.app-header {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(13,13,15,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.app-logo {
+  font-family: var(--display);
+  font-size: 17px; font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--red);
+  display: flex; align-items: center; gap: 8px;
+}
+.app-logo span { color: var(--text); }
+.threat-pulse {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 8px var(--red);
+  animation: throb 1.4s ease-in-out infinite;
+}
+@keyframes throb { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.5} }
+
+.header-right { display: flex; align-items: center; gap: 16px; }
+.hdr-badge {
+  font-size: 10px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; padding: 3px 9px; border-radius: 10px;
+}
+.hdr-badge.red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,61,90,.3); }
+.hdr-badge.amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,170,0,.3); }
+.elapsed { font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+
+/* ─── PROGRESS STRIP ─── */
+.prog-strip { height: 2px; background: var(--bg-3); display: flex; }
+.prog-seg { height: 100%; flex: 1; border-right: 1px solid var(--bg); transition: background .4s; }
+.prog-seg.done { background: var(--green); }
+.prog-seg.active { background: var(--amber); }
+.prog-seg.locked { background: var(--bg-4); }
+
+/* ─── INCIDENT TICKER ─── */
+.ticker-wrap {
+  background: var(--red-dim);
+  border-bottom: 1px solid rgba(255,61,90,.2);
+  padding: 7px 24px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--red);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ticker-inner { display: inline-block; animation: scroll 30s linear infinite; }
+@keyframes scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+/* ─── MODULE NAV ─── */
+.module-nav {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-2);
+  padding: 0 24px;
+  overflow-x: auto;
+}
+.mod-tab {
+  padding: 12px 20px;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: .3px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  color: var(--text-2);
+  white-space: nowrap;
+  transition: all .2s;
+  display: flex; align-items: center; gap: 7px;
+  user-select: none;
+}
+.mod-tab:hover { color: var(--text); }
+.mod-tab.active { color: var(--red); border-color: var(--red); }
+.mod-tab.complete { color: var(--green); }
+.tab-score {
+  font-family: var(--mono); font-size: 10px;
+  background: var(--bg-4); padding: 1px 6px; border-radius: 8px;
+}
+
+/* ─── MAIN WORKSPACE ─── */
+.workspace {
+  display: grid;
+  grid-template-columns: 220px 1fr 260px;
+  height: calc(100vh - 52px - 2px - 32px - 45px);
+  overflow: hidden;
+}
+
+/* ─── LEFT RAIL ─── */
+.left-rail {
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 16px 12px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.rail-section { display: flex; flex-direction: column; gap: 6px; }
+.rail-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--text-3);
+  padding-bottom: 5px; border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+}
+
+/* Org chart */
+.org-node {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 8px; border-radius: 5px;
+  font-size: 11px; cursor: pointer;
+  transition: background .15s;
+  border: 1px solid transparent;
+}
+.org-node:hover { background: var(--bg-4); }
+.org-node.targeted { background: var(--red-dim); border-color: rgba(255,61,90,.3); color: var(--red); }
+.org-node.compromised { background: rgba(255,61,90,.25); border-color: var(--red); color: var(--red); }
+.org-node.secure { background: var(--green-dim); border-color: rgba(0,229,122,.2); color: var(--green); }
+.org-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+  background: var(--bg-4);
+}
+.org-info { display: flex; flex-direction: column; line-height: 1.3; }
+.org-name { font-weight: 600; font-size: 11px; }
+.org-role { font-size: 10px; color: var(--text-2); }
+
+/* Threat meter */
+.threat-meter {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 6px; padding: 10px 12px;
+}
+.meter-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11px; }
+.meter-label { color: var(--text-2); }
+.meter-val { font-family: var(--mono); font-weight: 600; }
+.meter-bar { height: 5px; background: var(--bg-4); border-radius: 3px; margin-bottom: 8px; overflow: hidden; }
+.meter-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+
+/* Step checklist */
+.step-check {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 7px 8px; border-radius: 5px;
+  font-size: 11px; line-height: 1.4;
+  border: 1px solid transparent;
+  transition: all .2s;
+}
+.step-check.active { background: var(--amber-dim); border-color: rgba(255,170,0,.3); }
+.step-check.done { background: var(--green-dim); border-color: rgba(0,229,122,.2); }
+.step-check.locked { color: var(--text-3); }
+.chk-icon { flex-shrink: 0; width: 16px; margin-top: 1px; }
+
+/* ─── CENTER STAGE ─── */
+.center-stage {
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.stage-header {
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
+.stage-title {
+  font-family: var(--display);
+  font-size: 14px; font-weight: 700;
+  color: var(--red); letter-spacing: -.2px;
+  margin-bottom: 2px;
+}
+.stage-sub { font-size: 11px; color: var(--text-2); }
+
+.content-area {
+  flex: 1; overflow-y: auto;
+  padding: 16px 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+/* Log entries */
+.log {
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.75;
+  padding: 12px 14px; border-radius: 6px;
+  border-left: 3px solid; white-space: pre-wrap; word-break: break-word;
+}
+.log.sys    { border-color: var(--cyan);   background: var(--cyan-dim);   color: var(--cyan); }
+.log.threat { border-color: var(--red);    background: var(--red-dim);    color: var(--red); }
+.log.warn   { border-color: var(--amber);  background: var(--amber-dim);  color: var(--amber); }
+.log.ok     { border-color: var(--green);  background: var(--green-dim);  color: var(--green); }
+.log.info   { border-color: var(--border); background: var(--bg-2);       color: var(--text); }
+.log.user   { border-color: var(--purple); background: var(--purple-dim); color: var(--text); }
+.log-ts { color: var(--text-3); font-size: 10px; display: block; margin-bottom: 3px; }
+
+/* Simulated artifacts: emails, SMSes, calls */
+.artifact {
+  border: 1px solid var(--border);
+  border-radius: 8px; overflow: hidden;
+  background: var(--bg-2);
+}
+.artifact-header {
+  padding: 10px 14px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  display: flex; align-items: center; gap: 8px;
+}
+.artifact-type {
+  font-weight: 700; font-size: 10px; letter-spacing: .8px;
+  text-transform: uppercase; padding: 2px 7px; border-radius: 8px;
+}
+.art-email  { background: var(--blue-dim);   color: var(--blue); }
+.art-sms    { background: var(--green-dim);  color: var(--green); }
+.art-call   { background: var(--amber-dim);  color: var(--amber); }
+.art-usb    { background: var(--purple-dim); color: var(--purple); }
+.art-web    { background: var(--red-dim);    color: var(--red); }
+.artifact-body { padding: 14px; font-size: 12px; line-height: 1.75; }
+.artifact-meta { font-size: 10px; color: var(--text-2); font-family: var(--mono); line-height: 1.9; margin-bottom: 10px; }
+.artifact-content { color: var(--text); }
+.red-flag {
+  background: var(--red-dim); border: 1px dashed rgba(255,61,90,.4);
+  border-radius: 4px; padding: 2px 6px;
+  color: var(--red); font-size: 10px; font-weight: 600;
+  display: inline;
+}
+
+/* Decision panels */
+.decision-panel {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px;
+}
+.decision-title {
+  font-size: 11px; font-weight: 700; color: var(--amber);
+  text-transform: uppercase; letter-spacing: .8px;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 7px;
+}
+.choice-grid { display: flex; flex-direction: column; gap: 7px; }
+.choice-btn {
+  padding: 9px 14px; border-radius: 6px;
+  background: var(--bg-3); border: 1px solid var(--border);
+  color: var(--text); font-size: 12px; cursor: pointer;
+  text-align: left; transition: all .2s;
+  display: flex; align-items: center; gap: 10px;
+}
+.choice-btn:hover { border-color: var(--border-hi); background: var(--bg-4); }
+.choice-btn:disabled { opacity: .35; cursor: not-allowed; }
+.choice-btn.correct { background: var(--green-dim); border-color: rgba(0,229,122,.5); color: var(--green); }
+.choice-btn.incorrect { background: var(--red-dim); border-color: rgba(255,61,90,.5); color: var(--red); }
+.choice-letter {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--bg-4); display: flex; align-items: center;
+  justify-content: center; font-size: 10px; font-weight: 700;
+  flex-shrink: 0; border: 1px solid var(--border);
+}
+
+/* Hint strip */
+.hint-strip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 5px;
+  background: var(--amber-dim);
+  border: 1px solid rgba(255,170,0,.25);
+  font-size: 11px; color: var(--amber);
+  cursor: pointer;
+}
+.hint-content { display: none; font-size: 11px; color: var(--amber); margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,170,0,.2); }
+.hint-content.show { display: block; }
+
+/* Action bar */
+.action-bar {
+  border-top: 1px solid var(--border);
+  background: var(--bg-2);
+  padding: 12px 20px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.btn {
+  padding: 8px 18px; border-radius: 5px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  border: none; transition: all .2s; letter-spacing: .2px;
+}
+.btn-red { background: var(--red); color: #fff; }
+.btn-red:hover { opacity: .85; }
+.btn-ghost { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--text-2); color: var(--text); }
+.btn-green { background: var(--green); color: var(--bg); }
+.btn-green:hover { opacity: .85; }
+.btn:disabled { opacity: .3; cursor: not-allowed; }
+
+/* ─── RIGHT PANEL ─── */
+.right-panel {
+  background: var(--bg-2);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+.ref-card {
+  border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.ref-head {
+  padding: 7px 11px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 6px;
+}
+.ref-head.red    { background: var(--red-dim);    color: var(--red); }
+.ref-head.amber  { background: var(--amber-dim);  color: var(--amber); }
+.ref-head.green  { background: var(--green-dim);  color: var(--green); }
+.ref-head.blue   { background: var(--blue-dim);   color: var(--blue); }
+.ref-head.purple { background: var(--purple-dim); color: var(--purple); }
+.ref-body { padding: 10px 11px; font-size: 10.5px; line-height: 1.8; color: var(--text-2); background: var(--bg-3); }
+.ref-body b { color: var(--text); }
+
+.tactic-chip {
+  display: inline-block; margin: 2px;
+  padding: 2px 8px; border-radius: 10px;
+  font-size: 10px; font-weight: 600;
+  border: 1px solid currentColor;
+}
+.tc-phish  { color: var(--red); }
+.tc-vish   { color: var(--amber); }
+.tc-smish  { color: var(--green); }
+.tc-bait   { color: var(--purple); }
+.tc-pret   { color: var(--blue); }
+.tc-scare  { color: var(--cyan); }
+.tc-tail   { color: #ff7755; }
+
+/* Eval table */
+.eval-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 5px 0; border-bottom: 1px solid var(--border);
+  font-size: 11px;
+}
+.eval-row:last-child { border: none; }
+.eval-key { color: var(--text-2); }
+.ev-pass { color: var(--green); font-family: var(--mono); font-weight: 700; }
+.ev-fail { color: var(--red); font-family: var(--mono); font-weight: 700; }
+.ev-pend { color: var(--text-3); font-family: var(--mono); }
+
+/* Password meter */
+.pw-wrap { display: flex; flex-direction: column; gap: 8px; }
+.pw-field {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--text); font-family: var(--mono); font-size: 13px;
+  padding: 10px 14px; border-radius: 6px;
+  outline: none; width: 100%;
+  transition: border-color .2s;
+}
+.pw-field:focus { border-color: var(--amber); }
+.pw-meter-bars { display: grid; grid-template-columns: repeat(5,1fr); gap: 4px; }
+.pw-seg { height: 5px; border-radius: 3px; background: var(--bg-4); transition: background .4s; }
+.pw-seg.weak  { background: var(--red); }
+.pw-seg.fair  { background: var(--amber); }
+.pw-seg.good  { background: #90cc00; }
+.pw-seg.strong{ background: var(--green); }
+.pw-label { font-size: 11px; font-weight: 700; font-family: var(--mono); }
+.pw-criteria { display: flex; flex-direction: column; gap: 3px; margin-top: 2px; }
+.pw-crit {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--text-2);
+}
+.crit-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--bg-4); flex-shrink: 0; }
+.crit-dot.pass { background: var(--green); }
+.crit-dot.fail { background: var(--text-3); }
+
+/* Malware cards */
+.malware-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mw-card {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 7px; padding: 12px;
+  cursor: pointer; transition: all .2s;
+}
+.mw-card:hover { border-color: var(--border-hi); background: var(--bg-4); }
+.mw-card.selected { border-color: var(--amber); background: var(--amber-dim); }
+.mw-card.correct  { border-color: var(--green); background: var(--green-dim); }
+.mw-card.wrong    { border-color: var(--red);   background: var(--red-dim); }
+.mw-name { font-weight: 700; font-size: 12px; margin-bottom: 4px; }
+.mw-family { font-size: 10px; color: var(--text-2); font-family: var(--mono); }
+.mw-icon { font-size: 22px; margin-bottom: 6px; }
+
+/* modal */
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(0,0,0,.8);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999;
+}
+.modal {
+  background: var(--bg-2); border: 1px solid var(--border-hi);
+  border-radius: 12px; padding: 32px;
+  max-width: 540px; width: 90%;
+  box-shadow: 0 0 80px rgba(255,61,90,.15);
+}
+.modal-grade {
+  font-family: var(--display); font-size: 52px; font-weight: 800;
+  text-align: center; margin: 12px 0;
+}
+.modal-title { font-family: var(--display); font-size: 18px; font-weight: 700; color: var(--red); }
+.modal-body { font-size: 13px; color: var(--text-2); line-height: 1.75; margin: 14px 0; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Responsive */
+@media (max-width: 1080px) {
+  .workspace { grid-template-columns: 200px 1fr; }
+  .right-panel { display: none; }
+}
+@media (max-width: 680px) {
+  .workspace { grid-template-columns: 1fr; }
+  .left-rail { display: none; }
+}
+
+/* Tooltip */
+[data-tip] { position: relative; }
+[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+  background: var(--bg-4); color: var(--text); font-size: 10px;
+  padding: 4px 8px; border-radius: 4px; white-space: nowrap;
+  border: 1px solid var(--border); pointer-events: none; z-index: 10;
+}
+
+select {
+  background: var(--bg-4); border: 1px solid var(--border);
+  color: var(--text); padding: 7px 10px; border-radius: 5px;
+  font-size: 12px; font-family: var(--sans); outline: none;
+  cursor: pointer;
+}
+select:focus { border-color: var(--amber); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="app-logo">
+    <div class="threat-pulse"></div>
+    THREAT<span>SIM</span>
+  </div>
+  <div class="header-right">
+    <span class="elapsed" id="clock">00:00:00</span>
+    <span class="hdr-badge red">⚠ LIVE INCIDENT</span>
+    <span class="hdr-badge amber">NSP TECHNICAL STAFF</span>
+  </div>
+</header>
+
+<!-- PROGRESS -->
+<div class="prog-strip" id="progStrip"></div>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    ⚠ ALERT: Spear-phishing campaign detected — 3 users have clicked malicious links &nbsp;|&nbsp; 
+    🔴 CRITICAL: Help Desk received suspicious credential-reset calls &nbsp;|&nbsp; 
+    ⚡ INFO: USB drives found in parking lot — 2 inserted into workstations &nbsp;|&nbsp; 
+    🛡 SEC OPS: Initiating Social Engineering Incident Response — All Modules Active &nbsp;|&nbsp;
+    ⚠ ALERT: Spear-phishing campaign detected — 3 users have clicked malicious links &nbsp;|&nbsp; 
+    🔴 CRITICAL: Help Desk received suspicious credential-reset calls &nbsp;|&nbsp; 
+    ⚡ INFO: USB drives found in parking lot — 2 inserted into workstations &nbsp;|&nbsp; 
+    🛡 SEC OPS: Initiating Social Engineering Incident Response — All Modules Active
+  </div>
+</div>
+
+<!-- MODULE NAV -->
+<nav class="module-nav">
+  <div class="mod-tab active" id="tab-1" onclick="switchModule(1)">
+    🎭 MODULE 1 — Social Engineering Tactics
+    <span class="tab-score" id="score-1">0/12</span>
+  </div>
+  <div class="mod-tab" id="tab-2" onclick="switchModule(2)">
+    🦠 MODULE 2 — Malware Family ID
+    <span class="tab-score" id="score-2">0/5</span>
+  </div>
+  <div class="mod-tab" id="tab-3" onclick="switchModule(3)">
+    🔐 MODULE 3 — Password Strength
+    <span class="tab-score" id="score-3">0/1</span>
+  </div>
+</nav>
+
+<!-- WORKSPACE -->
+<div class="workspace">
+
+  <!-- ─── LEFT RAIL ─── -->
+  <aside class="left-rail">
+    <!-- Org targets -->
+    <div class="rail-section">
+      <div class="rail-label">Target Organization — Nexus Corp</div>
+      <div class="org-node" id="org-ceo">
+        <div class="org-avatar">👔</div>
+        <div class="org-info">
+          <span class="org-name">J. Harmon</span>
+          <span class="org-role">CEO</span>
+        </div>
+      </div>
+      <div class="org-node targeted" id="org-cfo">
+        <div class="org-avatar">💼</div>
+        <div class="org-info">
+          <span class="org-name">R. Chen</span>
+          <span class="org-role">CFO ← targeted</span>
+        </div>
+      </div>
+      <div class="org-node" id="org-it">
+        <div class="org-avatar">🖥</div>
+        <div class="org-info">
+          <span class="org-name">D. Okafor</span>
+          <span class="org-role">IT Admin</span>
+        </div>
+      </div>
+      <div class="org-node targeted" id="org-hr">
+        <div class="org-avatar">📋</div>
+        <div class="org-info">
+          <span class="org-name">S. Patel</span>
+          <span class="org-role">HR Manager ← targeted</span>
+        </div>
+      </div>
+      <div class="org-node" id="org-eng">
+        <div class="org-avatar">⚙️</div>
+        <div class="org-info">
+          <span class="org-name">T. Walker</span>
+          <span class="org-role">Sr. Engineer</span>
+        </div>
+      </div>
+      <div class="org-node" id="org-help">
+        <div class="org-avatar">🎧</div>
+        <div class="org-info">
+          <span class="org-name">M. Reyes</span>
+          <span class="org-role">Help Desk</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Threat meter -->
+    <div class="rail-section">
+      <div class="rail-label">Threat Level</div>
+      <div class="threat-meter">
+        <div class="meter-row">
+          <span class="meter-label">Organization Risk</span>
+          <span class="meter-val" id="orgRisk" style="color:var(--amber)">MEDIUM</span>
+        </div>
+        <div class="meter-bar">
+          <div class="meter-fill" id="riskBar" style="width:45%;background:var(--amber)"></div>
+        </div>
+        <div class="meter-row">
+          <span class="meter-label">Compromised Assets</span>
+          <span class="meter-val" id="compromisedCount" style="color:var(--red)">2</span>
+        </div>
+        <div class="meter-row">
+          <span class="meter-label">Incidents Analyzed</span>
+          <span class="meter-val" id="incidentCount" style="color:var(--green)">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module steps -->
+    <div class="rail-section" id="stepChecklist"></div>
+  </aside>
+
+  <!-- ─── CENTER STAGE ─── -->
+  <main class="center-stage">
+    <div class="stage-header">
+      <div class="stage-title" id="stageTitle">⚠ MODULE 1 — Social Engineering Tactics Simulator</div>
+      <div class="stage-sub" id="stageSub">Nexus Corp · Security Incident Response · Scenario-Based Learning</div>
+    </div>
+
+    <div class="content-area" id="contentArea"></div>
+
+    <div class="action-bar" id="actionBar">
+      <!-- Dynamic -->
+    </div>
+  </main>
+
+  <!-- ─── RIGHT PANEL ─── -->
+  <aside class="right-panel">
+    <div class="rail-label">Reference Compendium</div>
+
+    <div class="ref-card">
+      <div class="ref-head red">🎭 Social Engineering Tactics</div>
+      <div class="ref-body">
+        <div class="tactic-chip tc-phish">Phishing</div>
+        <div class="tactic-chip tc-vish">Vishing</div>
+        <div class="tactic-chip tc-smish">Smishing</div>
+        <div class="tactic-chip tc-bait">Baiting</div>
+        <div class="tactic-chip tc-pret">Pretexting</div>
+        <div class="tactic-chip tc-scare">Scareware</div>
+        <div class="tactic-chip tc-tail">Tailgating</div>
+        <div style="margin-top:8px;font-size:10px;line-height:1.9">
+          <b>Phishing:</b> Deceptive email/link to steal credentials<br>
+          <b>Spear Phishing:</b> Targeted phishing using OSINT<br>
+          <b>Whaling:</b> Phishing targeting C-suite<br>
+          <b>Vishing:</b> Voice/phone-based deception<br>
+          <b>Smishing:</b> SMS-based phishing<br>
+          <b>Baiting:</b> USB drops or false promises<br>
+          <b>Pretexting:</b> Fabricated identity/scenario<br>
+          <b>Scareware:</b> Fake threat alerts to coerce action<br>
+          <b>Tailgating:</b> Physical access via social proximity<br>
+          <b>BEC:</b> Business Email Compromise — impersonating executives
+        </div>
+      </div>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-head amber">🧠 Psychological Triggers</div>
+      <div class="ref-body" style="font-size:10px;line-height:1.9">
+        <b>Authority:</b> "Your CEO needs this now"<br>
+        <b>Urgency:</b> "Act within 15 minutes or account is locked"<br>
+        <b>Scarcity:</b> "Limited offer expires today"<br>
+        <b>Social Proof:</b> "Everyone in your dept has already done this"<br>
+        <b>Reciprocity:</b> Offer something first to trigger obligation<br>
+        <b>Fear:</b> Fake virus warnings, legal threats<br>
+        <b>Familiarity:</b> Spoofed brand logos, known names
+      </div>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-head red">🦠 Malware Families</div>
+      <div class="ref-body" style="font-size:10px;line-height:1.9">
+        <b>Ransomware:</b> Encrypts files, demands payment<br>
+        <b>RAT:</b> Remote Access Trojan — backdoor control<br>
+        <b>Keylogger:</b> Captures keystrokes<br>
+        <b>Rootkit:</b> Hides in OS, persistence<br>
+        <b>Worm:</b> Self-propagating across network<br>
+        <b>Spyware:</b> Covert data exfiltration<br>
+        <b>Botnet:</b> C2-controlled zombie network<br>
+        <b>Dropper/Loader:</b> Installs secondary payload<br>
+        <b>Fileless:</b> Lives in memory/registry only
+      </div>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-head green">🔐 Password Strength</div>
+      <div class="ref-body" style="font-size:10px;line-height:1.9">
+        <b>Length:</b> Min 12 chars; 16+ preferred<br>
+        <b>Uppercase:</b> A–Z included<br>
+        <b>Lowercase:</b> a–z included<br>
+        <b>Numbers:</b> 0–9 included<br>
+        <b>Symbols:</b> !@#$%^&* etc.<br>
+        <b>No dictionary words</b><br>
+        <b>No sequential patterns</b> (abc, 123)<br>
+        <b>No personal info</b><br>
+        <b>Entropy ≥70 bits</b> for strong classification
+      </div>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-head blue">📊 Module Evaluations</div>
+      <div class="ref-body" id="evalPanel">
+        <div class="eval-row"><span class="eval-key">Phishing Identified</span><span id="ev-ph" class="ev-pend">—</span></div>
+        <div class="eval-row"><span class="eval-key">Vishing Identified</span><span id="ev-vi" class="ev-pend">—</span></div>
+        <div class="eval-row"><span class="eval-key">Smishing Identified</span><span id="ev-sm" class="ev-pend">—</span></div>
+        <div class="eval-row"><span class="eval-key">Baiting Identified</span><span id="ev-ba" class="ev-pend">—</span></div>
+        <div class="eval-row"><span class="eval-key">Pretexting Identified</span><span id="ev-pr" class="ev-pend">—</span></div>
+        <div class="eval-row"><span class="eval-key">BEC / Whaling</span><span id="ev-be" class="ev-pend">—</span></div>
+        <div class="eval-row"><span class="eval-key">Malware — Ransomware</span><span id="ev-mw1" class="ev-pend">—</span></div>
+        <div class="eval-row"><span class="eval-key">Malware — RAT</span><span id="ev-mw2" class="ev-pend">—</span></div>
+        <div class="eval-row"><span class="eval-key">Malware — Keylogger</span><span id="ev-mw3" class="ev-pend">—</span></div>
+        <div class="eval-row"><span class="eval-key">Password Strength</span><span id="ev-pw" class="ev-pend">—</span></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal" style="display:none">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Simulation Complete</div>
+    <div class="modal-grade" id="modalGrade">—</div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="document.getElementById('modal').style.display='none'">Review</button>
+      <button class="btn btn-red" onclick="resetAll()">Restart</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  GLOBAL STATE
+// ═══════════════════════════════════════════════
+const S = {
+  module: 1,
+  m1: { step: 0, score: 0, maxScore: 12, attempts: {}, hints: 0 },
+  m2: { step: 0, score: 0, maxScore: 5, completed: false },
+  m3: { score: 0, maxScore: 1, tested: false, pwScore: 0 },
+  startTime: Date.now(),
+  incidents: 0,
+  compromised: 2
+};
+
+// ═══════════════════════════════════════════════
+//  MODULE 1 — SOCIAL ENGINEERING SCENARIOS
+// ═══════════════════════════════════════════════
+const SE_SCENARIOS = [
+  {
+    id: "se1",
+    title: "Scenario 1 — Suspicious Email",
+    evKey: "ev-ph",
+    artifact: {
+      type: "email", label: "PHISHING EMAIL",
+      from: "support@nexuscorp-it.helpdesk.net",
+      to: "r.chen@nexuscorp.com (CFO)",
+      subject: "⚠️ URGENT: Your Microsoft 365 License Expires TODAY",
+      body: `Dear R. Chen,
+
+Your Microsoft 365 license is set to expire in <span class="red-flag">2 HOURS</span>. Failure to verify your account will result in <span class="red-flag">immediate suspension</span> of all email and file access.
+
+Please click the link below immediately to verify your credentials:
+
+<span class="red-flag">https://m1cr0s0ft-verify.nexuscorp-support.net/login</span>
+
+If you do not act now, all your files in OneDrive will be permanently deleted.
+
+Regards,
+IT Security Team
+Microsoft Corporation
+
+<span style="color:var(--text-3);font-size:10px">© Microsoft 2024 · 1 Microsoft Way, Redmond, WA</span>`
+    },
+    question: "What type of social engineering attack is this? Identify the tactic AND the psychological triggers being exploited.",
+    choices: [
+      { letter:"A", text:"Vishing — uses authority and scarcity triggers", correct: false },
+      { letter:"B", text:"Phishing — exploits urgency, fear, and authority via a spoofed sender domain", correct: true },
+      { letter:"C", text:"Pretexting — attacker fabricates a legal identity", correct: false },
+      { letter:"D", text:"Baiting — promises access to free resources", correct: false }
+    ],
+    hint: "Look at the sender domain carefully. What's wrong with it? Also count how many urgency/fear words appear in the message body.",
+    feedback: {
+      correct: `✅ CORRECT — Spear Phishing identified.
+
+INDICATORS DETECTED:
+  ▸ Sender domain: nexuscorp-it.helpdesk.net (not nexuscorp.com) — SPOOFED
+  ▸ Urgency trigger: "expires in 2 HOURS"
+  ▸ Fear trigger: "files permanently deleted"
+  ▸ Authority trigger: poses as Microsoft/IT Security
+  ▸ Malicious URL: m1cr0s0ft-verify.nexuscorp-support.net
+
+TACTIC: Phishing (spear variant — targeted at CFO)
+PSYCHOLOGICAL LEVERS: Urgency + Fear + Authority
+MITRE ATT&CK: T1566.001 — Spear Phishing Link`,
+      incorrect: `❌ Incorrect. Review the sender domain and message body triggers.
+
+KEY TELLS:
+  ▸ This is EMAIL-based → not vishing (voice)
+  ▸ The spoofed domain is the primary indicator
+  ▸ "Expires TODAY," "2 HOURS," "permanently deleted" = urgency + fear
+  ▸ Poses as Microsoft IT = authority trigger
+  
+Correct answer: Phishing (B)`
+    },
+    points: 2
+  },
+  {
+    id: "se2",
+    title: "Scenario 2 — Incoming Phone Call",
+    evKey: "ev-vi",
+    artifact: {
+      type: "call", label: "VISHING CALL TRANSCRIPT",
+      from: "Caller ID: (800) 555-0192 — spoofed",
+      to: "M. Reyes — Help Desk",
+      subject: "Call Duration: 4m 22s",
+      body: `[CALL TRANSCRIPT — NEXUS CORP HELP DESK]
+
+REYES:  "Nexus Corp IT Help Desk, this is Marco."
+
+CALLER: "Marco, this is <span class="red-flag">Agent Tyler from Microsoft Security Response</span>. We've detected 
+        <span class="red-flag">a critical intrusion attempt on your systems</span> in the last 30 minutes. 
+        I need you to pull up your Active Directory console right now."
+
+REYES:  "Uh, okay... can I get your employee ID?"
+
+CALLER: "Marco, we don't have time for that. <span class="red-flag">You're going to lose everything</span> if we 
+        don't act in the next 5 minutes. I need you to create a temporary admin account 
+        called 'mssupport' and give me remote access via TeamViewer. My supervisor, 
+        <span class="red-flag">Director James Walsh</span>, authorized this personally."
+
+REYES:  "I... I think I should call back through our main number—"
+
+CALLER: "<span class="red-flag">There's no time for that. Every second counts. Your company is being 
+        actively attacked right now.</span> Do you want to be responsible for the breach?"
+        
+[REYES BEGINS TO COMPLY]`
+    },
+    question: "Analyze this phone call. What attack type is being used and which manipulation techniques are present?",
+    choices: [
+      { letter:"A", text:"Smishing — SMS-based coercion to install software", correct: false },
+      { letter:"B", text:"Vishing — voice phishing using authority, urgency, and fear to bypass verification", correct: true },
+      { letter:"C", text:"Baiting — offering TeamViewer access to help desk staff", correct: false },
+      { letter:"D", text:"Tailgating — attacker gaining physical proximity to IT staff", correct: false }
+    ],
+    hint: "The attack happens over a phone call. The caller is invoking multiple named authorities and manufacturing extreme time pressure. What do we call phone-based social engineering?",
+    feedback: {
+      correct: `✅ CORRECT — Vishing (Voice Phishing) identified.
+
+MANIPULATION TECHNIQUES PRESENT:
+  ▸ Authority: "Agent Tyler from Microsoft Security Response"
+  ▸ Authority stacking: "Director James Walsh authorized this"
+  ▸ Urgency: "5 minutes," "every second counts"
+  ▸ Fear: "You'll lose everything," "You'll be responsible"
+  ▸ Verification bypass: "We don't have time for that"
+  ▸ Goal: Create rogue admin account + install remote access tool
+
+THIS IS HOW HELP DESKS GET COMPROMISED.
+  → The caller's goal is unauthorized privileged account creation.
+  → TeamViewer = remote access malware delivery vector.
+
+MITRE ATT&CK: T1566.004 — Spear Phishing via Voice`,
+      incorrect: `❌ This is a phone call — that immediately narrows it to Vishing.
+
+Smishing = SMS text
+Tailgating = physical access
+Baiting = USB drop or false promise
+
+The key indicators: real-time voice call, fake Microsoft authority, extreme artificial urgency, 
+attempts to bypass identity verification.
+
+Correct answer: Vishing (B)`
+    },
+    points: 2
+  },
+  {
+    id: "se3",
+    title: "Scenario 3 — Text Message",
+    evKey: "ev-sm",
+    artifact: {
+      type: "sms", label: "SMISHING TEXT MESSAGE",
+      from: "Sender: +1 (312) 555-0847",
+      to: "S. Patel — HR Manager (personal mobile)",
+      subject: "Received: Today 10:14 AM",
+      body: `<div style="background:var(--bg);border-radius:12px;padding:14px;font-size:13px;max-width:280px;border:1px solid var(--border)">
+  <div style="background:#2a3a5a;border-radius:10px 10px 10px 2px;padding:10px 13px;margin-bottom:8px;font-size:12px;color:var(--text)">
+    <span class="red-flag">NEXUS-HR</span>: Your payroll direct deposit 
+    has been <span class="red-flag">placed on hold</span> due to a banking 
+    update. Verify your account now or miss your 
+    <span class="red-flag">payday Friday</span>:<br><br>
+    <span class="red-flag">http://nexus-hr-portal.verify-pay.co/update</span><br><br>
+    Reply STOP to opt out.
+  </div>
+  <div style="font-size:10px;color:var(--text-3);text-align:right">10:14 AM ✓</div>
+</div>`
+    },
+    question: "This message was sent to 47 Nexus Corp employees. What tactic is this, and what makes it especially dangerous in a corporate context?",
+    choices: [
+      { letter:"A", text:"Pretexting — HR Manager fabricated a scenario about payroll", correct: false },
+      { letter:"B", text:"Phishing — email disguised as HR department notification", correct: false },
+      { letter:"C", text:"Smishing — SMS-based phishing using payroll fear and urgency, targeting mobile devices", correct: true },
+      { letter:"D", text:"Scareware — pop-up warning about a system virus", correct: false }
+    ],
+    hint: "This attack arrives via SMS text message. What do we call SMS-based phishing? Also note: the link domain is not nexuscorp.com.",
+    feedback: {
+      correct: `✅ CORRECT — Smishing (SMS Phishing) identified.
+
+WHY THIS IS ESPECIALLY DANGEROUS:
+  ▸ Employees receive it on personal devices (not protected by corp security tools)
+  ▸ Mobile screens truncate URLs — domain spoofing is harder to spot
+  ▸ Payroll/salary is a universally powerful fear trigger
+  ▸ "Friday payday" creates real financial urgency
+  ▸ Mass-sent to 47 employees — probabilistic: some WILL click
+
+DOMAIN ANALYSIS:
+  Legitimate: hr.nexuscorp.com
+  Malicious:  nexus-hr-portal.verify-pay.co  ← registrar-created lookalike
+
+CORPORATE RISK:
+  → Credential harvest could expose HR system logins
+  → Banking info collection for financial fraud
+  → Device compromise as entry point to corporate Wi-Fi`,
+      incorrect: `❌ Key differentiator: the delivery channel.
+  SMS text = Smishing
+  Email = Phishing
+  Phone call = Vishing
+  Pop-up alert = Scareware
+
+The "verify-pay.co" domain is a strong indicator of a typosquatted credential-harvest page.
+Correct answer: Smishing (C)`
+    },
+    points: 2
+  },
+  {
+    id: "se4",
+    title: "Scenario 4 — Parking Lot Discovery",
+    evKey: "ev-ba",
+    artifact: {
+      type: "usb", label: "BAITING INCIDENT REPORT",
+      from: "Facilities Security — Camera Log",
+      to: "Security Operations Center",
+      subject: "Incident #2024-0847 — Foreign Media Detected",
+      body: `INCIDENT REPORT #2024-0847
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LOCATION:   Nexus Corp — West Parking Garage, Level 2
+TIME:       07:42 AM — 08:15 AM
+DISCOVERED: 4x USB flash drives left on vehicle windshields
+
+PHYSICAL DESCRIPTION:
+  - SanDisk Cruzer 32GB (branded)
+  - Label reads: <span class="red-flag">"Q3 SALARY REVIEW — CONFIDENTIAL"</span>
+  - Secondary label: <span class="red-flag">"DO NOT DISTRIBUTE"</span>
+
+CAMERA EVIDENCE:
+  07:42 — Unknown individual places drives on vehicles
+  08:15 — EMPLOYEE T. WALKER inserts drive into workstation #WS-114
+  08:16 — <span class="red-flag">ENDPOINT ALERT: autorun.inf executed</span>
+  08:16 — <span class="red-flag">OUTBOUND CONN: 185.220.101.47:4444 (C2 server)</span>
+  08:17 — <span class="red-flag">PROCESS: powershell.exe -enc [base64 payload]</span>
+
+COMPROMISED ASSET: WS-114 — T. Walker (Sr. Engineer)
+MALWARE EXECUTED: Dropper + RAT payload confirmed`,
+    },
+    question: "What social engineering technique caused this compromise? What made the USB drives effective bait?",
+    choices: [
+      { letter:"A", text:"Tailgating — attacker followed T. Walker into the building", correct: false },
+      { letter:"B", text:"Pretexting — attacker fabricated an HR identity to deliver drives", correct: false },
+      { letter:"C", text:"Scareware — drives displayed fake virus warnings when inserted", correct: false },
+      { letter:"D", text:"Baiting — USB drives labeled with enticing confidential content to trigger natural human curiosity", correct: true }
+    ],
+    hint: "The attacker didn't make contact with the victim at all. They left something behind that the victim picked up voluntarily. What tactic involves leaving malicious physical objects as lures?",
+    feedback: {
+      correct: `✅ CORRECT — Baiting (Physical USB Drop Attack) identified.
+
+WHY "Q3 SALARY REVIEW — CONFIDENTIAL" IS EFFECTIVE BAIT:
+  ▸ Curiosity trigger: salary data that employees aren't supposed to see
+  ▸ "CONFIDENTIAL" and "DO NOT DISTRIBUTE" increases appeal
+  ▸ Targets natural human behavior — desire for information advantage
+  ▸ No social contact required — entirely passive attack
+
+TECHNICAL KILL CHAIN:
+  1. autorun.inf executed on insert (Windows policy misconfiguration)
+  2. Dropper deployed → fetched secondary payload from C2: 185.220.101.47
+  3. PowerShell base64 encoded → fileless RAT injected into memory
+  4. Lateral movement risk: Sr. Engineer has elevated access
+
+MITRE ATT&CK:
+  T1091 — Replication Through Removable Media
+  T1059.001 — PowerShell execution
+  T1071 — C2 Communication
+
+REMEDIATION REQUIRED:
+  → Disable USB autorun via GPO
+  → Block removable media at endpoint
+  → Isolate WS-114 immediately`,
+      incorrect: `❌ The attacker left physical objects and had NO contact with the victim.
+  Tailgating = physical presence following someone
+  Pretexting = fabricated identity story
+  Scareware = fake pop-ups (post-compromise, not cause)
+  
+Baiting = leaving enticing malicious objects for victims to find and use themselves.
+Correct answer: Baiting (D)`
+    },
+    points: 2
+  },
+  {
+    id: "se5",
+    title: "Scenario 5 — Vendor Phone Pretext",
+    evKey: "ev-pr",
+    artifact: {
+      type: "call", label: "PRETEXTING CALL — SOCIAL AUDIT RECORDING",
+      from: "Caller ID: (855) 555-0311 — 'Cisco Systems'",
+      to: "D. Okafor — IT Admin",
+      subject: "Duration: 12m 04s",
+      body: `[CALL TRANSCRIPT — RED TEAM SOCIAL AUDIT LOG]
+
+CALLER: "Hi, this is <span class="red-flag">Kevin Marsh from Cisco's Enterprise Support</span>. I'm following up 
+        on the support ticket #CS-884921 your team opened last week regarding the 
+        ASA 5500-X firmware vulnerability."
+
+OKAFOR: "I... don't recall that ticket."
+
+CALLER: "No worries — it was likely logged by your vendor contact, Sarah Kim. 
+        I have her email right here. We escalated it to our security team because 
+        <span class="red-flag">the CVE affects all Cisco ASA devices on your version</span>. To push 
+        the emergency patch, I just need you to confirm the management IP of your 
+        primary ASA and provide temporary read-only SNMP community strings so 
+        I can verify the firmware version remotely."
+
+OKAFOR: "That does sound like something we'd need to fix..."
+
+CALLER: "Absolutely. Sarah flagged it as urgent. I can also email you the patch file 
+        directly if you'd prefer — just confirm your admin email. We just need to 
+        move on this <span class="red-flag">before end of business today</span>."
+
+[OKAFOR PROVIDES SNMP STRINGS AND MANAGEMENT IP]`
+    },
+    question: "This is a sophisticated attack. What technique is being used, and what specific elements construct the false pretext?",
+    choices: [
+      { letter:"A", text:"Vishing — basic cold call requesting password reset", correct: false },
+      { letter:"B", text:"Whaling — targeting executive-level staff for wire transfer", correct: false },
+      { letter:"C", text:"Pretexting — attacker builds a detailed fabricated backstory (fake ticket, real CVE, named colleague) to extract network credentials", correct: true },
+      { letter:"D", text:"Smishing — text message containing malicious Cisco patch link", correct: false }
+    ],
+    hint: "The attacker created an elaborate FALSE SCENARIO before making contact. They researched the organization, named a real colleague, referenced a plausible ticket number and real vulnerability. This pre-planned fabrication has a specific name.",
+    feedback: {
+      correct: `✅ CORRECT — Pretexting identified (advanced variant).
+
+PRETEXT CONSTRUCTION ELEMENTS:
+  ▸ Fabricated identity: "Kevin Marsh, Cisco Enterprise Support"
+  ▸ False ticket reference: CS-884921 (sounds plausible, verifiable-seeming)
+  ▸ Named insider: "Sarah Kim" (likely from LinkedIn/website OSINT)
+  ▸ Real technical context: ASA 5500-X + legitimate CVE concept
+  ▸ Urgency: "end of business today"
+  ▸ Authority: Cisco support engineer persona
+
+WHAT WAS EXTRACTED:
+  → Management IP of primary ASA firewall
+  → SNMP community string (read access = network topology mapping)
+  
+ATTACK PROGRESSION:
+  Reconnaissance → OSINT → Pretext build → Call → Extraction → Exploitation
+
+MITRE ATT&CK: T1598 — Phishing for Information (Spear Phishing via Service)
+
+WHY IT WORKED:
+  The fake ticket + real colleague name eliminated cognitive dissonance.
+  The technical plausibility reduced suspicion.
+  Urgency short-circuited verification instinct.`,
+      incorrect: `❌ Pretexting is distinct from simple vishing.
+  
+  Pretexting = RESEARCHED, FABRICATED backstory created in advance
+  Vishing = phone-based manipulation (pretexting often uses phone, but the defining 
+            feature is the pre-planned false narrative, not the medium)
+
+The attacker researched Nexus Corp (found Sarah Kim's name), created a fake ticket number,
+referenced a real product vulnerability — all before the call. That preparation = pretexting.
+Correct answer: Pretexting (C)`
+    },
+    points: 2
+  },
+  {
+    id: "se6",
+    title: "Scenario 6 — BEC Wire Transfer Request",
+    evKey: "ev-be",
+    artifact: {
+      type: "email", label: "BEC / WHALING EMAIL",
+      from: "<span class='red-flag'>j.harmon@nexuscorp-mail.com</span> [Display: J. Harmon, CEO]",
+      to: "r.chen@nexuscorp.com (CFO)",
+      subject: "Confidential — Urgent Wire Transfer Required",
+      body: `Rachel,
+
+I'm in a board meeting in London and cannot speak by phone. I need you to initiate 
+an urgent wire transfer of <span class="red-flag">$384,000 to our new M&A partner</span> before close 
+of business today EST.
+
+<span class="red-flag">This is time-sensitive and confidential — do not discuss with anyone else</span> 
+until the transaction is complete. Our legal counsel has cleared it.
+
+Wire Details:
+  Bank: Anchor Capital Holdings
+  Account: 4471-8829-0031
+  Routing: 021000089
+  Reference: NXS-M&A-Q4
+
+<span class="red-flag">Please confirm when sent. Do not reply to this email — I am on a secure device. 
+Text me instead at +44 7700 900847.</span>
+
+James Harmon
+Chief Executive Officer, Nexus Corp
+<span style="color:var(--text-3);font-size:10px">Sent from my iPhone</span>`
+    },
+    question: "This is one of the most financially damaging social engineering attacks in cybersecurity. Identify the attack type and all red flags present.",
+    choices: [
+      { letter:"A", text:"Pretexting — CEO fabricated a London travel scenario", correct: false },
+      { letter:"B", text:"Phishing — generic email blast impersonating the CEO", correct: false },
+      { letter:"C", text:"Business Email Compromise (BEC) / Whaling — targeted impersonation of C-suite to authorize fraudulent wire transfer", correct: true },
+      { letter:"D", text:"Scareware — threatening email about legal consequences of non-payment", correct: false }
+    ],
+    hint: "FBI IC3 reports this attack type caused $2.9 BILLION in losses in 2023. It specifically targets financial officers by impersonating executives. Look at the sender domain character by character.",
+    feedback: {
+      correct: `✅ CORRECT — Business Email Compromise (BEC) / Whaling identified.
+
+RED FLAGS IDENTIFIED (7):
+  1. Sender domain: nexuscorp-MAIL.com ≠ nexuscorp.com (typosquatting)
+  2. "Cannot speak by phone" → blocks voice verification
+  3. "Do not discuss with anyone" → eliminates peer verification
+  4. Urgency: "before close of business today"
+  5. Confidentiality instruction isolates the target
+  6. "Do not reply to this email" → routes to attacker-controlled number
+  7. UK phone number for a domestic CEO
+
+FBI IC3 STATS (2023):
+  → BEC caused $2.9 BILLION in losses
+  → Average loss per incident: $124,000
+  → This $384,000 request is above average
+
+MITRE ATT&CK: T1534 — Internal Spearphishing / T1566.002 — BEC
+
+VERIFICATION PROTOCOL (what CFO should do):
+  → Call CEO directly using NUMBER FROM INTERNAL DIRECTORY (not the text)
+  → Never initiate wire transfers from email alone
+  → Require dual-authorization for transfers >$10,000
+  → Report to SOC immediately`,
+      incorrect: `❌ This is BEC — Business Email Compromise, specifically "Whaling" (targeting C-suite).
+  
+  Why not pretexting? Pretexting usually involves impersonating someone external.
+  Why not generic phishing? This is a HIGHLY TARGETED attack on one specific CFO.
+  
+  BEC = impersonating an internal executive (CEO, CFO) to manipulate financial transactions.
+  FBI IC3 calls BEC the costliest cybercrime category — $2.9B in 2023 alone.
+  Correct answer: BEC/Whaling (C)`
+    },
+    points: 2
+  }
+];
+
+// ═══════════════════════════════════════════════
+//  MODULE 2 — MALWARE FAMILY IDENTIFICATION
+// ═══════════════════════════════════════════════
+const MALWARE_SCENARIOS = [
+  {
+    id: "mw1",
+    evKey: "ev-mw1",
+    title: "Malware Case #1 — WS-114 Behavioral Analysis",
+    brief: `BEHAVIORAL ANALYSIS REPORT — SANDBOX DETONATION
+══════════════════════════════════════════════
+HOST:     WS-114 — T. Walker (Sr. Engineer)
+SAMPLE:   autorun.inf payload from USB incident
+SANDBOX:  Cuckoo v2.0.7 — 5 min analysis
+
+BEHAVIORS OBSERVED:
+  [T+00:03] Dropped: %TEMP%\\svchost32.exe (4.2MB)
+  [T+00:05] Modified: HKLM\\SOFTWARE\\Run → svchost32.exe (persistence)
+  [T+00:08] Enumerated: All local drives D:\\ through Z:\\
+  [T+00:09] DROPPED: ransom_note.txt on Desktop
+  [T+00:10] Modified: 1,847 files → extension changed to .nx3cry
+  [T+00:11] CONN: 185.220.101.47:443 → POST /payment (TOR exit node)
+  [T+00:12] WALLPAPER CHANGED → "YOUR FILES ARE ENCRYPTED"
+  [T+00:14] Executed: vssadmin delete shadows /all /quiet
+  [T+00:15] Executed: bcdedit /set {default} recoveryenabled No`,
+    question: "Based on the behavioral profile, what malware family type is this?",
+    correctFamily: "Ransomware",
+    options: ["Ransomware", "RAT", "Rootkit", "Spyware", "Worm", "Keylogger", "Botnet", "Fileless Malware"],
+    points: 1
+  },
+  {
+    id: "mw2",
+    evKey: "ev-mw2",
+    title: "Malware Case #2 — Endpoint Telemetry",
+    brief: `BEHAVIORAL ANALYSIS REPORT — ENDPOINT DETECTION
+══════════════════════════════════════════════
+HOST:     WS-089 — M. Reyes (Help Desk)
+SOURCE:   Credential harvest → drive-by download
+SAMPLE:   svc_update.exe (disguised as Windows Update)
+
+BEHAVIORS OBSERVED:
+  [T+00:02] Injected into: explorer.exe (process hollowing)
+  [T+00:04] Opened: reverse shell → C2: 45.77.102.33:8443
+  [T+00:06] Captured: desktop screenshot → C2 upload
+  [T+00:08] Activated: webcam (no LED indicator — covert)
+  [T+00:10] Exfil: clipboard contents → C2
+  [T+00:12] Executed: whoami, ipconfig, net user /domain
+  [T+00:15] Downloaded: lateral_move.ps1 from C2
+  [T+00:18] Attempted: RDP brute force → WS-032, WS-045
+  [T+00:20] Established: 2nd persistent C2 channel (backup)`,
+    question: "What malware family does this behavioral profile describe?",
+    correctFamily: "RAT",
+    options: ["Ransomware", "RAT", "Rootkit", "Spyware", "Worm", "Keylogger", "Botnet", "Fileless Malware"],
+    points: 1
+  },
+  {
+    id: "mw3",
+    evKey: "ev-mw3",
+    title: "Malware Case #3 — Covert Data Capture",
+    brief: `BEHAVIORAL ANALYSIS REPORT — MEMORY FORENSICS
+══════════════════════════════════════════════
+HOST:     WS-203 — R. Chen (CFO)
+SOURCE:   Phishing email attachment — PDF exploit
+SAMPLE:   Adobe_Q4_Report.pdf → shellcode → payload
+
+BEHAVIORS OBSERVED:
+  [T+00:01] Installed: kernel-mode driver (unsigned)
+  [T+00:02] Hooked: GetAsyncKeyState() API
+  [T+00:03] Hooked: NtCreateFile() — file access monitoring
+  [T+00:05] Captured: 2,847 keystrokes → encrypted buffer
+  [T+00:08] Captured: Form field data — Chrome, Firefox, Edge
+  [T+00:10] Captured: Autofill credentials (passwords, CC#s)
+  [T+00:15] Captured: Clipboard — repeated copy of bank routing#
+  [T+00:20] Exfil: encrypted_keys.bin → SMTP → gmail.com relay
+  [T+00:25] Captured: Typed: "nexuscorp-bank-login" credentials`,
+    question: "Identify this malware family based on its API hooking and data capture behavior.",
+    correctFamily: "Keylogger",
+    options: ["Ransomware", "RAT", "Rootkit", "Spyware", "Worm", "Keylogger", "Botnet", "Fileless Malware"],
+    points: 1
+  },
+  {
+    id: "mw4",
+    evKey: null,
+    title: "Malware Case #4 — Network Propagation",
+    brief: `BEHAVIORAL ANALYSIS REPORT — NETWORK TRAFFIC ANALYSIS
+══════════════════════════════════════════════
+HOST:     WS-045 → RAPID LATERAL SPREAD
+SOURCE:   Initial infection via SMB vulnerability (EternalBlue)
+SAMPLE:   win_update.exe — 280KB self-contained binary
+
+BEHAVIORS OBSERVED:
+  [T+00:01] Copied self to: \\\\WS-032\\ADMIN$\\win_update.exe
+  [T+00:02] Copied self to: \\\\WS-201\\ADMIN$\\win_update.exe
+  [T+00:03] Copied self to: \\\\FS-01\\ADMIN$\\win_update.exe (file server)
+  [T+00:05] Scanner: 10.0.x.x/16 — TCP 445 (SMB) sweep
+  [T+00:06] Exploited: 12 additional hosts via MS17-010
+  [T+00:08] NO C2 CALLBACK — self-directed propagation
+  [T+00:10] Copied self to: all network shares found
+  [T+00:12] Executed: payload on all newly infected hosts
+  [T+00:15] TOTAL INFECTED: 17 hosts in 15 minutes`,
+    question: "This malware spreads autonomously without human interaction or C2 direction. What family is this?",
+    correctFamily: "Worm",
+    options: ["Ransomware", "RAT", "Rootkit", "Spyware", "Worm", "Keylogger", "Botnet", "Fileless Malware"],
+    points: 1
+  },
+  {
+    id: "mw5",
+    evKey: null,
+    title: "Malware Case #5 — Memory Forensics",
+    brief: `BEHAVIORAL ANALYSIS REPORT — VOLATILE MEMORY ANALYSIS
+══════════════════════════════════════════════
+HOST:     SRV-DC01 — Domain Controller
+SOURCE:   Phishing → credential dump → lateral move → DC
+SAMPLE:   No file on disk — MEMORY ONLY
+
+VOLATILITY ANALYSIS RESULTS:
+  [PROCESS]  Injected into: lsass.exe, svchost.exe (legitimate processes)
+  [REGISTRY] Persistence: HKCU\\Environment → UserInitMprLogonScript
+  [MEMORY]   Payload: PowerShell Empire stager in process memory
+  [DISK]     On-disk artifact count: ZERO
+  [NETWORK]  C2: HTTPS beacon → api.dropboxusercontent.com (living off land)
+  [BEHAVIOR] Abused: LOLBins — certutil, mshta, regsvr32
+  [TOOL]     Dump: LSASS process memory → credential extraction
+  [PERSIST]  WMI subscription → execute on every login event
+  [DETECTION] AV/EDR: 0 alerts — no file to scan`,
+    question: "No file was found on disk. All activity exists in memory. This malware evades traditional AV. What family is this?",
+    correctFamily: "Fileless Malware",
+    options: ["Ransomware", "RAT", "Rootkit", "Spyware", "Worm", "Keylogger", "Botnet", "Fileless Malware"],
+    points: 1
+  }
+];
+
+// ═══════════════════════════════════════════════
+//  DOM HELPERS
+// ═══════════════════════════════════════════════
+function ca(tag, cls, html) {
+  const el = document.createElement(tag);
+  if (cls) el.className = cls;
+  if (html !== undefined) el.innerHTML = html;
+  return el;
+}
+function qs(sel) { return document.querySelector(sel); }
+function log(type, msg) {
+  const area = qs("#contentArea");
+  const ts = new Date().toLocaleTimeString("en-US",{hour12:false});
+  const d = ca("div", `log ${type}`);
+  d.innerHTML = `<span class="log-ts">[${ts}]</span>${escHtml(msg)}`;
+  area.appendChild(d); area.scrollTop = area.scrollHeight;
+}
+function logRaw(type, html) {
+  const area = qs("#contentArea");
+  const ts = new Date().toLocaleTimeString("en-US",{hour12:false});
+  const d = ca("div", `log ${type}`);
+  d.innerHTML = `<span class="log-ts">[${ts}]</span>${html}`;
+  area.appendChild(d); area.scrollTop = area.scrollHeight;
+}
+function clearContent() { qs("#contentArea").innerHTML = ""; qs("#actionBar").innerHTML = ""; }
+function escHtml(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function addToContent(el) {
+  const area = qs("#contentArea");
+  area.appendChild(el);
+  area.scrollTop = area.scrollHeight;
+}
+
+function setActionBar(html) { qs("#actionBar").innerHTML = html; }
+
+// ═══════════════════════════════════════════════
+//  INIT + MODULE SWITCH
+// ═══════════════════════════════════════════════
+function init() {
+  buildProgStrip();
+  buildStepChecklist();
+  startClock();
+  startModule1();
+}
+
+function switchModule(n) {
+  S.module = n;
+  [1,2,3].forEach(i => {
+    qs(`#tab-${i}`).classList.toggle("active", i===n);
+  });
+  clearContent();
+  if (n===1) startModule1();
+  else if (n===2) startModule2();
+  else if (n===3) startModule3();
+}
+
+function buildProgStrip() {
+  const strip = qs("#progStrip");
+  const total = SE_SCENARIOS.length + MALWARE_SCENARIOS.length + 1;
+  strip.innerHTML = Array(total).fill(0).map((_,i) =>
+    `<div class="prog-seg locked" id="pseg-${i}"></div>`
+  ).join("");
+}
+
+function updateProg(idx, state) {
+  const el = qs(`#pseg-${idx}`);
+  if (el) el.className = `prog-seg ${state}`;
+}
+
+function buildStepChecklist() {
+  const c = qs("#stepChecklist");
+  c.innerHTML = `<div class="rail-label">Module Progress</div>
+  ${SE_SCENARIOS.map((s,i) => `<div class="step-check locked" id="chk-m1-${i}"><span class="chk-icon">○</span><span>${s.title.replace("Scenario ","S")}</span></div>`).join("")}
+  ${MALWARE_SCENARIOS.map((s,i) => `<div class="step-check locked" id="chk-m2-${i}"><span class="chk-icon">○</span><span>MW Case #${i+1}</span></div>`).join("")}
+  <div class="step-check locked" id="chk-m3-0"><span class="chk-icon">○</span><span>Password Assessment</span></div>`;
+}
+
+function updateChk(id, state) {
+  const el = qs(`#${id}`);
+  if (!el) return;
+  el.className = `step-check ${state}`;
+  el.querySelector(".chk-icon").textContent = state==="done" ? "✓" : state==="active" ? "▶" : "○";
+}
+
+function startClock() {
+  setInterval(() => {
+    const e = Math.floor((Date.now() - S.startTime) / 1000);
+    const h = String(Math.floor(e/3600)).padStart(2,"0");
+    const m = String(Math.floor((e%3600)/60)).padStart(2,"0");
+    const s = String(e%60).padStart(2,"0");
+    qs("#clock").textContent = `${h}:${m}:${s}`;
+  }, 1000);
+}
+
+// ═══════════════════════════════════════════════
+//  MODULE 1
+// ═══════════════════════════════════════════════
+function startModule1() {
+  qs("#stageTitle").textContent = "⚠ MODULE 1 — Social Engineering Tactics Simulator";
+  qs("#stageSub").textContent = "Nexus Corp · Active Incident Response · Identify Attack Types & Psychological Triggers";
+  clearContent();
+
+  logRaw("sys", `┌─────────────────────────────────────────────────────────┐
+│   THREATSIM — MODULE 1: SOCIAL ENGINEERING TACTICS    │
+│   Nexus Corp Security Incident Response                │
+└─────────────────────────────────────────────────────────┘
+
+INCIDENT BRIEF:
+  Nexus Corporation (FinTech, 340 employees) is under active 
+  social engineering attack. Multiple campaigns have been 
+  detected across email, phone, SMS, and physical vectors.
+
+  YOUR ROLE: Security Analyst — classify each attack, identify 
+  psychological triggers, and recommend mitigations.
+
+  6 SCENARIOS | 12 POINTS AVAILABLE | Hints: -0.5 pts each
+
+  68% of all 2024 data breaches involved the human element.
+  — Verizon DBIR 2024
+
+[STATUS] → Loading Scenario 1 of 6...`);
+
+  setTimeout(() => loadM1Scenario(S.m1.step), 800);
+}
+
+function loadM1Scenario(idx) {
+  if (idx >= SE_SCENARIOS.length) { finishModule1(); return; }
+  S.m1.step = idx;
+  const sc = SE_SCENARIOS[idx];
+  updateChk(`chk-m1-${idx}`, "active");
+  updateProg(idx, "active");
+
+  // Render artifact
+  const art = sc.artifact;
+  const typeClass = {email:"art-email",call:"art-call",sms:"art-sms",usb:"art-usb",web:"art-web"}[art.type];
+  const artEl = ca("div","artifact");
+  artEl.innerHTML = `
+    <div class="artifact-header">
+      <span class="artifact-type ${typeClass}">${art.label}</span>
+      <span style="color:var(--text-2);font-size:11px">${sc.title}</span>
+    </div>
+    <div class="artifact-body">
+      <div class="artifact-meta">FROM: ${art.from}<br>TO: ${art.to}<br>${art.subject}</div>
+      <div class="artifact-content">${art.body}</div>
+    </div>`;
+  addToContent(artEl);
+
+  // Question + choices
+  const qEl = ca("div","decision-panel");
+  let choicesHtml = sc.choices.map(c => `
+    <button class="choice-btn" id="choice-${sc.id}-${c.letter}" onclick="answerM1('${sc.id}',${idx},'${c.letter}',${c.correct})">
+      <span class="choice-letter">${c.letter}</span>
+      ${c.text}
+    </button>`).join("");
+
+  qEl.innerHTML = `
+    <div class="decision-title">🔍 ANALYST DECISION REQUIRED</div>
+    <div style="font-size:12px;color:var(--text);margin-bottom:10px">${sc.question}</div>
+    <div class="choice-grid">${choicesHtml}</div>
+    <div class="hint-strip" onclick="toggleHint('hint-${sc.id}',${idx})" style="margin-top:10px">
+      💡 Request Analyst Hint (−0.5 pts penalty)
+      <div class="hint-content" id="hint-${sc.id}">${sc.hint}</div>
+    </div>`;
+  addToContent(qEl);
+}
+
+function toggleHint(id, idx) {
+  const el = qs(`#${id}`);
+  if (!el.classList.contains("show")) {
+    el.classList.add("show");
+    S.m1.hints++;
+    if (!S.m1.attempts[idx+"_hinted"]) {
+      S.m1.attempts[idx+"_hinted"] = true;
+      // deduct from score if not yet answered
+    }
+  }
+}
+
+function answerM1(scId, idx, letter, isCorrect) {
+  const sc = SE_SCENARIOS[idx];
+  // Disable all choices
+  sc.choices.forEach(c => {
+    const btn = qs(`#choice-${scId}-${c.letter}`);
+    if (btn) { btn.disabled = true; btn.classList.add(c.correct ? "correct" : ""); }
+  });
+  const clicked = qs(`#choice-${scId}-${letter}`);
+  if (clicked && !isCorrect) clicked.classList.add("incorrect");
+
+  const pts = isCorrect ? sc.points - (S.m1.attempts[idx+"_hinted"] ? 0.5 : 0) : 0;
+  if (isCorrect) {
+    S.m1.score += pts;
+    S.incidents++;
+    qs("#incidentCount").textContent = S.incidents;
+  }
+
+  const evEl = qs(`#${sc.evKey}`);
+  if (evEl) {
+    evEl.textContent = isCorrect ? `✓ +${pts}` : "✗";
+    evEl.className = isCorrect ? "ev-pass" : "ev-fail";
+  }
+
+  updateChk(`chk-m1-${idx}`, "done");
+  updateProg(idx, "done");
+
+  const fbEl = ca("div", `log ${isCorrect?"ok":"threat"}`);
+  fbEl.innerHTML = `<span class="log-ts">[Feedback — Scenario ${idx+1}]</span><pre style="white-space:pre-wrap;font-family:var(--mono);font-size:11px">${isCorrect ? sc.feedback.correct : sc.feedback.incorrect}</pre>`;
+  addToContent(fbEl);
+
+  qs("#score-1").textContent = `${Math.round(S.m1.score)}/${S.m1.maxScore}`;
+
+  // Update org node if applicable
+  if (idx===0||idx===5) { qs("#org-cfo").className = "org-node compromised"; }
+  if (idx===1) { qs("#org-help").className = "org-node compromised"; S.compromised++; qs("#compromisedCount").textContent = S.compromised; }
+  if (idx===3) { qs("#org-eng").className = "org-node compromised"; S.compromised++; qs("#compromisedCount").textContent = S.compromised; updateRisk(75); }
+  if (idx===4) { qs("#org-it").className = "org-node compromised"; S.compromised++; qs("#compromisedCount").textContent = S.compromised; updateRisk(90); }
+
+  setActionBar(`<button class="btn btn-red" onclick="loadM1Scenario(${idx+1})">Next Scenario →</button>
+  <span style="color:var(--text-2);font-size:11px">Step ${idx+1}/6 · Module 1 Score: ${Math.round(S.m1.score)} pts</span>`);
+}
+
+function updateRisk(pct) {
+  const bar = qs("#riskBar");
+  if (!bar) return;
+  bar.style.width = pct + "%";
+  const risk = qs("#orgRisk");
+  if (pct > 70) { bar.style.background="var(--red)"; risk.textContent="HIGH"; risk.style.color="var(--red)"; }
+  else if (pct > 45) { bar.style.background="var(--amber)"; risk.textContent="MEDIUM"; }
+}
+
+function finishModule1() {
+  qs("#tab-1").classList.add("complete");
+  logRaw("ok", `<pre style="white-space:pre-wrap;font-family:var(--mono);font-size:11px">
+╔════════════════════════════════════════════╗
+║  MODULE 1 COMPLETE — Social Engineering    ║
+║  Score: ${Math.round(S.m1.score)}/${S.m1.maxScore} pts · Hints used: ${S.m1.hints}         ║
+╚════════════════════════════════════════════╝
+
+You have identified 6 social engineering vectors used against 
+Nexus Corp. ${S.compromised} employees/assets are compromised.
+
+→ Proceed to MODULE 2: Malware Family Identification
+</pre>`);
+  setActionBar(`<button class="btn btn-red" onclick="switchModule(2)">Proceed to Module 2 →</button>`);
+}
+
+// ═══════════════════════════════════════════════
+//  MODULE 2 — MALWARE IDENTIFICATION
+// ═══════════════════════════════════════════════
+function startModule2() {
+  qs("#stageTitle").textContent = "🦠 MODULE 2 — Malware Family Identification";
+  qs("#stageSub").textContent = "Behavioral Analysis · Sandbox Reports · Endpoint Telemetry";
+  clearContent();
+
+  logRaw("sys", `┌─────────────────────────────────────────────────────────┐
+│   THREATSIM — MODULE 2: MALWARE FAMILY ID             │
+│   Cuckoo Sandbox · Memory Forensics · EDR Telemetry   │
+└─────────────────────────────────────────────────────────┘
+
+CONTEXT: The social engineering attacks from Module 1 delivered 
+multiple malware payloads across Nexus Corp endpoints.
+
+YOUR ROLE: Analyze behavioral sandbox reports and classify each 
+malware sample into the correct family.
+
+5 BEHAVIORAL REPORTS | 5 POINTS AVAILABLE
+Classification is based on: behavior, propagation, primary objective
+
+[LOADING CASE #1...]`);
+
+  setTimeout(() => loadM2Case(S.m2.step), 600);
+}
+
+function loadM2Case(idx) {
+  if (idx >= MALWARE_SCENARIOS.length) { finishModule2(); return; }
+  S.m2.step = idx;
+  const sc = MALWARE_SCENARIOS[idx];
+  updateChk(`chk-m2-${idx}`, "active");
+  updateProg(SE_SCENARIOS.length + idx, "active");
+
+  const briefEl = ca("div","log info");
+  briefEl.innerHTML = `<span class="log-ts">[Sandbox Report — ${sc.title}]</span><pre style="white-space:pre-wrap;font-family:var(--mono);font-size:11px;line-height:1.7">${sc.brief}</pre>`;
+  addToContent(briefEl);
+
+  const qEl = ca("div","decision-panel");
+  const grid = ca("div","malware-grid");
+  sc.options.forEach(opt => {
+    const card = ca("div","mw-card");
+    const icons = {Ransomware:"🔒",RAT:"🕹️",Rootkit:"🫥",Spyware:"👁️",Worm:"🪱",Keylogger:"⌨️",Botnet:"🤖","Fileless Malware":"👻"};
+    card.innerHTML = `<div class="mw-icon">${icons[opt]||"❓"}</div><div class="mw-name">${opt}</div><div class="mw-family">Click to select</div>`;
+    card.onclick = () => selectMalware(sc, idx, opt, card);
+    grid.appendChild(card);
+  });
+
+  qEl.innerHTML = `<div class="decision-title">🦠 CLASSIFY THIS MALWARE SAMPLE</div>
+  <div style="font-size:12px;color:var(--text);margin-bottom:12px">${sc.question}</div>`;
+  qEl.appendChild(grid);
+
+  // hint
+  const hintDiv = ca("div","hint-strip");
+  hintDiv.setAttribute("onclick", `toggleM2Hint(${idx})`);
+  hintDiv.innerHTML = `💡 Analyst Hint<div class="hint-content" id="m2hint-${idx}">Focus on the PRIMARY BEHAVIOR: What does this malware's main goal appear to be? Ransomware = extortion. RAT = control. Keylogger = capture keystrokes. Worm = spread. Fileless = memory-only, no disk artifacts.</div>`;
+  qEl.appendChild(hintDiv);
+  addToContent(qEl);
+}
+
+function toggleM2Hint(idx) {
+  const el = qs(`#m2hint-${idx}`);
+  if (el) el.classList.toggle("show");
+}
+
+function selectMalware(sc, idx, chosen, cardEl) {
+  // Disable all cards
+  document.querySelectorAll(".mw-card").forEach(c => c.onclick = null);
+
+  const correct = chosen === sc.correctFamily;
+  cardEl.classList.add(correct ? "correct" : "wrong");
+
+  // Show correct card
+  document.querySelectorAll(".mw-card").forEach(c => {
+    if (c.querySelector(".mw-name")?.textContent === sc.correctFamily) {
+      c.classList.add("correct");
+    }
+  });
+
+  if (correct) {
+    S.m2.score++;
+    if (sc.evKey) {
+      const evEl = qs(`#${sc.evKey}`);
+      if (evEl) { evEl.textContent = "✓"; evEl.className = "ev-pass"; }
+    }
+  }
+
+  updateChk(`chk-m2-${idx}`, "done");
+  updateProg(SE_SCENARIOS.length + idx, "done");
+
+  const feedbacks = {
+    Ransomware: "RANSOMWARE CONFIRMED.\nKey indicators: file extension modification (.nx3cry), ransom note drop, vssadmin shadow copy deletion (prevents recovery), wallpaper change, C2 payment channel.\nNotable: shadow copy deletion is signature behavior — prevents Windows System Restore recovery.",
+    RAT: "RAT (Remote Access Trojan) CONFIRMED.\nKey indicators: reverse shell establishment, screenshot/webcam capture, clipboard exfiltration, process enumeration, lateral movement attempt, persistent dual C2.\nRATs provide full interactive control — the attacker 'lives inside' the compromised host.",
+    Keylogger: "KEYLOGGER CONFIRMED.\nKey indicators: GetAsyncKeyState() hook (captures keystrokes), NtCreateFile() hook (monitors files), browser form field capture, clipboard monitoring, SMTP exfiltration.\nKernel-mode driver indicates sophisticated, persistent keylogger.",
+    Worm: "WORM CONFIRMED.\nKey indicators: self-replication to network shares, autonomous SMB scanning (EternalBlue/MS17-010), NO C2 required, infected 17 hosts in 15 minutes.\nWorms are self-propagating — they require no attacker direction after initial release.",
+    "Fileless Malware": "FILELESS MALWARE CONFIRMED.\nKey indicators: ZERO disk artifacts, process injection into lsass/svchost, PowerShell Empire in memory, LOLBins (certutil, mshta), WMI persistence.\nFileless malware evades file-based AV/EDR — requires memory forensics and behavioral detection."
+  };
+
+  const fb = feedbacks[sc.correctFamily] || "Classification noted.";
+  const fbEl = ca("div", `log ${correct?"ok":"threat"}`);
+  fbEl.innerHTML = `<span class="log-ts">[${correct?"✅ CORRECT":"❌ INCORRECT"} — ${sc.correctFamily}]</span><pre style="white-space:pre-wrap;font-family:var(--mono);font-size:11px;line-height:1.6">${fb}</pre>`;
+  addToContent(fbEl);
+
+  qs("#score-2").textContent = `${S.m2.score}/${MALWARE_SCENARIOS.length}`;
+
+  setActionBar(`<button class="btn btn-red" onclick="loadM2Case(${idx+1})">Next Case →</button>
+  <span style="color:var(--text-2);font-size:11px">Case ${idx+1}/5 · Module 2 Score: ${S.m2.score}/5</span>`);
+}
+
+function finishModule2() {
+  qs("#tab-2").classList.add("complete");
+  logRaw("ok", `<pre style="white-space:pre-wrap;font-family:var(--mono);font-size:11px">
+╔════════════════════════════════════════════╗
+║  MODULE 2 COMPLETE — Malware Family ID     ║
+║  Score: ${S.m2.score}/${MALWARE_SCENARIOS.length} pts                          ║
+╚════════════════════════════════════════════╝
+
+→ Proceed to MODULE 3: Password Strength Assessment
+</pre>`);
+  setActionBar(`<button class="btn btn-red" onclick="switchModule(3)">Proceed to Module 3 →</button>`);
+}
+
+// ═══════════════════════════════════════════════
+//  MODULE 3 — PASSWORD STRENGTH
+// ═══════════════════════════════════════════════
+function startModule3() {
+  qs("#stageTitle").textContent = "🔐 MODULE 3 — Password Strength Assessment";
+  qs("#stageSub").textContent = "Credential Analysis · NIST SP 800-63B · Entropy Measurement";
+  clearContent();
+
+  logRaw("sys", `┌─────────────────────────────────────────────────────────┐
+│   THREATSIM — MODULE 3: PASSWORD STRENGTH              │
+│   NIST SP 800-63B · Entropy Analysis · Crackability   │
+└─────────────────────────────────────────────────────────┘
+
+CONTEXT: The keylogger on WS-203 (CFO's workstation) captured 
+credentials. Security analysts discovered employees are using 
+weak passwords that accelerated the breach.
+
+YOUR TASK:
+  1. Analyze the captured weak passwords below
+  2. Test a compliant strong password in the simulator
+  3. Understand NIST password requirements
+
+CAPTURED WEAK PASSWORDS (from keylogger dump):
+  r.chen@nexuscorp.com   → "Nexus2024!"      ← guessable
+  s.patel@nexuscorp.com  → "Summer#123"      ← dictionary+pattern
+  t.walker@nexuscorp.com → "password1"       ← trivially cracked
+  m.reyes@nexuscorp.com  → "NexusCorp!"      ← company name
+  d.okafor@nexuscorp.com → "Admin@2024"      ← predictable
+
+CRACKING TIMES (estimated with GPU cluster):
+  "password1"    → < 1 SECOND  (dictionary)
+  "Nexus2024!"   → ~ 3 MINUTES (mask attack)
+  "Summer#123"   → ~ 8 HOURS   (hybrid)
+  "Admin@2024"   → ~ 2 DAYS    (hybrid+rule)
+  "Summer#123Qx!" → ~ 847 YEARS (strong)
+
+TEST YOUR PASSWORD BELOW:`);
+
+  updateChk("chk-m3-0", "active");
+  updateProg(SE_SCENARIOS.length + MALWARE_SCENARIOS.length, "active");
+
+  const panelEl = ca("div","decision-panel");
+  panelEl.innerHTML = `
+    <div class="decision-title">🔐 PASSWORD STRENGTH ANALYZER</div>
+    <div class="pw-wrap">
+      <input type="text" class="pw-field" id="pwInput" placeholder="Enter a test password..." oninput="analyzePassword(this.value)" autocomplete="off" spellcheck="false">
+      <div class="pw-meter-bars" id="pwBars">
+        ${Array(5).fill('<div class="pw-seg"></div>').join("")}
+      </div>
+      <div class="pw-label" id="pwLabel" style="color:var(--text-3)">— Enter a password to analyze —</div>
+      <div class="pw-criteria" id="pwCriteria">
+        <div class="pw-crit"><div class="crit-dot" id="c-len"></div>Minimum 12 characters</div>
+        <div class="pw-crit"><div class="crit-dot" id="c-up"></div>Contains uppercase (A-Z)</div>
+        <div class="pw-crit"><div class="crit-dot" id="c-lo"></div>Contains lowercase (a-z)</div>
+        <div class="pw-crit"><div class="crit-dot" id="c-num"></div>Contains numbers (0-9)</div>
+        <div class="pw-crit"><div class="crit-dot" id="c-sym"></div>Contains symbols (!@#$...)</div>
+        <div class="pw-crit"><div class="crit-dot" id="c-nodict"></div>No obvious dictionary words</div>
+        <div class="pw-crit"><div class="crit-dot" id="c-noseq"></div>No sequential patterns (abc, 123)</div>
+      </div>
+      <div id="pwEntropy" style="font-family:var(--mono);font-size:11px;color:var(--text-2);margin-top:4px"></div>
+    </div>`;
+  addToContent(panelEl);
+
+  // NIST reference
+  const nistEl = ca("div","log info");
+  nistEl.innerHTML = `<span class="log-ts">[NIST SP 800-63B Reference]</span>
+<pre style="white-space:pre-wrap;font-family:var(--mono);font-size:11px;line-height:1.7">NIST PASSWORD GUIDELINES (SP 800-63B):
+
+MINIMUM REQUIREMENTS:
+  ▸ 8 characters minimum (NIST baseline)
+  ▸ 15+ characters recommended for privileged accounts
+  ▸ Allow all printable ASCII + spaces
+  ▸ Do NOT require mandatory complexity rules (NIST retired this)
+  ▸ DO check against breached password databases (HaveIBeenPwned)
+  ▸ DO NOT use password hints or security questions
+  ▸ DO use passphrases: "correct-horse-battery-staple"
+
+ENTROPY TARGETS:
+  &lt;40 bits  → Very Weak  (cracked in seconds-hours)
+  40-59 bits → Weak       (cracked in days-weeks)
+  60-79 bits → Moderate   (cracked in months-years)
+  70-89 bits → Strong     (cracked in decades)
+  90+ bits   → Very Strong (computationally infeasible)
+
+WHY "Nexus2024!" FAILS:
+  → Company name = in every targeted wordlist
+  → Year suffix = standard password rule appended to dictionary
+  → Single symbol + cap = meets old complexity but low entropy</pre>`;
+  addToContent(nistEl);
+
+  setActionBar(`<button class="btn btn-green" id="submitPwBtn" onclick="submitPassword()" disabled>Submit Password Assessment</button>
+  <span style="color:var(--text-2);font-size:11px">Enter a strong password to unlock submission</span>`);
+}
+
+const DICT_WORDS = ["password","nexus","admin","summer","winter","spring","autumn","company","login","secure","welcome","monkey","dragon","master","abc","qwerty","letmein","iloveyou","sunshine","shadow"];
+const SEQ = ["abc","bcd","cde","def","efg","fgh","ghi","hij","ijk","jkl","klm","lmn","mno","nop","opq","pqr","qrs","rst","stu","tuv","uvw","vwx","wxy","xyz","012","123","234","345","456","567","678","789","890","qwe","wer","ert","rty","tyu","yui","uio","iop","asd","sdf","dfg","fgh","ghj","hjk","jkl","zxc","xcv","cvb","vbn","bnm"];
+
+function analyzePassword(pw) {
+  const c = {
+    len: pw.length >= 12,
+    up: /[A-Z]/.test(pw),
+    lo: /[a-z]/.test(pw),
+    num: /[0-9]/.test(pw),
+    sym: /[^a-zA-Z0-9]/.test(pw),
+    nodict: !DICT_WORDS.some(w => pw.toLowerCase().includes(w)),
+    noseq: !SEQ.some(s => pw.toLowerCase().includes(s))
+  };
+
+  // Update criteria dots
+  Object.entries({len:"c-len",up:"c-up",lo:"c-lo",num:"c-num",sym:"c-sym",nodict:"c-nodict",noseq:"c-noseq"}).forEach(([k,id]) => {
+    const dot = qs(`#${id}`);
+    if (dot) { dot.className = `crit-dot ${c[k]?"pass":"fail"}`; }
+  });
+
+  // Score 0-5
+  const passed = Object.values(c).filter(Boolean).length;
+  const score = passed; // out of 7
+
+  // Entropy estimate
+  let charSpace = 0;
+  if (c.lo) charSpace += 26;
+  if (c.up) charSpace += 26;
+  if (c.num) charSpace += 10;
+  if (c.sym) charSpace += 32;
+  const entropy = charSpace > 0 ? Math.round(pw.length * Math.log2(charSpace)) : 0;
+
+  qs("#pwEntropy").textContent = pw.length > 0 ? `Estimated entropy: ~${entropy} bits · Length: ${pw.length} chars` : "";
+
+  // Meter bars
+  const bars = document.querySelectorAll(".pw-seg");
+  const level = pw.length === 0 ? -1 : score < 3 ? 0 : score < 5 ? 1 : score < 6 ? 2 : score < 7 ? 3 : 4;
+  const levels = ["weak","weak","fair","good","strong"];
+  const labels = ["Very Weak","Weak","Fair","Good","Strong"];
+  const colors = ["var(--red)","var(--red)","var(--amber)","#90cc00","var(--green)"];
+
+  bars.forEach((b,i) => {
+    b.className = `pw-seg${i <= level && level >= 0 ? " "+levels[Math.min(level,4)] : ""}`;
+  });
+
+  const lbl = qs("#pwLabel");
+  if (pw.length === 0) {
+    lbl.textContent = "— Enter a password to analyze —";
+    lbl.style.color = "var(--text-3)";
+  } else {
+    lbl.textContent = `${labels[Math.max(0,level)]} — ${entropy} bit entropy`;
+    lbl.style.color = colors[Math.max(0,level)];
+  }
+
+  S.m3.pwScore = score;
+
+  const submitBtn = qs("#submitPwBtn");
+  if (submitBtn) submitBtn.disabled = score < 6;
+}
+
+function submitPassword() {
+  const pw = qs("#pwInput").value;
+  const score = S.m3.pwScore;
+  const isStrong = score >= 6;
+
+  if (isStrong) {
+    S.m3.score = 1;
+    const evEl = qs("#ev-pw");
+    if (evEl) { evEl.textContent = "✓"; evEl.className = "ev-pass"; }
+  }
+
+  updateChk("chk-m3-0", "done");
+  updateProg(SE_SCENARIOS.length + MALWARE_SCENARIOS.length, "done");
+  qs("#score-3").textContent = `${S.m3.score}/1`;
+
+  const pwEl = ca("div", `log ${isStrong?"ok":"warn"}`);
+  const c = {
+    len: pw.length >= 12, up: /[A-Z]/.test(pw), lo: /[a-z]/.test(pw),
+    num: /[0-9]/.test(pw), sym: /[^a-zA-Z0-9]/.test(pw),
+    nodict: !DICT_WORDS.some(w => pw.toLowerCase().includes(w)),
+    noseq: !SEQ.some(s => pw.toLowerCase().includes(s))
+  };
+  const charSpace = (c.lo?26:0)+(c.up?26:0)+(c.num?10:0)+(c.sym?32:0);
+  const entropy = charSpace > 0 ? Math.round(pw.length * Math.log2(charSpace)) : 0;
+
+  pwEl.innerHTML = `<span class="log-ts">[Password Assessment Result]</span>
+<pre style="white-space:pre-wrap;font-family:var(--mono);font-size:11px;line-height:1.7">${isStrong ? "✅ STRONG PASSWORD CONFIRMED" : "⚠️ PASSWORD NEEDS IMPROVEMENT"}
+
+Criteria Analysis:
+  Length ≥12:      ${c.len ? "✓ PASS" : "✗ FAIL"} (${pw.length} characters)
+  Uppercase:       ${c.up ? "✓ PASS" : "✗ FAIL"}
+  Lowercase:       ${c.lo ? "✓ PASS" : "✗ FAIL"}
+  Numbers:         ${c.num ? "✓ PASS" : "✗ FAIL"}
+  Symbols:         ${c.sym ? "✓ PASS" : "✗ FAIL"}
+  No dict words:   ${c.nodict ? "✓ PASS" : "✗ FAIL"}
+  No sequences:    ${c.noseq ? "✓ PASS" : "✗ FAIL"}
+
+Estimated Entropy: ~${entropy} bits
+NIST Classification: ${entropy >= 70 ? "STRONG (meets SP 800-63B)" : entropy >= 40 ? "MODERATE (below SP 800-63B target)" : "WEAK (does not meet NIST)"}
+
+${isStrong ? 
+`PASSWORD STRENGTH: COMPLIANT ✅
+This password would resist:
+  ▸ Dictionary attacks (no common words found)
+  ▸ Brute force (${entropy >= 70 ? "estimated cracking time: decades+" : "moderate resistance"})
+  ▸ Common rule-based mangling
+  ▸ Credential stuffing (unique construction)` :
+`REMEDIATION REQUIRED:
+  → Minimum 12 characters with all character classes
+  → Avoid dictionary words, company names, dates
+  → Consider passphrase: 4+ random words + numbers + symbols
+  → Example pattern: Word-Word-Word-Number-Symbol`}
+</pre>`;
+  addToContent(pwEl);
+
+  S.m3.tested = true;
+  setActionBar(`<button class="btn btn-green" onclick="showFinalResults()">🏁 View Final Results →</button>`);
+}
+
+// ═══════════════════════════════════════════════
+//  FINAL RESULTS
+// ═══════════════════════════════════════════════
+function showFinalResults() {
+  const total = Math.round(S.m1.score) + S.m2.score + S.m3.score;
+  const max = S.m1.maxScore + S.m2.maxScore + S.m3.maxScore;
+  const pct = Math.round((total / max) * 100);
+
+  const grade = pct >= 90 ? "A" : pct >= 80 ? "B" : pct >= 70 ? "C" : pct >= 60 ? "D" : "F";
+  const color = pct >= 80 ? "var(--green)" : pct >= 60 ? "var(--amber)" : "var(--red)";
+
+  const label = pct >= 90 ? "Distinguished Analyst" : pct >= 80 ? "Proficient" : pct >= 70 ? "Developing" : "Needs Remediation";
+
+  qs("#modalTitle").textContent = `🏁 THREATSIM — Final Results`;
+  qs("#modalGrade").textContent = `${pct}%`;
+  qs("#modalGrade").style.color = color;
+  qs("#modalBody").innerHTML = `
+    <strong style="color:var(--text)">${grade} — ${label}</strong><br><br>
+    <strong>Module 1 (Social Engineering):</strong> ${Math.round(S.m1.score)}/${S.m1.maxScore} pts<br>
+    <strong>Module 2 (Malware Family ID):</strong> ${S.m2.score}/${S.m2.maxScore} pts<br>
+    <strong>Module 3 (Password Strength):</strong> ${S.m3.score}/${S.m3.maxScore} pts<br>
+    <strong>Total:</strong> ${total}/${max} pts · Hints used: ${S.m1.hints}<br><br>
+    ${pct >= 85 ? "Excellent performance. You demonstrated mastery of social engineering tactic identification, malware behavioral analysis, and password security assessment. Ready for Tier 2 incident response scenarios." :
+      pct >= 70 ? "Good foundational understanding. Focus on distinguishing pretexting from vishing (medium = key differentiator), and review fileless malware indicators (LOLBins, process injection)." :
+      "Additional study required. Review the MITRE ATT&CK framework (T1566 family), malware behavioral signatures in Cuckoo sandbox reports, and NIST SP 800-63B password guidance."}
+  `;
+  qs("#modal").style.display = "flex";
+}
+
+function resetAll() {
+  S.m1 = { step:0, score:0, maxScore:12, attempts:{}, hints:0 };
+  S.m2 = { step:0, score:0, maxScore:5, completed:false };
+  S.m3 = { score:0, maxScore:1, tested:false, pwScore:0 };
+  S.startTime = Date.now();
+  S.incidents = 0;
+  S.compromised = 2;
+  qs("#incidentCount").textContent = "0";
+  qs("#compromisedCount").textContent = "2";
+  qs("#score-1").textContent = "0/12";
+  qs("#score-2").textContent = "0/5";
+  qs("#score-3").textContent = "0/1";
+  qs("#riskBar").style.width = "45%";
+  qs("#riskBar").style.background = "var(--amber)";
+  qs("#orgRisk").textContent = "MEDIUM";
+  qs("#modal").style.display = "none";
+  ["cfo","it","hr","eng","help"].forEach(r => {
+    const n = qs(`#org-${r}`);
+    if (n) n.className = r==="cfo"||r==="hr" ? "org-node targeted" : "org-node";
+  });
+  document.querySelectorAll(".ev-pass,.ev-fail").forEach(el => {
+    el.textContent = "—"; el.className = "ev-pend";
+  });
+  [1,2,3].forEach(i => {
+    qs(`#tab-${i}`).classList.remove("active","complete");
+  });
+  qs("#tab-1").classList.add("active");
+  buildProgStrip();
+  buildStepChecklist();
+  switchModule(1);
+}
+
+// ─── START ───
+init();
+</script>
+</body>
+</html>

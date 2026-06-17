@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Administration Simulator - Vulnerability & Mitigation Lab</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --primary-green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --border-color: #cccccc;
+            --terminal-bg: #111111;
+            --terminal-text: #4af626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header {
+            border-bottom: 3px solid var(--text-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-box {
+            width: 40px;
+            height: 40px;
+            background-color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-color);
+            font-weight: bold;
+            font-size: 24px;
+            border: 2px solid var(--primary-green);
+        }
+
+        .title-area h1 {
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .title-area p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .score-board {
+            background-color: var(--light-green);
+            border: 1px solid var(--primary-green);
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .score-board span {
+            font-weight: bold;
+            color: var(--dark-green);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            border: 2px solid var(--text-color);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            background: #fafafa;
+        }
+
+        .panel-header {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            padding: 8px 15px;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .panel-content {
+            padding: 15px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        /* Terminal Styling */
+        .terminal-container {
+            background-color: var(--terminal-bg);
+            color: var(--terminal-text);
+            font-family: "Courier New", Courier, monospace;
+            padding: 15px;
+            border-radius: 0 0 4px 4px;
+            min-height: 300px;
+            max-height: 450px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .terminal-log {
+            margin-bottom: 10px;
+            white-space: pre-wrap;
+        }
+
+        .terminal-input-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .prompt-symbol {
+            color: var(--terminal-text);
+            font-weight: bold;
+        }
+
+        .term-input {
+            background: transparent;
+            border: none;
+            color: var(--terminal-text);
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+            flex-grow: 1;
+            outline: none;
+        }
+
+        /* Architecture Tooltip/Status Map */
+        .topology-map {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .node {
+            border: 1px solid var(--border-color);
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .node.compromised {
+            border-color: #d32f2f;
+            background-color: #ffebee;
+        }
+
+        .node.secured {
+            border-color: var(--primary-green);
+            background-color: var(--light-green);
+        }
+
+        .node-header {
+            font-weight: bold;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 1px 5px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .badge-warn { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+        .badge-danger { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+        .badge-success { background: var(--light-green); color: var(--dark-green); border: 1px solid #c8e6c9; }
+
+        .node-details {
+            font-size: 12px;
+            color: #333;
+        }
+
+        /* Action Panel Hooks */
+        .options-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-card:hover {
+            border-color: var(--primary-green);
+            background-color: #f9f9f9;
+            transform: translateX(2px);
+        }
+
+        .action-card h4 {
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .action-card p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .submit-btn {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            border: 2px solid var(--text-color);
+            padding: 10px 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+
+        .feedback-box {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .feedback-success { background-color: var(--light-green); border: 1px solid var(--primary-green); color: var(--dark-green); }
+        .feedback-error { background-color: #ffebee; border: 1px solid #c62828; color: #c62828; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-box">W</div>
+            <div class="title-area">
+                <h1>Network Security Academy</h1>
+                <p>Course: Vulnerability and Mitigation Class | Cloud Admin Sandbox</p>
+            </div>
+        </div>
+        <div class="score-board">
+            Mitigation Score: <span id="mitigation-score">0</span> / 100
+        </div>
+    </header>
+
+    <main>
+        <div class="grid-container">
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Live Simulation Terminal</span>
+                    <span>v1.4.2-STABLE</span>
+                </div>
+                <div class="terminal-container" id="terminal-screen">
+                    <div class="terminal-log">[*] INITIALIZING SIMULATION ARCHITECTURE...</div>
+                    <div class="terminal-log">[*] FETCHING ENVIRONMENT STATUS...</div>
+                    <div class="terminal-log" style="color: #ffb300;">[WARN] SOC ALERT: Anomalous outbound traffic detected originating from internal subnets.</div>
+                    <div class="terminal-log" style="color: #ff3333;">[CRITICAL] External penetration vector detected matching pattern: CVE-2024-XXXX.</div>
+                    <div class="terminal-log" id="dynamic-log">--- Awaiting System Diagnostics Assignment ---</div>
+                </div>
+                <div class="panel-content" style="background: #f0f0f0; border-top: 1px solid #ccc; padding: 10px;">
+                    <div class="terminal-input-line">
+                        <span class="prompt-symbol">admin@sec-ops:~$</span>
+                        <input type="text" id="terminal-input" class="term-input" placeholder="Type diagnostic or verification command (e.g., 'help', 'show nodes')..." autocomplete="off">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Target Infrastructure Blueprint</span>
+                </div>
+                <div class="panel-content">
+                    <div class="topology-map" id="topo-map">
+                        <div class="node compromised" id="node-app">
+                            <div class="node-header">
+                                <span>Prod-Web-01</span>
+                                <span class="status-badge badge-danger" id="status-app">VULNERABLE</span>
+                            </div>
+                            <div class="node-details">
+                                <strong>Type:</strong> Web Application Server<br>
+                                <strong>Flaw:</strong> Insecure Deserialization / Missing Update<br>
+                                <strong>Access:</strong> Publicly Exposed (Port 443/80)
+                            </div>
+                        </div>
+                        <div class="node compromised" id="node-db">
+                            <div class="node-header">
+                                <span>Core-DB-Data</span>
+                                <span class="status-badge badge-warn" id="status-db">EXPOSED</span>
+                            </div>
+                            <div class="node-details">
+                                <strong>Type:</strong> Database Instance (Shared Subnet)<br>
+                                <strong>Flaw:</strong> Insecure Defaults / Cleartext Creds<br>
+                                <strong>Access:</strong> Accessible from Web Subnet
+                            </div>
+                        </div>
+                        <div class="node" id="node-api">
+                            <div class="node-header">
+                                <span>Internal-API</span>
+                                <span class="status-badge badge-warn" id="status-api">UNHARDENED</span>
+                            </div>
+                            <div class="node-details">
+                                <strong>Type:</strong> Application Endpoint<br>
+                                <strong>Flaw:</strong> Over-privileged service tokens<br>
+                                <strong>Access:</strong> Internal-only Routing
+                            </div>
+                        </div>
+                        <div class="node" id="node-mobile">
+                            <div class="node-header">
+                                <span>Mobile-Gateway</span>
+                                <span class="status-badge badge-warn" id="status-mobile">RISK PROFILE</span>
+                            </div>
+                            <div class="node-details">
+                                <strong>Type:</strong> Edge Gateway Asset<br>
+                                <strong>Flaw:</strong> Sideloading API trust configuration<br>
+                                <strong>Access:</strong> Consumer Mobile Sync
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span>Active Engagement Matrix: Select Strategy to Match Vulnerability Profile</span>
+            </div>
+            <div class="panel-content">
+                <p style="margin-bottom: 15px; font-size: 15px;">
+                    Review the system state. Attackers are attempting lateral movement from the web tier to the database tier using application misconfigurations and over-privileged connections. Select an asset, match the correct mitigation strategy framework, and hit deploy to execute.
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">1. SELECT TARGET ASSET TO MITIGATE:</label>
+                        <select id="target-select" class="submit-btn" style="background: white; color: black; border: 1px solid #ccc; font-weight: normal; margin-top: 0; text-transform: none; text-align: left;">
+                            <option value="app">Prod-Web-01 (Application Patching & OS Kernel Flaw)</option>
+                            <option value="db">Core-DB-Data (Database Architecture & Network Isolation)</option>
+                            <option value="api">Internal-API (Identity & Access Control Hardening)</option>
+                            <option value="mobile">Mobile-Gateway (Sideloading Trust and Data Storage Controls)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px;">2. SELECT CORE STRATEGY PATTERN:</label>
+                        <select id="strategy-select" class="submit-btn" style="background: white; color: black; border: 1px solid #ccc; font-weight: normal; margin-top: 0; text-transform: none; text-align: left;">
+                            <option value="patching">Patching (Update kernels, resolve CVEs via code modification)</option>
+                            <option value="hardening">Hardening (Disable insecure defaults, enforce baseline compliance)</option>
+                            <option value="segmentation">Network Segmentation (Split subnets, firewall separation)</option>
+                            <option value="isolation">Isolation (Sandboxing execution environments, air-gapping workloads)</option>
+                            <option value="access_control">Access Control (Enforce Least Privilege, restrict service account tokens)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="submit-btn" id="deploy-btn">Deploy Strategic Control Mitigation</button>
+
+                <div class="feedback-box" id="feedback-message"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Track Internal State
+        let currentScore = 0;
+        const totalMaxScore = 100;
+        const mitigationsState = {
+            app: false,
+            db: false,
+            api: false,
+            mobile: false
+        };
+
+        // DOM Handles
+        const terminalScreen = document.getElementById('terminal-screen');
+        const terminalInput = document.getElementById('terminal-input');
+        const dynamicLog = document.getElementById('dynamic-log');
+        const scoreDisplay = document.getElementById('mitigation-score');
+        const deployBtn = document.getElementById('deploy-btn');
+        const targetSelect = document.getElementById('target-select');
+        const strategySelect = document.getElementById('strategy-select');
+        const feedbackMsg = document.getElementById('feedback-message');
+
+        // Help commands dictionary
+        const CLI_RESPONSES = {
+            'help': "Available commands:\n  help         - Show this menu\n  show nodes   - Print high-level target health telemetry\n  clear        - Clear console output logs\n  sysinfo      - Display baseline environment details",
+            'sysinfo': "[SYSTEM INFORMATION]\nOS Profile: Ubuntu 22.04 LTS / Kernel 5.15.0\nCloud Provider: Managed Cluster Isolation Sandbox\nActive Threats: Lateral pivoting via compromised Web application framework.",
+            'show nodes': "[NODE OVERVIEW]\n- Prod-Web-01: Status CRITICAL (CVE-2024 Remote Code Execution vulnerability found)\n- Core-DB-Data: Status EXPOSED (No firewall barriers, globally routeable credentials)\n- Internal-API: Status OPEN (Service roles configured with root access privileges)\n- Mobile-Gateway: Status UNVERIFIED (Accepting custom untrusted application packages)"
+        };
+
+        // Command Prompt processing
+        terminalInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const command = terminalInput.value.trim().toLowerCase();
+                if (!command) return;
+
+                // Append command line to display
+                appendLog(`admin@sec-ops:~$ ${terminalInput.value}`, '#ffffff');
+
+                if (CLI_RESPONSES[command]) {
+                    appendLog(CLI_RESPONSES[command], '#4af626');
+                } else if (command === 'clear') {
+                    terminalScreen.innerHTML = '<div class="terminal-log">[*] Console log history cleared.</div>';
+                } else {
+                    appendLog(`[ERROR] Command recognition failure: "${command}". Type "help" for baseline parameters.`, '#ff3333');
+                }
+
+                terminalInput.value = '';
+                terminalScreen.scrollTop = terminalScreen.scrollHeight;
+            }
+        });
+
+        function appendLog(text, color = '#4af626') {
+            const el = document.createElement('div');
+            el.className = 'terminal-log';
+            el.style.color = color;
+            el.innerText = text;
+            terminalScreen.appendChild(el);
+            terminalScreen.scrollTop = terminalScreen.scrollHeight;
+        }
+
+        // Strategy Matrix deployment Logic
+        deployBtn.addEventListener('click', function() {
+            const target = targetSelect.value;
+            const strategy = strategySelect.value;
+
+            let isCorrect = false;
+            let responseText = "";
+
+            if (target === "app" && strategy === "patching") {
+                isCorrect = true;
+                responseText = "Success: Patching applied to Prod-Web-01. Kernel flaws and vendor libraries updated to close CVE-2024 exploit vectors.";
+                updateNodeUI('node-app', 'status-app', 'SECURED', 'badge-success', 'patched');
+            } else if (target === "db" && strategy === "segmentation") {
+                isCorrect = true;
+                responseText = "Success: Network Segmentation deployed between Web Tier and Database Tier. Lateral pivoting routes blocked by isolated subnets.";
+                updateNodeUI('node-db', 'status-db', 'ISOLATED', 'badge-success', 'secured');
+            } else if (target === "api" && strategy === "access_control") {
+                isCorrect = true;
+                responseText = "Success: Access Control parameters hardened. Over-privileged IAM service tokens trimmed to strict Least Privilege specifications.";
+                updateNodeUI('node-api', 'status-api', 'COMPLIANT', 'badge-success', 'secured');
+            } else if (target === "mobile" && strategy === "hardening") {
+                isCorrect = true;
+                responseText = "Success: System Hardening applied to Mobile Gateway configurations. Insecure defaults disabled, third-party package sideloading trust revoked.";
+                updateNodeUI('node-mobile', 'status-mobile', 'PROTECTED', 'badge-success', 'secured');
+            } else {
+                responseText = `Failed: The chosen strategy (${strategy}) did not fully mitigate the risk on this asset tier. Misconfigurations or exploitable paths remain open. Check architectural alignments.`;
+            }
+
+            displayFeedback(isCorrect, responseText);
+            
+            if (isCorrect && !mitigationsState[target]) {
+                mitigationsState[target] = true;
+                currentScore += 25;
+                scoreDisplay.innerText = currentScore;
+                appendLog(`[MITIGATION SUCCESS] Target [${target.toUpperCase()}] status verified safe.`, '#4af626');
+            } else if (!isCorrect) {
+                appendLog(`[MITIGATION ERROR] Invalid control mapping vector attempt on target [${target.toUpperCase()}].`, '#ff3333');
+            }
+
+            if (currentScore === totalMaxScore) {
+                appendLog(`\n[*** SIMULATION COMPLETED ***]\nALL STRATEGIC VULNERABILITY ARCHITECTURES FULLY MITIGATED.\nFinal Assessment Grade: 100% (Outstanding Baseline Configuration compliance reached).`, '#ffffff');
+            }
+        });
+
+        function updateNodeUI(nodeId, statusId, statusText, badgeClass, nodeClass) {
+            const nodeEl = document.getElementById(nodeId);
+            const statusEl = document.getElementById(statusId);
+
+            nodeEl.className = `node ${nodeClass}`;
+            statusEl.innerText = statusText;
+            statusEl.className = `status-badge ${badgeClass}`;
+        }
+
+        function displayFeedback(success, text) {
+            feedbackMsg.style.display = "block";
+            feedbackMsg.innerText = text;
+            if (success) {
+                feedbackMsg.className = "feedback-box feedback-success";
+            } else {
+                feedbackMsg.className = "feedback-box feedback-error";
+            }
+        }
+    </script>
+</body>
+</html>

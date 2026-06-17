@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPS Simulator - Learn Intrusion Prevention Systems</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .task-counter {
+            background: #1b5e20;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        .simulator-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e8f5e8;
+        }
+
+        .info-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e8f5e8;
+            height: fit-content;
+        }
+
+        .network-diagram {
+            background: #f8f9fa;
+            border: 2px dashed #4caf50;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            min-height: 200px;
+        }
+
+        .network-node {
+            position: absolute;
+            width: 80px;
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .internet {
+            background: #ff5722;
+            color: white;
+            top: 20px;
+            left: 20px;
+        }
+
+        .ips {
+            background: #4caf50;
+            color: white;
+            top: 20px;
+            left: 150px;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .internal-network {
+            background: #2196f3;
+            color: white;
+            top: 20px;
+            right: 20px;
+        }
+
+        .traffic-flow {
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: #333;
+            top: 50px;
+        }
+
+        .flow1 { left: 100px; }
+        .flow2 { right: 100px; }
+
+        .packet {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            position: absolute;
+            top: 120px;
+            animation: movePacket 3s linear infinite;
+        }
+
+        .legitimate { background: #4caf50; }
+        .malicious { background: #f44336; }
+        .blocked { background: #333; }
+
+        @keyframes movePacket {
+            0% { left: 0; }
+            50% { left: 150px; }
+            100% { left: 300px; }
+        }
+
+        .control-panel {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .control-section {
+            margin-bottom: 20px;
+        }
+
+        .control-section h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button.danger {
+            background: #f44336;
+        }
+
+        .button.danger:hover {
+            background: #da190b;
+        }
+
+        .select-input {
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin: 5px;
+            background: white;
+        }
+
+        .log-panel {
+            background: #1e1e1e;
+            color: #00ff00;
+            border-radius: 8px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin: 20px 0;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-active { background: #4caf50; }
+        .status-warning { background: #ff9800; }
+        .status-blocked { background: #f44336; }
+
+        .signature-list {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background: white;
+        }
+
+        .signature-item {
+            padding: 5px;
+            margin: 2px 0;
+            background: #f8f9fa;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .task-description {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .success-message {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .statistics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ IPS Simulator</h1>
+            <p>Interactive Learning Tool for Intrusion Prevention Systems</p>
+            <div class="task-counter">
+                Task <span id="currentTask">1</span> of 5 - Score: <span id="score">0</span>/100
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="simulator-panel">
+                <h2>🌐 Network Simulation</h2>
+                
+                <div class="task-description" id="taskDescription">
+                    <strong>Task 1: System Initialization</strong><br>
+                    Welcome to the IPS Simulator! Your first task is to initialize the IPS system. Click the "Initialize IPS" button to start monitoring network traffic.
+                </div>
+
+                <div class="network-diagram" id="networkDiagram">
+                    <div class="network-node internet">Internet</div>
+                    <div class="network-node ips" id="ipsNode">IPS<br>OFFLINE</div>
+                    <div class="network-node internal-network">Internal<br>Network</div>
+                    <div class="traffic-flow flow1"></div>
+                    <div class="traffic-flow flow2"></div>
+                </div>
+
+                <div class="control-panel">
+                    <div class="control-section">
+                        <h3>🔧 IPS Controls</h3>
+                        <button class="button" id="initializeBtn" onclick="initializeIPS()">Initialize IPS</button>
+                        <button class="button" id="startMonitoringBtn" onclick="startMonitoring()" disabled>Start Monitoring</button>
+                        <button class="button danger" id="shutdownBtn" onclick="shutdownIPS()" disabled>Shutdown IPS</button>
+                    </div>
+
+                    <div class="control-section" id="detectionMethods" style="display: none;">
+                        <h3>🎯 Detection Method</h3>
+                        <select class="select-input" id="detectionMode">
+                            <option value="signature">Signature-Based Detection</option>
+                            <option value="anomaly">Anomaly-Based Detection</option>
+                            <option value="hybrid">Hybrid Detection</option>
+                        </select>
+                        <button class="button" onclick="updateDetectionMethod()">Update Method</button>
+                    </div>
+
+                    <div class="control-section" id="trafficControls" style="display: none;">
+                        <h3>📊 Traffic Simulation</h3>
+                        <button class="button" onclick="sendLegitimateTraffic()">Send Normal Traffic</button>
+                        <button class="button danger" onclick="sendMaliciousTraffic()">Simulate Attack</button>
+                        <button class="button" onclick="sendMixedTraffic()">Mixed Traffic Burst</button>
+                    </div>
+
+                    <div class="control-section" id="signatureControls" style="display: none;">
+                        <h3>📝 Signature Management</h3>
+                        <select class="select-input" id="signatureSelect">
+                            <option value="sql_injection">SQL Injection Pattern</option>
+                            <option value="xss_attack">XSS Attack Pattern</option>
+                            <option value="port_scan">Port Scan Pattern</option>
+                            <option value="dos_attack">DoS Attack Pattern</option>
+                        </select>
+                        <button class="button" onclick="addSignature()">Add Signature</button>
+                        <button class="button danger" onclick="removeSignature()">Remove Signature</button>
+                    </div>
+                </div>
+
+                <div class="log-panel" id="logPanel">
+                    <div class="log-entry">[SYSTEM] IPS Simulator initialized. Ready for training...</div>
+                </div>
+
+                <div class="statistics">
+                    <div class="stat-box">
+                        <div class="stat-number" id="packetsProcessed">0</div>
+                        <div>Packets Processed</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="threatsBlocked">0</div>
+                        <div>Threats Blocked</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="falsePositives">0</div>
+                        <div>False Positives</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3>📚 Learning Guide</h3>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4>🎯 Current Objective</h4>
+                    <p id="currentObjective">Initialize the IPS system to begin monitoring network traffic for potential threats.</p>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4>🛡️ IPS Status</h4>
+                    <p><span class="status-indicator status-blocked" id="statusIndicator"></span><span id="ipsStatus">Offline</span></p>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4>🔍 Detection Methods</h4>
+                    <div style="font-size: 0.9em;">
+                        <p><strong>Signature-Based:</strong> Detects known attack patterns</p>
+                        <p><strong>Anomaly-Based:</strong> Identifies unusual behavior</p>
+                        <p><strong>Hybrid:</strong> Combines both methods</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4>📊 Active Signatures</h4>
+                    <div class="signature-list" id="signatureList">
+                        <div class="signature-item">No signatures loaded</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>💡 Key Concepts</h4>
+                    <div style="font-size: 0.8em; line-height: 1.4;">
+                        <p>• <strong>IPS:</strong> Actively blocks threats in real-time</p>
+                        <p>• <strong>Inline Deployment:</strong> All traffic passes through IPS</p>
+                        <p>• <strong>Virtual Patching:</strong> Protects against vulnerabilities</p>
+                        <p>• <strong>Network Segmentation:</strong> Monitors traffic flows</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentTask = 1;
+        let score = 0;
+        let ipsOnline = false;
+        let monitoringActive = false;
+        let packetsProcessed = 0;
+        let threatsBlocked = 0;
+        let falsePositives = 0;
+        let signatures = [];
+        let detectionMethod = 'signature';
+
+        // Task definitions
+        const tasks = [
+            {
+                id: 1,
+                title: "System Initialization",
+                description: "Welcome to the IPS Simulator! Your first task is to initialize the IPS system. Click the 'Initialize IPS' button to start monitoring network traffic.",
+                objective: "Initialize the IPS system to begin monitoring network traffic for potential threats.",
+                points: 20,
+                completed: false
+            },
+            {
+                id: 2,
+                title: "Configure Detection Method",
+                description: "Now that your IPS is online, configure the detection method. Try different approaches: Signature-Based (fast, known threats), Anomaly-Based (detects new threats), or Hybrid (best of both).",
+                objective: "Select and configure a detection method for the IPS system.",
+                points: 20,
+                completed: false
+            },
+            {
+                id: 3,
+                title: "Signature Database Management",
+                description: "Cybersecurity is about staying current with threats. Add threat signatures to your IPS database. Try adding different types of attack signatures and observe how they affect detection.",
+                objective: "Add at least 3 different threat signatures to strengthen your defense capabilities.",
+                points: 20,
+                completed: false
+            },
+            {
+                id: 4,
+                title: "Traffic Analysis & Threat Detection",
+                description: "Time to test your IPS! Start monitoring and simulate different types of network traffic. Send normal traffic, then try malicious attacks. Watch how your IPS responds based on your configuration.",
+                objective: "Successfully detect and block at least 5 malicious attacks while minimizing false positives.",
+                points: 20,
+                completed: false
+            },
+            {
+                id: 5,
+                title: "Advanced Security Operations",
+                description: "Master level! Handle a mixed traffic scenario with multiple simultaneous threats. Analyze the logs, adjust your detection sensitivity, and demonstrate advanced IPS management skills.",
+                objective: "Process mixed traffic scenarios and achieve 90%+ detection accuracy with minimal false positives.",
+                points: 20,
+                completed: false
+            }
+        ];
+
+        // Initialize the simulator
+        function initializeIPS() {
+            if (ipsOnline) return;
+            
+            ipsOnline = true;
+            addLog('[SYSTEM] Initializing IPS system...', 'info');
+            
+            setTimeout(() => {
+                addLog('[IPS] System initialization complete', 'success');
+                addLog('[IPS] Loading default signature database...', 'info');
+                updateIPSStatus('Online - Ready');
+                document.getElementById('ipsNode').innerHTML = 'IPS<br>ONLINE';
+                document.getElementById('ipsNode').style.backgroundColor = '#4caf50';
+                document.getElementById('statusIndicator').className = 'status-indicator status-active';
+                
+                // Enable buttons
+                document.getElementById('initializeBtn').disabled = true;
+                document.getElementById('startMonitoringBtn').disabled = false;
+                document.getElementById('shutdownBtn').disabled = false;
+                document.getElementById('detectionMethods').style.display = 'block';
+                
+                // Complete task 1
+                completeTask(1);
+                
+            }, 2000);
+        }
+
+        function startMonitoring() {
+            if (!ipsOnline || monitoringActive) return;
+            
+            monitoringActive = true;
+            addLog('[IPS] Starting network traffic monitoring...', 'info');
+            addLog('[IPS] Monitoring all ingress and egress traffic', 'info');
+            
+            updateIPSStatus('Online - Monitoring');
+            document.getElementById('startMonitoringBtn').disabled = true;
+            document.getElementById('trafficControls').style.display = 'block';
+            document.getElementById('signatureControls').style.display = 'block';
+            
+            // Start passive monitoring animation
+            startTrafficAnimation();
+        }
+
+        function shutdownIPS() {
+            if (!ipsOnline) return;
+            
+            ipsOnline = false;
+            monitoringActive = false;
+            addLog('[SYSTEM] Shutting down IPS system...', 'warning');
+            
+            setTimeout(() => {
+                addLog('[SYSTEM] IPS system offline', 'warning');
+                updateIPSStatus('Offline');
+                document.getElementById('ipsNode').innerHTML = 'IPS<br>OFFLINE';
+                document.getElementById('ipsNode').style.backgroundColor = '#f44336';
+                document.getElementById('statusIndicator').className = 'status-indicator status-blocked';
+                
+                // Reset buttons
+                document.getElementById('initializeBtn').disabled = false;
+                document.getElementById('startMonitoringBtn').disabled = true;
+                document.getElementById('shutdownBtn').disabled = true;
+                document.getElementById('detectionMethods').style.display = 'none';
+                document.getElementById('trafficControls').style.display = 'none';
+                document.getElementById('signatureControls').style.display = 'none';
+                
+                stopTrafficAnimation();
+            }, 1500);
+        }
+
+        function updateDetectionMethod() {
+            const newMethod = document.getElementById('detectionMode').value;
+            detectionMethod = newMethod;
+            
+            addLog(`[CONFIG] Detection method changed to: ${newMethod.toUpperCase()}`, 'info');
+            
+            switch(newMethod) {
+                case 'signature':
+                    addLog('[CONFIG] Using signature-based detection for known threats', 'info');
+                    break;
+                case 'anomaly':
+                    addLog('[CONFIG] Using anomaly-based detection for behavioral analysis', 'info');
+                    break;
+                case 'hybrid':
+                    addLog('[CONFIG] Using hybrid detection for comprehensive protection', 'info');
+                    break;
+            }
+            
+            completeTask(2);
+        }
+
+        function addSignature() {
+            const signatureType = document.getElementById('signatureSelect').value;
+            const signatureMap = {
+                'sql_injection': 'SQL Injection Pattern (SELECT * FROM)',
+                'xss_attack': 'XSS Attack Pattern (<script>)',
+                'port_scan': 'Port Scan Pattern (Sequential port access)',
+                'dos_attack': 'DoS Attack Pattern (High request frequency)'
+            };
+            
+            if (!signatures.includes(signatureType)) {
+                signatures.push(signatureType);
+                addLog(`[SIGNATURES] Added signature: ${signatureMap[signatureType]}`, 'success');
+                updateSignatureDisplay();
+                
+                if (signatures.length >= 3) {
+                    completeTask(3);
+                }
+            } else {
+                addLog(`[SIGNATURES] Signature already exists: ${signatureMap[signatureType]}`, 'warning');
+            }
+        }
+
+        function removeSignature() {
+            const signatureType = document.getElementById('signatureSelect').value;
+            const index = signatures.indexOf(signatureType);
+            
+            if (index > -1) {
+                signatures.splice(index, 1);
+                addLog(`[SIGNATURES] Removed signature: ${signatureType}`, 'warning');
+                updateSignatureDisplay();
+            } else {
+                addLog(`[SIGNATURES] Signature not found: ${signatureType}`, 'warning');
+            }
+        }
+
+        function sendLegitimateTraffic() {
+            if (!monitoringActive) return;
+            
+            const packets = Math.floor(Math.random() * 5) + 3;
+            packetsProcessed += packets;
+            
+            addLog(`[TRAFFIC] Processing ${packets} legitimate packets`, 'info');
+            addLog(`[ANALYSIS] All packets passed security inspection`, 'success');
+            
+            updateStatistics();
+            animatePacket('legitimate');
+        }
+
+        function sendMaliciousTraffic() {
+            if (!monitoringActive) return;
+            
+            const attackTypes = ['sql_injection', 'xss_attack', 'port_scan', 'dos_attack'];
+            const attackType = attackTypes[Math.floor(Math.random() * attackTypes.length)];
+            const detected = signatures.includes(attackType) || detectionMethod === 'hybrid';
+            
+            packetsProcessed += 1;
+            
+            if (detected) {
+                threatsBlocked += 1;
+                addLog(`[THREAT DETECTED] ${attackType.toUpperCase()} attack blocked!`, 'danger');
+                addLog(`[ACTION] Packet dropped, source IP logged`, 'success');
+                animatePacket('blocked');
+            } else {
+                addLog(`[TRAFFIC] Suspicious packet passed inspection`, 'warning');
+                addLog(`[WARNING] Potential threat not detected - update signatures!`, 'warning');
+                animatePacket('malicious');
+            }
+            
+            updateStatistics();
+            checkTask4Completion();
+        }
+
+        function sendMixedTraffic() {
+            if (!monitoringActive) return;
+            
+            addLog(`[TRAFFIC] Processing mixed traffic burst...`, 'info');
+            
+            // Simulate multiple packets
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    if (Math.random() > 0.7) {
+                        sendMaliciousTraffic();
+                    } else {
+                        // Sometimes create false positives in anomaly mode
+                        if (detectionMethod === 'anomaly' && Math.random() > 0.8) {
+                            falsePositives += 1;
+                            packetsProcessed += 1;
+                            addLog(`[FALSE POSITIVE] Legitimate traffic flagged as suspicious`, 'warning');
+                            updateStatistics();
+                        } else {
+                            sendLegitimateTraffic();
+                        }
+                    }
+                }, i * 500);
+            }
+            
+            setTimeout(() => {
+                checkTask5Completion();
+            }, 6000);
+        }
+
+        function checkTask4Completion() {
+            if (threatsBlocked >= 5 && !tasks[3].completed) {
+                completeTask(4);
+            }
+        }
+
+        function checkTask5Completion() {
+            const totalThreats = threatsBlocked + (packetsProcessed - threatsBlocked);
+            const accuracy = totalThreats > 0 ? (threatsBlocked / totalThreats) * 100 : 0;
+            
+            if (accuracy >= 70 && falsePositives <= 3 && !tasks[4].completed) {
+                completeTask(5);
+            }
+        }
+
+        function completeTask(taskId) {
+            if (tasks[taskId - 1].completed) return;
+            
+            tasks[taskId - 1].completed = true;
+            score += tasks[taskId - 1].points;
+            
+            addLog(`[ACHIEVEMENT] Task ${taskId} completed! (+${tasks[taskId - 1].points} points)`, 'success');
+            
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.innerHTML = `🎉 Task ${taskId} Complete! You earned ${tasks[taskId - 1].points} points!`;
+            
+            const taskDesc = document.getElementById('taskDescription');
+            taskDesc.parentNode.insertBefore(successDiv, taskDesc.nextSibling);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+            
+            // Move to next task
+            if (taskId < tasks.length) {
+                currentTask = taskId + 1;
+                updateTaskDisplay();
+            } else {
+                // All tasks completed
+                addLog(`[CONGRATULATIONS] All tasks completed! Final score: ${score}/100`, 'success');
+                showCompletionMessage();
+            }
+            
+            updateScore();
+        }
+
+        function updateTaskDisplay() {
+            const task = tasks[currentTask - 1];
+            document.getElementById('taskDescription').innerHTML = 
+                `<strong>Task ${currentTask}: ${task.title}</strong><br>${task.description}`;
+            document.getElementById('currentObjective').textContent = task.objective;
+            document.getElementById('currentTask').textContent = currentTask;
+            
+            // Update progress bar
+            const progress = ((currentTask - 1) / tasks.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showCompletionMessage() {
+            const completion = document.createElement('div');
+            completion.className = 'success-message';
+            completion.style.fontSize = '1.2em';
+            completion.style.padding = '25px';
+            completion.innerHTML = `
+                🏆 <strong>SIMULATION COMPLETE!</strong> 🏆<br>
+                You've mastered IPS fundamentals!<br>
+                Final Score: ${score}/100<br>
+                <small>You're ready for advanced cybersecurity challenges!</small>
+            `;
+            
+            document.querySelector('.simulator-panel').appendChild(completion);
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function updateStatistics() {
+            document.getElementById('packetsProcessed').textContent = packetsProcessed;
+            document.getElementById('threatsBlocked').textContent = threatsBlocked;
+            document.getElementById('falsePositives').textContent = falsePositives;
+        }
+
+        function updateIPSStatus(status) {
+            document.getElementById('ipsStatus').textContent = status;
+        }
+
+        function updateSignatureDisplay() {
+            const signatureList = document.getElementById('signatureList');
+            
+            if (signatures.length === 0) {
+                signatureList.innerHTML = '<div class="signature-item">No signatures loaded</div>';
+            } else {
+                const signatureMap = {
+                    'sql_injection': 'SQL Injection Pattern',
+                    'xss_attack': 'XSS Attack Pattern',
+                    'port_scan': 'Port Scan Pattern',
+                    'dos_attack': 'DoS Attack Pattern'
+                };
+                
+                signatureList.innerHTML = signatures.map(sig => 
+                    `<div class="signature-item">✓ ${signatureMap[sig]}</div>`
+                ).join('');
+            }
+        }
+
+        function addLog(message, type = 'info') {
+            const logPanel = document.getElementById('logPanel');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const colorMap = {
+                'info': '#00ff00',
+                'success': '#00ff88',
+                'warning': '#ffaa00',
+                'danger': '#ff4444',
+                'error': '#ff0000'
+            };
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.style.color = colorMap[type] || '#00ff00';
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logPanel.appendChild(logEntry);
+            logPanel.scrollTop = logPanel.scrollHeight;
+            
+            // Keep only last 50 log entries
+            while (logPanel.children.length > 50) {
+                logPanel.removeChild(logPanel.firstChild);
+            }
+        }
+
+        function animatePacket(type) {
+            const diagram = document.getElementById('networkDiagram');
+            const packet = document.createElement('div');
+            packet.className = `packet ${type}`;
+            
+            diagram.appendChild(packet);
+            
+            setTimeout(() => {
+                packet.remove();
+            }, 3000);
+        }
+
+        function startTrafficAnimation() {
+            // Add subtle animation effects when monitoring is active
+            const ipsNode = document.getElementById('ipsNode');
+            ipsNode.style.animation = 'pulse 2s infinite';
+            
+            // Add CSS for pulse animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.5); }
+                    50% { box-shadow: 0 0 30px rgba(76, 175, 80, 0.8); }
+                    100% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.5); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function stopTrafficAnimation() {
+            const ipsNode = document.getElementById('ipsNode');
+            ipsNode.style.animation = '';
+        }
+
+        // Initialize the display
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTaskDisplay();
+            updateStatistics();
+            updateSignatureDisplay();
+        });
+
+        // Add some educational tooltips
+        function showTooltip(element, text) {
+            // Simple tooltip implementation for educational purposes
+            element.title = text;
+        }
+
+        // Educational enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add tooltips to network nodes
+            const internetNode = document.querySelector('.internet');
+            const ipsNode = document.querySelector('.ips');
+            const internalNode = document.querySelector('.internal-network');
+            
+            showTooltip(internetNode, 'External network - source of potential threats');
+            showTooltip(ipsNode, 'Intrusion Prevention System - your security checkpoint');
+            showTooltip(internalNode, 'Protected internal network - your assets');
+            
+            // Add educational information popups
+            const buttons = document.querySelectorAll('.button');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    const buttonText = this.textContent;
+                    let tooltip = '';
+                    
+                    switch(buttonText) {
+                        case 'Initialize IPS':
+                            tooltip = 'Starts the IPS system and loads basic configuration';
+                            break;
+                        case 'Start Monitoring':
+                            tooltip = 'Begins active network traffic monitoring';
+                            break;
+                        case 'Send Normal Traffic':
+                            tooltip = 'Simulates legitimate network traffic';
+                            break;
+                        case 'Simulate Attack':
+                            tooltip = 'Generates malicious traffic to test IPS detection';
+                            break;
+                        case 'Add Signature':
+                            tooltip = 'Adds threat patterns to the detection database';
+                            break;
+                    }
+                    
+                    if (tooltip) {
+                        showTooltip(this, tooltip);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

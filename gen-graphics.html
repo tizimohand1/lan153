@@ -1,0 +1,1608 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Instructional Graphic Prompt Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5efe4;
+    --paper-deep: #ebe3d3;
+    --ink: #1c1a17;
+    --ink-soft: #3d3832;
+    --rule: #c9bfa9;
+    --rule-soft: #ddd3bd;
+    --accent: #b8431f;
+    --accent-deep: #8a2f12;
+    --highlight: #f0c850;
+    --success: #2d6a3e;
+    --card-bg: #faf6ec;
+    --shadow: 0 1px 0 rgba(28,26,23,0.08), 0 8px 24px -12px rgba(28,26,23,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(184,67,31,0.04), transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(45,106,62,0.04), transparent 40%);
+  }
+
+  /* ====== Masthead ====== */
+  .masthead {
+    border-bottom: 1px solid var(--ink);
+    padding: 28px 48px 20px;
+    background: var(--paper);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+  }
+
+  .masthead-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .title-block { flex: 1; min-width: 300px; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::after {
+    content: '';
+    flex: 1;
+    max-width: 140px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(32px, 4.5vw, 52px);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    font-variation-settings: "SOFT" 30, "opsz" 144;
+  }
+  h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+    max-width: 620px;
+  }
+
+  .masthead-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border: 1px solid var(--ink);
+    border-radius: 100px;
+    color: var(--ink);
+  }
+  .pill.accent { background: var(--ink); color: var(--paper); }
+
+  /* ====== Main Layout ====== */
+  .canvas {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 48px 80px;
+    display: grid;
+    grid-template-columns: 1fr 480px;
+    gap: 40px;
+    align-items: start;
+  }
+
+  @media (max-width: 1100px) {
+    .canvas { grid-template-columns: 1fr; }
+    .masthead, .canvas { padding-left: 24px; padding-right: 24px; }
+  }
+
+  /* ====== Section Styling ====== */
+  .section {
+    margin-bottom: 44px;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .section-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 24px;
+    letter-spacing: -0.01em;
+    font-variation-settings: "SOFT" 50;
+  }
+
+  .section-hint {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-left: auto;
+    text-align: right;
+  }
+
+  /* ====== Form Controls ====== */
+  .field-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .field-grid.two { grid-template-columns: 1fr 1fr; }
+  .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 700px) { .field-grid.two, .field-grid.three { grid-template-columns: 1fr; } }
+
+  label.field {
+    display: block;
+  }
+
+  .field-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  input[type="text"], textarea, select {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--rule);
+    padding: 10px 14px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    transition: all 0.15s ease;
+    border-radius: 2px;
+  }
+
+  input[type="text"]:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--ink);
+    background: var(--paper);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 70px;
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3e%3cpath d='M3 4.5l3 3 3-3' stroke='%231c1a17' fill='none' stroke-width='1.2'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    cursor: pointer;
+  }
+
+  /* ====== Graphic Type Cards ====== */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  .gcard {
+    background: var(--card-bg);
+    border: 1px solid var(--rule);
+    padding: 16px 16px 14px;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.2, 0, 0.2, 1);
+    position: relative;
+    text-align: left;
+    font-family: inherit;
+    color: inherit;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .gcard::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s cubic-bezier(0.2, 0, 0.2, 1);
+    z-index: 0;
+    opacity: 0;
+  }
+  .gcard:hover {
+    border-color: var(--ink);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+  .gcard.selected {
+    border-color: var(--accent);
+    background: var(--paper);
+    box-shadow: 0 0 0 1px var(--accent), var(--shadow);
+  }
+  .gcard.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .gcard-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 17px;
+    margin-bottom: 4px;
+    font-variation-settings: "SOFT" 30;
+    padding-right: 18px;
+  }
+  .gcard-purpose {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .gcard-desc {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.45;
+  }
+
+  /* ====== Why this fits panel ====== */
+  .fit-note {
+    margin-top: 18px;
+    padding: 14px 18px;
+    background: var(--paper-deep);
+    border-left: 3px solid var(--accent);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    border-radius: 0 2px 2px 0;
+    display: none;
+  }
+  .fit-note.visible { display: block; }
+  .fit-note strong {
+    font-style: normal;
+    color: var(--ink);
+    font-weight: 600;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* ====== Chip group ====== */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    padding: 7px 13px;
+    border: 1px solid var(--rule);
+    background: var(--card-bg);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 100px;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  .chip:hover { border-color: var(--ink); }
+  .chip.selected {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  /* ====== Model selector ====== */
+  .model-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 700px) { .model-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .mcard {
+    background: var(--card-bg);
+    border: 1px solid var(--rule);
+    padding: 14px 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+    border-radius: 2px;
+    font-family: inherit;
+    color: inherit;
+  }
+  .mcard:hover { border-color: var(--ink); }
+  .mcard.selected {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .mcard-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 17px;
+    margin-bottom: 2px;
+  }
+  .mcard-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  /* ====== Preset bar ====== */
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px 18px;
+    background: var(--paper-deep);
+    border: 1px dashed var(--rule);
+    border-radius: 2px;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  .preset-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-right: 4px;
+  }
+  .preset-btn {
+    padding: 6px 12px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 13.5px;
+    cursor: pointer;
+    border-radius: 2px;
+    color: var(--ink);
+    transition: all 0.15s ease;
+  }
+  .preset-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  /* ====== Preview panel ====== */
+  .preview-panel {
+    position: sticky;
+    top: 140px;
+    background: var(--card-bg);
+    border: 1px solid var(--ink);
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    max-height: calc(100vh - 170px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-head {
+    padding: 18px 22px 14px;
+    background: var(--ink);
+    color: var(--paper);
+    border-bottom: 1px solid var(--ink);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .preview-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 20px;
+    font-style: italic;
+  }
+  .preview-model-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--highlight);
+  }
+
+  .preview-body {
+    padding: 22px;
+    overflow-y: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: var(--ink);
+    flex: 1;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .preview-body::-webkit-scrollbar { width: 8px; }
+  .preview-body::-webkit-scrollbar-track { background: transparent; }
+  .preview-body::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 4px; }
+
+  .prompt-block-header {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 14px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .prompt-block-header:first-child { margin-top: 0; }
+  .prompt-block-body {
+    margin-top: 6px;
+    margin-bottom: 4px;
+    color: var(--ink-soft);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13.5px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+  .placeholder-text {
+    color: var(--rule);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 15px;
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .preview-actions {
+    border-top: 1px solid var(--rule);
+    padding: 14px 18px;
+    display: flex;
+    gap: 8px;
+    background: var(--paper);
+  }
+
+  .btn {
+    flex: 1;
+    padding: 11px 12px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 2px;
+    transition: all 0.15s ease;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .btn.primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
+  .btn.success { background: var(--success); color: white; border-color: var(--success); }
+
+  /* ====== Toggle row ====== */
+  .toggles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  @media (max-width: 600px) { .toggles { grid-template-columns: 1fr; } }
+  .toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--rule);
+    cursor: pointer;
+    border-radius: 2px;
+    font-size: 13px;
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .toggle:hover { border-color: var(--ink); }
+  .toggle.on { background: var(--paper); border-color: var(--ink); }
+  .toggle-box {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--paper);
+    background: var(--paper);
+  }
+  .toggle.on .toggle-box { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* ====== Custom size group ====== */
+  .size-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 8px;
+    align-items: end;
+  }
+  @media (max-width: 600px) { .size-row { grid-template-columns: 1fr 1fr; } }
+
+  /* ====== Footer ====== */
+  .footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 40px;
+    padding-top: 16px;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+  .footer-mark {
+    font-family: 'IBM Plex Mono', monospace;
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  /* Toast for copy feedback */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 24px;
+    border-radius: 2px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Letterpress decoration */
+  .deco-rule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0 20px;
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+  }
+  .deco-rule::before, .deco-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="title-block">
+      <div class="eyebrow">An instructional design tool · No. 01</div>
+      <h1>The Graphic <em>Prompt</em> Atelier</h1>
+      <div class="subtitle">A structured workbench for composing precise, model-aware prompts that produce classroom-ready instructional graphics.</div>
+    </div>
+    <div class="masthead-actions">
+      <span class="pill">v1.0</span>
+      <span class="pill accent">For educators</span>
+    </div>
+  </div>
+</header>
+
+<main class="canvas">
+  <div class="builder-column">
+
+    <!-- Presets -->
+    <div class="presets">
+      <span class="preset-label">Quick start →</span>
+      <button class="preset-btn" data-preset="k12">Classroom Activity</button>
+      <button class="preset-btn" data-preset="college">Lecture</button>
+      <button class="preset-btn" data-preset="cyber">Training</button>
+      <button class="preset-btn" data-preset="exec">Learning Summary</button>
+    </div>
+
+    <!-- Section 1: Content -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-number">§ 01</span>
+        <h2 class="section-title">Content</h2>
+        <span class="section-hint">what is being taught</span>
+      </div>
+
+      <div class="field-grid">
+        <label class="field">
+          <span class="field-label">Topic or Lesson Title *</span>
+          <input type="text" id="topic" placeholder="e.g., SQL Joins, OSI Model Layers, Mitochondrial Respiration" autocomplete="off" />
+        </label>
+
+        <div class="field-grid two">
+          <label class="field">
+            <span class="field-label">Subject Area</span>
+            <select id="subject">
+              <option value="">— select —</option>
+              <option>Cybersecurity</option>
+              <option>Computer Science / Networking</option>
+              <option>Mathematics</option>
+              <option>Biological Sciences</option>
+              <option>Physical Sciences</option>
+              <option>Engineering / Electronics</option>
+              <option>History / Social Studies</option>
+              <option>Language Arts / Composition</option>
+              <option>Economics / Business</option>
+              <option>Health / Medical</option>
+              <option>Art / Humanities</option>
+              <option>Workforce / Career Tech</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Grade / Skill Level</span>
+            <select id="grade">
+              <option value="">— select —</option>
+              <option>Elementary (K–5)</option>
+              <option>Middle School (6–8)</option>
+              <option>High School (9–12)</option>
+              <option>Community College / Undergraduate</option>
+              <option>Graduate / Professional</option>
+              <option>Adult Workforce Training</option>
+              <option>Executive / Industry Audience</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Learning Objective</span>
+          <textarea id="objective" placeholder="By the end of viewing this graphic, the learner will be able to..."></textarea>
+        </label>
+      </div>
+    </section>
+
+    <!-- Section 2: Graphic Type -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-number">§ 02</span>
+        <h2 class="section-title">Graphic Type</h2>
+        <span class="section-hint">how the information is shaped</span>
+      </div>
+
+      <div class="card-grid" id="typeGrid"></div>
+      <div class="fit-note" id="fitNote">
+        <strong>Why this fits</strong>
+        <span id="fitText"></span>
+      </div>
+    </section>
+
+    <!-- Section 3: Visuals -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-number">§ 03</span>
+        <h2 class="section-title">Visuals</h2>
+        <span class="section-hint">aesthetic & tone</span>
+      </div>
+
+      <div class="field-grid">
+        <div class="field-grid two">
+          <label class="field">
+            <span class="field-label">Visual Style</span>
+            <select id="style">
+              <option>Flat vector illustration</option>
+              <option>Minimal line-art / icon-based</option>
+              <option>Editorial / textbook diagram</option>
+              <option>Isometric 3D</option>
+              <option>Hand-drawn / sketch-style</option>
+              <option>Technical schematic</option>
+              <option>Infographic with data viz</option>
+              <option>Cybersecurity / HUD aesthetic</option>
+              <option>Photorealistic</option>
+              <option>Retro / mid-century</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Tone</span>
+            <select id="tone">
+              <option>Professional / formal</option>
+              <option>Friendly / approachable</option>
+              <option>Playful / engaging</option>
+              <option>Authoritative / technical</option>
+              <option>Calm / contemplative</option>
+              <option>High-energy / dynamic</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="field-grid two">
+          <label class="field">
+            <span class="field-label">Color Scheme</span>
+            <select id="color">
+              <option>Editorial neutrals (cream, ink, single accent)</option>
+              <option>Classic academic (navy, gold, white)</option>
+              <option>Cybersecurity (dark teal, cyan, amber)</option>
+              <option>Warm & approachable (terracotta, sand, sage)</option>
+              <option>Cool & analytical (slate blue, charcoal, white)</option>
+              <option>Vibrant primary (bold red, blue, yellow)</option>
+              <option>Pastel / soft</option>
+              <option>Monochrome grayscale</option>
+              <option>High-contrast black & white</option>
+              <option>Brand-neutral (let model choose)</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Complexity / Density</span>
+            <select id="density">
+              <option>Minimal — single concept, sparse</option>
+              <option>Moderate — balanced detail</option>
+              <option>Rich — comprehensive reference</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Icon & Illustration Preference</span>
+          <div class="chips" id="iconChips">
+            <button type="button" class="chip" data-val="Icons only">Icons only</button>
+            <button type="button" class="chip" data-val="Mix of icons and illustrations">Icons + illustrations</button>
+            <button type="button" class="chip" data-val="Illustrations of people">Illustrations of people</button>
+            <button type="button" class="chip" data-val="Abstract shapes only">Abstract shapes only</button>
+            <button type="button" class="chip" data-val="Diagrams with labeled parts">Labeled diagrams</button>
+            <button type="button" class="chip" data-val="No imagery, type only">Type only</button>
+          </div>
+        </label>
+      </div>
+    </section>
+
+    <!-- Section 4: Layout -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-number">§ 04</span>
+        <h2 class="section-title">Layout & Size</h2>
+        <span class="section-hint">physical & spatial form</span>
+      </div>
+
+      <div class="field-grid">
+        <div class="size-row">
+          <label class="field">
+            <span class="field-label">Size Preset</span>
+            <select id="sizePreset">
+              <option value="letter-portrait">US Letter — 8.5 × 11 in (portrait)</option>
+              <option value="letter-landscape">US Letter — 11 × 8.5 in (landscape)</option>
+              <option value="tabloid">Tabloid — 11 × 17 in</option>
+              <option value="a4-portrait">A4 — 210 × 297 mm</option>
+              <option value="poster-small">Poster — 18 × 24 in</option>
+              <option value="poster-large">Poster — 24 × 36 in</option>
+              <option value="slide-16-9">Slide — 16:9 (1920 × 1080)</option>
+              <option value="slide-4-3">Slide — 4:3 (1024 × 768)</option>
+              <option value="square">Square — social / handout (1080 × 1080)</option>
+              <option value="custom">Custom dimensions</option>
+            </select>
+          </label>
+          <label class="field" id="customWGroup" style="display:none">
+            <span class="field-label">Width</span>
+            <input type="text" id="customW" placeholder="8.5" />
+          </label>
+          <label class="field" id="customHGroup" style="display:none">
+            <span class="field-label">Height</span>
+            <input type="text" id="customH" placeholder="11" />
+          </label>
+          <label class="field" id="customUnitGroup" style="display:none">
+            <span class="field-label">Unit</span>
+            <select id="customUnit">
+              <option>inches</option>
+              <option>mm</option>
+              <option>cm</option>
+              <option>pixels</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="field-grid two">
+          <label class="field">
+            <span class="field-label">Orientation</span>
+            <select id="orientation">
+              <option>As specified by size preset</option>
+              <option>Portrait</option>
+              <option>Landscape</option>
+              <option>Square</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Amount of Text</span>
+            <select id="textAmount">
+              <option>Minimal labels — title + key terms only</option>
+              <option>Moderate explanation — short captions per section</option>
+              <option>Full teaching graphic — self-contained learning resource</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Output -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-number">§ 05</span>
+        <h2 class="section-title">Output Specifications</h2>
+        <span class="section-hint">technical deliverable</span>
+      </div>
+
+      <div class="field-grid">
+        <div class="field-grid two">
+          <label class="field">
+            <span class="field-label">File Format</span>
+            <select id="format">
+              <option value="png|Best for screen display and presentations with transparency support">PNG — screen & presentation (transparency-capable)</option>
+              <option value="jpg|Best for photographs and smaller file sizes, no transparency">JPG — photographs, smaller files</option>
+              <option value="pdf|Best for print handouts, posters, and crisp scalable text">PDF — print, scalable text</option>
+              <option value="svg|Best for infinitely scalable vector graphics, editable">SVG — scalable vector, editable</option>
+              <option value="model-choice|Let the model recommend the optimal format">Let model recommend best format</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Resolution</span>
+            <select id="resolution">
+              <option>300 DPI (print quality)</option>
+              <option>150 DPI (high-quality screen)</option>
+              <option>72 DPI (standard screen)</option>
+              <option>Vector — resolution-independent</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="toggles">
+          <div class="toggle" data-toggle="transparent">
+            <div class="toggle-box">✓</div>
+            <span>Transparent background</span>
+          </div>
+          <div class="toggle on" data-toggle="bleed">
+            <div class="toggle-box">✓</div>
+            <span>Include safe margins / bleed area</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Pedagogical Constraints -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-number">§ 06</span>
+        <h2 class="section-title">Pedagogical Constraints</h2>
+        <span class="section-hint">accessibility & rigor</span>
+      </div>
+
+      <div class="toggles">
+        <div class="toggle on" data-toggle="readable">
+          <div class="toggle-box">✓</div>
+          <span>Prioritize readability at distance</span>
+        </div>
+        <div class="toggle on" data-toggle="colorblind">
+          <div class="toggle-box">✓</div>
+          <span>Color-blind-safe palette</span>
+        </div>
+        <div class="toggle on" data-toggle="accuracy">
+          <div class="toggle-box">✓</div>
+          <span>Enforce factual & technical accuracy</span>
+        </div>
+        <div class="toggle on" data-toggle="altText">
+          <div class="toggle-box">✓</div>
+          <span>Include alt-text description</span>
+        </div>
+        <div class="toggle on" data-toggle="hierarchy">
+          <div class="toggle-box">✓</div>
+          <span>Clear visual hierarchy</span>
+        </div>
+        <div class="toggle" data-toggle="citations">
+          <div class="toggle-box">✓</div>
+          <span>Cite sources in caption</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Target Model -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-number">§ 07</span>
+        <h2 class="section-title">Target Model</h2>
+        <span class="section-hint">tailored phrasing</span>
+      </div>
+
+      <div class="model-grid" id="modelGrid">
+        <button class="mcard selected" data-model="claude">
+          <div class="mcard-name">Claude</div>
+          <div class="mcard-tag">Structured · Anthropic</div>
+        </button>
+        <button class="mcard" data-model="chatgpt">
+          <div class="mcard-name">ChatGPT</div>
+          <div class="mcard-tag">Conversational · OpenAI</div>
+        </button>
+        <button class="mcard" data-model="gemini">
+          <div class="mcard-name">Gemini</div>
+          <div class="mcard-tag">Multimodal · Google</div>
+        </button>
+        <button class="mcard" data-model="perplexity">
+          <div class="mcard-name">Perplexity</div>
+          <div class="mcard-tag">Research-first</div>
+        </button>
+      </div>
+    </section>
+
+    <div class="footer">
+      <div class="footer-mark">— Compose, Refine, Deploy —</div>
+      Built for instructional designers. Every selection reshapes the prompt below in real time.
+    </div>
+
+  </div>
+
+  <!-- ===== Preview Column ===== -->
+  <aside class="preview-panel">
+    <div class="preview-head">
+      <h2>The Generated Prompt</h2>
+      <span class="preview-model-tag" id="modelTag">→ For Claude</span>
+    </div>
+    <div class="preview-body" id="preview">
+      <div class="placeholder-text">Begin by entering a topic and selecting a graphic type. Your prompt will compose itself here.</div>
+    </div>
+    <div class="preview-actions">
+      <button class="btn primary" id="copyBtn">Copy</button>
+      <button class="btn" id="downloadBtn">Download .txt</button>
+      <button class="btn" id="resetBtn">Reset</button>
+    </div>
+  </aside>
+</main>
+
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<script>
+/* ============================================================
+   Data: Graphic Types
+   Each card carries: name, purpose, classroom use, prompt-translation
+============================================================ */
+const GRAPHIC_TYPES = [
+  {
+    id: 'concept-map',
+    name: 'Concept Map',
+    purpose: 'Show relationships',
+    desc: 'Connects ideas with labeled links to reveal how concepts interrelate.',
+    use: 'Use for vocabulary networks, theory frameworks, or showing how subtopics connect to a central idea.',
+    promptTraits: 'emphasize labeled relationships between concepts; use connecting lines with relationship verbs; arrange the central idea prominently with branching subtopics'
+  },
+  {
+    id: 'flowchart',
+    name: 'Flowchart',
+    purpose: 'Clarify process steps',
+    desc: 'Sequential decision-based steps showing how a process unfolds.',
+    use: 'Use for procedures, troubleshooting paths, algorithms, or decision-making workflows.',
+    promptTraits: 'show clear sequential process steps; use standard flowchart shapes (rectangles for processes, diamonds for decisions); include directional arrows; mark start and end points clearly'
+  },
+  {
+    id: 'infographic',
+    name: 'Infographic',
+    purpose: 'Combine data & narrative',
+    desc: 'Mixes statistics, illustrations, and short text into a scannable visual story.',
+    use: 'Use as a takeaway handout, social-media teaser, or summary of a unit.',
+    promptTraits: 'combine data visualizations, illustrations, and short narrative text; create a scannable top-to-bottom or grid composition; use bold headings to chunk content'
+  },
+  {
+    id: 'timeline',
+    name: 'Timeline',
+    purpose: 'Show chronology',
+    desc: 'Plots events along a horizontal or vertical axis to reveal order and pacing.',
+    use: 'Use for historical events, project phases, software versioning, or biological/physical processes over time.',
+    promptTraits: 'arrange events along a chronological axis; mark dates clearly; use proportional spacing where possible; include short event descriptions'
+  },
+  {
+    id: 'comparison',
+    name: 'Comparison Chart',
+    purpose: 'Emphasize differences',
+    desc: 'Side-by-side or matrix layout that contrasts two or more items across attributes.',
+    use: 'Use to compare protocols, models, theories, frameworks, or product/method alternatives.',
+    promptTraits: 'emphasize side-by-side comparison; use a matrix or split layout with shared rows of attributes; visually highlight key differences with color or weight'
+  },
+  {
+    id: 'diagram',
+    name: 'Labeled Diagram',
+    purpose: 'Identify parts',
+    desc: 'A clear illustration with callout labels pointing to each component.',
+    use: 'Use for anatomy, equipment, network topology, electronic circuits, or system architecture.',
+    promptTraits: 'create a clearly illustrated subject with callout labels pointing to each significant part; use thin leader lines; keep label typography crisp and consistent'
+  },
+  {
+    id: 'cycle',
+    name: 'Cycle Diagram',
+    purpose: 'Show repeating processes',
+    desc: 'Circular arrangement of stages that loop back to the beginning.',
+    use: 'Use for biological cycles, business processes, project lifecycles, or feedback loops.',
+    promptTraits: 'arrange stages in a continuous circular flow with directional arrows returning to the start; equally space the stages; emphasize the cyclical, repeating nature'
+  },
+  {
+    id: 'hierarchy',
+    name: 'Hierarchy / Org Chart',
+    purpose: 'Show structure',
+    desc: 'Tree-like arrangement showing levels of authority, taxonomy, or containment.',
+    use: 'Use for organizational structures, taxonomies, class inheritance, or governance frameworks.',
+    promptTraits: 'arrange items in a top-down tree hierarchy; show parent–child relationships with connecting lines; group related branches with consistent styling at each level'
+  },
+  {
+    id: 'venn',
+    name: 'Venn Diagram',
+    purpose: 'Show overlap & intersection',
+    desc: 'Overlapping circles that reveal shared and distinct attributes.',
+    use: 'Use for set theory, comparing concepts with shared traits, or analyzing overlap of disciplines.',
+    promptTraits: 'use overlapping circles to show set relationships; label both unique regions and intersecting regions clearly; use transparency or color blending in overlaps'
+  },
+  {
+    id: 'matrix',
+    name: '2×2 Matrix',
+    purpose: 'Categorize by two axes',
+    desc: 'Quadrant grid that classifies items along two intersecting dimensions.',
+    use: 'Use for prioritization (urgent/important), SWOT, threat modeling, or risk assessment.',
+    promptTraits: 'create a 2×2 quadrant matrix with two labeled axes representing opposing dimensions; place items within the appropriate quadrant; label each quadrant'
+  },
+  {
+    id: 'mindmap',
+    name: 'Mind Map',
+    purpose: 'Brainstorm & explore',
+    desc: 'Radial branching from a central topic, capturing free associations.',
+    use: 'Use to explore a topic, plan a lesson, or scaffold student-generated ideas.',
+    promptTraits: 'use a radial branching layout from a central topic; allow organic curves rather than rigid lines; vary branch thickness to show importance'
+  },
+  {
+    id: 'sequence',
+    name: 'Sequence / Step-by-Step',
+    purpose: 'Demonstrate procedure',
+    desc: 'Numbered panels that show a linear how-to procedure.',
+    use: 'Use for lab protocols, software tutorials, configuration steps, or kinesthetic instructions.',
+    promptTraits: 'show numbered sequential panels demonstrating a procedure; use consistent panel sizes; include a clear visual for each step alongside a short instruction'
+  },
+  {
+    id: 'anatomy',
+    name: 'Anatomy / Cross-Section',
+    purpose: 'Reveal internal structure',
+    desc: 'Cutaway view exposing the internal workings of a subject.',
+    use: 'Use for biological organs, machinery internals, geological strata, or building cross-sections.',
+    promptTraits: 'use a cutaway or cross-sectional view exposing internal structure; label internal components with leader lines; differentiate layers or systems with color'
+  },
+  {
+    id: 'data-viz',
+    name: 'Data Visualization',
+    purpose: 'Display quantitative evidence',
+    desc: 'Charts, graphs, or plots conveying numeric information clearly.',
+    use: 'Use to support claims with evidence, teach data literacy, or show trends over time.',
+    promptTraits: 'use precise chart types (bar, line, scatter, etc.) appropriate to the data; label axes clearly; emphasize the key insight visually; minimize chart-junk'
+  },
+  {
+    id: 'analogy',
+    name: 'Visual Analogy',
+    purpose: 'Bridge unfamiliar to familiar',
+    desc: 'Pairs an abstract concept with a concrete, everyday metaphor.',
+    use: 'Use when introducing complex or abstract ideas — networks as highways, encryption as locked boxes.',
+    promptTraits: 'pair the abstract concept with a concrete familiar metaphor side-by-side; visually map analogous parts; use a clear "this is like that" composition'
+  },
+  {
+    id: 'poster',
+    name: 'Reference Poster',
+    purpose: 'At-a-glance teaching wall piece',
+    desc: 'Dense, visually rich poster designed to live on a classroom wall.',
+    use: 'Use for periodic tables, command-line references, OSI model wall charts, or vocabulary posters.',
+    promptTraits: 'design as a high-density classroom wall poster; balance rich information with strong visual hierarchy; ensure legibility from across a room for the largest headings'
+  }
+];
+
+/* ============================================================
+   State
+============================================================ */
+const state = {
+  topic: '',
+  subject: '',
+  grade: '',
+  objective: '',
+  graphicType: null,
+  style: 'Flat vector illustration',
+  tone: 'Professional / formal',
+  color: 'Editorial neutrals (cream, ink, single accent)',
+  density: 'Moderate — balanced detail',
+  iconPref: '',
+  sizePreset: 'letter-portrait',
+  customW: '',
+  customH: '',
+  customUnit: 'inches',
+  orientation: 'As specified by size preset',
+  textAmount: 'Moderate explanation — short captions per section',
+  format: 'png|Best for screen display and presentations with transparency support',
+  resolution: '300 DPI (print quality)',
+  toggles: {
+    transparent: false,
+    bleed: true,
+    readable: true,
+    colorblind: true,
+    accuracy: true,
+    altText: true,
+    hierarchy: true,
+    citations: false
+  },
+  model: 'claude'
+};
+
+const SIZE_PRESETS = {
+  'letter-portrait': { w: '8.5', h: '11', unit: 'in', orient: 'portrait' },
+  'letter-landscape': { w: '11', h: '8.5', unit: 'in', orient: 'landscape' },
+  'tabloid': { w: '11', h: '17', unit: 'in', orient: 'portrait' },
+  'a4-portrait': { w: '210', h: '297', unit: 'mm', orient: 'portrait' },
+  'poster-small': { w: '18', h: '24', unit: 'in', orient: 'portrait' },
+  'poster-large': { w: '24', h: '36', unit: 'in', orient: 'portrait' },
+  'slide-16-9': { w: '1920', h: '1080', unit: 'px', orient: 'landscape' },
+  'slide-4-3': { w: '1024', h: '768', unit: 'px', orient: 'landscape' },
+  'square': { w: '1080', h: '1080', unit: 'px', orient: 'square' }
+};
+
+/* ============================================================
+   Render: graphic type cards
+============================================================ */
+function renderTypeCards() {
+  const grid = document.getElementById('typeGrid');
+  grid.innerHTML = '';
+  GRAPHIC_TYPES.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'gcard' + (state.graphicType === t.id ? ' selected' : '');
+    btn.dataset.id = t.id;
+    btn.innerHTML = `
+      <div class="gcard-name">${t.name}</div>
+      <div class="gcard-purpose">${t.purpose}</div>
+      <div class="gcard-desc">${t.desc}</div>
+    `;
+    btn.addEventListener('click', () => {
+      state.graphicType = t.id;
+      renderTypeCards();
+      renderFitNote();
+      updatePrompt();
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function renderFitNote() {
+  const note = document.getElementById('fitNote');
+  const text = document.getElementById('fitText');
+  if (!state.graphicType) {
+    note.classList.remove('visible');
+    return;
+  }
+  const t = GRAPHIC_TYPES.find(x => x.id === state.graphicType);
+  text.textContent = `${t.name}s ${t.purpose.toLowerCase()}. ${t.use}`;
+  note.classList.add('visible');
+}
+
+/* ============================================================
+   Model-specific prompt generators
+============================================================ */
+function buildPromptParts() {
+  const t = GRAPHIC_TYPES.find(x => x.id === state.graphicType);
+  const topic = state.topic.trim() || '[TOPIC]';
+  const subject = state.subject || 'general education';
+  const grade = state.grade || 'general learners';
+  const objective = state.objective.trim();
+
+  // Size resolution
+  let sizeStr;
+  if (state.sizePreset === 'custom') {
+    const w = state.customW || '?';
+    const h = state.customH || '?';
+    sizeStr = `${w} × ${h} ${state.customUnit}`;
+  } else {
+    const p = SIZE_PRESETS[state.sizePreset];
+    sizeStr = `${p.w} × ${p.h} ${p.unit}`;
+  }
+  const orient = state.orientation === 'As specified by size preset'
+    ? (SIZE_PRESETS[state.sizePreset]?.orient || 'portrait')
+    : state.orientation.toLowerCase();
+
+  const [fmt, fmtNote] = state.format.split('|');
+
+  // Pedagogical constraints
+  const constraints = [];
+  if (state.toggles.readable) constraints.push('Type sizes must remain legible at standard classroom viewing distance; minimum body text equivalent to 12pt at final output size.');
+  if (state.toggles.colorblind) constraints.push('Use a color-blind-safe palette (avoid red/green-only distinctions); rely on shape, position, and label as well as color to differentiate elements.');
+  if (state.toggles.accuracy) constraints.push('All technical content, terminology, and relationships must be factually accurate. Do not invent statistics, dates, or processes.');
+  if (state.toggles.altText) constraints.push('Provide a concise alt-text description of the graphic (under 200 words) suitable for screen readers and LMS accessibility.');
+  if (state.toggles.hierarchy) constraints.push('Establish a clear visual hierarchy: dominant title, secondary headings, supporting detail. The eye should know where to land first.');
+  if (state.toggles.citations) constraints.push('Cite primary sources or authoritative references in a small caption at the bottom of the graphic.');
+
+  return {
+    role: buildRole(state.model, subject, grade),
+    task: buildTask(state.model, t, topic),
+    content: buildContent(t, topic, subject, grade, objective),
+    design: buildDesign(t),
+    output: buildOutput(sizeStr, orient, fmt, fmtNote),
+    constraints,
+    modelNotes: buildModelNotes(state.model)
+  };
+}
+
+function buildRole(model, subject, grade) {
+  const base = `You are a senior instructional designer and visual communicator specializing in ${subject} for ${grade}.`;
+  const variants = {
+    claude: `${base} You think carefully about how a learner will encounter this graphic, and you reason about visual hierarchy, cognitive load, and accessibility before producing your output.`,
+    chatgpt: `${base} You craft engaging, classroom-ready visuals that balance clarity, accuracy, and visual appeal.`,
+    gemini: `${base} You combine pedagogical research with strong multimodal visual design to produce graphics that work across print and screen contexts.`,
+    perplexity: `${base} You ground every visual claim in verifiable, well-sourced information and prioritize factual rigor alongside clarity.`
+  };
+  return variants[model];
+}
+
+function buildTask(model, t, topic) {
+  const typeName = t ? t.name.toLowerCase() : 'instructional graphic';
+  const variants = {
+    claude: `Design a ${typeName} that teaches the concept of "${topic}." Before producing the final design specification, briefly think through (1) what the learner needs to walk away knowing, (2) how this graphic type best supports that goal, and (3) what to leave out.`,
+    chatgpt: `Create a ${typeName} that teaches "${topic}" in a way that is visually engaging and immediately understandable to its intended audience.`,
+    gemini: `Generate a detailed design specification for a ${typeName} on "${topic}." Where relevant, suggest how the same content could be adapted for both print and digital contexts.`,
+    perplexity: `Design a ${typeName} on "${topic}" grounded in current, accurate, well-sourced information. Where the content involves data, terminology, or factual claims, verify and cite sources.`
+  };
+  return variants[model];
+}
+
+function buildContent(t, topic, subject, grade, objective) {
+  let s = `Topic: ${topic}\nSubject area: ${subject}\nAudience: ${grade}`;
+  if (objective) s += `\nLearning objective: ${objective}`;
+  if (t) s += `\nGraphic-type intent: ${t.promptTraits}.`;
+  return s;
+}
+
+function buildDesign(t) {
+  const lines = [];
+  lines.push(`Visual style: ${state.style}.`);
+  lines.push(`Tone: ${state.tone}.`);
+  lines.push(`Color scheme: ${state.color}.`);
+  lines.push(`Visual density: ${state.density}.`);
+  if (state.iconPref) lines.push(`Imagery approach: ${state.iconPref}.`);
+  lines.push(`Amount of on-graphic text: ${state.textAmount}.`);
+  return lines.join('\n');
+}
+
+function buildOutput(sizeStr, orient, fmt, fmtNote) {
+  const fmtLabel = fmt === 'model-choice'
+    ? 'Recommend the optimal file format for this use case and explain the choice briefly.'
+    : `${fmt.toUpperCase()} (${fmtNote})`;
+  const lines = [
+    `Dimensions: ${sizeStr}, ${orient} orientation.`,
+    `File format: ${fmtLabel}`,
+    `Resolution: ${state.resolution}.`
+  ];
+  if (state.toggles.transparent && (fmt === 'png' || fmt === 'svg' || fmt === 'model-choice')) {
+    lines.push('Background: transparent.');
+  } else if (!state.toggles.transparent) {
+    lines.push('Background: solid, consistent with the color scheme.');
+  }
+  if (state.toggles.bleed) lines.push('Include safe margins / bleed area appropriate to the format.');
+  return lines.join('\n');
+}
+
+function buildModelNotes(model) {
+  const notes = {
+    claude: 'If any selection above is ambiguous, ask a clarifying question before producing the final design. Return your output in clearly labeled sections (Concept, Layout, Typography, Color, Element-by-Element Description, Alt-Text).',
+    chatgpt: 'Return your output as a step-by-step design brief, followed by a complete prompt suitable for an image-generation model (DALL·E or similar). Keep the language vivid and concrete.',
+    gemini: 'Where appropriate, suggest both a static-graphic version and an interactive or animated adaptation. If you can generate the image directly, do so; otherwise produce a complete design specification.',
+    perplexity: 'For every factual claim, statistic, or technical detail included in the graphic, cite a current, authoritative source. Flag any information that could not be verified.'
+  };
+  return notes[model];
+}
+
+/* ============================================================
+   Render preview
+============================================================ */
+function updatePrompt() {
+  const preview = document.getElementById('preview');
+  const modelTag = document.getElementById('modelTag');
+  const modelDisplayName = { claude: 'Claude', chatgpt: 'ChatGPT', gemini: 'Gemini', perplexity: 'Perplexity' }[state.model];
+  modelTag.textContent = `→ For ${modelDisplayName}`;
+
+  if (!state.topic.trim() && !state.graphicType) {
+    preview.innerHTML = `<div class="placeholder-text">Begin by entering a topic and selecting a graphic type. Your prompt will compose itself here.</div>`;
+    return;
+  }
+
+  const parts = buildPromptParts();
+  let html = '';
+  html += blockHTML('Role', parts.role);
+  html += blockHTML('Task', parts.task);
+  html += blockHTML('Content', parts.content);
+  html += blockHTML('Design Requirements', parts.design);
+  html += blockHTML('Technical Output', parts.output);
+  if (parts.constraints.length) {
+    html += blockHTML('Pedagogical Constraints', parts.constraints.map(c => '• ' + c).join('\n'));
+  }
+  html += blockHTML(`Model-Specific Notes (${modelDisplayName})`, parts.modelNotes);
+
+  preview.innerHTML = html;
+}
+
+function blockHTML(label, body) {
+  return `<div class="prompt-block-header">${label}</div><div class="prompt-block-body">${escapeHTML(body)}</div>`;
+}
+
+function escapeHTML(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/* ============================================================
+   Plain-text export
+============================================================ */
+function buildPlainTextPrompt() {
+  if (!state.topic.trim() && !state.graphicType) return '';
+  const parts = buildPromptParts();
+  const modelDisplayName = { claude: 'Claude', chatgpt: 'ChatGPT', gemini: 'Gemini', perplexity: 'Perplexity' }[state.model];
+  let out = '';
+  out += `# INSTRUCTIONAL GRAPHIC PROMPT — for ${modelDisplayName}\n\n`;
+  out += `## ROLE\n${parts.role}\n\n`;
+  out += `## TASK\n${parts.task}\n\n`;
+  out += `## CONTENT\n${parts.content}\n\n`;
+  out += `## DESIGN REQUIREMENTS\n${parts.design}\n\n`;
+  out += `## TECHNICAL OUTPUT\n${parts.output}\n\n`;
+  if (parts.constraints.length) {
+    out += `## PEDAGOGICAL CONSTRAINTS\n${parts.constraints.map(c => '- ' + c).join('\n')}\n\n`;
+  }
+  out += `## MODEL-SPECIFIC NOTES (${modelDisplayName})\n${parts.modelNotes}\n`;
+  return out;
+}
+
+/* ============================================================
+   Wire up inputs
+============================================================ */
+function wireInputs() {
+  document.getElementById('topic').addEventListener('input', e => { state.topic = e.target.value; updatePrompt(); });
+  document.getElementById('subject').addEventListener('change', e => { state.subject = e.target.value; updatePrompt(); });
+  document.getElementById('grade').addEventListener('change', e => { state.grade = e.target.value; updatePrompt(); });
+  document.getElementById('objective').addEventListener('input', e => { state.objective = e.target.value; updatePrompt(); });
+
+  document.getElementById('style').addEventListener('change', e => { state.style = e.target.value; updatePrompt(); });
+  document.getElementById('tone').addEventListener('change', e => { state.tone = e.target.value; updatePrompt(); });
+  document.getElementById('color').addEventListener('change', e => { state.color = e.target.value; updatePrompt(); });
+  document.getElementById('density').addEventListener('change', e => { state.density = e.target.value; updatePrompt(); });
+
+  // Icon chips
+  document.getElementById('iconChips').querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const v = chip.dataset.val;
+      if (state.iconPref === v) {
+        state.iconPref = '';
+        chip.classList.remove('selected');
+      } else {
+        state.iconPref = v;
+        document.getElementById('iconChips').querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+      }
+      updatePrompt();
+    });
+  });
+
+  // Size preset
+  document.getElementById('sizePreset').addEventListener('change', e => {
+    state.sizePreset = e.target.value;
+    const custom = state.sizePreset === 'custom';
+    document.getElementById('customWGroup').style.display = custom ? '' : 'none';
+    document.getElementById('customHGroup').style.display = custom ? '' : 'none';
+    document.getElementById('customUnitGroup').style.display = custom ? '' : 'none';
+    updatePrompt();
+  });
+  document.getElementById('customW').addEventListener('input', e => { state.customW = e.target.value; updatePrompt(); });
+  document.getElementById('customH').addEventListener('input', e => { state.customH = e.target.value; updatePrompt(); });
+  document.getElementById('customUnit').addEventListener('change', e => { state.customUnit = e.target.value; updatePrompt(); });
+
+  document.getElementById('orientation').addEventListener('change', e => { state.orientation = e.target.value; updatePrompt(); });
+  document.getElementById('textAmount').addEventListener('change', e => { state.textAmount = e.target.value; updatePrompt(); });
+  document.getElementById('format').addEventListener('change', e => { state.format = e.target.value; updatePrompt(); });
+  document.getElementById('resolution').addEventListener('change', e => { state.resolution = e.target.value; updatePrompt(); });
+
+  // Toggles
+  document.querySelectorAll('.toggle').forEach(tog => {
+    tog.addEventListener('click', () => {
+      const key = tog.dataset.toggle;
+      state.toggles[key] = !state.toggles[key];
+      tog.classList.toggle('on', state.toggles[key]);
+      updatePrompt();
+    });
+  });
+
+  // Model
+  document.getElementById('modelGrid').querySelectorAll('.mcard').forEach(card => {
+    card.addEventListener('click', () => {
+      document.getElementById('modelGrid').querySelectorAll('.mcard').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      state.model = card.dataset.model;
+      updatePrompt();
+    });
+  });
+
+  // Actions
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    const txt = buildPlainTextPrompt();
+    if (!txt) { showToast('Nothing to copy yet'); return; }
+    navigator.clipboard.writeText(txt).then(() => showToast('Copied to clipboard'));
+  });
+
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    const txt = buildPlainTextPrompt();
+    if (!txt) { showToast('Nothing to download yet'); return; }
+    const blob = new Blob([txt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const slug = (state.topic.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'prompt');
+    a.href = url;
+    a.download = `graphic-prompt-${slug}-${state.model}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Downloaded');
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (!confirm('Reset all fields?')) return;
+    location.reload();
+  });
+
+  // Presets
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+  });
+}
+
+/* ============================================================
+   Presets
+============================================================ */
+function applyPreset(name) {
+  const presets = {
+    k12: {
+      grade: 'Elementary (K–5)',
+      style: 'Flat vector illustration',
+      tone: 'Friendly / approachable',
+      color: 'Vibrant primary (bold red, blue, yellow)',
+      density: 'Minimal — single concept, sparse',
+      iconPref: 'Illustrations of people',
+      textAmount: 'Minimal labels — title + key terms only'
+    },
+    college: {
+      grade: 'Community College / Undergraduate',
+      style: 'Editorial / textbook diagram',
+      tone: 'Authoritative / technical',
+      color: 'Classic academic (navy, gold, white)',
+      density: 'Moderate — balanced detail',
+      iconPref: 'Diagrams with labeled parts',
+      textAmount: 'Moderate explanation — short captions per section'
+    },
+    cyber: {
+      subject: 'Cybersecurity',
+      grade: 'Adult Workforce Training',
+      style: 'Cybersecurity / HUD aesthetic',
+      tone: 'Authoritative / technical',
+      color: 'Cybersecurity (dark teal, cyan, amber)',
+      density: 'Rich — comprehensive reference',
+      iconPref: 'Mix of icons and illustrations',
+      textAmount: 'Full teaching graphic — self-contained learning resource'
+    },
+    exec: {
+      grade: 'Executive / Industry Audience',
+      style: 'Infographic with data viz',
+      tone: 'Professional / formal',
+      color: 'Cool & analytical (slate blue, charcoal, white)',
+      density: 'Minimal — single concept, sparse',
+      iconPref: 'Icons only',
+      textAmount: 'Minimal labels — title + key terms only'
+    }
+  };
+
+  const p = presets[name];
+  if (!p) return;
+
+  Object.entries(p).forEach(([k, v]) => {
+    state[k] = v;
+    const el = document.getElementById(k);
+    if (el) el.value = v;
+  });
+
+  // Reset icon chips and set selection
+  document.querySelectorAll('#iconChips .chip').forEach(c => {
+    c.classList.toggle('selected', c.dataset.val === state.iconPref);
+  });
+
+  updatePrompt();
+  showToast(`Applied: ${name.toUpperCase()} preset`);
+}
+
+/* ============================================================
+   Toast
+============================================================ */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastT);
+  window._toastT = setTimeout(() => t.classList.remove('show'), 1900);
+}
+
+/* ============================================================
+   Init
+============================================================ */
+renderTypeCards();
+wireInputs();
+updatePrompt();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAB 1A: Analyzing Types of Attacks and Mitigation Techniques</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
+            color: black;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Navigation Sidebar */
+        .sidebar {
+            width: 300px;
+            background-color: #2d5016;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            color: #90EE90;
+            border-bottom: 2px solid #90EE90;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 12px 15px;
+            margin: 5px 0;
+            background-color: #3d6b26;
+            border: none;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background-color: #4d7b36;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background-color: #90EE90;
+            color: black;
+            font-weight: bold;
+        }
+
+        .nav-subsection {
+            padding-left: 30px;
+            font-size: 12px;
+            background-color: #4d7b36;
+            margin-top: 2px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 300px;
+            padding: 30px;
+            flex: 1;
+            background-color: white;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #2d5016;
+            border-bottom: 3px solid #90EE90;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #2d5016;
+            margin: 30px 0 20px 0;
+            font-size: 1.8em;
+        }
+
+        h3 {
+            color: #4d7b36;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        h4 {
+            color: #2d5016;
+            margin: 20px 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .warning {
+            background-color: #ffe6e6;
+            border-left: 5px solid #ff4444;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning::before {
+            content: "⚠️ ";
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .info-box {
+            background-color: #e6f7e6;
+            border-left: 5px solid #2d5016;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .command-box {
+            background-color: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            border: 1px solid #2d5016;
+        }
+
+        .topology-diagram {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #90EE90;
+        }
+
+        .vm-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .vm-table th {
+            background-color: #2d5016;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .vm-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .vm-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .vm-table tr:hover {
+            background-color: #e6f7e6;
+        }
+
+        .step-number {
+            background-color: #2d5016;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 3px solid #90EE90;
+            background-color: #f9f9f9;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 300px;
+            right: 0;
+            height: 4px;
+            background-color: #ddd;
+            z-index: 1000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #90EE90;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .nav-buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background-color: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: #4d7b36;
+        }
+
+        .nav-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .objectives-list {
+            background-color: #e6f7e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .objectives-list ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .objectives-list li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .objectives-list li::before {
+            content: "✓";
+            color: #2d5016;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .topology-network {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .network-device {
+            text-align: center;
+            margin: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #90EE90;
+        }
+
+        .device-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .completion-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #ddd;
+            border: 2px solid #2d5016;
+        }
+
+        .completion-indicator.completed {
+            background-color: #90EE90;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="container">
+        <!-- Navigation Sidebar -->
+        <nav class="sidebar">
+            <h2>LAB 1A Navigation</h2>
+            
+            <button class="nav-item active" onclick="showSection('intro', this)">
+                📋 Introduction
+            </button>
+            
+            <button class="nav-item" onclick="showSection('objectives', this)">
+                🎯 Objectives
+            </button>
+            
+            <button class="nav-item" onclick="showSection('topology', this)">
+                🌐 Lab Topology
+            </button>
+            
+            <button class="nav-item" onclick="showSection('settings', this)">
+                ⚙️ Lab Settings
+            </button>
+            
+            <button class="nav-item" onclick="showSection('bruteforce', this)">
+                🔓 1. Bruteforcing SSH
+            </button>
+            
+            <button class="nav-item nav-subsection" onclick="showSection('bruteforce-1', this)">
+                1.1 ncrack vs sshguard
+            </button>
+            
+            <button class="nav-item nav-subsection" onclick="showSection('bruteforce-2', this)">
+                1.2 sshguard Action
+            </button>
+            
+            <button class="nav-item" onclick="showSection('dos', this)">
+                💣 2. DOS Attack
+            </button>
+            
+            <button class="nav-item" onclick="showSection('hdd', this)">
+                💾 3. HDD Destruction
+            </button>
+            
+            <button class="nav-item" onclick="showSection('summary', this)">
+                📊 Lab Summary
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Introduction Section -->
+            <section id="intro" class="section active">
+                <div class="completion-indicator" id="intro-complete"></div>
+                <h1>LAB 1A: Analyzing Types of Attacks and Mitigation Techniques</h1>
+                
+                <div class="info-box">
+                    <strong>Lab Focus:</strong> This lab explores various cybersecurity attack vectors and their mitigation techniques through hands-on demonstrations in a controlled virtual environment.
+                </div>
+
+                <h2>Introduction</h2>
+                <p>In this lab, you will be conducting host security practices using the command line along with scripts. This practical experience will help you understand real-world attack scenarios and the importance of implementing proper security measures.</p>
+
+                <h3>What You'll Learn</h3>
+                <ul>
+                    <li>How brute force attacks work against SSH services</li>
+                    <li>The effectiveness of security tools like sshguard</li>
+                    <li>Understanding Denial of Service (DoS) attacks</li>
+                    <li>The devastating impact of disk-level attacks</li>
+                    <li>Proper security monitoring and log analysis</li>
+                </ul>
+
+                <div class="warning">
+                    <strong>Important Warning:</strong> The techniques demonstrated in this lab are for educational purposes only and should NEVER be performed on production systems or systems you do not own. These attacks can cause permanent damage and are illegal when performed without authorization.
+                </div>
+
+                <h3>Lab Environment</h3>
+                <p>This lab uses a virtualized network environment with multiple systems to safely demonstrate attack techniques and their mitigations. All activities are contained within this controlled environment.</p>
+            </section>
+
+            <!-- Objectives Section -->
+            <section id="objectives" class="section">
+                <div class="completion-indicator" id="objectives-complete"></div>
+                <h1>Lab Objectives</h1>
+                
+                <div class="objectives-list">
+                    <h3>In this lab, you will perform the following tasks:</h3>
+                    <ul>
+                        <li>Compare and contrast types of attacks</li>
+                        <li>Perform Brute forcing SSH attacks</li>
+                        <li>Perform dangerous Linux commands</li>
+                        <li>Analyze attack indicators and system responses</li>
+                        <li>Understand mitigation techniques and their effectiveness</li>
+                    </ul>
+                </div>
+
+                <h2>Learning Outcomes</h2>
+                <p>By the end of this lab, you will have hands-on experience with:</p>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>SSH Brute Force Attacks:</strong> Understanding how attackers attempt to gain unauthorized access through password guessing and how defensive tools respond.
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Denial of Service:</strong> Experiencing how resource exhaustion attacks work and their impact on system availability.
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>System Destruction:</strong> Understanding the catastrophic impact of disk-level attacks and the importance of proper access controls.
+                </div>
+
+                <div class="info-box">
+                    <strong>CompTIA Security+ Alignment:</strong> This lab directly supports exam objectives 1.2, 1.3, 1.4, and 1.6, covering attack indicators, application attacks, network attacks, and vulnerability concerns.
+                </div>
+            </section>
+
+            <!-- Lab Topology Section -->
+            <section id="topology" class="section">
+                <div class="completion-indicator" id="topology-complete"></div>
+                <h1>Lab Topology</h1>
+                
+                <div class="topology-diagram">
+                    <h3>Network Architecture</h3>
+                    <div class="topology-network">
+                        <div class="network-device">
+                            <div class="device-icon">💻</div>
+                            <h4>Kali Linux</h4>
+                            <p>Attacker Machine</p>
+                            <small>203.0.113.2</small>
+                        </div>
+                        
+                        <div class="network-device">
+                            <div class="device-icon">🔥</div>
+                            <h4>pfSense</h4>
+                            <p>Firewall/Router</p>
+                            <small>192.168.0.1</small>
+                        </div>
+                        
+                        <div class="network-device">
+                            <div class="device-icon">🖥️</div>
+                            <h4>UbuntuSRV</h4>
+                            <p>Target Server</p>
+                            <small>172.16.1.10</small>
+                        </div>
+                        
+                        <div class="network-device">
+                            <div class="device-icon">🪟</div>
+                            <h4>WinOS</h4>
+                            <p>Windows Client</p>
+                            <small>192.168.0.50</small>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Network Segments</h2>
+                <ul>
+                    <li><strong>External Network:</strong> 203.0.113.0/29 (Kali Linux)</li>
+                    <li><strong>DMZ Network:</strong> 172.16.1.0/28 (UbuntuSRV)</li>
+                    <li><strong>Internal Network:</strong> 192.168.0.0/24 (WinOS, pfSense)</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>Network Design:</strong> This topology simulates a typical enterprise network with proper segmentation between external, DMZ, and internal zones. The pfSense firewall controls traffic flow between segments.
+                </div>
+            </section>
+
+            <!-- Lab Settings Section -->
+            <section id="settings" class="section">
+                <div class="completion-indicator" id="settings-complete"></div>
+                <h1>Lab Settings</h1>
+                
+                <p>The information in the table below will be needed to complete the lab. The task sections provide details on the use of this information.</p>
+
+                <table class="vm-table">
+                    <thead>
+                        <tr>
+                            <th>Virtual Machine</th>
+                            <th>IP Address</th>
+                            <th>Account</th>
+                            <th>Password</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Kali Linux</strong></td>
+                            <td>203.0.113.2</td>
+                            <td>kali</td>
+                            <td>kali</td>
+                        </tr>
+                        <tr>
+                            <td><strong>pfSense</strong></td>
+                            <td>192.168.0.1</td>
+                            <td>sysadmin</td>
+                            <td>NDGlabpass123!</td>
+                        </tr>
+                        <tr>
+                            <td><strong>UbuntuSRV</strong></td>
+                            <td>172.16.1.10</td>
+                            <td>sysadmin</td>
+                            <td>NDGlabpass123!</td>
+                        </tr>
+                        <tr>
+                            <td><strong>WinOS</strong></td>
+                            <td>192.168.0.50</td>
+                            <td>Administrator</td>
+                            <td>NDGlabpass123!</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="warning">
+                    <strong>Security Note:</strong> These credentials are for lab use only. In a production environment, always use strong, unique passwords and implement proper access controls.
+                </div>
+
+                <h2>Pre-Lab Checklist</h2>
+                <div class="step">
+                    <span class="step-number">✓</span>
+                    Verify all virtual machines are powered on and accessible
+                </div>
+                <div class="step">
+                    <span class="step-number">✓</span>
+                    Confirm network connectivity between systems
+                </div>
+                <div class="step">
+                    <span class="step-number">✓</span>
+                    Test SSH access to UbuntuSRV from Kali
+                </div>
+            </section>
+
+            <!-- Bruteforce Main Section -->
+            <section id="bruteforce" class="section">
+                <div class="completion-indicator" id="bruteforce-complete"></div>
+                <h1>1. Bruteforcing SSH</h1>
+                
+                <div class="info-box">
+                    <strong>Attack Overview:</strong> SSH brute force attacks attempt to gain unauthorized access by systematically trying different username/password combinations. This section demonstrates both the attack technique and defensive countermeasures.
+                </div>
+
+                <h2>Attack Methodology</h2>
+                <p>In this section, we'll use the <code>ncrack</code> tool to perform a brute force attack against the SSH service on UbuntuSRV, then observe how <code>sshguard</code> detects and mitigates the attack.</p>
+
+                <h3>Tools Used</h3>
+                <ul>
+                    <li><strong>ncrack:</strong> Network authentication brute forcing tool</li>
+                    <li><strong>sshguard:</strong> Intrusion detection and prevention tool for SSH</li>
+                    <li><strong>iptables:</strong> Linux firewall for blocking malicious traffic</li>
+                </ul>
+
+                <h2>Learning Objectives</h2>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    Understand how SSH brute force attacks work
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    Learn to implement and configure sshguard
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    Analyze attack patterns in system logs
+                </div>
+                <div class="step">
+                    <span class="step-number">4</span>
+                    Observe automatic threat response mechanisms
+                </div>
+            </section>
+
+            <!-- Bruteforce Part 1 -->
+            <section id="bruteforce-1" class="section">
+                <div class="completion-indicator" id="bruteforce-1-complete"></div>
+                <h1>1.1 Demonstrate ncrack Against sshguard</h1>
+
+                <h2>Setting Up the Target (UbuntuSRV)</h2>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Launch UbuntuSRV:</strong> Access the graphical login screen and log in as <code>sysadmin</code> with password <code>NDGlabpass123!</code>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Open Terminal:</strong> Click on the Terminal icon in the left menu pane
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Verify SSH Service:</strong> Check if SSH is running
+                    <div class="command-box">sysadmin@ubuntusrv:~$ service sshd status</div>
+                    <p>If not running, start it with: <code>sudo service sshd start</code></p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Stop sshguard:</strong> Ensure sshguard is not running initially
+                    <div class="command-box">sysadmin@ubuntusrv:~$ service sshguard status
+sysadmin@ubuntusrv:~$ sudo service sshguard stop</div>
+                </div>
+
+                <h2>Setting Up the Attacker (Kali)</h2>
+
+                <div class="step">
+                    <span class="step-number">5</span>
+                    <strong>Launch Kali:</strong> Log in as <code>kali</code> with password <code>kali</code>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">6</span>
+                    <strong>Test SSH Connection:</strong> Verify connectivity to target
+                    <div class="command-box">kali@kali$ ssh sysadmin@172.16.1.10 "uptime"</div>
+                    <p>Enter <code>yes</code> when prompted about host authenticity, then enter password <code>NDGlabpass123!</code></p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">7</span>
+                    <strong>Check Authentication Logs:</strong> Switch back to UbuntuSRV and verify the connection was logged
+                    <div class="command-box">sysadmin@ubuntusrv$ grep -a "Accepted password" /var/log/auth.log | grep -a "203.0.113.2"</div>
+                </div>
+
+                <h2>Launching the Brute Force Attack</h2>
+
+                <div class="step">
+                    <span class="step-number">8</span>
+                    <strong>Wait for Unblock:</strong> After 60 seconds, test SSH connectivity again
+                    <div class="command-box">kali@kali$ ssh sysadmin@172.16.1.10</div>
+                    <p>The connection should work again after the block timeout expires.</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">9</span>
+                    <strong>Analyze Failed Attempts:</strong> On UbuntuSRV, examine the authentication logs
+                    <div class="command-box">sysadmin@ubuntusrv:~$ grep -a "Failed password" /var/log/auth.log | grep -a "203.0.113.2"</div>
+                    <p>This shows all the failed login attempts from the Kali machine.</p>
+                </div>
+
+                <div class="warning">
+                    <strong>Real-World Impact:</strong> sshguard automatically detected the brute force pattern and temporarily blocked the attacking IP. This demonstrates how automated defenses can respond faster than human administrators.
+                </div>
+            </section>
+
+            <!-- DOS Attack Section -->
+            <section id="dos" class="section">
+                <div class="completion-indicator" id="dos-complete"></div>
+                <h1>2. Demonstrate DOS Attack</h1>
+
+                <div class="warning">
+                    <strong>CRITICAL WARNING:</strong> Do not attempt this section on a personal computer. It will cause serious harm to a machine, resulting in an inoperable state. This is for educational demonstration only in a controlled lab environment.
+                </div>
+
+                <div class="info-box">
+                    <strong>Attack Overview:</strong> A fork bomb is a type of denial-of-service attack that depletes available system resources by creating an exponentially increasing number of processes, ultimately making the system unresponsive.
+                </div>
+
+                <h2>Understanding Fork Bombs</h2>
+                <p>The fork bomb attack we'll demonstrate uses a bash function that recursively calls itself, rapidly consuming system memory and CPU resources. The attack syntax <code>:(){ :|: & };:</code> creates a function that pipes its output to itself while running in the background.</p>
+
+                <h2>Monitoring System Resources</h2>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Launch Resource Monitor:</strong> On UbuntuSRV, start htop to monitor system resources
+                    <div class="command-box">sysadmin@ubuntusrv:~$ htop</div>
+                    <p>This will show real-time CPU and memory usage.</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Open Second Terminal:</strong> Right-click Terminal icon and select "New Window"
+                    <p>Position both terminals side-by-side so you can monitor the attack's impact.</p>
+                </div>
+
+                <h2>Executing the Fork Bomb</h2>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Launch Fork Bomb:</strong> In the second terminal, execute the attack
+                    <div class="command-box">sysadmin@ubuntusrv:~$ :(){ :|: & };:</div>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Observe System Impact:</strong> Watch the htop display for 3-4 minutes
+                    <ul>
+                        <li>CPU usage will spike to nearly 100%</li>
+                        <li>Memory usage will rapidly increase</li>
+                        <li>Swap memory will also be consumed</li>
+                        <li>The system will become increasingly unresponsive</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <strong>What's Happening:</strong> The fork bomb creates multiple copies of itself exponentially, creating a chain reaction that quickly exhausts system resources. Each process forks two new processes, leading to exponential growth: 2, 4, 8, 16, 32, 64... until system limits are reached.
+                </div>
+
+                <h2>System Recovery</h2>
+
+                <div class="step">
+                    <span class="step-number">5</span>
+                    <strong>Force System Shutdown:</strong> When the system becomes unresponsive, use the VM controls
+                    <p>Click on the Ubuntu dropdown menu and select "Power Off"</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">6</span>
+                    <strong>Restart System:</strong> Wait for shutdown to complete, then click "Power On"
+                    <p>The system will boot normally as the attack doesn't cause permanent damage.</p>
+                </div>
+
+                <div class="warning">
+                    <strong>Mitigation Strategies:</strong> In production environments, implement process limits (ulimits), resource quotas, and monitoring systems to detect and prevent such attacks before they can render systems unusable.
+                </div>
+            </section>
+
+            <!-- HDD Destruction Section -->
+            <section id="hdd" class="section">
+                <div class="completion-indicator" id="hdd-complete"></div>
+                <h1>3. Destroying the HDD with dd</h1>
+
+                <div class="warning">
+                    <strong>EXTREME WARNING:</strong> Do not attempt this section on a personal computer. This will cause permanent, irreversible damage to storage devices, rendering them completely inoperable. This demonstration is for educational purposes only in a disposable lab environment.
+                </div>
+
+                <div class="info-box">
+                    <strong>Attack Overview:</strong> The dd command can be weaponized to perform destructive disk operations by overwriting critical system areas with zeros or random data, effectively destroying the filesystem and making data unrecoverable.
+                </div>
+
+                <h2>Understanding the dd Command Attack</h2>
+                <p>The command <code>dd if=/dev/zero of=/dev/sda</code> reads zeros from the special device <code>/dev/zero</code> and writes them directly to the primary storage device <code>/dev/sda</code>, overwriting the master boot record, partition table, and all data.</p>
+
+                <h2>Setting Up Monitoring</h2>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Launch UbuntuSRV:</strong> Log in as sysadmin with password NDGlabpass123!
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Start I/O Monitor:</strong> Launch iotop to monitor disk activity
+                    <div class="command-box">sysadmin@ubuntusrv:~$ sudo iotop</div>
+                    <p>This will show real-time disk read/write activity.</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Open Second Terminal:</strong> Right-click Terminal and select "New Window"
+                    <p>Position both terminals to view them simultaneously.</p>
+                </div>
+
+                <h2>Executing the Destructive Attack</h2>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Launch Disk Attack:</strong> Execute the destructive dd command
+                    <div class="command-box">sysadmin@ubuntusrv:~$ sudo dd if=/dev/zero of=/dev/sda</div>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">5</span>
+                    <strong>Observe Disk Activity:</strong> Watch the iotop output for 1-3 minutes
+                    <p>You'll see intense write activity as zeros are written to the disk at maximum speed.</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>Technical Details:</strong> The dd command bypasses the filesystem and writes directly to the raw device. This overwrites critical system areas including the boot sector, partition table, and all user data, making the system completely unbootable.
+                </div>
+
+                <h2>System Destruction and Recovery Attempt</h2>
+
+                <div class="step">
+                    <span class="step-number">6</span>
+                    <strong>Wait for System Crash:</strong> Allow the attack to run until the system becomes unresponsive
+                    <p>The system will eventually crash as critical system files are overwritten.</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">7</span>
+                    <strong>Force Shutdown:</strong> Use VM controls to power off the system
+                    <p>Select the dropdown menu and choose "Power Off"</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">8</span>
+                    <strong>Attempt Restart:</strong> Try to power the system back on
+                    <p>Click "Power On" and observe the boot process.</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">9</span>
+                    <strong>Verify Destruction:</strong> Observe the boot failure
+                    <p>The system will display "Operating System not found" or similar error, confirming the attack succeeded in destroying the bootable system.</p>
+                </div>
+
+                <div class="warning">
+                    <strong>Attack Success:</strong> The dd command has successfully destroyed the system by overwriting critical boot sectors and filesystem structures. In a real environment, this would represent complete data loss requiring restoration from backups.
+                </div>
+
+                <h2>Defense Strategies</h2>
+                <ul>
+                    <li><strong>Access Controls:</strong> Restrict sudo privileges and administrative access</li>
+                    <li><strong>File System Protections:</strong> Implement immutable flags on critical system files</li>
+                    <li><strong>Monitoring:</strong> Alert on unusual disk I/O patterns</li>
+                    <li><strong>Backup Systems:</strong> Maintain offline, verified backups</li>
+                    <li><strong>Physical Security:</strong> Prevent unauthorized physical access to systems</li>
+                </ul>
+            </section>
+
+            <!-- Summary Section -->
+            <section id="summary" class="section">
+                <div class="completion-indicator" id="summary-complete"></div>
+                <h1>📊 Lab Summary</h1>
+
+                <div class="info-box">
+                    <strong>Congratulations!</strong> You have successfully completed LAB 1A: Analyzing Types of Attacks and Mitigation Techniques. This hands-on experience has provided valuable insights into real-world cybersecurity threats and defensive measures.
+                </div>
+
+                <h2>Key Learning Outcomes</h2>
+
+                <div class="step">
+                    <span class="step-number">✓</span>
+                    <strong>SSH Brute Force Attacks:</strong> You experienced how automated tools can systematically attack authentication systems and learned how sshguard provides effective automated defense.
+                </div>
+
+                <div class="step">
+                    <span class="step-number">✓</span>
+                    <strong>Denial of Service:</strong> You witnessed the devastating impact of resource exhaustion attacks and understand the importance of implementing process limits and monitoring.
+                </div>
+
+                <div class="step">
+                    <span class="step-number">✓</span>
+                    <strong>Destructive Attacks:</strong> You observed the catastrophic potential of disk-level attacks and learned why physical and administrative access controls are critical.
+                </div>
+
+                <h2>Security Insights Gained</h2>
+
+                <h3>🔒 Authentication Security</h3>
+                <ul>
+                    <li>Weak passwords are vulnerable to dictionary attacks</li>
+                    <li>Automated defense systems can respond faster than humans</li>
+                    <li>Log analysis is crucial for detecting attack patterns</li>
+                    <li>Temporary blocking can effectively disrupt brute force attempts</li>
+                </ul>
+
+                <h3>💾 System Availability</h3>
+                <ul>
+                    <li>Resource exhaustion can render systems completely unusable</li>
+                    <li>Simple commands can have devastating system-wide effects</li>
+                    <li>Monitoring tools are essential for detecting abnormal activity</li>
+                    <li>Recovery procedures must be tested and readily available</li>
+                </ul>
+
+                <h3>🛡️ Defense Strategies</h3>
+                <ul>
+                    <li>Multiple layers of security provide better protection</li>
+                    <li>Automated responses can mitigate attacks in real-time</li>
+                    <li>Access controls must be properly configured and maintained</li>
+                    <li>Regular backups are essential for disaster recovery</li>
+                </ul>
+
+                <h2>Real-World Applications</h2>
+
+                <div class="objectives-list">
+                    <h3>Apply these lessons to improve security posture:</h3>
+                    <ul>
+                        <li>Implement strong password policies and multi-factor authentication</li>
+                        <li>Deploy intrusion detection and prevention systems</li>
+                        <li>Configure resource limits and monitoring alerts</li>
+                        <li>Establish comprehensive backup and recovery procedures</li>
+                        <li>Conduct regular security assessments and penetration testing</li>
+                    </ul>
+                </div>
+
+                <h2>CompTIA Security+ Exam Relevance</h2>
+                <p>This lab directly supports the following exam objectives:</p>
+                <ul>
+                    <li><strong>1.2:</strong> Attack indicators and analysis techniques</li>
+                    <li><strong>1.3:</strong> Application-level attack vectors</li>
+                    <li><strong>1.4:</strong> Network-based attack methods</li>
+                    <li><strong>1.6:</strong> Vulnerability assessment and management</li>
+                </ul>
+
+                <div class="warning">
+                    <strong>Ethical Reminder:</strong> The techniques demonstrated in this lab are powerful and potentially destructive. Always ensure you have explicit authorization before performing any security testing, and use these skills responsibly to improve security rather than cause harm.
+                </div>
+
+                <h2>Next Steps</h2>
+                <p>Continue your cybersecurity education by exploring:</p>
+                <ul>
+                    <li>Advanced penetration testing methodologies</li>
+                    <li>Security incident response procedures</li>
+                    <li>Digital forensics and malware analysis</li>
+                    <li>Security architecture and design principles</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>Lab Complete:</strong> You have successfully completed all sections of LAB 1A. The knowledge and skills gained here form a foundation for advanced cybersecurity practices and exam success.
+                </div>
+            </section>
+
+            <!-- Navigation Buttons -->
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prevBtn" onclick="navigateSection(-1)" disabled>← Previous</button>
+                <button class="nav-btn" id="nextBtn" onclick="navigateSection(1)">Next →</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Section management
+        const sections = ['intro', 'objectives', 'topology', 'settings', 'bruteforce', 'bruteforce-1', 'bruteforce-2', 'dos', 'hdd', 'summary'];
+        let currentSectionIndex = 0;
+        const completedSections = new Set();
+
+        // Initialize the page
+        function initializePage() {
+            updateProgressBar();
+            updateNavigationButtons();
+            markSectionComplete('intro'); // Auto-complete introduction
+        }
+
+        // Show specific section
+        function showSection(sectionId, navButton) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                
+                // Update current section index
+                currentSectionIndex = sections.indexOf(sectionId);
+                if (currentSectionIndex === -1) currentSectionIndex = 0;
+
+                // Mark section as viewed
+                markSectionComplete(sectionId);
+            }
+
+            // Add active class to clicked nav button
+            if (navButton) {
+                navButton.classList.add('active');
+            }
+
+            // Update progress and navigation
+            updateProgressBar();
+            updateNavigationButtons();
+
+            // Smooth scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Navigate between sections sequentially
+        function navigateSection(direction) {
+            const newIndex = currentSectionIndex + direction;
+            
+            if (newIndex >= 0 && newIndex < sections.length) {
+                const targetSectionId = sections[newIndex];
+                const navButton = document.querySelector(`[onclick*="${targetSectionId}"]`);
+                showSection(targetSectionId, navButton);
+            }
+        }
+
+        // Mark section as complete
+        function markSectionComplete(sectionId) {
+            completedSections.add(sectionId);
+            
+            // Update completion indicator
+            const indicator = document.getElementById(sectionId + '-complete');
+            if (indicator) {
+                indicator.classList.add('completed');
+            }
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = ((currentSectionIndex + 1) / sections.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // Update navigation buttons
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentSectionIndex === 0;
+            nextBtn.disabled = currentSectionIndex === sections.length - 1;
+            
+            if (currentSectionIndex === sections.length - 1) {
+                nextBtn.textContent = 'Lab Complete ✓';
+                nextBtn.style.backgroundColor = '#90EE90';
+                nextBtn.style.color = 'black';
+            } else {
+                nextBtn.textContent = 'Next →';
+                nextBtn.style.backgroundColor = '#2d5016';
+                nextBtn.style.color = 'white';
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) return; // Allow browser shortcuts
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    navigateSection(-1);
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    navigateSection(1);
+                    break;
+            }
+        });
+
+        // Auto-scroll navigation for long sections
+        function highlightCurrentSection() {
+            const scrollPosition = window.scrollY;
+            const windowHeight = window.innerHeight;
+            
+            // Auto-mark sections as complete when scrolled through
+            if (scrollPosition + windowHeight >= document.documentElement.scrollHeight - 100) {
+                markSectionComplete(sections[currentSectionIndex]);
+            }
+        }
+
+        // Event listeners
+        window.addEventListener('scroll', highlightCurrentSection);
+        window.addEventListener('load', initializePage);
+
+        // Initialize on page load
+        initializePage();
+    </script>
+</body>
+</html>
+                    <strong>Explore ncrack Options:</strong> On Kali, examine available options
+                    <div class="command-box">kali@kali$ ncrack -help</div>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">9</span>
+                    <strong>Execute Attack:</strong> Launch brute force attack using predefined wordlist
+                    <div class="command-box">kali@kali$ ncrack -v 172.16.1.10 --user sysadmin -P /usr/share/wordlists/fasttrack.txt -p ssh</div>
+                    <p>Let the attack run for 1-2 minutes. The tool should successfully find the password.</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>Observation:</strong> Notice how the tool systematically tries passwords from the wordlist until it finds a match. This demonstrates the importance of using strong, unique passwords that aren't found in common wordlists.
+                </div>
+            </section>
+
+            <!-- Bruteforce Part 2 -->
+            <section id="bruteforce-2" class="section">
+                <div class="completion-indicator" id="bruteforce-2-complete"></div>
+                <h1>1.2 Observe the Action of sshguard</h1>
+
+                <h2>Configuring sshguard</h2>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Edit sshguard Configuration:</strong> On UbuntuSRV, modify the configuration for faster response
+                    <div class="command-box">sysadmin@ubuntusrv:~$ sudo nano /etc/sshguard/sshguard.conf</div>
+                    <p>Change <code>BLOCK_TIME</code> to 60 and <code>DETECTION_TIME</code> to 60. Save with Ctrl+S, exit with Ctrl+X.</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>Configuration Note:</strong> We're using shorter timeouts than production defaults to make the lab demonstration more apparent. In production, longer detection and block times are typically more appropriate.
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Check Initial Firewall Rules:</strong> Examine iptables before starting sshguard
+                    <div class="command-box">sysadmin@ubuntusrv:~$ sudo iptables -S</div>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Start sshguard:</strong> Enable the protection service
+                    <div class="command-box">sysadmin@ubuntusrv:~$ sudo service sshguard start
+sysadmin@ubuntusrv:~$ service sshguard status</div>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Observe Firewall Changes:</strong> Check how sshguard modifies iptables
+                    <div class="command-box">sysadmin@ubuntusrv:~$ sudo iptables -S</div>
+                    <p>Notice the new sshguard chain has been created.</p>
+                </div>
+
+                <h2>Configuring Automatic Blocking</h2>
+
+                <div class="step">
+                    <span class="step-number">5</span>
+                    <strong>Enable SSH Port Monitoring:</strong> Configure iptables to send SSH traffic to sshguard
+                    <div class="command-box">sysadmin@ubuntusrv:~$ sudo iptables -A INPUT -p tcp -m tcp --dport 22 -j sshguard</div>
+                </div>
+
+                <h2>Testing the Protection</h2>
+
+                <div class="step">
+                    <span class="step-number">6</span>
+                    <strong>Launch Second Attack:</strong> On Kali, run ncrack again
+                    <div class="command-box">kali@kali$ ncrack -v 172.16.1.10 --user sysadmin -P /usr/share/wordlists/fasttrack.txt -p ssh</div>
+                    <p>This time, the attack should fail due to sshguard blocking.</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">7</span>
+                    <strong>Verify Blocking:</strong> On UbuntuSRV, check the updated firewall rules
+                    <div class="command-box">sysadmin@ubuntusrv:~$ sudo iptables -S</div>
+                    <p>You should see a rule blocking 203.0.113.2 (the Kali machine).</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">8

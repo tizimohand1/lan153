@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompTIA Risk Management Trainer</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 25px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #0056b3;
+            border-bottom: 2px solid #eef2f5;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #eef2f5;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9fbfd;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+        .priority-score {
+            font-weight: bold;
+            text-align: center;
+        }
+        .risk-category {
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+            border-radius: 5px;
+            color: #fff;
+        }
+        .risk-low { background-color: #28a745; }
+        .risk-moderate { background-color: #ffc107; color: #333; }
+        .risk-high { background-color: #dc3545; }
+        .risk-critical { background-color: #8B0000; }
+        .incomplete { background-color: #e0e0e0; color: #777; }
+        .instructions {
+            background-color: #e7f3fe;
+            border-left: 5px solid #0056b3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        #summary {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9fbfd;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: none; /* Hidden by default */
+        }
+        #summary h2 {
+            margin-top: 0;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 20px;
+            background-color: #007bff;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            border-radius: 5px;
+            transition: width 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Interactive Risk Management Simulation</h1>
+
+    <div class="instructions">
+        <p><strong>Instructions:</strong> For each asset, classify the primary **Risk Source** and **Risk Type**. Then, assess the potential **Impact** and **Likelihood** of an event. The Priority Score and Risk Category will update automatically.</p>
+    </div>
+
+    <h2>Progress</h2>
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar">0%</div>
+    </div>
+
+    <div id="risk-assessment-tool">
+        <table>
+            <thead>
+                <tr>
+                    <th>Asset Name</th>
+                    <th>Risk Source</th>
+                    <th>Risk Category</th>
+                    <th>Impact</th>
+                    <th>Likelihood</th>
+                    <th>Priority Score</th>
+                    <th>Comments</th>
+                </tr>
+            </thead>
+            <tbody id="assetTableBody">
+                </tbody>
+        </table>
+    </div>
+
+    <div id="summary">
+        <h2>Assessment Complete! ✅</h2>
+        <p>You have successfully completed the risk assessment. The table above now serves as your prioritized risk register. This list, complete with your classifications, helps leaders understand not only *how severe* a risk is, but also *where it comes from* and *what part of the business it affects*. This is crucial for making informed decisions and allocating resources effectively.</p>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const assets = [
+            { id: 1, name: "Customer Credit Card Database" },
+            { id: 2, name: "Company Website" },
+            { id: 3, name: "Source Code for Proprietary Software" },
+            { id: 4, name: "Employee Personal Information (PII)" },
+            { id: 5, name: "On-premise Domain Controller Server" },
+            { id: 6, name: "Firewall Appliance" },
+            { id: 7, name: "Office Building" },
+            { id: 8, name: "Company-issued Laptops" },
+            { id: 9, name: "CEO" },
+            { id: 10, name: "System Administrators" },
+            { id: 11, name: "Sales Team" },
+            { id: 12, name: "Customer Service Representatives" },
+            { id: 13, name: "Brand Reputation" },
+            { id: 14, name: "Trade Secrets / Formulas" },
+            { id: 15, name: "Patents and Copyrights" },
+            { id: 16, name: "Supply Chain Logistics Plan" },
+            { id: 17, name: "Marketing Campaign Data" },
+            { id: 18, name: "Financial Records (Quarterly Reports)" },
+            { id: 19, name: "Cloud-hosted Virtual Machines" },
+            { id: 20, name: "Network Switches and Routers" },
+            { id: 21, name: "Security Camera System" },
+            { id: 22, name: "Uninterruptible Power Supply (UPS) units" },
+            { id: 23, name: "Help Desk Ticketing System" },
+            { id: 24, name: "Key Stakeholder Relationships" }
+        ];
+
+        const tableBody = document.getElementById('assetTableBody');
+        let completedRows = 0;
+        const totalRows = assets.length;
+
+        const valueMapping = { "0": 0, "Low": 1, "Medium": 2, "High": 3 };
+        const sourceCategories = ["", "Internal", "External"];
+        const typeCategories = ["", "Financial", "Operational", "Reputational", "Compliance", "Strategic", "Technology"];
+        const riskLevels = ["", "Low", "Medium", "High"];
+
+        assets.forEach(asset => {
+            const row = document.createElement('tr');
+            row.id = `row-${asset.id}`;
+
+            // Asset Name
+            const nameCell = document.createElement('td');
+            nameCell.textContent = asset.name;
+            row.appendChild(nameCell);
+
+            // Risk Source Dropdown
+            const sourceCell = createDropdownCell(asset.id, 'source', sourceCategories);
+            row.appendChild(sourceCell);
+
+            // Risk Category Dropdown
+            const typeCell = createDropdownCell(asset.id, 'type', typeCategories);
+            row.appendChild(typeCell);
+
+            // Impact Dropdown
+            const impactCell = createDropdownCell(asset.id, 'impact', riskLevels);
+            row.appendChild(impactCell);
+
+            // Likelihood Dropdown
+            const likelihoodCell = createDropdownCell(asset.id, 'likelihood', riskLevels);
+            row.appendChild(likelihoodCell);
+
+            // Priority Score
+            const priorityCell = document.createElement('td');
+            priorityCell.className = 'priority-score';
+            priorityCell.id = `priority-${asset.id}`;
+            priorityCell.textContent = '-';
+            row.appendChild(priorityCell);
+
+            // Comments
+            const categoryCell = document.createElement('td');
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'risk-category incomplete';
+            categoryDiv.id = `category-${asset.id}`;
+            categoryDiv.textContent = 'Incomplete';
+            categoryCell.appendChild(categoryDiv);
+            row.appendChild(categoryCell);
+            
+            tableBody.appendChild(row);
+        });
+
+        function createDropdownCell(assetId, type, options) {
+            const cell = document.createElement('td');
+            const select = document.createElement('select');
+            select.id = `${type}-${assetId}`;
+            select.dataset.assetId = assetId;
+
+            options.forEach(optionText => {
+                const option = document.createElement('option');
+                option.value = (optionText === "") ? "0" : optionText;
+                option.textContent = (optionText === "") ? "Select..." : optionText;
+                select.appendChild(option);
+            });
+            
+            select.addEventListener('change', checkCompletion);
+            cell.appendChild(select);
+            return cell;
+        }
+
+        function checkCompletion(event) {
+            const assetId = event.target.dataset.assetId;
+            
+            const sourceValue = document.getElementById(`source-${assetId}`).value;
+            const typeValue = document.getElementById(`type-${assetId}`).value;
+            const impactValue = valueMapping[document.getElementById(`impact-${assetId}`).value] || 0;
+            const likelihoodValue = valueMapping[document.getElementById(`likelihood-${assetId}`).value] || 0;
+
+            const priorityCell = document.getElementById(`priority-${assetId}`);
+            const categoryDiv = document.getElementById(`category-${assetId}`);
+            
+            const wasIncomplete = categoryDiv.classList.contains('incomplete');
+
+            if (impactValue > 0 && likelihoodValue > 0 && sourceValue !== "0" && typeValue !== "0") {
+                const score = impactValue * likelihoodValue;
+                priorityCell.textContent = score;
+
+                let category = '';
+                let categoryClass = '';
+                
+                if (score >= 9) {
+                    category = 'Critical';
+                    categoryClass = 'risk-critical';
+                } else if (score >= 6) {
+                    category = 'High';
+                    categoryClass = 'risk-high';
+                } else if (score >= 3) {
+                    category = 'Moderate';
+                    categoryClass = 'risk-moderate';
+                } else {
+                    category = 'Low';
+                    categoryClass = 'risk-low';
+                }
+
+                categoryDiv.textContent = category;
+                categoryDiv.className = `risk-category ${categoryClass}`;
+                
+                if (wasIncomplete) {
+                    completedRows++;
+                    updateProgress();
+                }
+
+            } else {
+                priorityCell.textContent = '-';
+                categoryDiv.textContent = 'Incomplete';
+                categoryDiv.className = 'risk-category incomplete';
+                
+                if (!wasIncomplete) {
+                    completedRows--;
+                    updateProgress();
+                }
+            }
+        }
+
+        function updateProgress() {
+            const percentage = Math.round((completedRows / totalRows) * 100);
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+
+            if (completedRows === totalRows) {
+                document.getElementById('summary').style.display = 'block';
+            } else {
+                 document.getElementById('summary').style.display = 'none';
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

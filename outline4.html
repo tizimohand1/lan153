@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompTIA Security+ Domain 4: Security Operations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: white;
+            color: black;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a7b3e, #2d8f47);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(45, 143, 71, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .exam-stats {
+            background: #f8f9fa;
+            border: 2px solid #1a7b3e;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #1a7b3e;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1a7b3e;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .navigation {
+            background: #1a7b3e;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .dropdown-select {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 16px;
+            background: white;
+            border: 2px solid #2d8f47;
+            border-radius: 8px;
+            color: black;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%231a7b3e' viewBox='0 0 16 16'%3e%3cpath d='M8 11L3 6h10l-5 5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+
+        .dropdown-select:focus {
+            outline: none;
+            border-color: #1a7b3e;
+            box-shadow: 0 0 0 3px rgba(26, 123, 62, 0.2);
+        }
+
+        .content-area {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .objective-section {
+            display: none;
+            background: white;
+            border: 2px solid #1a7b3e;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .objective-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .objective-title {
+            color: #1a7b3e;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #2d8f47;
+            padding-bottom: 0.5rem;
+        }
+
+        .objective-description {
+            background: #f0f8f4;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 5px solid #1a7b3e;
+        }
+
+        .sub-topics {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .sub-topic {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .sub-topic:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(26, 123, 62, 0.1);
+            border-color: #1a7b3e;
+        }
+
+        .sub-topic h3 {
+            color: #1a7b3e;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .topic-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .topic-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .topic-list li:before {
+            content: "▸";
+            color: #1a7b3e;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .topic-list li:last-child {
+            border-bottom: none;
+        }
+
+        .nested-list {
+            margin-left: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .nested-list li {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .key-concepts {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f4);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #1a7b3e;
+            margin-top: 2rem;
+        }
+
+        .key-concepts h3 {
+            color: #1a7b3e;
+            margin-bottom: 1rem;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .concept-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #1a7b3e;
+            text-align: center;
+        }
+
+        .concept-card h4 {
+            color: #1a7b3e;
+            margin-bottom: 0.5rem;
+        }
+
+        .practical-tips {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #1a7b3e;
+            margin-top: 2rem;
+        }
+
+        .practical-tips h3 {
+            color: #1a7b3e;
+            margin-bottom: 1rem;
+        }
+
+        .tip-item {
+            background: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .footer {
+            background: #1a7b3e;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .progress-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: #1a7b3e;
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .exam-stats {
+                grid-template-columns: 1fr;
+                margin: 1rem;
+            }
+            
+            .content-area {
+                padding: 1rem;
+            }
+            
+            .objective-section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-indicator" id="progressBar"></div>
+    
+    <header class="header">
+        <h1>CompTIA Security+ SY0-701</h1>
+        <p>Domain 4: Security Operations - Interactive Study Guide</p>
+    </header>
+
+    <div class="exam-stats">
+        <div class="stat-item">
+            <div class="stat-number">28%</div>
+            <div class="stat-label">Exam Weight</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">9</div>
+            <div class="stat-label">Objectives</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">25-27</div>
+            <div class="stat-label">Est. Questions</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">SY0-701</div>
+            <div class="stat-label">Exam Version</div>
+        </div>
+    </div>
+
+    <nav class="navigation">
+        <div class="dropdown-container">
+            <select class="dropdown-select" id="objectiveSelector">
+                <option value="">Select an Objective to Study</option>
+                <option value="overview">Domain 4 Overview</option>
+                <option value="4.1">4.1 - Security Techniques for Computing Resources</option>
+                <option value="4.2">4.2 - Hardware, Software & Data Asset Management</option>
+                <option value="4.3">4.3 - Vulnerability Management Activities</option>
+                <option value="4.4">4.4 - Security Alerting and Monitoring</option>
+                <option value="4.5">4.5 - Modify Enterprise Capabilities</option>
+                <option value="4.6">4.6 - Identity and Access Management</option>
+                <option value="4.7">4.7 - Automation and Orchestration</option>
+                <option value="4.8">4.8 - Incident Response Activities</option>
+                <option value="4.9">4.9 - Data Sources for Investigation</option>
+            </select>
+        </div>
+    </nav>
+
+    <main class="content-area">
+        <!-- Overview Section -->
+        <section id="overview" class="objective-section">
+            <h2 class="objective-title">Domain 4: Security Operations Overview</h2>
+            <div class="objective-description">
+                <p><strong>Security Operations</strong> encompasses the daily practices and procedures that security professionals use to monitor, detect, respond to, and recover from security incidents. This domain represents the largest portion of the Security+ exam at 28% and focuses on practical, hands-on security operations that every cybersecurity professional must master.</p>
+            </div>
+
+            <div class="key-concepts">
+                <h3>Core Focus Areas</h3>
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h4>Security Monitoring</h4>
+                        <p>Continuous monitoring of systems, networks, and applications for security threats</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Incident Response</h4>
+                        <p>Structured approach to handling security incidents from detection to recovery</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Vulnerability Management</h4>
+                        <p>Systematic identification, assessment, and remediation of security vulnerabilities</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Automation & Orchestration</h4>
+                        <p>Leveraging tools and processes to automate routine security tasks</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="practical-tips">
+                <h3>Exam Preparation Tips for Domain 4</h3>
+                <div class="tip-item">
+                    <strong>Hands-on Practice:</strong> This domain heavily emphasizes scenario-based questions. Practice with real security tools and understand their practical applications.
+                </div>
+                <div class="tip-item">
+                    <strong>Focus on SOAR:</strong> Security Orchestration, Automation, and Response (SOAR) is a key topic. Understand how it differs from SIEM and its benefits.
+                </div>
+                <div class="tip-item">
+                    <strong>Incident Response Process:</strong> Memorize the incident response lifecycle: Preparation → Detection → Analysis → Containment → Eradication → Recovery → Lessons Learned.
+                </div>
+                <div class="tip-item">
+                    <strong>Asset Management:</strong> Know the complete asset lifecycle from acquisition to disposal, including sanitization and destruction methods.
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.1 Security Techniques -->
+        <section id="4.1" class="objective-section">
+            <h2 class="objective-title">4.1 - Apply Common Security Techniques to Computing Resources</h2>
+            <div class="objective-description">
+                <p>This objective focuses on implementing security measures across various computing resources, from mobile devices to industrial control systems. It emphasizes practical application of security techniques in real-world scenarios.</p>
+            </div>
+
+            <div class="sub-topics">
+                <div class="sub-topic">
+                    <h3>Secure Baselines</h3>
+                    <ul class="topic-list">
+                        <li>Establish baseline configurations
+                            <ul class="nested-list">
+                                <li>Standard security configurations for systems</li>
+                                <li>Documented security requirements</li>
+                                <li>Configuration templates</li>
+                            </ul>
+                        </li>
+                        <li>Deploy baselines across infrastructure</li>
+                        <li>Maintain baseline integrity over time</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Hardening Targets</h3>
+                    <ul class="topic-list">
+                        <li>Mobile devices (smartphones, tablets)</li>
+                        <li>Workstations (desktops, laptops)</li>
+                        <li>Network infrastructure (switches, routers)</li>
+                        <li>Cloud infrastructure components</li>
+                        <li>Servers (web, database, application)</li>
+                        <li>ICS/SCADA systems</li>
+                        <li>Embedded systems and IoT devices</li>
+                        <li>Real-time Operating Systems (RTOS)</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Wireless Security</h3>
+                    <ul class="topic-list">
+                        <li>Installation considerations
+                            <ul class="nested-list">
+                                <li>Site surveys for optimal placement</li>
+                                <li>Heat maps for coverage analysis</li>
+                                <li>Interference assessment</li>
+                            </ul>
+                        </li>
+                        <li>Wireless security settings
+                            <ul class="nested-list">
+                                <li>WPA3 implementation</li>
+                                <li>AAA/RADIUS authentication</li>
+                                <li>Cryptographic protocols</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Mobile Solutions</h3>
+                    <ul class="topic-list">
+                        <li>Mobile Device Management (MDM)</li>
+                        <li>Deployment models
+                            <ul class="nested-list">
+                                <li>BYOD (Bring Your Own Device)</li>
+                                <li>COPE (Corporate-Owned, Personally Enabled)</li>
+                                <li>CYOD (Choose Your Own Device)</li>
+                            </ul>
+                        </li>
+                        <li>Connection methods (Cellular, Wi-Fi, Bluetooth)</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Application Security</h3>
+                    <ul class="topic-list">
+                        <li>Input validation techniques</li>
+                        <li>Secure cookie implementation</li>
+                        <li>Static code analysis</li>
+                        <li>Code signing processes</li>
+                        <li>Sandboxing environments</li>
+                        <li>Continuous monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.2 Asset Management -->
+        <section id="4.2" class="objective-section">
+            <h2 class="objective-title">4.2 - Hardware, Software, and Data Asset Management</h2>
+            <div class="objective-description">
+                <p>Asset management is critical for maintaining security throughout the entire lifecycle of organizational resources. This objective covers the complete process from acquisition to disposal.</p>
+            </div>
+
+            <div class="sub-topics">
+                <div class="sub-topic">
+                    <h3>Acquisition/Procurement Process</h3>
+                    <ul class="topic-list">
+                        <li>Vendor assessment and selection</li>
+                        <li>Security requirements in procurement</li>
+                        <li>Contract security provisions</li>
+                        <li>Supply chain security considerations</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Assignment/Accounting</h3>
+                    <ul class="topic-list">
+                        <li>Ownership determination
+                            <ul class="nested-list">
+                                <li>Asset custodians</li>
+                                <li>Data owners vs. data controllers</li>
+                                <li>Responsibility matrices</li>
+                            </ul>
+                        </li>
+                        <li>Classification schemes
+                            <ul class="nested-list">
+                                <li>Confidential, Internal, Public</li>
+                                <li>Critical, Important, Standard</li>
+                                <li>Business impact ratings</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Monitoring/Asset Tracking</h3>
+                    <ul class="topic-list">
+                        <li>Inventory management systems</li>
+                        <li>Enumeration processes
+                            <ul class="nested-list">
+                                <li>Automated discovery tools</li>
+                                <li>Network scanning</li>
+                                <li>Configuration management databases (CMDB)</li>
+                            </ul>
+                        </li>
+                        <li>Real-time asset monitoring</li>
+                        <li>Change tracking and approval</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Disposal/Decommissioning</h3>
+                    <ul class="topic-list">
+                        <li>Sanitization methods
+                            <ul class="nested-list">
+                                <li>Data wiping (logical)</li>
+                                <li>Degaussing (magnetic)</li>
+                                <li>Cryptographic erasure</li>
+                            </ul>
+                        </li>
+                        <li>Destruction techniques
+                            <ul class="nested-list">
+                                <li>Physical destruction</li>
+                                <li>Shredding</li>
+                                <li>Incineration</li>
+                            </ul>
+                        </li>
+                        <li>Certification and documentation</li>
+                        <li>Data retention requirements</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="key-concepts">
+                <h3>Asset Lifecycle Security</h3>
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h4>Acquisition</h4>
+                        <p>Secure procurement with vendor vetting and security requirements</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Deployment</h4>
+                        <p>Proper classification, ownership assignment, and initial configuration</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Operation</h4>
+                        <p>Continuous monitoring, maintenance, and security updates</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Disposal</h4>
+                        <p>Secure sanitization, destruction, and proper documentation</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.3 Vulnerability Management -->
+        <section id="4.3" class="objective-section">
+            <h2 class="objective-title">4.3 - Vulnerability Management Activities</h2>
+            <div class="objective-description">
+                <p>Vulnerability management is a continuous process of identifying, analyzing, and remediating security vulnerabilities across the organization's infrastructure.</p>
+            </div>
+
+            <div class="sub-topics">
+                <div class="sub-topic">
+                    <h3>Identification Methods</h3>
+                    <ul class="topic-list">
+                        <li>Vulnerability scanning
+                            <ul class="nested-list">
+                                <li>Network-based scanners</li>
+                                <li>Host-based scanners</li>
+                                <li>Web application scanners</li>
+                            </ul>
+                        </li>
+                        <li>Application security testing
+                            <ul class="nested-list">
+                                <li>Static Analysis (SAST)</li>
+                                <li>Dynamic Analysis (DAST)</li>
+                                <li>Package monitoring</li>
+                            </ul>
+                        </li>
+                        <li>Threat intelligence feeds
+                            <ul class="nested-list">
+                                <li>Open Source Intelligence (OSINT)</li>
+                                <li>Proprietary/third-party feeds</li>
+                                <li>Information sharing organizations</li>
+                                <li>Dark web monitoring</li>
+                            </ul>
+                        </li>
+                        <li>Penetration testing</li>
+                        <li>Responsible disclosure programs and bug bounties</li>
+                        <li>System and process audits</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Analysis Process</h3>
+                    <ul class="topic-list">
+                        <li>Confirmation procedures
+                            <ul class="nested-list">
+                                <li>False positive identification</li>
+                                <li>False negative detection</li>
+                                <li>Validation testing</li>
+                            </ul>
+                        </li>
+                        <li>Prioritization frameworks
+                            <ul class="nested-list">
+                                <li>Common Vulnerability Scoring System (CVSS)</li>
+                                <li>Common Vulnerability Enumeration (CVE)</li>
+                                <li>Vulnerability classification</li>
+                            </ul>
+                        </li>
+                        <li>Risk assessment factors
+                            <ul class="nested-list">
+                                <li>Exposure factor</li>
+                                <li>Environmental variables</li>
+                                <li>Industry impact</li>
+                                <li>Organizational risk tolerance</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Response and Remediation</h3>
+                    <ul class="topic-list">
+                        <li>Patching strategies</li>
+                        <li>Risk transfer (insurance)</li>
+                        <li>Network segmentation</li>
+                        <li>Compensating controls</li>
+                        <li>Exceptions and exemptions</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Validation and Reporting</h3>
+                    <ul class="topic-list">
+                        <li>Remediation validation
+                            <ul class="nested-list">
+                                <li>Rescanning procedures</li>
+                                <li>Audit verification</li>
+                                <li>Testing validation</li>
+                            </ul>
+                        </li>
+                        <li>Reporting mechanisms
+                            <ul class="nested-list">
+                                <li>Executive dashboards</li>
+                                <li>Technical reports</li>
+                                <li>Trend analysis</li>
+                                <li>Compliance reporting</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.4 Security Alerting and Monitoring -->
+        <section id="4.4" class="objective-section">
+            <h2 class="objective-title">4.4 - Security Alerting and Monitoring Concepts and Tools</h2>
+            <div class="objective-description">
+                <p>Effective security monitoring requires understanding various tools, techniques, and processes for detecting and responding to security events across the enterprise infrastructure.</p>
+            </div>
+
+            <div class="sub-topics">
+                <div class="sub-topic">
+                    <h3>Monitoring Computing Resources</h3>
+                    <ul class="topic-list">
+                        <li>Systems monitoring
+                            <ul class="nested-list">
+                                <li>Operating system events</li>
+                                <li>Performance metrics</li>
+                                <li>Resource utilization</li>
+                            </ul>
+                        </li>
+                        <li>Applications monitoring
+                            <ul class="nested-list">
+                                <li>Application logs</li>
+                                <li>Error tracking</li>
+                                <li>Performance monitoring</li>
+                            </ul>
+                        </li>
+                        <li>Infrastructure monitoring
+                            <ul class="nested-list">
+                                <li>Network devices</li>
+                                <li>Storage systems</li>
+                                <li>Cloud resources</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Monitoring Activities</h3>
+                    <ul class="topic-list">
+                        <li>Log aggregation and correlation</li>
+                        <li>Alerting mechanisms and thresholds</li>
+                        <li>Scanning and assessment</li>
+                        <li>Reporting and analytics</li>
+                        <li>Archiving and retention</li>
+                        <li>Alert response and remediation
+                            <ul class="nested-list">
+                                <li>Quarantine procedures</li>
+                                <li>Alert tuning and optimization</li>
+                                <li>Escalation procedures</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Security Monitoring Tools</h3>
+                    <ul class="topic-list">
+                        <li>Security Content Automation Protocol (SCAP)</li>
+                        <li>Security benchmarks and frameworks</li>
+                        <li>Agent-based vs. agentless monitoring</li>
+                        <li>Security Information and Event Management (SIEM)</li>
+                        <li>Antivirus and anti-malware</li>
+                        <li>Data Loss Prevention (DLP)</li>
+                        <li>Simple Network Management Protocol (SNMP) traps</li>
+                        <li>NetFlow and network analysis</li>
+                        <li>Vulnerability scanners</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="key-concepts">
+                <h3>Monitoring Strategy Components</h3>
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h4>Detection</h4>
+                        <p>Identifying security events and potential threats in real-time</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Analysis</h4>
+                        <p>Correlating events and determining threat severity and impact</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Response</h4>
+                        <p>Automated and manual responses to security incidents</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Improvement</h4>
+                        <p>Tuning systems and processes based on lessons learned</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.5 Modify Enterprise Capabilities -->
+        <section id="4.5" class="objective-section">
+            <h2 class="objective-title">4.5 - Modify Enterprise Capabilities to Enhance Security</h2>
+            <div class="objective-description">
+                <p>This objective focuses on implementing and configuring various security technologies and controls to strengthen the organization's overall security posture.</p>
+            </div>
+
+            <div class="sub-topics">
+                <div class="sub-topic">
+                    <h3>Firewall Configuration</h3>
+                    <ul class="topic-list">
+                        <li>Rules management and optimization</li>
+                        <li>Access Control Lists (ACLs)</li>
+                        <li>Ports and protocols configuration</li>
+                        <li>Screened subnets (DMZ) implementation</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Intrusion Detection and Prevention</h3>
+                    <ul class="topic-list">
+                        <li>IDS/IPS configuration and tuning
+                            <ul class="nested-list">
+                                <li>Trend analysis</li>
+                                <li>Signature management</li>
+                                <li>Behavioral analysis</li>
+                            </ul>
+                        </li>
+                        <li>Network vs. host-based deployment</li>
+                        <li>Inline vs. passive monitoring</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Web Filtering and Content Control</h3>
+                    <ul class="topic-list">
+                        <li>Agent-based filtering</li>
+                        <li>Centralized proxy solutions</li>
+                        <li>URL scanning and categorization</li>
+                        <li>Content categorization policies</li>
+                        <li>Block rules and exceptions</li>
+                        <li>Reputation-based filtering</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Operating System Security</h3>
+                    <ul class="topic-list">
+                        <li>Group Policy management (Windows)</li>
+                        <li>SELinux configuration (Linux)</li>
+                        <li>Security hardening guidelines</li>
+                        <li>Patch management processes</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Secure Protocol Implementation</h3>
+                    <ul class="topic-list">
+                        <li>Protocol selection criteria</li>
+                        <li>Port selection and management</li>
+                        <li>Transport method security</li>
+                        <li>Encryption in transit</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Additional Security Controls</h3>
+                    <ul class="topic-list">
+                        <li>DNS filtering and security</li>
+                        <li>Email security
+                            <ul class="nested-list">
+                                <li>DMARC (Domain-based Message Authentication)</li>
+                                <li>DKIM (DomainKeys Identified Mail)</li>
+                                <li>SPF (Sender Policy Framework)</li>
+                                <li>Email gateway security</li>
+                            </ul>
+                        </li>
+                        <li>File Integrity Monitoring (FIM)</li>
+                        <li>Data Loss Prevention (DLP)</li>
+                        <li>Network Access Control (NAC)</li>
+                        <li>Endpoint Detection and Response (EDR)</li>
+                        <li>Extended Detection and Response (XDR)</li>
+                        <li>User Behavior Analytics (UBA)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.6 Identity and Access Management -->
+        <section id="4.6" class="objective-section">
+            <h2 class="objective-title">4.6 - Identity and Access Management Implementation</h2>
+            <div class="objective-description">
+                <p>Identity and Access Management (IAM) is fundamental to security operations, controlling who has access to what resources and under what conditions.</p>
+            </div>
+
+            <div class="sub-topics">
+                <div class="sub-topic">
+                    <h3>User Account Management</h3>
+                    <ul class="topic-list">
+                        <li>Provisioning and de-provisioning processes</li>
+                        <li>Permission assignments and implications</li>
+                        <li>Identity proofing procedures</li>
+                        <li>Account lifecycle management</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Federation and Single Sign-On</h3>
+                    <ul class="topic-list">
+                        <li>Federation concepts and benefits</li>
+                        <li>Single Sign-On (SSO) implementation
+                            <ul class="nested-list">
+                                <li>LDAP (Lightweight Directory Access Protocol)</li>
+                                <li>OAuth (Open Authorization)</li>
+                                <li>SAML (Security Assertions Markup Language)</li>
+                            </ul>
+                        </li>
+                        <li>Interoperability considerations</li>
+                        <li>Attestation processes</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Access Control Models</h3>
+                    <ul class="topic-list">
+                        <li>Mandatory Access Control (MAC)</li>
+                        <li>Discretionary Access Control (DAC)</li>
+                        <li>Role-Based Access Control (RBAC)</li>
+                        <li>Rule-Based Access Control</li>
+                        <li>Attribute-Based Access Control (ABAC)</li>
+                        <li>Time-of-day restrictions</li>
+                        <li>Least privilege principle</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Multifactor Authentication</h3>
+                    <ul class="topic-list">
+                        <li>Implementation methods
+                            <ul class="nested-list">
+                                <li>Biometric authentication</li>
+                                <li>Hardware tokens</li>
+                                <li>Software tokens</li>
+                                <li>Security keys</li>
+                            </ul>
+                        </li>
+                        <li>Authentication factors
+                            <ul class="nested-list">
+                                <li>Something you know (passwords)</li>
+                                <li>Something you have (tokens)</li>
+                                <li>Something you are (biometrics)</li>
+                                <li>Somewhere you are (location)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Password Management</h3>
+                    <ul class="topic-list">
+                        <li>Password best practices
+                            <ul class="nested-list">
+                                <li>Length requirements</li>
+                                <li>Complexity standards</li>
+                                <li>Reuse prevention</li>
+                                <li>Expiration policies</li>
+                                <li>Age requirements</li>
+                            </ul>
+                        </li>
+                        <li>Password managers</li>
+                        <li>Passwordless authentication</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Privileged Access Management</h3>
+                    <ul class="topic-list">
+                        <li>Just-in-time permissions</li>
+                        <li>Password vaulting</li>
+                        <li>Ephemeral credentials</li>
+                        <li>Privileged session monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.7 Automation and Orchestration -->
+        <section id="4.7" class="objective-section">
+            <h2 class="objective-title">4.7 - Automation and Orchestration in Security Operations</h2>
+            <div class="objective-description">
+                <p>Security automation and orchestration are essential for managing the scale and complexity of modern security operations, enabling faster response times and consistent processes.</p>
+            </div>
+
+            <div class="sub-topics">
+                <div class="sub-topic">
+                    <h3>Use Cases for Automation and Scripting</h3>
+                    <ul class="topic-list">
+                        <li>User provisioning and de-provisioning</li>
+                        <li>Resource provisioning and configuration</li>
+                        <li>Guard rails and policy enforcement</li>
+                        <li>Security group management</li>
+                        <li>Ticket creation and management</li>
+                        <li>Escalation procedures</li>
+                        <li>Service and access management</li>
+                        <li>Continuous integration and testing</li>
+                        <li>API integrations and orchestration</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Benefits of Automation</h3>
+                    <ul class="topic-list">
+                        <li>Efficiency and time savings</li>
+                        <li>Baseline enforcement and consistency</li>
+                        <li>Standard infrastructure configurations</li>
+                        <li>Secure scaling capabilities</li>
+                        <li>Employee retention and satisfaction</li>
+                        <li>Improved reaction times</li>
+                        <li>Workforce multiplication effect</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Implementation Considerations</h3>
+                    <ul class="topic-list">
+                        <li>Complexity management</li>
+                        <li>Cost-benefit analysis</li>
+                        <li>Single point of failure risks</li>
+                        <li>Technical debt accumulation</li>
+                        <li>Ongoing supportability requirements</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="key-concepts">
+                <h3>SOAR Platform Components</h3>
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h4>Security Orchestration</h4>
+                        <p>Connecting and coordinating security tools and processes</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Automation</h4>
+                        <p>Executing repetitive tasks without human intervention</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Response</h4>
+                        <p>Standardized incident response playbooks and workflows</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Integration</h4>
+                        <p>API-driven connections between security technologies</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.8 Incident Response Activities -->
+        <section id="4.8" class="objective-section">
+            <h2 class="objective-title">4.8 - Incident Response Activities</h2>
+            <div class="objective-description">
+                <p>Incident response is a structured approach to handling security incidents, from initial detection through recovery and lessons learned.</p>
+            </div>
+
+            <div class="sub-topics">
+                <div class="sub-topic">
+                    <h3>Incident Response Process</h3>
+                    <ul class="topic-list">
+                        <li>Preparation
+                            <ul class="nested-list">
+                                <li>Incident response plan development</li>
+                                <li>Team training and role assignment</li>
+                                <li>Tool and resource preparation</li>
+                            </ul>
+                        </li>
+                        <li>Detection and identification</li>
+                        <li>Analysis and assessment</li>
+                        <li>Containment strategies
+                            <ul class="nested-list">
+                                <li>Short-term containment</li>
+                                <li>Long-term containment</li>
+                                <li>System isolation</li>
+                            </ul>
+                        </li>
+                        <li>Eradication procedures</li>
+                        <li>Recovery and restoration</li>
+                        <li>Lessons learned and improvement</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Training and Preparedness</h3>
+                    <ul class="topic-list">
+                        <li>Regular team training programs</li>
+                        <li>Role-specific skill development</li>
+                        <li>Cross-training initiatives</li>
+                        <li>Certification maintenance</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Testing and Validation</h3>
+                    <ul class="topic-list">
+                        <li>Tabletop exercises
+                            <ul class="nested-list">
+                                <li>Scenario-based discussions</li>
+                                <li>Decision-making practice</li>
+                                <li>Communication testing</li>
+                            </ul>
+                        </li>
+                        <li>Simulation exercises
+                            <ul class="nested-list">
+                                <li>Live environment testing</li>
+                                <li>Technical response practice</li>
+                                <li>Tool utilization validation</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Advanced Activities</h3>
+                    <ul class="topic-list">
+                        <li>Root cause analysis</li>
+                        <li>Threat hunting initiatives</li>
+                        <li>Digital forensics procedures
+                            <ul class="nested-list">
+                                <li>Legal hold processes</li>
+                                <li>Chain of custody maintenance</li>
+                                <li>Evidence acquisition</li>
+                                <li>Forensic reporting</li>
+                                <li>Data preservation</li>
+                                <li>E-discovery support</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="practical-tips">
+                <h3>Incident Response Best Practices</h3>
+                <div class="tip-item">
+                    <strong>Documentation:</strong> Maintain detailed logs of all incident response activities, decisions, and communications for post-incident analysis.
+                </div>
+                <div class="tip-item">
+                    <strong>Communication:</strong> Establish clear communication channels and escalation procedures for different types of incidents.
+                </div>
+                <div class="tip-item">
+                    <strong>Legal Considerations:</strong> Understand when to involve legal counsel and law enforcement, especially for criminal activities.
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.9 Data Sources for Investigation -->
+        <section id="4.9" class="objective-section">
+            <h2 class="objective-title">4.9 - Data Sources to Support Investigation</h2>
+            <div class="objective-description">
+                <p>Understanding and utilizing various data sources is crucial for effective security investigations and incident analysis.</p>
+            </div>
+
+            <div class="sub-topics">
+                <div class="sub-topic">
+                    <h3>Log Data Sources</h3>
+                    <ul class="topic-list">
+                        <li>Firewall logs
+                            <ul class="nested-list">
+                                <li>Connection attempts</li>
+                                <li>Blocked traffic</li>
+                                <li>Rule violations</li>
+                            </ul>
+                        </li>
+                        <li>Application logs
+                            <ul class="nested-list">
+                                <li>User activities</li>
+                                <li>Error messages</li>
+                                <li>Performance metrics</li>
+                            </ul>
+                        </li>
+                        <li>Endpoint logs
+                            <ul class="nested-list">
+                                <li>Process execution</li>
+                                <li>File system changes</li>
+                                <li>Network connections</li>
+                            </ul>
+                        </li>
+                        <li>OS-specific security logs
+                            <ul class="nested-list">
+                                <li>Windows Event Logs</li>
+                                <li>Linux system logs</li>
+                                <li>Authentication events</li>
+                            </ul>
+                        </li>
+                        <li>IPS/IDS logs</li>
+                        <li>Network logs and flow data</li>
+                        <li>Metadata analysis</li>
+                    </ul>
+                </div>
+
+                <div class="sub-topic">
+                    <h3>Additional Data Sources</h3>
+                    <ul class="topic-list">
+                        <li>Vulnerability scan results</li>
+                        <li>Automated security reports</li>
+                        <li>Security dashboards and metrics</li>
+                        <li>Network packet captures
+                            <ul class="nested-list">
+                                <li>Full packet analysis</li>
+                                <li>Protocol analysis</li>
+                                <li>Traffic patterns</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="key-concepts">
+                <h3>Investigation Data Analysis</h3>
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h4>Log Correlation</h4>
+                        <p>Connecting events across multiple data sources for comprehensive analysis</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Timeline Analysis</h4>
+                        <p>Reconstructing the sequence of events during an incident</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Artifact Collection</h4>
+                        <p>Gathering digital evidence for forensic analysis</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Pattern Recognition</h4>
+                        <p>Identifying indicators of compromise and attack patterns</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 CompTIA Security+ Study Guide - Domain 4: Security Operations</p>
+        <p>This interactive guide covers all SY0-701 exam objectives for comprehensive exam preparation.</p>
+    </footer>
+
+    <script>
+        // Navigation functionality
+        const selector = document.getElementById('objectiveSelector');
+        const sections = document.querySelectorAll('.objective-section');
+        const progressBar = document.getElementById('progressBar');
+
+        // Show overview by default
+        document.getElementById('overview').classList.add('active');
+
+        selector.addEventListener('change', function() {
+            const selectedValue = this.value;
+            
+            // Hide all sections
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            if (selectedValue) {
+                const targetSection = document.getElementById(selectedValue);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+            
+            updateProgress();
+        });
+
+        // Progress bar functionality
+        function updateProgress() {
+            const currentOption = selector.selectedIndex;
+            const totalOptions = selector.options.length - 1; // Exclude the first "Select" option
+            const progress = currentOption > 0 ? (currentOption / totalOptions) * 100 : 0;
+            progressBar.style.width = progress + '%';
+        }
+
+        // Add hover effects for better interactivity
+        document.querySelectorAll('.sub-topic').forEach(topic => {
+            topic.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 6px 20px rgba(26, 123, 62, 0.1)';
+            });
+            
+            topic.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                const currentIndex = selector.selectedIndex;
+                if (currentIndex < selector.options.length - 1) {
+                    selector.selectedIndex = currentIndex + 1;
+                    selector.dispatchEvent(new Event('change'));
+                }
+                e.preventDefault();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                const currentIndex = selector.selectedIndex;
+                if (currentIndex > 0) {
+                    selector.selectedIndex = currentIndex - 1;
+                    selector.dispatchEvent(new Event('change'));
+                }
+                e.preventDefault();
+            }
+        });
+
+        // Initialize progress
+        updateProgress();
+
+        // Add smooth scrolling for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add click-to-expand functionality for nested lists
+        document.querySelectorAll('.topic-list > li').forEach(item => {
+            const nestedList = item.querySelector('.nested-list');
+            if (nestedList) {
+                item.style.cursor = 'pointer';
+                item.addEventListener('click', function(e) {
+                    if (e.target === this || e.target.parentNode === this) {
+                        nestedList.style.display = nestedList.style.display === 'none' ? 'block' : 'none';
+                        this.style.fontWeight = nestedList.style.display === 'none' ? 'normal' : 'bold';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

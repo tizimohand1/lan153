@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIST SP 800-171 Framework Analysis - FreshFlow Systems</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #2d5016, #4a7c23);
+            color: white;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 3px 0 20px rgba(0,0,0,0.1);
+            left: 0;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .sidebar h1 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .sidebar .subtitle {
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 20px;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 18px 20px;
+            margin: 12px 0;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-align: left;
+            width: 100%;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(8px);
+            border-left-color: white;
+        }
+
+        .nav-item.active {
+            background: rgba(255,255,255,0.25);
+            border-left-color: white;
+            transform: translateX(8px);
+        }
+
+        .nav-item .task-number {
+            font-weight: 700;
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .nav-item .task-title {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .content-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 30px;
+            background-color: white;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08);
+        }
+
+        .task-section {
+            display: none;
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        .task-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-header {
+            background: linear-gradient(135deg, #4a7c23, #2d5016);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            margin-bottom: 35px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(74, 124, 35, 0.3);
+        }
+
+        .task-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .task-header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .section-card {
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .section-card:hover {
+            border-color: #4a7c23;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .section-card h3 {
+            color: #2d5016;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-bottom: 2px solid #4a7c23;
+            padding-bottom: 10px;
+        }
+
+        .section-card p {
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+            color: #34495e;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            border-left: 5px solid #4a7c23;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        }
+
+        .info-box h4 {
+            color: #2d5016;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .info-box p, .info-box ul {
+            font-size: 1.05rem;
+            color: #2d5016;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2d5016;
+            font-size: 1.05rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4a7c23;
+            box-shadow: 0 0 0 3px rgba(74, 124, 35, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: #f8fafe;
+            border-radius: 12px;
+            border: 2px solid #e1e8ed;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            border-color: #4a7c23;
+            background: rgba(74, 124, 35, 0.05);
+            transform: translateX(5px);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: #4a7c23;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 1.05rem;
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .priority-container {
+            margin-top: 25px;
+        }
+
+        .priority-boxes {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .priority-box {
+            border: 3px solid;
+            border-radius: 15px;
+            padding: 25px;
+            min-height: 140px;
+            transition: all 0.3s ease;
+        }
+
+        .priority-box h4 {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .priority-high {
+            border-color: #e74c3c;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.05), rgba(231, 76, 60, 0.1));
+        }
+
+        .priority-high h4 {
+            color: #e74c3c;
+        }
+
+        .priority-medium {
+            border-color: #f39c12;
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.05), rgba(243, 156, 18, 0.1));
+        }
+
+        .priority-medium h4 {
+            color: #f39c12;
+        }
+
+        .priority-low {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), rgba(39, 174, 96, 0.1));
+        }
+
+        .priority-low h4 {
+            color: #27ae60;
+        }
+
+        .draggable-items {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8fafe;
+            border-radius: 12px;
+            border: 2px solid #e1e8ed;
+        }
+
+        .draggable-items h4 {
+            margin-bottom: 15px;
+            color: #2d5016;
+            font-size: 1.1rem;
+        }
+
+        .draggable-item {
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            cursor: move;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .draggable-item:hover {
+            border-color: #4a7c23;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .drop-zone {
+            min-height: 80px;
+            border: 2px dashed transparent;
+            border-radius: 8px;
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #4a7c23;
+            background: rgba(74, 124, 35, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e1e8ed;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4a7c23, #2d5016);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 124, 35, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 124, 35, 0.4);
+        }
+
+        .reset-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        .results-area {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            border: 2px solid #4a7c23;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            display: none;
+            box-shadow: 0 5px 20px rgba(74, 124, 35, 0.1);
+        }
+
+        .results-area.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                padding: 0 25px;
+            }
+            to {
+                opacity: 1;
+                max-height: 800px;
+                padding: 25px;
+            }
+        }
+
+        .results-area h4 {
+            color: #2d5016;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .asset-card {
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+        }
+
+        .asset-card h5 {
+            color: #2d5016;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .risk-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .risk-high {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .risk-medium {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .risk-low {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            
+            .main-content {
+                margin-left: 200px;
+            }
+            
+            .content-wrapper {
+                padding: 25px 20px;
+            }
+            
+            .task-header {
+                padding: 30px 20px;
+            }
+            
+            .task-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .section-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 160px;
+            }
+            
+            .main-content {
+                margin-left: 160px;
+            }
+            
+            .content-wrapper {
+                padding: 20px 15px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h1>NIST SP 800-171</h1>
+        <p class="subtitle">FreshFlow Systems Analysis</p>
+        
+        <button class="nav-item active" onclick="showTask(1)" data-task="1">
+            <span class="task-number">Task 1</span>
+            <span class="task-title">Framework Overview & Asset Identification</span>
+        </button>
+        
+        <button class="nav-item" onclick="showTask(2)" data-task="2">
+            <span class="task-number">Task 2</span>
+            <span class="task-title">Control Family Mapping</span>
+        </button>
+        
+        <button class="nav-item" onclick="showTask(3)" data-task="3">
+            <span class="task-number">Task 3</span>
+            <span class="task-title">Risk Assessment & Prioritization</span>
+        </button>
+    </div>
+
+    <div class="main-content">
+        <div class="content-wrapper">
+            <!-- Task 1: Framework Overview & Asset Identification -->
+            <div id="task1" class="task-section active">
+                <div class="task-header">
+                    <h2>Task 1: Framework Overview & Asset Identification</h2>
+                    <p>Understand NIST SP 800-171 and identify FreshFlow Systems critical assets</p>
+                </div>
+
+                <div class="info-box">
+                    <h4>NIST SP 800-171 Framework Overview</h4>
+                    <p>NIST SP 800-171 provides guidelines for protecting Controlled Unclassified Information (CUI) in nonfederal systems. It contains <strong>17 control families</strong> with <strong>110 total controls</strong> that organizations must implement to safeguard sensitive information.</p>
+                </div>
+
+                <div class="section-card">
+                    <h3>Company Background</h3>
+                    <p><strong>FreshFlow Systems</strong> is a rapidly growing food packaging company founded in 2018 with 64 employees across 3 facilities in Lima, Ohio. They operate a mixed IT/OT environment with traditional computers alongside industrial control systems for automated packaging.</p>
+                    
+                    <div class="form-group">
+                        <label>Based on the company profile, describe FreshFlow's main operational risks:</label>
+                        <textarea id="operational-risks" rows="4" placeholder="Consider their manufacturing environment, growth rate, and technology mix..."></textarea>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <h3>Critical Asset Identification</h3>
+                    <p>Select the assets that would require NIST SP 800-171 protection based on their criticality to operations and data sensitivity:</p>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="asset-plc" value="Rockwell PLCs">
+                            <label for="asset-plc">Rockwell PLCs (12 units) - Controls packaging automation</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="asset-servers" value="VMware Servers">
+                            <label for="asset-servers">VMware Server Cluster (5 units) - Hosts ERP and file services</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="asset-laptops" value="Dell Laptops">
+                            <label for="asset-laptops">Dell Laptops (20 units) - Mobile computing for executives</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="asset-hmi" value="HMI Terminals">
+                            <label for="asset-hmi">HMI Terminals (3 units) - Operator interfaces</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="asset-workstations" value="HP Workstations">
+                            <label for="asset-workstations">HP Workstations (40 units) - Standard employee computers</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Explain why you selected these assets as requiring NIST protection:</label>
+                        <textarea id="asset-justification" rows="4" placeholder="Justify your selections based on data sensitivity and operational impact..."></textarea>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="submit-btn" onclick="submitTask1()">Submit Task 1</button>
+                    <button class="reset-btn" onclick="resetTask1()">Reset</button>
+                </div>
+
+                <div id="results1" class="results-area"></div>
+            </div>
+
+            <!-- Task 2: Control Family Mapping -->
+            <div id="task2" class="task-section">
+                <div class="task-header">
+                    <h2>Task 2: Control Family Mapping</h2>
+                    <p>Map NIST control families to FreshFlow's operational environment</p>
+                </div>
+
+                <div class="info-box">
+                    <h4>NIST Control Families</h4>
+                    <p>The 17 control families cover areas like Access Control, System Protection, Physical Security, and Incident Response. Consider FreshFlow's mixed IT/OT environment, rapid growth, and multi-facility operations.</p>
+                </div>
+
+                <div class="section-card">
+                    <h3>Priority Control Family Selection</h3>
+                    <p>Select the <strong>6 most critical</strong> control families for FreshFlow Systems based on their business environment:</p>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cf-ac" value="Access Control">
+                            <label for="cf-ac">Access Control (AC) - User access and permissions (22 controls)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cf-cm" value="Configuration Management">
+                            <label for="cf-cm">Configuration Management (CM) - System baselines and changes (9 controls)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cf-ia" value="Identification Authentication">
+                            <label for="cf-ia">Identification and Authentication (IA) - User verification (12 controls)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cf-ir" value="Incident Response">
+                            <label for="cf-ir">Incident Response (IR) - Security incident handling (6 controls)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cf-pe" value="Physical Environmental">
+                            <label for="cf-pe">Physical and Environmental Protection (PE) - Facility security (6 controls)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cf-sc" value="System Communications Protection">
+                            <label for="cf-sc">System and Communications Protection (SC) - Network security (23 controls)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cf-si" value="System Information Integrity">
+                            <label for="cf-si">System and Information Integrity (SI) - Malware and monitoring (16 controls)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cf-au" value="Audit Accountability">
+                            <label for="cf-au">Audit and Accountability (AU) - Logging and monitoring (9 controls)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cf-at" value="Awareness Training">
+                            <label for="cf-at">Awareness and Training (AT) - Security education (3 controls)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cf-ma" value="Maintenance">
+                            <label for="cf-ma">Maintenance (MA) - System maintenance controls (6 controls)</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Explain why these control families are most critical for FreshFlow:</label>
+                        <textarea id="control-justification" rows="5" placeholder="Consider their manufacturing environment, IT/OT systems, growth challenges, and security risks..."></textarea>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="submit-btn" onclick="submitTask2()">Submit Task 2</button>
+                    <button class="reset-btn" onclick="resetTask2()">Reset</button>
+                </div>
+
+                <div id="results2" class="results-area"></div>
+            </div>
+
+            <!-- Task 3: Risk Assessment & Prioritization -->
+            <div id="task3" class="task-section">
+                <div class="task-header">
+                    <h2>Task 3: Risk Assessment & Prioritization</h2>
+                    <p>Assess and prioritize security risks for FreshFlow Systems</p>
+                </div>
+
+                <div class="info-box">
+                    <h4>Risk Assessment Approach</h4>
+                    <p>Consider both <strong>likelihood</strong> and <strong>business impact</strong> when prioritizing risks. High priority risks could halt production, expose sensitive data, or cause significant financial loss.</p>
+                </div>
+
+                <div class="section-card">
+                    <h3>Risk Prioritization Exercise</h3>
+                    <p>Drag the following risk scenarios into the appropriate priority categories based on their potential impact on FreshFlow's operations:</p>
+                    
+                    <div class="priority-container">
+                        <div class="priority-boxes">
+                            <div class="priority-box priority-high">
+                                <h4>High Priority</h4>
+                                <div id="high-priority" class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                    <!-- High priority risks dropped here -->
+                                </div>
+                            </div>
+                            
+                            <div class="priority-box priority-medium">
+                                <h4>Medium Priority</h4>
+                                <div id="medium-priority" class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                    <!-- Medium priority risks dropped here -->
+                                </div>
+                            </div>
+                            
+                            <div class="priority-box priority-low">
+                                <h4>Low Priority</h4>
+                                <div id="low-priority" class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                    <!-- Low priority risks dropped here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="draggable-items">
+                            <h4>Risk Scenarios - Drag to Priority Level:</h4>
+                            <div id="risk-items">
+                                <div class="draggable-item" draggable="true" ondragstart="drag(event)" id="risk1">Cyberattack targeting PLC systems causing production shutdown</div>
+                                <div class="draggable-item" draggable="true" ondragstart="drag(event)" id="risk2">Ransomware infection on office workstations</div>
+                                <div class="draggable-item" draggable="true" ondragstart="drag(event)" id="risk3">Theft of executive laptops with customer data</div>
+                                <div class="draggable-item" draggable="true" ondragstart="drag(event)" id="risk4">Unauthorized physical access to packaging facility</div>
+                                <div class="draggable-item" draggable="true" ondragstart="drag(event)" id="risk5">Phishing attack targeting financial department</div>
+                                <div class="draggable-item" draggable="true" ondragstart="drag(event)" id="risk6">Server hardware failure affecting ERP system</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Explain your risk prioritization decisions:</label>
+                        <textarea id="risk-rationale" rows="5" placeholder="Justify your prioritization based on potential business impact, likelihood, and FreshFlow's operational dependencies..."></textarea>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="submit-btn" onclick="submitTask3()">Submit Task 3</button>
+                    <button class="reset-btn" onclick="resetTask3()">Reset</button>
+                </div>
+
+                <div id="results3" class="results-area"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTask = 1;
+
+        // Navigation functions
+        function showTask(taskNumber) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.task-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(`task${taskNumber}`).classList.add('active');
+
+            // Update navigation buttons
+            const buttons = document.querySelectorAll('.nav-item');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelector(`[data-task="${taskNumber}"]`).classList.add('active');
+
+            currentTask = taskNumber;
+        }
+
+        // Task 1 Functions
+        function submitTask1() {
+            const operationalRisks = document.getElementById('operational-risks').value;
+            const assetJustification = document.getElementById('asset-justification').value;
+            
+            const selectedAssets = [];
+            const assetCheckboxes = document.querySelectorAll('#task1 input[type="checkbox"]:checked');
+            assetCheckboxes.forEach(checkbox => {
+                selectedAssets.push(checkbox.value);
+            });
+
+            const results = document.getElementById('results1');
+            let feedback = '<h4>Task 1 Assessment Results</h4>';
+            
+            // Validate responses
+            if (operationalRisks.length < 100) {
+                feedback += '<p style="color: #e74c3c;">⚠️ Provide more detailed analysis of operational risks (minimum 100 characters).</p>';
+            } else {
+                feedback += '<p style="color: #27ae60;">✅ Good operational risk analysis provided.</p>';
+            }
+
+            if (selectedAssets.length >= 3) {
+                feedback += '<p style="color: #27ae60;">✅ Good asset selection - identified ' + selectedAssets.length + ' critical assets.</p>';
+                feedback += '<p><strong>Selected Assets:</strong> ' + selectedAssets.join(', ') + '</p>';
+                
+                // Check for critical assets
+                const criticalAssets = ['Rockwell PLCs', 'VMware Servers', 'Dell Laptops'];
+                const selectedCritical = selectedAssets.filter(asset => criticalAssets.includes(asset));
+                if (selectedCritical.length >= 2) {
+                    feedback += '<p style="color: #27ae60;">✅ Correctly identified high-priority assets for NIST protection.</p>';
+                } else {
+                    feedback += '<p style="color: #f39c12;">⚠️ Consider including more assets that handle sensitive data or control critical operations.</p>';
+                }
+            } else {
+                feedback += '<p style="color: #e74c3c;">⚠️ Select at least 3 assets that would require NIST SP 800-171 protection.</p>';
+            }
+
+            if (assetJustification.length > 50) {
+                feedback += '<p style="color: #27ae60;">✅ Asset selection justification provided.</p>';
+            } else {
+                feedback += '<p style="color: #e74c3c;">⚠️ Provide detailed justification for your asset selections.</p>';
+            }
+
+            results.innerHTML = feedback;
+            results.classList.add('show');
+        }
+
+        function resetTask1() {
+            document.getElementById('operational-risks').value = '';
+            document.getElementById('asset-justification').value = '';
+            
+            const checkboxes = document.querySelectorAll('#task1 input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            document.getElementById('results1').classList.remove('show');
+        }
+
+        // Task 2 Functions
+        function submitTask2() {
+            const selectedFamilies = [];
+            const familyCheckboxes = document.querySelectorAll('#task2 input[type="checkbox"]:checked');
+            familyCheckboxes.forEach(checkbox => {
+                selectedFamilies.push(checkbox.value);
+            });
+
+            const justification = document.getElementById('control-justification').value;
+            const results = document.getElementById('results2');
+            let feedback = '<h4>Task 2 Assessment Results</h4>';
+
+            if (selectedFamilies.length === 6) {
+                feedback += '<p style="color: #27ae60;">✅ Perfect - selected exactly 6 control families as requested.</p>';
+            } else if (selectedFamilies.length < 6) {
+                feedback += '<p style="color: #f39c12;">⚠️ Select exactly 6 control families (currently selected: ' + selectedFamilies.length + ').</p>';
+            } else {
+                feedback += '<p style="color: #f39c12;">⚠️ Too many selected - choose only the 6 most critical (currently selected: ' + selectedFamilies.length + ').</p>';
+            }
+
+            // Check for essential control families for manufacturing
+            const essentialFamilies = ['Access Control', 'System Communications Protection', 'Configuration Management', 'Physical Environmental'];
+            const selectedEssential = selectedFamilies.filter(family => essentialFamilies.includes(family));
+            
+            if (selectedEssential.length >= 3) {
+                feedback += '<p style="color: #27ae60;">✅ Selected key control families essential for manufacturing environments.</p>';
+            } else {
+                feedback += '<p style="color: #e74c3c;">⚠️ Consider including more controls critical for manufacturing/industrial environments.</p>';
+            }
+
+            feedback += '<p><strong>Selected Control Families:</strong> ' + selectedFamilies.join(', ') + '</p>';
+
+            if (justification.length > 150) {
+                feedback += '<p style="color: #27ae60;">✅ Comprehensive justification provided.</p>';
+            } else {
+                feedback += '<p style="color: #e74c3c;">⚠️ Provide more detailed justification explaining why these families are most critical.</p>';
+            }
+
+            results.innerHTML = feedback;
+            results.classList.add('show');
+        }
+
+        function resetTask2() {
+            const checkboxes = document.querySelectorAll('#task2 input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            document.getElementById('control-justification').value = '';
+            document.getElementById('results2').classList.remove('show');
+        }
+
+        // Task 3 Drag and Drop Functions
+        function allowDrop(ev) {
+            ev.preventDefault();
+            ev.target.classList.add('drag-over');
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            ev.target.classList.remove('drag-over');
+            
+            const data = ev.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(data);
+            
+            // Find the drop zone
+            let dropZone = ev.target;
+            while (dropZone && !dropZone.classList.contains('drop-zone')) {
+                dropZone = dropZone.parentNode;
+            }
+            
+            if (dropZone) {
+                dropZone.appendChild(draggedElement);
+            }
+        }
+
+        function submitTask3() {
+            const highPriority = document.getElementById('high-priority').children;
+            const mediumPriority = document.getElementById('medium-priority').children;
+            const lowPriority = document.getElementById('low-priority').children;
+            const rationale = document.getElementById('risk-rationale').value;
+
+            const results = document.getElementById('results3');
+            let feedback = '<h4>Task 3 Assessment Results</h4>';
+
+            const totalCategorized = highPriority.length + mediumPriority.length + lowPriority.length;
+            
+            if (totalCategorized >= 5) {
+                feedback += '<p style="color: #27ae60;">✅ Good risk categorization - ' + totalCategorized + ' risks prioritized.</p>';
+            } else {
+                feedback += '<p style="color: #e74c3c;">⚠️ Categorize more risks into priority levels (at least 5 of 6).</p>';
+            }
+
+            // Check for production-critical risks in high priority
+            const highPriorityTexts = Array.from(highPriority).map(el => el.textContent);
+            if (highPriorityTexts.some(text => text.includes('PLC') || text.includes('production'))) {
+                feedback += '<p style="color: #27ae60;">✅ Correctly identified production-critical risks as high priority.</p>';
+            } else {
+                feedback += '<p style="color: #f39c12;">⚠️ Consider if any risks could halt production operations.</p>';
+            }
+
+            // Display categorization
+            if (highPriority.length > 0) {
+                const highTexts = Array.from(highPriority).map(el => el.textContent.substring(0, 50) + '...');
+                feedback += '<p><strong>High Priority:</strong> ' + highTexts.join('; ') + '</p>';
+            }
+
+            if (rationale.length > 100) {
+                feedback += '<p style="color: #27ae60;">✅ Comprehensive rationale for risk prioritization provided.</p>';
+            } else {
+                feedback += '<p style="color: #e74c3c;">⚠️ Provide more detailed rationale for your risk prioritization decisions.</p>';
+            }
+
+            results.innerHTML = feedback;
+            results.classList.add('show');
+        }
+
+        function resetTask3() {
+            // Move all items back to the original container
+            const allItems = document.querySelectorAll('#task3 .draggable-item');
+            const riskItemsContainer = document.getElementById('risk-items');
+            
+            allItems.forEach(item => {
+                riskItemsContainer.appendChild(item);
+            });
+            
+            document.getElementById('risk-rationale').value = '';
+            document.getElementById('results3').classList.remove('show');
+        }
+
+        // Add drag over effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZones = document.querySelectorAll('.drop-zone');
+            
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                });
+                
+                zone.addEventListener('dragleave', function(e) {
+                    if (!this.contains(e.relatedTarget)) {
+                        this.classList.remove('drag-over');
+                    }
+                });
+                
+                zone.addEventListener('drop', function(e) {
+                    this.classList.remove('drag-over');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

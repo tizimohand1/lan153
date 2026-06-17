@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cybersecurity Certification Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #030b14;
+    --bg-panel: #071520;
+    --bg-card: #0a1e30;
+    --bg-card-hover: #0d2640;
+    --accent-cyan: #00e5ff;
+    --accent-blue: #1a78ff;
+    --accent-green: #00ff9d;
+    --accent-amber: #ffb300;
+    --accent-red: #ff3d5a;
+    --accent-purple: #a855f7;
+    --text-bright: #e0f4ff;
+    --text-mid: #7eb8d4;
+    --text-dim: #3a6a82;
+    --border-glow: rgba(0,229,255,0.25);
+    --grid-line: rgba(0,229,255,0.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg-deep);
+    color: var(--text-bright);
+    font-family: 'Exo 2', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    padding: 48px 40px 36px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-glow);
+    background: linear-gradient(180deg, rgba(0,229,255,0.06) 0%, transparent 100%);
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-badge {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-cyan);
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.3);
+    padding: 4px 14px;
+    border-radius: 2px;
+    letter-spacing: 3px;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+  h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 50%, var(--accent-green) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .subtitle {
+    color: var(--text-mid);
+    font-size: 0.95rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.9rem;
+    color: var(--accent-cyan);
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(3,11,20,0.95);
+    backdrop-filter: blur(12px);
+    padding: 16px 40px;
+    border-bottom: 1px solid var(--border-glow);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 200px;
+  }
+  .control-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--accent-cyan);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  select, input[type="text"] {
+    background: var(--bg-card);
+    border: 1px solid rgba(0,229,255,0.2);
+    color: var(--text-bright);
+    padding: 8px 14px;
+    border-radius: 3px;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.85rem;
+    flex: 1;
+    min-width: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    cursor: pointer;
+  }
+  select:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 10px rgba(0,229,255,0.15);
+  }
+  select option { background: #0a1e30; }
+  .reset-btn {
+    background: transparent;
+    border: 1px solid rgba(255,61,90,0.4);
+    color: var(--accent-red);
+    padding: 8px 18px;
+    border-radius: 3px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .reset-btn:hover {
+    background: rgba(255,61,90,0.1);
+    border-color: var(--accent-red);
+  }
+  .count-display {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .count-display span {
+    color: var(--accent-green);
+  }
+
+  /* ── GRID ── */
+  .cert-grid {
+    padding: 32px 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+  }
+
+  /* ── CARD ── */
+  .cert-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(0,229,255,0.12);
+    border-radius: 6px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .cert-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-color, var(--accent-cyan));
+    opacity: 0.6;
+    transition: opacity 0.25s;
+  }
+  .cert-card:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(0,229,255,0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(0,229,255,0.1), 0 0 0 1px rgba(0,229,255,0.1);
+  }
+  .cert-card:hover::before { opacity: 1; }
+  .cert-card.hidden { display: none; }
+
+  .card-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .card-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+  .card-acronym {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--accent-color, var(--accent-cyan));
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .tag {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .tag-vendor { background: rgba(26,120,255,0.15); color: #64b3ff; border: 1px solid rgba(26,120,255,0.25); }
+  .tag-domain { background: rgba(0,255,157,0.1); color: #00ff9d; border: 1px solid rgba(0,255,157,0.2); }
+  .tag-difficulty {
+    border: 1px solid;
+  }
+  .tag-difficulty.beginner { background: rgba(0,255,157,0.08); color: #00ff9d; border-color: rgba(0,255,157,0.25); }
+  .tag-difficulty.intermediate { background: rgba(255,179,0,0.08); color: #ffb300; border-color: rgba(255,179,0,0.25); }
+  .tag-difficulty.advanced { background: rgba(255,61,90,0.08); color: #ff3d5a; border-color: rgba(255,61,90,0.25); }
+  .tag-difficulty.expert { background: rgba(168,85,247,0.08); color: #c084fc; border-color: rgba(168,85,247,0.25); }
+
+  .card-cost {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent-amber);
+    margin-top: 10px;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(3,11,20,0.92);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 40px 20px;
+  }
+  .modal-overlay.active { display: flex; align-items: flex-start; justify-content: center; }
+
+  .modal {
+    background: var(--bg-panel);
+    border: 1px solid rgba(0,229,255,0.3);
+    border-radius: 8px;
+    max-width: 820px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 0 80px rgba(0,229,255,0.08), 0 0 0 1px rgba(0,229,255,0.05);
+    overflow: hidden;
+    animation: modalIn 0.3s ease;
+  }
+  @keyframes modalIn {
+    from { opacity:0; transform:translateY(20px) scale(0.98); }
+    to { opacity:1; transform:translateY(0) scale(1); }
+  }
+
+  .modal-header {
+    padding: 28px 32px 20px;
+    border-bottom: 1px solid rgba(0,229,255,0.1);
+    position: relative;
+    background: linear-gradient(135deg, rgba(0,229,255,0.04) 0%, transparent 50%);
+  }
+  .modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--modal-accent, var(--accent-cyan)) 0%, transparent 70%);
+  }
+  .modal-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .modal-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+  .modal-acronym {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--modal-accent, var(--accent-cyan));
+    margin-bottom: 14px;
+  }
+  .modal-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .close-btn {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--text-mid);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    line-height: 1;
+  }
+  .close-btn:hover { background: rgba(255,61,90,0.1); border-color: var(--accent-red); color: var(--accent-red); }
+
+  .modal-body {
+    padding: 28px 32px;
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .info-block {
+    background: rgba(0,229,255,0.03);
+    border: 1px solid rgba(0,229,255,0.08);
+    border-radius: 5px;
+    padding: 14px 16px;
+  }
+  .info-block-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .info-block-value {
+    font-size: 0.9rem;
+    color: var(--text-bright);
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .info-block-value.highlight {
+    color: var(--modal-accent, var(--accent-cyan));
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid rgba(0,229,255,0.08);
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+    margin-top: 24px;
+  }
+  .resource-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .resource-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: var(--text-mid);
+    line-height: 1.5;
+  }
+  .resource-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--modal-accent, var(--accent-cyan));
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  .prereq-box {
+    background: rgba(255,179,0,0.04);
+    border: 1px solid rgba(255,179,0,0.15);
+    border-radius: 5px;
+    padding: 14px 16px;
+    font-size: 0.88rem;
+    color: var(--text-mid);
+    line-height: 1.6;
+    margin-top: 24px;
+  }
+  .prereq-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--accent-amber);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .renewal-box {
+    background: rgba(0,255,157,0.04);
+    border: 1px solid rgba(0,255,157,0.12);
+    border-radius: 5px;
+    padding: 14px 16px;
+    font-size: 0.88rem;
+    color: var(--text-mid);
+    line-height: 1.6;
+    margin-top: 14px;
+  }
+  .renewal-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--accent-green);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  /* nav arrows */
+  .modal-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 32px 24px;
+    border-top: 1px solid rgba(0,229,255,0.08);
+  }
+  .nav-btn {
+    background: transparent;
+    border: 1px solid rgba(0,229,255,0.2);
+    color: var(--text-mid);
+    padding: 8px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-btn:hover { background: rgba(0,229,255,0.06); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .nav-btn:disabled:hover { background: transparent; border-color: rgba(0,229,255,0.2); color: var(--text-mid); }
+
+  /* no-results */
+  .no-results {
+    display: none;
+    text-align: center;
+    padding: 80px 40px;
+    grid-column: 1/-1;
+  }
+  .no-results.visible { display: block; }
+  .no-results-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+  .no-results-text {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+
+  /* scan line animation */
+  @keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+  .scanline {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0,229,255,0.15), transparent);
+    animation: scanline 8s linear infinite;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid rgba(0,229,255,0.06);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 28px 20px 20px; }
+    .controls { padding: 12px 20px; }
+    .cert-grid { padding: 20px 16px; }
+    .modal-header, .modal-body, .modal-nav { padding-left: 20px; padding-right: 20px; }
+    .info-grid { grid-template-columns: 1fr; }
+    .stats-bar { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<header>
+  <div class="header-badge">// MORAINE VALLEY CC — CYBERSECURITY PROGRAM //</div>
+  <h1>Certification Explorer</h1>
+  <p class="subtitle">Your interactive guide to planning the cybersecurity certification journey. Click any card to explore full exam details.</p>
+  <div class="stats-bar">
+    <div class="stat-item"><span class="stat-num">34</span><div class="stat-label">Certifications</div></div>
+    <div class="stat-item"><span class="stat-num">12</span><div class="stat-label">Vendors</div></div>
+    <div class="stat-item"><span class="stat-num">4</span><div class="stat-label">Difficulty Levels</div></div>
+    <div class="stat-item"><span class="stat-num">8</span><div class="stat-label">Knowledge Domains</div></div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="control-group">
+    <span class="control-label">Difficulty</span>
+    <select id="filterDifficulty">
+      <option value="">All Levels</option>
+      <option value="Beginner">Beginner</option>
+      <option value="Intermediate">Intermediate</option>
+      <option value="Advanced">Advanced</option>
+      <option value="Expert">Expert</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <span class="control-label">Domain</span>
+    <select id="filterDomain">
+      <option value="">All Domains</option>
+      <option value="IT Fundamentals">IT Fundamentals</option>
+      <option value="Networking">Networking</option>
+      <option value="Security Operations">Security Operations</option>
+      <option value="Penetration Testing">Penetration Testing</option>
+      <option value="Cloud Security">Cloud Security</option>
+      <option value="Governance & Audit">Governance &amp; Audit</option>
+      <option value="Industrial/ICS">Industrial / ICS</option>
+      <option value="Wireless Security">Wireless Security</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <span class="control-label">Vendor</span>
+    <select id="filterVendor">
+      <option value="">All Vendors</option>
+      <option value="CompTIA">CompTIA</option>
+      <option value="Cisco">Cisco</option>
+      <option value="EC-Council">EC-Council</option>
+      <option value="ISC2">(ISC)²</option>
+      <option value="ISACA">ISACA</option>
+      <option value="GIAC/SANS">GIAC / SANS</option>
+      <option value="Palo Alto Networks">Palo Alto Networks</option>
+      <option value="Fortinet">Fortinet</option>
+      <option value="Check Point">Check Point</option>
+      <option value="Microsoft">Microsoft</option>
+      <option value="Certiport/Pearson">Certiport / Pearson</option>
+      <option value="SUSE">SUSE</option>
+      <option value="Wireshark">Wireshark / Riverbed</option>
+    </select>
+  </div>
+  <div class="control-group" style="max-width:220px">
+    <span class="control-label">Search</span>
+    <input type="text" id="searchInput" placeholder="e.g. Security+">
+  </div>
+  <button class="reset-btn" onclick="resetFilters()">↺ RESET</button>
+  <div class="count-display">Showing <span id="countDisplay">34</span> / 34</div>
+</div>
+
+<div class="cert-grid" id="certGrid">
+  <!-- Cards rendered by JS -->
+  <div class="no-results" id="noResults">
+    <div class="no-results-icon">⚠</div>
+    <div class="no-results-text">NO CERTIFICATIONS MATCH YOUR FILTERS</div>
+  </div>
+</div>
+
+<footer>DATA CURRENT AS OF 2025 · VERIFY PRICING AT VENDOR WEBSITES BEFORE PURCHASING · MORAINE VALLEY COMMUNITY COLLEGE</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-header" id="modalHeader">
+      <div class="modal-num" id="modalNum"></div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-acronym" id="modalAcronym"></div>
+      <div class="modal-meta-row" id="modalMetaTags"></div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-nav">
+      <button class="nav-btn" id="prevBtn" onclick="navigateModal(-1)">◀ PREV CERT</button>
+      <button class="nav-btn" id="nextBtn" onclick="navigateModal(1)">NEXT CERT ▶</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const certifications = [
+  {
+    id: 1,
+    name: "CompTIA IT Fundamentals",
+    acronym: "ITF+",
+    vendor: "CompTIA",
+    domain: "IT Fundamentals",
+    difficulty: "Beginner",
+    accentColor: "#ff6b35",
+    examCode: "FC0-U61",
+    questions: "75 max (Multiple Choice)",
+    duration: "60 minutes",
+    passingScore: "650 / 900 (scaled)",
+    cost: "$134 USD",
+    validity: "Does not expire",
+    renewal: "N/A — ITF+ never expires",
+    prerequisites: "None — designed for absolute beginners",
+    studyMaterials: [
+      "FREE: CompTIA CertMaster Learn trial",
+      "FREE: YouTube channels (Professor Messer)",
+      "PAID: CompTIA Official Study Guide (~$35)",
+      "PAID: CompTIA CertMaster Learn ($99)",
+      "PAID: Udemy courses ($15–$30)"
+    ],
+    testing: "In-person (Pearson VUE) or Online (OnVUE)"
+  },
+  {
+    id: 2,
+    name: "CompTIA A+",
+    acronym: "A+",
+    vendor: "CompTIA",
+    domain: "IT Fundamentals",
+    difficulty: "Beginner",
+    accentColor: "#ff6b35",
+    examCode: "Core 1: 220-1101 / Core 2: 220-1102",
+    questions: "90 max per exam (MC + PBQs)",
+    duration: "90 minutes per exam",
+    passingScore: "Core 1: 675/900 | Core 2: 700/900 (scaled)",
+    cost: "$246 per exam voucher (~$492 total for 2 exams)",
+    validity: "3 years",
+    renewal: "30 CEUs in 3 years, retake latest exam, or pass higher CompTIA cert (e.g., Network+)",
+    prerequisites: "None required; 9–12 months IT experience recommended",
+    studyMaterials: [
+      "FREE: Professor Messer A+ Study Guide (professormesser.com)",
+      "FREE: CompTIA CertMaster Learn trial",
+      "PAID: Mike Meyers All-in-One A+ (book, ~$50)",
+      "PAID: Jason Dion Udemy course (~$15)",
+      "PAID: CompTIA CertMaster Labs ($129)"
+    ],
+    testing: "In-person (Pearson VUE) or Online (OnVUE)"
+  },
+  {
+    id: 3,
+    name: "CompTIA Network+",
+    acronym: "Network+",
+    vendor: "CompTIA",
+    domain: "Networking",
+    difficulty: "Beginner",
+    accentColor: "#ff6b35",
+    examCode: "N10-009",
+    questions: "90 max (MC + PBQs)",
+    duration: "90 minutes",
+    passingScore: "720 / 900 (scaled)",
+    cost: "$338 USD",
+    validity: "3 years",
+    renewal: "30 CEUs in 3 years, retake exam, or pass higher cert",
+    prerequisites: "None; CompTIA A+ and 9–12 months networking experience recommended",
+    studyMaterials: [
+      "FREE: Professor Messer N10-009 Study Notes",
+      "FREE: Cisco Packet Tracer (free download)",
+      "PAID: Mike Meyers Network+ Guide (~$50)",
+      "PAID: Jason Dion Udemy course (~$15–20)",
+      "PAID: CompTIA CertMaster Learn"
+    ],
+    testing: "In-person (Pearson VUE) or Online (OnVUE)"
+  },
+  {
+    id: 4,
+    name: "CompTIA Linux+",
+    acronym: "Linux+",
+    vendor: "CompTIA",
+    domain: "Security Operations",
+    difficulty: "Intermediate",
+    accentColor: "#ff6b35",
+    examCode: "XK0-005",
+    questions: "90 max (MC + PBQs)",
+    duration: "90 minutes",
+    passingScore: "720 / 900 (scaled)",
+    cost: "$338 USD",
+    validity: "3 years",
+    renewal: "30 CEUs in 3 years, retake exam, or pass higher cert",
+    prerequisites: "CompTIA A+ and Network+ recommended; 12 months Linux admin experience",
+    studyMaterials: [
+      "FREE: Linux Foundation free courses",
+      "FREE: OverTheWire Bandit wargames (online labs)",
+      "PAID: CompTIA Linux+ Study Guide (Wiley, ~$50)",
+      "PAID: Udemy courses by Jason Dion",
+      "PAID: CompTIA CertMaster Labs"
+    ],
+    testing: "In-person (Pearson VUE) or Online (OnVUE)"
+  },
+  {
+    id: 5,
+    name: "CompTIA Security+",
+    acronym: "Security+",
+    vendor: "CompTIA",
+    domain: "Security Operations",
+    difficulty: "Intermediate",
+    accentColor: "#ff6b35",
+    examCode: "SY0-701",
+    questions: "90 max (MC + PBQs)",
+    duration: "90 minutes",
+    passingScore: "750 / 900 (scaled)",
+    cost: "$392 USD",
+    validity: "3 years",
+    renewal: "50 CEUs in 3 years, retake exam, or earn higher cert (CySA+, CASP+)",
+    prerequisites: "None required; CompTIA Network+ and 2 years IT security experience recommended",
+    studyMaterials: [
+      "FREE: Professor Messer Security+ SY0-701 course (free)",
+      "FREE: NIST Cybersecurity Framework docs",
+      "PAID: Darril Gibson/Mike Meyers study guide (~$40)",
+      "PAID: Jason Dion Udemy course (~$15)",
+      "PAID: CompTIA CertMaster Learn + Labs bundle"
+    ],
+    testing: "In-person (Pearson VUE) or Online (OnVUE)"
+  },
+  {
+    id: 6,
+    name: "CompTIA PenTest+",
+    acronym: "PenTest+",
+    vendor: "CompTIA",
+    domain: "Penetration Testing",
+    difficulty: "Advanced",
+    accentColor: "#ff6b35",
+    examCode: "PT0-002",
+    questions: "85 max (MC + PBQs/Simulations)",
+    duration: "165 minutes",
+    passingScore: "750 / 900 (scaled)",
+    cost: "$392 USD",
+    validity: "3 years",
+    renewal: "60 CEUs in 3 years, retake exam, or earn CASP+",
+    prerequisites: "None required; Security+ and 3–4 years hands-on security experience recommended",
+    studyMaterials: [
+      "FREE: Metasploit Unleashed (offensive-security.com)",
+      "FREE: TryHackMe free rooms",
+      "PAID: CompTIA PenTest+ Study Guide (Wiley)",
+      "PAID: TCM Security Practical Ethical Hacking ($30)",
+      "PAID: Hack The Box VIP ($14/mo)"
+    ],
+    testing: "In-person (Pearson VUE) or Online (OnVUE)"
+  },
+  {
+    id: 7,
+    name: "Cisco Certified Network Associate",
+    acronym: "CCNA",
+    vendor: "Cisco",
+    domain: "Networking",
+    difficulty: "Intermediate",
+    accentColor: "#1ba5e0",
+    examCode: "200-301",
+    questions: "100–120 (MC, Drag & Drop, Simulations)",
+    duration: "120 minutes",
+    passingScore: "~825 / 1000 (varies by form)",
+    cost: "$330 USD",
+    validity: "3 years",
+    renewal: "30 CE credits, or pass CCNP core/concentration exam",
+    prerequisites: "None; 1–2 years networking experience recommended",
+    studyMaterials: [
+      "FREE: Cisco Packet Tracer (free simulator)",
+      "FREE: Cisco NetAcad CCNA courses (discounted)",
+      "PAID: Wendell Odom Official Guide (~$75)",
+      "PAID: Jeremy's IT Lab on YouTube (free)/Udemy",
+      "PAID: CBT Nuggets or Pluralsight subscription"
+    ],
+    testing: "In-person (Pearson VUE) only; no online proctoring for CCNA"
+  },
+  {
+    id: 8,
+    name: "Cisco Certified Network Professional",
+    acronym: "CCNP",
+    vendor: "Cisco",
+    domain: "Networking",
+    difficulty: "Advanced",
+    accentColor: "#1ba5e0",
+    examCode: "350-401 ENCOR (core) + one concentration exam",
+    questions: "70–100 per exam (MC, Drag & Drop, Sims)",
+    duration: "120 min (core) / 90 min (concentration)",
+    passingScore: "~825 / 1000 (scaled, varies)",
+    cost: "$700 USD total ($400 core + $300 concentration)",
+    validity: "3 years",
+    renewal: "80 CE credits or pass professional-level exam + 40 CE credits",
+    prerequisites: "No formal prerequisite; CCNA-level knowledge strongly recommended; 3–5 years networking experience",
+    studyMaterials: [
+      "FREE: Cisco Learning Network free resources",
+      "FREE: Cisco Modeling Labs Personal (~$200/yr for advanced)",
+      "PAID: Official Cisco Press guides (~$70 each)",
+      "PAID: CBT Nuggets or Pluralsight",
+      "PAID: INE (Network Expert) training platform"
+    ],
+    testing: "In-person (Pearson VUE) only"
+  },
+  {
+    id: 9,
+    name: "Wireshark Certified Network Analyst",
+    acronym: "WCNA",
+    vendor: "Wireshark",
+    domain: "Networking",
+    difficulty: "Intermediate",
+    accentColor: "#00bcd4",
+    examCode: "WCNA",
+    questions: "75 (Multiple Choice)",
+    duration: "75 minutes",
+    passingScore: "75% (approx.)",
+    cost: "$200 USD",
+    validity: "3 years",
+    renewal: "Retake exam or complete approved CE activities",
+    prerequisites: "No formal requirements; networking fundamentals and Wireshark experience recommended",
+    studyMaterials: [
+      "FREE: Wireshark documentation (wireshark.org/docs)",
+      "FREE: Sample PCAP files on Wireshark wiki",
+      "PAID: 'Wireshark Network Analysis' by Laura Chappell (~$60)",
+      "PAID: Wireshark University online courses",
+      "PAID: PacketLife.net resources"
+    ],
+    testing: "Online proctored (Pearson VUE)"
+  },
+  {
+    id: 10,
+    name: "Certified Ethical Hacker",
+    acronym: "CEH",
+    vendor: "EC-Council",
+    domain: "Penetration Testing",
+    difficulty: "Intermediate",
+    accentColor: "#e91e63",
+    examCode: "312-50 (v13)",
+    questions: "125 (Multiple Choice)",
+    duration: "240 minutes (4 hours)",
+    passingScore: "60–85% depending on question bank (scaled)",
+    cost: "$950 (EC-Council) / $1,199 (Pearson VUE) + $100 admin fee",
+    validity: "3 years",
+    renewal: "120 ECE credits in 3 years + $80/yr membership fee",
+    prerequisites: "2 years InfoSec experience OR completion of EC-Council training; $100 application fee if no training",
+    studyMaterials: [
+      "FREE: EC-Council iLabs free trial",
+      "FREE: TryHackMe and Hack The Box free rooms",
+      "PAID: EC-Council Official eCourseware ($850)",
+      "PAID: Udemy CEH courses (~$15–25)",
+      "PAID: EC-Council iLabs subscription"
+    ],
+    testing: "In-person (Pearson VUE) or EC-Council Remote Proctoring (ECC Exam)"
+  },
+  {
+    id: 11,
+    name: "Certified Wireless Security Professional",
+    acronym: "CWSP",
+    vendor: "CWNP",
+    domain: "Wireless Security",
+    difficulty: "Advanced",
+    accentColor: "#9c27b0",
+    examCode: "CWSP-207",
+    questions: "60 (Multiple Choice)",
+    duration: "90 minutes",
+    passingScore: "70%",
+    cost: "$225 USD",
+    validity: "3 years",
+    renewal: "Pass CWSP exam again or earn a higher CWNP cert",
+    prerequisites: "Current CWNA certification required",
+    studyMaterials: [
+      "FREE: CWNP study guides online excerpts",
+      "FREE: 802.11 standard documentation",
+      "PAID: CWSP Official Study Guide (~$60)",
+      "PAID: CWNP eLearning modules",
+      "PAID: Boson practice exams"
+    ],
+    testing: "In-person (Pearson VUE) or Online proctored"
+  },
+  {
+    id: 12,
+    name: "Palo Alto Networks Certified Network Security Administrator",
+    acronym: "PCNSA",
+    vendor: "Palo Alto Networks",
+    domain: "Security Operations",
+    difficulty: "Intermediate",
+    accentColor: "#ff5722",
+    examCode: "PCNSA (retiring — check PA site for new role-based equiv.)",
+    questions: "50–80 (Multiple Choice)",
+    duration: "80 minutes",
+    passingScore: "~70% (not publicly disclosed)",
+    cost: "$155 USD",
+    validity: "2 years",
+    renewal: "Retake exam before expiry",
+    prerequisites: "No formal prerequisite; PCCET and basic security knowledge recommended",
+    studyMaterials: [
+      "FREE: Palo Alto Networks EDU online courses (free audit)",
+      "FREE: YouTube 'Strata by Palo Alto' channel",
+      "PAID: Palo Alto official training ($500–$2,000)",
+      "PAID: Udemy PCNSA courses (~$15)",
+      "PAID: Palo Alto live community resources"
+    ],
+    testing: "In-person (Pearson VUE) — as of Aug 2025, in-person only"
+  },
+  {
+    id: 13,
+    name: "Palo Alto Networks Certified Network Security Engineer",
+    acronym: "PCNSE",
+    vendor: "Palo Alto Networks",
+    domain: "Security Operations",
+    difficulty: "Expert",
+    accentColor: "#ff5722",
+    examCode: "PCNSE (retiring July 2025 — see NGFW Engineer)",
+    questions: "75 (Multiple Choice)",
+    duration: "90 minutes",
+    passingScore: "~70% / 860 on 300–1000 scale",
+    cost: "$175 USD",
+    validity: "2 years",
+    renewal: "Retake exam or pass higher-level Palo Alto cert",
+    prerequisites: "No formal prerequisite; PCNSA-level knowledge, 6+ months hands-on Palo Alto firewall experience strongly recommended",
+    studyMaterials: [
+      "FREE: Palo Alto Networks free EDU online courses",
+      "FREE: Palo Alto documentation library (docs.paloaltonetworks.com)",
+      "PAID: Palo Alto authorized training (EDU-210, EDU-220)",
+      "PAID: Datacipher or authorized partner training",
+      "PAID: SkillCertPro practice exams"
+    ],
+    testing: "In-person (Pearson VUE) — as of Aug 2025, in-person only"
+  },
+  {
+    id: 14,
+    name: "Palo Alto Networks Certified Cybersecurity Entry-level Technician",
+    acronym: "PCCET",
+    vendor: "Palo Alto Networks",
+    domain: "Security Operations",
+    difficulty: "Beginner",
+    accentColor: "#ff5722",
+    examCode: "PCCET (retired Jan 31, 2025 — active certs remain valid)",
+    questions: "60 (Multiple Choice)",
+    duration: "90 minutes",
+    passingScore: "~70% (not publicly disclosed)",
+    cost: "$110 USD",
+    validity: "2 years",
+    renewal: "Retake exam or earn higher Palo Alto cert",
+    prerequisites: "None — entry-level credential",
+    studyMaterials: [
+      "FREE: Palo Alto Networks free EDU online courses",
+      "FREE: YouTube 'Strata by Palo Alto' channel",
+      "PAID: Udemy PCCET prep courses (~$15)",
+      "PAID: Practice test platforms (Skillcertpro)",
+      "NOTE: Exam retired Jan 2025; check for replacement cert"
+    ],
+    testing: "In-person (Pearson VUE)"
+  },
+  {
+    id: 15,
+    name: "Fortinet Certified Fundamentals in Cybersecurity",
+    acronym: "FCF",
+    vendor: "Fortinet",
+    domain: "Security Operations",
+    difficulty: "Beginner",
+    accentColor: "#e53935",
+    examCode: "FCF (multiple modules)",
+    questions: "30–35 per module exam (Multiple Choice)",
+    duration: "60 minutes per module",
+    passingScore: "Approx. 70%",
+    cost: "Free (included with Fortinet Training Institute)",
+    validity: "2 years",
+    renewal: "Retake exam or earn FCA-level cert",
+    prerequisites: "None — open to all; basic IT knowledge helpful",
+    studyMaterials: [
+      "FREE: Fortinet Training Institute courses (training.fortinet.com)",
+      "FREE: Fortinet NSE Program free courses",
+      "FREE: YouTube Fortinet channel",
+      "PAID: Fortinet authorized partner training",
+      "PAID: Udemy Fortinet courses"
+    ],
+    testing: "Online (Fortinet NSE Training Institute platform)"
+  },
+  {
+    id: 16,
+    name: "Fortinet Certified Associate in Cybersecurity",
+    acronym: "FCA",
+    vendor: "Fortinet",
+    domain: "Security Operations",
+    difficulty: "Intermediate",
+    accentColor: "#e53935",
+    examCode: "NSE 4 (FCA equivalent)",
+    questions: "60 (Multiple Choice)",
+    duration: "105 minutes",
+    passingScore: "Approx. 70–75%",
+    cost: "$400 USD (NSE 4 exam)",
+    validity: "2 years",
+    renewal: "Retake exam or earn higher Fortinet cert",
+    prerequisites: "FCF recommended; FortiGate hands-on experience",
+    studyMaterials: [
+      "FREE: Fortinet Training Institute (training.fortinet.com)",
+      "FREE: Fortinet NSE 4 self-paced course (free to audit)",
+      "PAID: Fortinet authorized partner training",
+      "PAID: Udemy NSE 4 courses (~$15)",
+      "PAID: Pearson VUE practice tests"
+    ],
+    testing: "In-person (Pearson VUE)"
+  },
+  {
+    id: 17,
+    name: "Check Point Certified Security Administrator",
+    acronym: "CCSA",
+    vendor: "Check Point",
+    domain: "Security Operations",
+    difficulty: "Intermediate",
+    accentColor: "#00897b",
+    examCode: "156-215.81",
+    questions: "90 (Multiple Choice)",
+    duration: "90 minutes",
+    passingScore: "70%",
+    cost: "$200–$250 USD (Pearson VUE)",
+    validity: "2 years",
+    renewal: "Retake exam or pass CCSE",
+    prerequisites: "No formal prerequisites; networking knowledge and Check Point product familiarity recommended",
+    studyMaterials: [
+      "FREE: Check Point Security Academy (checkpoint.com/support/training)",
+      "FREE: Check Point YouTube training videos",
+      "PAID: Check Point official courseware (R2 ILT course ~$2,000)",
+      "PAID: Udemy CCSA courses (~$15)",
+      "PAID: Boson / SkillCertPro practice exams"
+    ],
+    testing: "In-person (Pearson VUE)"
+  },
+  {
+    id: 18,
+    name: "IT Specialist — Network Security",
+    acronym: "ITS-NS",
+    vendor: "Certiport/Pearson",
+    domain: "Security Operations",
+    difficulty: "Beginner",
+    accentColor: "#607d8b",
+    examCode: "ITS-NS (Exam 701)",
+    questions: "40 (Multiple Choice + Performance-based)",
+    duration: "50 minutes",
+    passingScore: "700 / 1000",
+    cost: "$127 USD",
+    validity: "Does not expire",
+    renewal: "N/A — does not expire",
+    prerequisites: "None — designed for students and entry-level professionals",
+    studyMaterials: [
+      "FREE: Certiport official exam objectives (certiport.com)",
+      "FREE: Cybrary free courses",
+      "PAID: Certiport MeasureUp practice tests",
+      "PAID: Pearson authorized courseware",
+      "PAID: Udemy IT Specialist Network Security courses"
+    ],
+    testing: "In-person (Certiport testing centers)"
+  },
+  {
+    id: 19,
+    name: "Advanced Certified Compliance Specialist",
+    acronym: "ACCS",
+    vendor: "GIAC/SANS",
+    domain: "Governance & Audit",
+    difficulty: "Advanced",
+    accentColor: "#4caf50",
+    examCode: "ACCS",
+    questions: "~115 (Multiple Choice)",
+    duration: "3 hours",
+    passingScore: "Approx. 73%",
+    cost: "$979 USD (cert attempt only; SANS course ~$8,000+)",
+    validity: "4 years",
+    renewal: "36 CPE credits in 4 years or retake exam; $99 renewal fee",
+    prerequisites: "No formal prerequisite; compliance, audit, or legal background strongly recommended",
+    studyMaterials: [
+      "FREE: NIST SP 800-series documents (free)",
+      "FREE: ISACA journal articles",
+      "PAID: SANS MGT512 course (included with cert bundle)",
+      "PAID: GIAC practice tests ($329)",
+      "PAID: ISACA compliance resources"
+    ],
+    testing: "Online (ProctorU) or In-person (Pearson VUE)"
+  },
+  {
+    id: 20,
+    name: "Systems Security Certified Practitioner",
+    acronym: "SSCP",
+    vendor: "ISC2",
+    domain: "Security Operations",
+    difficulty: "Intermediate",
+    accentColor: "#2196f3",
+    examCode: "SSCP",
+    questions: "125 (CAT format, Multiple Choice)",
+    duration: "180 minutes (3 hours)",
+    passingScore: "700 / 1000",
+    cost: "$249 USD",
+    validity: "3 years",
+    renewal: "60 CPE credits over 3 years + $125/yr membership fee",
+    prerequisites: "1 year cumulative paid work experience in 1+ SSCP domains; Associate of ISC2 status available without experience",
+    studyMaterials: [
+      "FREE: ISC2 SSCP free CBK resources",
+      "FREE: Cybrary SSCP free course",
+      "PAID: Official ISC2 SSCP Study Guide (~$60)",
+      "PAID: ISC2 Official Training ($1,800+)",
+      "PAID: Boson or Sybex practice exams"
+    ],
+    testing: "In-person (Pearson VUE) or Online proctored"
+  },
+  {
+    id: 21,
+    name: "Microsoft Security, Compliance, and Identity Fundamentals",
+    acronym: "SC-900",
+    vendor: "Microsoft",
+    domain: "Governance & Audit",
+    difficulty: "Beginner",
+    accentColor: "#0078d4",
+    examCode: "SC-900",
+    questions: "40–60 (Multiple Choice, drag-and-drop, scenarios)",
+    duration: "45 minutes",
+    passingScore: "700 / 1000",
+    cost: "$99 USD",
+    validity: "Does not expire (Fundamentals certs)",
+    renewal: "N/A — Fundamentals certs do not expire",
+    prerequisites: "None — basic familiarity with Microsoft 365 and Azure helpful",
+    studyMaterials: [
+      "FREE: Microsoft Learn SC-900 learning path (learn.microsoft.com)",
+      "FREE: John Savill YouTube SC-900 course",
+      "PAID: Exam Ref SC-900 book (~$30)",
+      "PAID: MeasureUp practice tests (~$99)",
+      "PAID: Pluralsight or LinkedIn Learning subscription"
+    ],
+    testing: "In-person (Pearson VUE) or Online proctored"
+  },
+  {
+    id: 22,
+    name: "Microsoft Identity and Access Administrator",
+    acronym: "SC-300",
+    vendor: "Microsoft",
+    domain: "Security Operations",
+    difficulty: "Advanced",
+    accentColor: "#0078d4",
+    examCode: "SC-300",
+    questions: "40–60 (MC, case studies, scenario-based)",
+    duration: "120 minutes",
+    passingScore: "700 / 1000",
+    cost: "$165 USD",
+    validity: "1 year (Microsoft role-based certs expire annually)",
+    renewal: "Free annual renewal assessment on Microsoft Learn",
+    prerequisites: "SC-900 recommended; hands-on Microsoft Entra ID / Azure AD experience",
+    studyMaterials: [
+      "FREE: Microsoft Learn SC-300 learning path (free)",
+      "FREE: John Savill YouTube deep-dives",
+      "PAID: Exam Ref SC-300 book (~$40)",
+      "PAID: Whizlabs practice tests (~$15)",
+      "PAID: A Cloud Guru or Pluralsight subscription"
+    ],
+    testing: "In-person (Pearson VUE) or Online proctored"
+  },
+  {
+    id: 23,
+    name: "Microsoft Azure Fundamentals",
+    acronym: "AZ-900",
+    vendor: "Microsoft",
+    domain: "Cloud Security",
+    difficulty: "Beginner",
+    accentColor: "#0078d4",
+    examCode: "AZ-900",
+    questions: "40–60 (Multiple Choice, drag-and-drop)",
+    duration: "45 minutes",
+    passingScore: "700 / 1000",
+    cost: "$99 USD",
+    validity: "Does not expire",
+    renewal: "N/A — Fundamentals certs do not expire",
+    prerequisites: "None — no technical background required",
+    studyMaterials: [
+      "FREE: Microsoft Learn AZ-900 path (learn.microsoft.com)",
+      "FREE: Adam Marczak YouTube 'Azure for Everyone' series",
+      "PAID: Exam Ref AZ-900 book (~$25)",
+      "PAID: Udemy AZ-900 courses by Scott Duffy (~$15)",
+      "PAID: MeasureUp practice tests"
+    ],
+    testing: "In-person (Pearson VUE) or Online proctored"
+  },
+  {
+    id: 24,
+    name: "Certified Security Professional",
+    acronym: "CSP",
+    vendor: "ISC2",
+    domain: "Security Operations",
+    difficulty: "Advanced",
+    accentColor: "#2196f3",
+    examCode: "CSP (CCSP track)",
+    questions: "125 (CAT: 25 pretest + 100 operational)",
+    duration: "240 minutes (4 hours)",
+    passingScore: "700 / 1000",
+    cost: "$599 USD",
+    validity: "3 years",
+    renewal: "90 CPE credits in 3 years + $125/yr ISC2 membership",
+    prerequisites: "5 years cumulative IT experience, with 3 in information security and 1 in one CCSP domain; CISSP satisfies all experience",
+    studyMaterials: [
+      "FREE: ISC2 CCSP free resources portal",
+      "FREE: Cloud Security Alliance (CSA) free papers",
+      "PAID: Official ISC2 CCSP Study Guide (~$60)",
+      "PAID: Cybrary CCSP course",
+      "PAID: Destination Certification MindMap course"
+    ],
+    testing: "In-person (Pearson VUE) or Online proctored"
+  },
+  {
+    id: 25,
+    name: "Certified Information Security Technician",
+    acronym: "CIST",
+    vendor: "NICCS / GIAC",
+    domain: "Security Operations",
+    difficulty: "Intermediate",
+    accentColor: "#4caf50",
+    examCode: "NA (varies by program)",
+    questions: "NA",
+    duration: "NA",
+    passingScore: "NA",
+    cost: "NA",
+    validity: "NA",
+    renewal: "NA",
+    prerequisites: "NA",
+    studyMaterials: [
+      "NOTE: CIST may refer to various programs; verify with your institution",
+      "FREE: NIST Cybersecurity resources",
+      "FREE: NICCS training catalog (niccs.cisa.gov)"
+    ],
+    testing: "Varies by program"
+  },
+  {
+    id: 26,
+    name: "SUSE Certified Administrator",
+    acronym: "SCA",
+    vendor: "SUSE",
+    domain: "IT Fundamentals",
+    difficulty: "Intermediate",
+    accentColor: "#73ba25",
+    examCode: "SCA in SUSE Linux Enterprise Server",
+    questions: "~65 (Multiple Choice + Short Answer)",
+    duration: "90 minutes",
+    passingScore: "Approx. 540 / 800 (~68%)",
+    cost: "$300–$400 USD (Pearson VUE)",
+    validity: "3 years",
+    renewal: "Retake exam or pass higher SUSE cert",
+    prerequisites: "Linux command-line experience; SCA course or equivalent recommended",
+    studyMaterials: [
+      "FREE: SUSE technical documentation (suse.com/documentation)",
+      "FREE: Linux Foundation free courses",
+      "PAID: SUSE official training (SLE Administration, ~$2,000)",
+      "PAID: SUSE eLearning subscription",
+      "PAID: Linux Academy / A Cloud Guru SUSE courses"
+    ],
+    testing: "In-person (Pearson VUE) or Online proctored"
+  },
+  {
+    id: 27,
+    name: "GIAC Global Industrial Cyber Security Professional",
+    acronym: "GICSP",
+    vendor: "GIAC/SANS",
+    domain: "Industrial/ICS",
+    difficulty: "Advanced",
+    accentColor: "#4caf50",
+    examCode: "GICSP",
+    questions: "115 (Multiple Choice — open book)",
+    duration: "3 hours",
+    passingScore: "71%",
+    cost: "$979 USD (cert only); SANS ICS410 course ~$8,500",
+    validity: "4 years",
+    renewal: "36 CPE credits in 4 years + $99 renewal fee",
+    prerequisites: "No formal prerequisite; ICS/OT/SCADA experience recommended; SANS ICS410 course strongly recommended",
+    studyMaterials: [
+      "FREE: ICS-CERT training (ics-cert.cisa.gov — free online courses)",
+      "FREE: NERC CIP documentation",
+      "PAID: SANS ICS410 course (included with cert bundle)",
+      "PAID: GIAC practice tests ($329)",
+      "PAID: Idaho National Laboratory ICS resources"
+    ],
+    testing: "Online (ProctorU) or In-person (Pearson VUE)"
+  },
+  {
+    id: 28,
+    name: "GIAC Security Essentials",
+    acronym: "GSEC",
+    vendor: "GIAC/SANS",
+    domain: "Security Operations",
+    difficulty: "Intermediate",
+    accentColor: "#4caf50",
+    examCode: "GSEC",
+    questions: "106 (Multiple Choice — open book)",
+    duration: "240 minutes (4 hours)",
+    passingScore: "73%",
+    cost: "$979 USD (cert only); SANS SEC401 course ~$8,500",
+    validity: "4 years",
+    renewal: "36 CPE credits in 4 years + $99 renewal fee",
+    prerequisites: "No formal prerequisite; IT/security experience helpful; SANS SEC401 strongly recommended",
+    studyMaterials: [
+      "FREE: SANS Reading Room white papers (free)",
+      "FREE: Cybrary free cybersecurity courses",
+      "PAID: SANS SEC401 course (included with cert bundle ~$8,500)",
+      "PAID: GIAC practice tests ($329 standalone)",
+      "PAID: Edusum.com practice tests"
+    ],
+    testing: "Online (ProctorU) or In-person (Pearson VUE)"
+  },
+  {
+    id: 29,
+    name: "GIAC Critical Infrastructure Protection",
+    acronym: "GCIP",
+    vendor: "GIAC/SANS",
+    domain: "Industrial/ICS",
+    difficulty: "Expert",
+    accentColor: "#4caf50",
+    examCode: "GCIP",
+    questions: "~115 (Multiple Choice — open book)",
+    duration: "3 hours",
+    passingScore: "Approx. 73%",
+    cost: "$979 USD (cert only); SANS ICS515 ~$8,500",
+    validity: "4 years",
+    renewal: "36 CPE credits in 4 years + $99 renewal fee",
+    prerequisites: "No formal prerequisite; advanced ICS/OT security experience; GICSP or equivalent recommended",
+    studyMaterials: [
+      "FREE: ICS-CERT free online courses (ics-cert.cisa.gov)",
+      "FREE: CISA advisories and ICS alerts",
+      "PAID: SANS ICS515 course",
+      "PAID: GIAC practice tests ($329)",
+      "PAID: Idaho National Laboratory training programs"
+    ],
+    testing: "Online (ProctorU) or In-person (Pearson VUE)"
+  },
+  {
+    id: 30,
+    name: "Certified Information Systems Security Professional",
+    acronym: "CISSP",
+    vendor: "ISC2",
+    domain: "Governance & Audit",
+    difficulty: "Expert",
+    accentColor: "#2196f3",
+    examCode: "CISSP",
+    questions: "100–150 (CAT format, Multiple Choice + Advanced Innovative Items)",
+    duration: "240 minutes (4 hours)",
+    passingScore: "700 / 1000",
+    cost: "$749 USD",
+    validity: "3 years",
+    renewal: "120 CPE credits over 3 years + $135/yr membership fee; $50 reschedule / $100 cancellation fee",
+    prerequisites: "5 years cumulative paid work experience in 2+ of 8 CISSP domains; 1-year waiver for 4-yr degree; Associate of ISC2 available without experience",
+    studyMaterials: [
+      "FREE: ISC2 CISSP free study resources",
+      "FREE: 'How to Think Like a Manager' free PDF by Kelly Handerhan",
+      "PAID: Official ISC2 CISSP Study Guide (Sybex, ~$60)",
+      "PAID: Destination Certification MindMap ($299)",
+      "PAID: Cybrary or Infosec CISSP bootcamp ($500–$3,000)"
+    ],
+    testing: "In-person (Pearson VUE) or Online proctored"
+  },
+  {
+    id: 31,
+    name: "Certified Information Systems Security Manager",
+    acronym: "CISSM",
+    vendor: "ISC2",
+    domain: "Governance & Audit",
+    difficulty: "Expert",
+    accentColor: "#2196f3",
+    examCode: "NA (may refer to ISC2 ISSMP or ISSAP specialty)",
+    questions: "125 (Multiple Choice)",
+    duration: "3 hours",
+    passingScore: "700 / 1000",
+    cost: "$599 USD",
+    validity: "3 years",
+    renewal: "90 CPE credits over 3 years + ISC2 annual membership",
+    prerequisites: "Active CISSP certification required",
+    studyMaterials: [
+      "FREE: ISC2 ISSMP free resources",
+      "FREE: NIST Cybersecurity Framework (free)",
+      "PAID: Official ISC2 ISSMP Study Guide",
+      "PAID: ISC2 official training courses",
+      "PAID: Cybrary advanced security management courses"
+    ],
+    testing: "In-person (Pearson VUE) or Online proctored"
+  },
+  {
+    id: 32,
+    name: "CompTIA Advanced Security Practitioner",
+    acronym: "CASP+ / SecurityX",
+    vendor: "CompTIA",
+    domain: "Security Operations",
+    difficulty: "Expert",
+    accentColor: "#ff6b35",
+    examCode: "CAS-005 (SecurityX, as of 2025)",
+    questions: "90 max (MC + PBQs/Simulations)",
+    duration: "165 minutes",
+    passingScore: "Pass / Fail (no scaled score)",
+    cost: "$494 USD",
+    validity: "3 years",
+    renewal: "75 CEUs in 3 years or earn a qualifying higher cert",
+    prerequisites: "No formal requirement; 10 years IT experience (5 in security) recommended; Security+, CySA+, CCNP/CISM level knowledge",
+    studyMaterials: [
+      "FREE: CompTIA CASP/SecurityX free objectives PDF",
+      "FREE: NIST & CISA advisory documents",
+      "PAID: CompTIA SecurityX Official Study Guide (Sybex)",
+      "PAID: Infosec Institute CASP+ bootcamp",
+      "PAID: CompTIA CertMaster Learn + Labs"
+    ],
+    testing: "In-person (Pearson VUE) or Online (OnVUE)"
+  },
+  {
+    id: 33,
+    name: "Certified Information Systems Auditor",
+    acronym: "CISA",
+    vendor: "ISACA",
+    domain: "Governance & Audit",
+    difficulty: "Expert",
+    accentColor: "#ff9800",
+    examCode: "CISA",
+    questions: "150 (Multiple Choice)",
+    duration: "240 minutes (4 hours)",
+    passingScore: "450 / 800 (scaled)",
+    cost: "$575 (ISACA members) / $760 (non-members)",
+    validity: "3 years",
+    renewal: "120 CPE hours over 3 years; 20 CPE/yr minimum + annual fee ($45 member / $85 non-member)",
+    prerequisites: "5 years work experience in information systems auditing, control, or security; some substitutions allowed",
+    studyMaterials: [
+      "FREE: ISACA free journal articles & CISA resources",
+      "FREE: CISA free exam prep webinars (ISACA chapters)",
+      "PAID: ISACA CISA Review Manual (~$109)",
+      "PAID: ISACA QA&E Question/Answer & Explanation ($129)",
+      "PAID: Simplilearn CISA certification training"
+    ],
+    testing: "In-person (PSI testing centers) or Online proctored"
+  },
+  {
+    id: 34,
+    name: "Certified Information Security Manager",
+    acronym: "CISM",
+    vendor: "ISACA",
+    domain: "Governance & Audit",
+    difficulty: "Expert",
+    accentColor: "#ff9800",
+    examCode: "CISM",
+    questions: "150 (Multiple Choice)",
+    duration: "240 minutes (4 hours)",
+    passingScore: "450 / 800 (scaled)",
+    cost: "$575 (ISACA members) / $760 (non-members)",
+    validity: "3 years",
+    renewal: "120 CPE hours over 3 years; 20 CPE/yr minimum + annual fee",
+    prerequisites: "5 years information security work experience (3 years in IS management in 3+ domains); some substitutions allowed",
+    studyMaterials: [
+      "FREE: ISACA CISM free journal and resources",
+      "FREE: ISACA chapter study groups (many free)",
+      "PAID: ISACA CISM Review Manual (~$109 member)",
+      "PAID: Destination Certification CISM course",
+      "PAID: Infosec Institute CISM bootcamp"
+    ],
+    testing: "In-person (PSI testing centers) or Online proctored"
+  }
+];
+
+// Color mappings
+const difficultyColors = {
+  "Beginner": "#00ff9d",
+  "Intermediate": "#ffb300",
+  "Advanced": "#ff6b35",
+  "Expert": "#ff3d5a"
+};
+
+let currentModalIndex = -1;
+let visibleIndices = certifications.map((_, i) => i);
+
+function buildCards() {
+  const grid = document.getElementById('certGrid');
+  const noResults = document.getElementById('noResults');
+
+  // Remove existing cards
+  grid.querySelectorAll('.cert-card').forEach(c => c.remove());
+
+  certifications.forEach((cert, index) => {
+    const card = document.createElement('div');
+    card.className = 'cert-card';
+    card.dataset.index = index;
+    card.dataset.difficulty = cert.difficulty;
+    card.dataset.domain = cert.domain;
+    card.dataset.vendor = cert.vendor;
+    card.style.setProperty('--accent-color', cert.accentColor);
+
+    const diffClass = cert.difficulty.toLowerCase();
+
+    card.innerHTML = `
+      <div class="card-num">#${String(cert.id).padStart(2,'0')}</div>
+      <div class="card-name">${cert.name}</div>
+      <div class="card-acronym">${cert.acronym}</div>
+      <div class="card-cost">${cert.cost}</div>
+      <div class="card-tags">
+        <span class="tag tag-difficulty ${diffClass}">${cert.difficulty}</span>
+        <span class="tag tag-vendor">${cert.vendor}</span>
+        <span class="tag tag-domain">${cert.domain}</span>
+      </div>
+    `;
+
+    card.addEventListener('click', () => openModal(index));
+    grid.insertBefore(card, noResults);
+  });
+}
+
+function applyFilters() {
+  const difficulty = document.getElementById('filterDifficulty').value;
+  const domain = document.getElementById('filterDomain').value;
+  const vendor = document.getElementById('filterVendor').value;
+  const search = document.getElementById('searchInput').value.toLowerCase();
+
+  let count = 0;
+  visibleIndices = [];
+
+  document.querySelectorAll('.cert-card').forEach(card => {
+    const cert = certifications[card.dataset.index];
+    const matchD = !difficulty || cert.difficulty === difficulty;
+    const matchDom = !domain || cert.domain === domain;
+    const matchV = !vendor || cert.vendor === vendor;
+    const matchS = !search ||
+      cert.name.toLowerCase().includes(search) ||
+      cert.acronym.toLowerCase().includes(search) ||
+      cert.vendor.toLowerCase().includes(search);
+
+    if (matchD && matchDom && matchV && matchS) {
+      card.classList.remove('hidden');
+      count++;
+      visibleIndices.push(parseInt(card.dataset.index));
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+
+  document.getElementById('countDisplay').textContent = count;
+  const noR = document.getElementById('noResults');
+  noR.classList.toggle('visible', count === 0);
+}
+
+function resetFilters() {
+  document.getElementById('filterDifficulty').value = '';
+  document.getElementById('filterDomain').value = '';
+  document.getElementById('filterVendor').value = '';
+  document.getElementById('searchInput').value = '';
+  applyFilters();
+}
+
+function openModal(index) {
+  currentModalIndex = index;
+  renderModal(index);
+  document.getElementById('modalOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function navigateModal(dir) {
+  const pos = visibleIndices.indexOf(currentModalIndex);
+  const newPos = pos + dir;
+  if (newPos >= 0 && newPos < visibleIndices.length) {
+    currentModalIndex = visibleIndices[newPos];
+    renderModal(currentModalIndex);
+  }
+}
+
+function renderModal(index) {
+  const cert = certifications[index];
+
+  document.getElementById('modalHeader').style.setProperty('--modal-accent', cert.accentColor);
+  document.querySelector('.modal').style.setProperty('--modal-accent', cert.accentColor);
+
+  document.getElementById('modalNum').textContent = `CERT #${String(cert.id).padStart(2,'0')} · ${cert.vendor}`;
+  document.getElementById('modalTitle').textContent = cert.name;
+  document.getElementById('modalAcronym').textContent = cert.acronym;
+
+  // Tags
+  const diffClass = cert.difficulty.toLowerCase();
+  document.getElementById('modalMetaTags').innerHTML = `
+    <span class="tag tag-difficulty ${diffClass}">${cert.difficulty}</span>
+    <span class="tag tag-domain">${cert.domain}</span>
+    <span class="tag tag-vendor">${cert.vendor}</span>
+  `;
+
+  // Body
+  const studyItems = cert.studyMaterials.map(s =>
+    `<div class="resource-item"><div class="resource-dot"></div><span>${s}</span></div>`
+  ).join('');
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="info-grid">
+      <div class="info-block">
+        <div class="info-block-label">📋 Exam Code / Version</div>
+        <div class="info-block-value">${cert.examCode}</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block-label">❓ Questions &amp; Format</div>
+        <div class="info-block-value">${cert.questions}</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block-label">⏱ Duration</div>
+        <div class="info-block-value highlight">${cert.duration}</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block-label">🎯 Passing Score</div>
+        <div class="info-block-value highlight">${cert.passingScore}</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block-label">💰 Cost (2025)</div>
+        <div class="info-block-value highlight" style="color:#ffb300">${cert.cost}</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block-label">📅 Validity Period</div>
+        <div class="info-block-value">${cert.validity}</div>
+      </div>
+      <div class="info-block" style="grid-column: span 2">
+        <div class="info-block-label">🖥 Testing Options</div>
+        <div class="info-block-value">${cert.testing}</div>
+      </div>
+    </div>
+
+    <div class="prereq-box">
+      <span class="prereq-label">⚠ PREREQUISITES</span>
+      ${cert.prerequisites}
+    </div>
+
+    <div class="renewal-box">
+      <span class="renewal-label">♻ RENEWAL REQUIREMENTS</span>
+      ${cert.renewal}
+    </div>
+
+    <div class="section-title">📚 STUDY MATERIALS</div>
+    <div class="resource-list">${studyItems}</div>
+  `;
+
+  // Nav buttons
+  const pos = visibleIndices.indexOf(index);
+  document.getElementById('prevBtn').disabled = pos <= 0;
+  document.getElementById('nextBtn').disabled = pos >= visibleIndices.length - 1;
+}
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('modalOverlay').classList.contains('active')) return;
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'ArrowLeft') navigateModal(-1);
+  if (e.key === 'ArrowRight') navigateModal(1);
+});
+
+// Event listeners for filters
+['filterDifficulty','filterDomain','filterVendor','searchInput'].forEach(id => {
+  document.getElementById(id).addEventListener('change', applyFilters);
+  document.getElementById(id).addEventListener('input', applyFilters);
+});
+
+// Init
+buildCards();
+applyFilters();
+</script>
+</body>
+</html>

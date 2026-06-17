@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompTIA Security+ SY0-701 Domain 2: Interactive Outline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
+            color: black;
+            line-height: 1.6;
+        }
+
+        .header {
+            background-color: #2d5016;
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-btn {
+            background-color: #4a7c23;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-btn:hover {
+            background-color: #5a8c33;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 300px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            border: 2px solid #4a7c23;
+            z-index: 1;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f0f8e8;
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown.show .dropdown-content {
+            display: block;
+        }
+
+        .main-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .domain-weight {
+            font-size: 14px;
+            color: #b8d6a0;
+        }
+
+        .main-content {
+            margin-top: 100px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background-color: #4a7c23;
+            color: white;
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+
+        .section-header:hover {
+            background-color: #5a8c33;
+        }
+
+        .section-content {
+            display: none;
+            padding: 1.5rem;
+            background-color: white;
+        }
+
+        .section.expanded .section-content {
+            display: block;
+        }
+
+        .subsection {
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #4a7c23;
+            padding-left: 1rem;
+        }
+
+        .subsection-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #2d5016;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .subsection-title:hover {
+            background-color: #f0f8e8;
+        }
+
+        .subsection-content {
+            display: none;
+            margin-left: 1rem;
+        }
+
+        .subsection.expanded .subsection-content {
+            display: block;
+        }
+
+        .topic {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            border-left: 3px solid #4a7c23;
+        }
+
+        .topic-title {
+            font-weight: bold;
+            color: #2d5016;
+            margin-bottom: 0.5rem;
+        }
+
+        .topic-description {
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 0.5rem;
+        }
+
+        .characteristics, .examples, .types {
+            margin-top: 0.5rem;
+        }
+
+        .characteristics ul, .examples ul, .types ul {
+            margin-left: 1.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .characteristics li, .examples li, .types li {
+            margin-bottom: 0.25rem;
+            font-size: 14px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #4a7c23;
+            font-size: 14px;
+        }
+
+        .expand-icon {
+            transition: transform 0.3s;
+        }
+
+        .expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .search-container {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #4a7c23;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        .clear-btn {
+            background-color: #4a7c23;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .clear-btn:hover {
+            background-color: #5a8c33;
+        }
+
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .dropdown-content {
+                min-width: 250px;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .main-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="nav-container">
+            <div class="dropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown()">
+                    📚 Navigation <span class="expand-icon">▼</span>
+                </button>
+                <div class="dropdown-content" id="navigationDropdown">
+                    <a href="#section-2-1">2.1 Threat Actors and Motivations</a>
+                    <a href="#section-2-2">2.2 Threat Vectors and Attack Surfaces</a>
+                    <a href="#section-2-3">2.3 Types of Vulnerabilities</a>
+                    <a href="#section-2-4">2.4 Indicators of Malicious Activity</a>
+                    <a href="#section-2-5">2.5 Mitigation Techniques</a>
+                    <a href="#" onclick="expandAll()">📖 Expand All Sections</a>
+                    <a href="#" onclick="collapseAll()">📕 Collapse All Sections</a>
+                </div>
+            </div>
+            <div>
+                <div class="main-title">CompTIA Security+ SY0-701 Domain 2</div>
+                <div class="domain-weight">Threats, Vulnerabilities, and Mitigations (22% of Exam)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="search-container">
+            <input type="text" class="search-box" id="searchBox" placeholder="Search content..." onkeyup="searchContent()">
+            <button class="clear-btn" onclick="clearSearch()">Clear</button>
+        </div>
+
+        <div class="section" id="section-2-1">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>2.1 Compare and contrast common threat actors and motivations</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.1.1 Threat Actors</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Nation-State</div>
+                            <div class="topic-description">Government-sponsored actors conducting cyber operations</div>
+                            <div class="characteristics">
+                                <span class="label">Characteristics:</span>
+                                <ul>
+                                    <li>Extensive resources and funding</li>
+                                    <li>Highly sophisticated capabilities</li>
+                                    <li>Long-term strategic objectives</li>
+                                    <li>Advanced persistent threat (APT) campaigns</li>
+                                </ul>
+                            </div>
+                            <div class="examples">
+                                <span class="label">Typical Targets:</span> Government agencies, defense contractors, critical infrastructure
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Unskilled Attacker</div>
+                            <div class="topic-description">Individuals with limited technical expertise using existing tools</div>
+                            <div class="characteristics">
+                                <span class="label">Characteristics:</span>
+                                <ul>
+                                    <li>Low skill level, relies on pre-built tools and scripts</li>
+                                    <li>Limited resources</li>
+                                    <li>Often called "script kiddies"</li>
+                                    <li>Opportunistic rather than targeted</li>
+                                </ul>
+                            </div>
+                            <div class="examples">
+                                <span class="label">Common Tools:</span> Automated vulnerability scanners, downloadable exploit kits
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Hacktivist</div>
+                            <div class="topic-description">Individuals or groups using hacking for political or social causes</div>
+                            <div class="characteristics">
+                                <span class="label">Characteristics:</span>
+                                <ul>
+                                    <li>Moderate technical skills</li>
+                                    <li>Ideologically motivated</li>
+                                    <li>Often work in groups or collectives</li>
+                                    <li>Public campaigns and demonstrations</li>
+                                </ul>
+                            </div>
+                            <div class="examples">
+                                <span class="label">Common Tactics:</span> Website defacements, DDoS attacks, data leaks
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Insider Threat</div>
+                            <div class="topic-description">Trusted individuals within an organization who pose security risks</div>
+                            <div class="types">
+                                <span class="label">Types:</span>
+                                <ul>
+                                    <li>Malicious insider: Intentionally harmful actions</li>
+                                    <li>Negligent insider: Unintentional security violations</li>
+                                    <li>Compromised insider: External actors using legitimate credentials</li>
+                                </ul>
+                            </div>
+                            <div class="characteristics">
+                                <span class="label">Risk Factors:</span> Financial stress, job dissatisfaction, ideological conflicts
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Organized Crime</div>
+                            <div class="topic-description">Professional criminal organizations conducting cyber operations</div>
+                            <div class="characteristics">
+                                <span class="label">Characteristics:</span>
+                                <ul>
+                                    <li>Well-funded and organized</li>
+                                    <li>Profit-driven operations</li>
+                                    <li>Sophisticated techniques and tools</li>
+                                    <li>Global networks and coordination</li>
+                                </ul>
+                            </div>
+                            <div class="examples">
+                                <span class="label">Common Activities:</span> Ransomware operations, financial fraud, identity theft
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Shadow IT</div>
+                            <div class="topic-description">Unauthorized IT systems, devices, or services used within organizations</div>
+                            <div class="characteristics">
+                                <span class="label">Characteristics:</span>
+                                <ul>
+                                    <li>Bypass official IT policies and procedures</li>
+                                    <li>Often well-intentioned but create security risks</li>
+                                    <li>Lack proper security controls and monitoring</li>
+                                </ul>
+                            </div>
+                            <div class="examples">
+                                <span class="label">Examples:</span> Unapproved cloud services, personal devices, unauthorized software
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.1.2 Attributes of Actors</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Internal/External</div>
+                            <div class="types">
+                                <span class="label">Internal Threats:</span>
+                                <ul>
+                                    <li>Employees, contractors, business partners</li>
+                                    <li>Legitimate access to systems and facilities</li>
+                                    <li>Insider knowledge of processes and vulnerabilities</li>
+                                </ul>
+                            </div>
+                            <div class="types">
+                                <span class="label">External Threats:</span>
+                                <ul>
+                                    <li>Attackers from outside the organization</li>
+                                    <li>Must gain unauthorized access</li>
+                                    <li>May use social engineering or technical exploits</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Resources/Funding</div>
+                            <div class="types">
+                                <span class="label">High-Resource Actors:</span> Nation-states, organized crime
+                            </div>
+                            <div class="types">
+                                <span class="label">Medium-Resource Actors:</span> Hacktivists, some insider threats
+                            </div>
+                            <div class="types">
+                                <span class="label">Low-Resource Actors:</span> Unskilled attackers, some insider threats
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Level of Sophistication/Capability</div>
+                            <div class="types">
+                                <span class="label">Advanced:</span> Custom malware, zero-day exploits, APT campaigns
+                            </div>
+                            <div class="types">
+                                <span class="label">Intermediate:</span> Modified existing tools, social engineering
+                            </div>
+                            <div class="types">
+                                <span class="label">Basic:</span> Readily available tools, simple attack methods
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.1.3 Motivations</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Data Exfiltration</div>
+                            <div class="topic-description">Stealing sensitive information for various reasons</div>
+                            <div class="examples">
+                                <span class="label">Targets:</span> Intellectual property, customer data, financial records
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Espionage</div>
+                            <div class="topic-description">Gathering intelligence for competitive, political, or military advantage</div>
+                            <div class="types">
+                                <span class="label">Types:</span> Industrial espionage, state espionage
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Service Disruption</div>
+                            <div class="topic-description">Preventing normal operations of services or systems</div>
+                            <div class="examples">
+                                <span class="label">Methods:</span> DDoS attacks, system sabotage, infrastructure attacks
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Financial Gain</div>
+                            <div class="topic-description">Direct monetary profit from cyber activities</div>
+                            <div class="examples">
+                                <span class="label">Methods:</span> Banking fraud, cryptocurrency theft, ransomware
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Philosophical/Political Beliefs</div>
+                            <div class="topic-description">Advancing ideological causes or political agendas</div>
+                            <div class="examples">
+                                <span class="label">Methods:</span> Website defacements, data leaks, propaganda campaigns
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">War</div>
+                            <div class="topic-description">Military or strategic advantages in conflicts</div>
+                            <div class="examples">
+                                <span class="label">Targets:</span> Critical infrastructure, military systems, communications
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="section-2-2">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>2.2 Explain common threat vectors and attack surfaces</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.2.1 Message-Based Threats</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Email</div>
+                            <div class="examples">
+                                <span class="label">Attack Types:</span>
+                                <ul>
+                                    <li>Phishing attacks: Deceptive emails to steal credentials</li>
+                                    <li>Malware delivery: Attachments containing malicious code</li>
+                                    <li>Business Email Compromise (BEC): Targeting executives</li>
+                                    <li>Email spoofing: Impersonating legitimate senders</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Short Message Service (SMS)</div>
+                            <div class="examples">
+                                <span class="label">Attack Types:</span>
+                                <ul>
+                                    <li>SMS phishing (Smishing): Text-based phishing attacks</li>
+                                    <li>Malware links: URLs leading to malicious downloads</li>
+                                    <li>Two-factor authentication bypass: SIM swapping attacks</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Instant Messaging (IM)</div>
+                            <div class="examples">
+                                <span class="label">Attack Types:</span>
+                                <ul>
+                                    <li>Malware spreading through file transfers and links</li>
+                                    <li>Social engineering through direct communication</li>
+                                    <li>Credential harvesting with fake login prompts</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.2.2 Network-Based Threats</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Wireless Networks</div>
+                            <div class="examples">
+                                <span class="label">Vulnerabilities:</span>
+                                <ul>
+                                    <li>Open networks: Unencrypted wireless access points</li>
+                                    <li>Weak encryption: WEP and weak WPA implementations</li>
+                                    <li>Evil twin attacks: Malicious access points mimicking legitimate ones</li>
+                                    <li>Man-in-the-middle attacks: Intercepting wireless communications</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Bluetooth</div>
+                            <div class="examples">
+                                <span class="label">Attack Types:</span>
+                                <ul>
+                                    <li>Bluejacking: Sending unauthorized messages</li>
+                                    <li>Bluesnarfing: Unauthorized access to device data</li>
+                                    <li>Proximity attacks: Short-range exploitation</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.2.3 Supply Chain Attacks</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Managed Service Providers (MSPs)</div>
+                            <div class="characteristics">
+                                <span class="label">Risks:</span>
+                                <ul>
+                                    <li>Third-party access to multiple client systems</li>
+                                    <li>Privileged access across organizations</li>
+                                    <li>Cascade effects from single compromise</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Vendors</div>
+                            <div class="examples">
+                                <span class="label">Attack Vectors:</span>
+                                <ul>
+                                    <li>Compromised software distribution</li>
+                                    <li>Modified hardware components</li>
+                                    <li>Poisoned software updates</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.2.4 Human Vectors/Social Engineering</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Phishing</div>
+                            <div class="types">
+                                <span class="label">Types:</span>
+                                <ul>
+                                    <li>Email phishing: Deceptive emails requesting information</li>
+                                    <li>Spear phishing: Targeted phishing attacks</li>
+                                    <li>Whaling: Targeting high-value individuals</li>
+                                    <li>Clone phishing: Duplicating legitimate emails with malicious modifications</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Business Email Compromise</div>
+                            <div class="examples">
+                                <span class="label">Methods:</span>
+                                <ul>
+                                    <li>Executive impersonation: Posing as company leadership</li>
+                                    <li>Vendor email compromise: Hijacking legitimate communications</li>
+                                    <li>Invoice fraud: Fake or modified invoices</li>
+                                    <li>Wire transfer fraud: Unauthorized financial transfers</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Pretexting</div>
+                            <div class="topic-description">Creating false scenarios to gather information or gain access</div>
+                            <div class="characteristics">
+                                <span class="label">Characteristics:</span>
+                                <ul>
+                                    <li>False scenarios: Creating believable but false situations</li>
+                                    <li>Information gathering: Collecting data for future attacks</li>
+                                    <li>Trust building: Establishing rapport before exploitation</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Watering Hole</div>
+                            <div class="topic-description">Compromising websites frequented by target audience</div>
+                            <div class="characteristics">
+                                <span class="label">Strategy:</span>
+                                <ul>
+                                    <li>Targeted websites: Compromising sites visited by target audience</li>
+                                    <li>Strategic placement: Infecting commonly used resources</li>
+                                    <li>Patient approach: Long-term compromise strategies</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Typosquatting</div>
+                            <div class="topic-description">Registering domains with common typos to deceive users</div>
+                            <div class="examples">
+                                <span class="label">Tactics:</span>
+                                <ul>
+                                    <li>Similar domains: Registering domains with common typos</li>
+                                    <li>User error exploitation: Capitalizing on typing mistakes</li>
+                                    <li>Credential harvesting: Fake login pages</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="section-2-3">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>2.3 Explain various types of vulnerabilities</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.3.1 Application Vulnerabilities</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Buffer Overflow</div>
+                            <div class="topic-description">Writing data beyond allocated memory boundaries</div>
+                            <div class="types">
+                                <span class="label">Types:</span> Stack overflow, heap overflow
+                            </div>
+                            <div class="examples">
+                                <span class="label">Prevention:</span> Bounds checking, stack canaries, ASLR
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Race Conditions</div>
+                            <div class="topic-description">Timing-dependent vulnerabilities in concurrent operations</div>
+                            <div class="characteristics">
+                                <span class="label">Components:</span>
+                                <ul>
+                                    <li>Time-of-Check (TOC): Verifying conditions at one point</li>
+                                    <li>Time-of-Use (TOU): Using resources at a different time</li>
+                                    <li>TOCTOU attacks: Exploiting the gap between check and use</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Memory Injection</div>
+                            <div class="topic-description">Exploiting memory management flaws to inject malicious code</div>
+                            <div class="types">
+                                <span class="label">Types:</span> Code injection, DLL injection, process hollowing
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.3.2 Web-Based Vulnerabilities</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">SQL Injection (SQLi)</div>
+                            <div class="topic-description">Injecting malicious SQL commands into web applications</div>
+                            <div class="types">
+                                <span class="label">Types:</span> In-band, blind, time-based SQL injection
+                            </div>
+                            <div class="examples">
+                                <span class="label">Impact:</span> Data extraction, database manipulation, authentication bypass
+                            </div>
+                            <div class="examples">
+                                <span class="label">Prevention:</span> Parameterized queries, input validation, least privilege
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Cross-Site Scripting (XSS)</div>
+                            <div class="topic-description">Injecting malicious scripts into web pages</div>
+                            <div class="types">
+                                <span class="label">Types:</span> Stored XSS, reflected XSS, DOM-based XSS
+                            </div>
+                            <div class="examples">
+                                <span class="label">Impact:</span> Session hijacking, credential theft, malware distribution
+                            </div>
+                            <div class="examples">
+                                <span class="label">Prevention:</span> Input sanitization, output encoding, CSP headers
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.3.3 Hardware Vulnerabilities</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Firmware</div>
+                            <div class="topic-description">Low-level software stored in hardware</div>
+                            <div class="examples">
+                                <span class="label">Vulnerabilities:</span> Backdoors, weak authentication, update mechanisms
+                            </div>
+                            <div class="examples">
+                                <span class="label">Examples:</span> UEFI vulnerabilities, router firmware flaws
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">End-of-Life</div>
+                            <div class="topic-description">Hardware no longer supported by manufacturer</div>
+                            <div class="characteristics">
+                                <span class="label">Risks:</span> No security updates, accumulating vulnerabilities
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Legacy</div>
+                            <div class="topic-description">Older hardware still in use but difficult to secure</div>
+                            <div class="examples">
+                                <span class="label">Mitigation:</span> Network isolation, additional monitoring
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.3.4 Cloud-Specific Vulnerabilities</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Common Cloud Vulnerabilities</div>
+                            <div class="examples">
+                                <span class="label">Risk Areas:</span>
+                                <ul>
+                                    <li>Shared responsibility model: Unclear security boundaries</li>
+                                    <li>Misconfigured storage: Publicly accessible cloud storage</li>
+                                    <li>Weak access controls: Inadequate identity and access management</li>
+                                    <li>API vulnerabilities: Insecure cloud service APIs</li>
+                                    <li>Data residency: Data location and sovereignty issues</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.3.5 Mobile Device Vulnerabilities</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Side Loading</div>
+                            <div class="topic-description">Installing applications from unofficial sources</div>
+                            <div class="characteristics">
+                                <span class="label">Risks:</span> Malicious app installation, bypassing security controls
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Jailbreaking</div>
+                            <div class="topic-description">Removing manufacturer security restrictions</div>
+                            <div class="characteristics">
+                                <span class="label">Risks:</span> Disabling security features, installing malicious software
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="section-2-4">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>2.4 Given a scenario, analyze indicators of malicious activity</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.4.1 Malware Attacks</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Ransomware</div>
+                            <div class="topic-description">Malware that encrypts data and demands payment for decryption</div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> File encryption, ransom notes, system lockouts
+                            </div>
+                            <div class="types">
+                                <span class="label">Variants:</span> Crypto-ransomware, locker ransomware, double extortion
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Trojan</div>
+                            <div class="topic-description">Malware disguised as legitimate software</div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Unexpected network connections, performance degradation
+                            </div>
+                            <div class="types">
+                                <span class="label">Types:</span> Remote access trojans (RATs), banking trojans, downloaders
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Worm</div>
+                            <div class="topic-description">Self-replicating malware that spreads across networks</div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Network congestion, rapid spread, system performance issues
+                            </div>
+                            <div class="examples">
+                                <span class="label">Propagation:</span> Network vulnerabilities, removable media, email
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Spyware</div>
+                            <div class="topic-description">Malware that secretly monitors and collects information</div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Keystroke logging, screen capture, data transmission
+                            </div>
+                            <div class="types">
+                                <span class="label">Types:</span> Keyloggers, screen recorders, audio/video capture
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Rootkit</div>
+                            <div class="topic-description">Malware that hides its presence and maintains persistence</div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Hidden processes, modified system files, unusual network activity
+                            </div>
+                            <div class="types">
+                                <span class="label">Types:</span> User-mode rootkits, kernel-mode rootkits, firmware rootkits
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Logic Bomb</div>
+                            <div class="topic-description">Malicious code triggered by specific conditions</div>
+                            <div class="examples">
+                                <span class="label">Triggers:</span> Date/time, user actions, system conditions
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.4.2 Network Attacks</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Distributed Denial-of-Service (DDoS)</div>
+                            <div class="topic-description">Overwhelming systems with traffic from multiple sources</div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Service unavailability, network congestion, high resource usage
+                            </div>
+                            <div class="types">
+                                <span class="label">Types:</span>
+                                <ul>
+                                    <li>Amplified: Using protocols that generate larger responses</li>
+                                    <li>Reflected: Bouncing attack traffic off third-party systems</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">DNS Attacks</div>
+                            <div class="types">
+                                <span class="label">Types:</span> DNS poisoning, DNS tunneling, DNS hijacking
+                            </div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Unexpected DNS responses, traffic to malicious domains
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">On-Path Attacks</div>
+                            <div class="topic-description">Intercepting and potentially modifying network communications</div>
+                            <div class="examples">
+                                <span class="label">Methods:</span> ARP poisoning, DNS spoofing, BGP hijacking
+                            </div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Unexpected network routes, certificate warnings
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Credential Replay</div>
+                            <div class="topic-description">Reusing captured authentication credentials</div>
+                            <div class="examples">
+                                <span class="label">Methods:</span> Session hijacking, pass-the-hash attacks
+                            </div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Unusual login patterns, concurrent sessions
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.4.3 Application Attacks</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Injection</div>
+                            <div class="types">
+                                <span class="label">Types:</span> SQL injection, command injection, LDAP injection
+                            </div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Database errors, unexpected command execution
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Privilege Escalation</div>
+                            <div class="topic-description">Gaining higher-level access than authorized</div>
+                            <div class="types">
+                                <span class="label">Types:</span> Vertical escalation, horizontal escalation
+                            </div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Unauthorized access, elevated privileges
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Directory Traversal</div>
+                            <div class="topic-description">Accessing files outside intended directories</div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Attempts to access system files, path manipulation
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.4.4 Password Attacks</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Password Spraying</div>
+                            <div class="topic-description">Trying common passwords against many accounts</div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> Failed logins across multiple accounts
+                            </div>
+                            <div class="examples">
+                                <span class="label">Advantage:</span> Avoiding account lockout policies
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Brute Force</div>
+                            <div class="topic-description">Systematically trying all possible password combinations</div>
+                            <div class="examples">
+                                <span class="label">Indicators:</span> High volume of failed login attempts
+                            </div>
+                            <div class="types">
+                                <span class="label">Types:</span> Dictionary attacks, rainbow table attacks
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.4.5 Activity Indicators</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Account Lockout</div>
+                            <div class="topic-description">Multiple failed authentication attempts</div>
+                            <div class="examples">
+                                <span class="label">Investigation:</span> Review login logs, check for attack patterns
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Concurrent Session Usage</div>
+                            <div class="topic-description">Same account accessed from multiple locations simultaneously</div>
+                            <div class="examples">
+                                <span class="label">Analysis:</span> Geographic analysis, device fingerprinting
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Impossible Travel</div>
+                            <div class="topic-description">Account access from geographically impossible locations</div>
+                            <div class="examples">
+                                <span class="label">Analysis:</span> Time stamps, geographic distance, travel time
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Resource Consumption</div>
+                            <div class="topic-description">Unusual system resource usage patterns</div>
+                            <div class="examples">
+                                <span class="label">Monitoring:</span> CPU, memory, disk, network utilization
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Out-of-Cycle Logging</div>
+                            <div class="topic-description">Log entries occurring outside normal patterns</div>
+                            <div class="examples">
+                                <span class="label">Analysis:</span> Time-based patterns, user behavior, system cycles
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Missing Logs</div>
+                            <div class="topic-description">Expected log entries that are absent</div>
+                            <div class="examples">
+                                <span class="label">Causes:</span> Log tampering, system failures, configuration issues
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="section-2-5">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>2.5 Explain the purpose of mitigation techniques used to secure the enterprise</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.5.1 Network Security Controls</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Segmentation</div>
+                            <div class="topic-description">Isolating network areas to contain threats and limit access</div>
+                            <div class="examples">
+                                <span class="label">Implementation:</span> VLANs, subnets, firewalls, air gaps
+                            </div>
+                            <div class="examples">
+                                <span class="label">Benefits:</span> Threat containment, reduced attack surface, compliance
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Isolation</div>
+                            <div class="topic-description">Separating systems or processes to prevent contamination</div>
+                            <div class="types">
+                                <span class="label">Types:</span> Physical isolation, logical isolation, process isolation
+                            </div>
+                            <div class="examples">
+                                <span class="label">Implementation:</span> Air gaps, VMs, containers, sandboxes
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.5.2 Access Control</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Access Control List (ACL)</div>
+                            <div class="topic-description">Defining specific permissions for resources</div>
+                            <div class="characteristics">
+                                <span class="label">Components:</span> Subjects, objects, permissions
+                            </div>
+                            <div class="examples">
+                                <span class="label">Implementation:</span> File systems, network devices, applications
+                            </div>
+                        </div>
+
+                        <div class="topic">
+                            <div class="topic-title">Permissions</div>
+                            <div class="types">
+                                <span class="label">Types:</span> Read, write, execute, delete, modify
+                            </div>
+                            <div class="types">
+                                <span class="label">Models:</span> Discretionary (DAC), mandatory (MAC), role-based (RBAC)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.5.3 Application Security</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Application Allow List</div>
+                            <div class="topic-description">Permitting only approved applications to run</div>
+                            <div class="examples">
+                                <span class="label">Implementation:</span> Whitelist-based application control
+                            </div>
+                            <div class="examples">
+                                <span class="label">Benefits:</span> Malware prevention, compliance enforcement
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title" onclick="toggleSubsection(this)">2.5.4 System Maintenance</div>
+                    <div class="subsection-content">
+                        <div class="topic">
+                            <div class="topic-title">Patching</div>
+                            <div class="topic-description">Fixing known vulnerabilities in software and systems</div>
+                            <div class="characteristics">
+                                <span class="label">Process:</span> Testing, staging, deployment, verification
+                            </div>
+                            <div class="examples">
+                                <span class="label">Management:</span> Patch cycles, emergency patches, rollback procedures
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown() {
+            document.querySelector('.dropdown').classList.toggle('show');
+        }
+
+        function toggleSection(element) {
+            const section = element.parentElement;
+            section.classList.toggle('expanded');
+        }
+
+        function toggleSubsection(element) {
+            const subsection = element.parentElement;
+            subsection.classList.toggle('expanded');
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('expanded');
+            });
+            document.querySelectorAll('.subsection').forEach(subsection => {
+                subsection.classList.add('expanded');
+            });
+            document.querySelector('.dropdown').classList.remove('show');
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('expanded');
+            });
+            document.querySelectorAll('.subsection').forEach(subsection => {
+                subsection.classList.remove('expanded');
+            });
+            document.querySelector('.dropdown').classList.remove('show');
+        }
+
+        function searchContent() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const allText = document.querySelectorAll('.topic-title, .topic-description, .label, li');
+            
+            // Clear previous highlights
+            allText.forEach(element => {
+                element.innerHTML = element.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
+            });
+
+            if (searchTerm.length > 2) {
+                // Expand all sections for better search visibility
+                expandAll();
+                
+                // Highlight search terms
+                allText.forEach(element => {
+                    if (element.textContent.toLowerCase().includes(searchTerm)) {
+                        const regex = new RegExp(`(${searchTerm})`, 'gi');
+                        element.innerHTML = element.innerHTML.replace(regex, '<span class="highlight">$1</span>');
+                    }
+                });
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchBox').value = '';
+            const allText = document.querySelectorAll('.topic-title, .topic-description, .label, li');
+            allText.forEach(element => {
+                element.innerHTML = element.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
+            });
+            collapseAll();
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-btn') && !event.target.closest('.dropdown-btn')) {
+                document.querySelector('.dropdown').classList.remove('show');
+            }
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.dropdown-content a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    document.querySelector('.dropdown').classList.remove('show');
+                }
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'f':
+                        e.preventDefault();
+                        document.getElementById('searchBox').focus();
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        expandAll();
+                        break;
+                    case 'c':
+                        e.preventDefault();
+                        collapseAll();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 12: Final Review & Exam Readiness | CompTIA Security+ SY0-701</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --bg:          #ffffff;
+  --bg-soft:     #f7f9f7;
+  --bg-card:     #ffffff;
+  --border:      #d8e4d8;
+  --border-dark: #b2ccb2;
+  --text:        #111111;
+  --text-mid:    #3a4a3a;
+  --text-muted:  #5c6e5c;
+  --green-dark:  #1b5e20;
+  --green:       #2e7d32;
+  --green-mid:   #388e3c;
+  --green-light: #4caf50;
+  --green-pale:  #e8f5e9;
+  --green-pale2: #c8e6c9;
+  --red:         #b71c1c;
+  --red-pale:    #ffebee;
+  --red-mid:     #c62828;
+  --blue:        #1565c0;
+  --blue-pale:   #e3f2fd;
+  --amber:       #e65100;
+  --amber-pale:  #fff3e0;
+  --purple:      #6a1b9a;
+  --purple-pale: #f3e5f5;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.13);
+  --radius:      10px;
+  --radius-lg:   16px;
+}
+[data-theme="dark"] {
+  --bg:          #0e120e;
+  --bg-soft:     #141a14;
+  --bg-card:     #1a221a;
+  --border:      #2a3a2a;
+  --border-dark: #3a4e3a;
+  --text:        #e8f0e8;
+  --text-mid:    #b8ccb8;
+  --text-muted:  #7a9a7a;
+  --green-dark:  #81c784;
+  --green:       #4caf50;
+  --green-mid:   #66bb6a;
+  --green-light: #a5d6a7;
+  --green-pale:  #1a2e1a;
+  --green-pale2: #1e3a1e;
+  --red:         #ef9a9a;
+  --red-pale:    #2a1010;
+  --red-mid:     #ef9a9a;
+  --blue:        #90caf9;
+  --blue-pale:   #0d1f35;
+  --amber:       #ffcc80;
+  --amber-pale:  #2a1a00;
+  --purple:      #ce93d8;
+  --purple-pale: #1f0d2a;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.30);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.40);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.50);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.65;font-size:16px;
+  transition:background .3s,color .3s;
+  min-height:100vh;
+}
+h1,h2,h3,h4{line-height:1.25;font-weight:700;}
+ul{padding-left:1.4em;}
+li{margin-bottom:.35em;}
+button{cursor:pointer;font-family:inherit;}
+
+/* ============================================================
+   LAYOUT: HEADER + SIDEBAR + MAIN
+   ============================================================ */
+header{
+  background:var(--green-dark);color:#fff;
+  position:sticky;top:0;z-index:300;
+  box-shadow:0 2px 12px rgba(0,0,0,.28);
+}
+.header-inner{
+  max-width:1280px;margin:0 auto;padding:12px 24px;
+  display:flex;align-items:center;
+  justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.header-left{display:flex;align-items:center;gap:12px;}
+.brand-icon{
+  width:40px;height:40px;
+  background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:13px;color:#fff;flex-shrink:0;
+}
+.brand-info h1{font-size:.95rem;font-weight:700;}
+.brand-info p {font-size:.72rem;opacity:.7;margin-top:1px;}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.lesson-badge{
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);
+  color:#fff;font-size:.68rem;font-weight:700;
+  padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.07em;
+}
+.nav-link{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+  color:#fff;font-size:.78rem;font-weight:600;
+  padding:5px 12px;border-radius:20px;
+  text-decoration:none;display:inline-block;transition:background .2s;
+}
+.nav-link:hover{background:rgba(255,255,255,.25);}
+.theme-btn{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+  color:#fff;font-size:.78rem;font-weight:600;
+  padding:5px 14px;border-radius:20px;transition:background .2s;
+}
+.theme-btn:hover{background:rgba(255,255,255,.25);}
+
+/* Wrapper */
+.app-wrapper{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  max-width:1280px;margin:0 auto;
+  min-height:calc(100vh - 65px);
+}
+
+/* SIDEBAR */
+.sidebar{
+  background:var(--bg-soft);border-right:1px solid var(--border);
+  padding:24px 16px;position:sticky;
+  top:65px;height:calc(100vh - 65px);overflow-y:auto;
+}
+.sidebar-title{
+  font-size:.65rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--text-muted);
+  margin-bottom:12px;padding:0 8px;
+}
+.nav-item{
+  width:100%;text-align:left;
+  background:none;border:none;
+  padding:10px 12px;border-radius:8px;
+  font-size:.85rem;font-weight:600;color:var(--text-mid);
+  display:flex;align-items:center;gap:10px;
+  transition:background .2s,color .2s;margin-bottom:2px;
+}
+.nav-item:hover{background:var(--green-pale);color:var(--green-dark);}
+.nav-item.active{background:var(--green);color:#fff;}
+.nav-item .nav-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
+.nav-item .nav-badge{
+  margin-left:auto;font-size:.62rem;font-weight:700;
+  padding:2px 7px;border-radius:10px;
+  background:rgba(0,0,0,.1);
+}
+.nav-item.active .nav-badge{background:rgba(255,255,255,.25);}
+
+.sidebar-divider{
+  height:1px;background:var(--border);margin:14px 0;
+}
+.sidebar-section-label{
+  font-size:.62rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--text-muted);
+  padding:0 8px;margin-bottom:6px;margin-top:4px;
+}
+
+/* MAIN */
+.main-content{
+  padding:32px 36px 64px;overflow-y:auto;
+  background:var(--bg);
+}
+
+/* ============================================================
+   PANELS (tab content)
+   ============================================================ */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* Section label */
+.section-label{
+  font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--green);
+  margin-bottom:14px;padding-bottom:8px;
+  border-bottom:2px solid var(--green-pale2);
+  display:flex;align-items:center;gap:8px;
+}
+.section-label::before{
+  content:'';display:block;width:4px;height:16px;
+  background:var(--green);border-radius:2px;
+}
+
+/* Hero banner inside panel */
+.panel-hero{
+  background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 50%,#388e3c 100%);
+  color:#fff;border-radius:var(--radius-lg);
+  padding:32px 36px;margin-bottom:32px;
+  position:relative;overflow:hidden;
+}
+.panel-hero::after{
+  content:attr(data-num);
+  position:absolute;right:24px;bottom:-12px;
+  font-size:100px;font-weight:900;opacity:.07;line-height:1;
+}
+.panel-hero h2{font-size:1.7rem;font-weight:800;margin-bottom:8px;}
+.panel-hero p{font-size:.95rem;opacity:.88;max-width:600px;}
+.panel-hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.panel-hero-tag{
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:20px;
+}
+
+/* Cards */
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.card-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:20px;
+  box-shadow:var(--shadow-sm);
+}
+.card h4{font-size:.92rem;color:var(--green-dark);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.card p,.card ul{font-size:.85rem;color:var(--text-mid);line-height:1.6;}
+
+/* Objectives box */
+.obj-box{
+  background:var(--green-pale);border:1px solid var(--green-pale2);
+  border-left:5px solid var(--green);border-radius:var(--radius);padding:22px 26px;
+  margin-bottom:24px;
+}
+.obj-box h3{color:var(--green-dark);margin-bottom:10px;font-size:.95rem;}
+.obj-box li{margin-bottom:7px;color:var(--text-mid);font-size:.9rem;}
+.obj-box li::marker{color:var(--green);}
+
+/* Key terms */
+.terms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:24px;}
+.term-card{background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;}
+.term-name{font-weight:700;font-size:.86rem;color:var(--green-dark);margin-bottom:4px;}
+.term-def {font-size:.8rem;color:var(--text-mid);line-height:1.5;}
+
+/* Callouts */
+.callout{background:var(--green-pale);border-left:4px solid var(--green);border-radius:0 var(--radius) var(--radius) 0;padding:14px 18px;margin:16px 0;font-size:.87rem;color:var(--text-mid);}
+.callout strong{color:var(--green-dark);}
+.callout-amber{background:var(--amber-pale);border-left:4px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:14px 18px;margin:16px 0;font-size:.87rem;color:var(--text-mid);}
+.callout-amber strong{color:var(--amber);}
+.callout-blue{background:var(--blue-pale);border-left:4px solid var(--blue);border-radius:0 var(--radius) var(--radius) 0;padding:14px 18px;margin:16px 0;font-size:.87rem;color:var(--text-mid);}
+.callout-blue strong{color:var(--blue);}
+
+/* Domain weight bars */
+.domain-bars{display:flex;flex-direction:column;gap:10px;margin:16px 0;}
+.domain-row{display:flex;align-items:center;gap:12px;font-size:.83rem;}
+.domain-label{width:200px;flex-shrink:0;color:var(--text-mid);font-weight:600;}
+.domain-bar-bg{flex:1;height:10px;background:var(--border);border-radius:5px;overflow:hidden;}
+.domain-bar-fill{height:100%;border-radius:5px;background:var(--green);transition:width 1.2s ease;}
+.domain-pct{width:36px;text-align:right;color:var(--text-muted);font-size:.78rem;font-weight:700;}
+
+/* Buttons */
+.btn-primary{
+  background:var(--green-dark);color:#fff;border:none;
+  padding:11px 24px;border-radius:8px;font-size:.9rem;font-weight:700;
+  transition:background .2s,transform .15s;
+}
+.btn-primary:hover{background:var(--green);transform:translateY(-1px);}
+.btn-secondary{
+  background:var(--bg-soft);color:var(--text);
+  border:1px solid var(--border-dark);
+  padding:11px 24px;border-radius:8px;font-size:.9rem;font-weight:600;
+  transition:background .2s;
+}
+.btn-secondary:hover{background:var(--border);}
+.btn-danger{
+  background:var(--red);color:#fff;border:none;
+  padding:11px 24px;border-radius:8px;font-size:.9rem;font-weight:700;
+  transition:background .2s;
+}
+
+/* ============================================================
+   WIDGET A: PACING CLOCK QUIZ
+   ============================================================ */
+.pacing-header{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;margin-bottom:20px;
+}
+.timer-display{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 20px;border-radius:var(--radius);
+  background:var(--bg-card);border:2px solid var(--green);
+  font-size:1.8rem;font-weight:900;color:var(--green-dark);
+  min-width:160px;justify-content:center;
+  transition:all .4s;
+}
+.timer-display.warn{border-color:var(--amber);color:var(--amber);}
+.timer-display.danger{border-color:var(--red);color:var(--red);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+.timer-icon{font-size:1.2rem;}
+.progress-bar-wrap{margin-bottom:16px;}
+.progress-label{display:flex;justify-content:space-between;font-size:.78rem;color:var(--text-muted);margin-bottom:4px;}
+.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--green);border-radius:3px;transition:width .4s;}
+
+.quiz-question-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px;}
+.quiz-q-meta{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:8px;}
+.quiz-q-domain{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-left:10px;}
+.quiz-q-text{font-size:.96rem;font-weight:600;color:var(--text);margin-bottom:16px;line-height:1.45;}
+.quiz-options{display:flex;flex-direction:column;gap:8px;}
+.quiz-option{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:11px 14px;background:var(--bg-soft);
+  border:1px solid var(--border);border-radius:var(--radius);
+  text-align:left;font-size:.88rem;color:var(--text);
+  transition:background .2s,border-color .2s;width:100%;
+}
+.quiz-option:hover:not(:disabled){background:var(--green-pale);border-color:var(--green-light);}
+.quiz-option.selected{background:var(--green-pale);border-color:var(--green);}
+.quiz-option.correct{background:var(--green-pale2);border-color:var(--green);color:var(--green-dark);font-weight:600;}
+.quiz-option.wrong{background:var(--red-pale);border-color:var(--red);color:var(--red);}
+.quiz-option:disabled{cursor:default;}
+.opt-letter{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--border);color:var(--text-muted);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:700;flex-shrink:0;
+  transition:background .2s,color .2s;
+}
+.quiz-option.correct .opt-letter{background:var(--green);color:#fff;}
+.quiz-option.wrong   .opt-letter{background:var(--red);color:#fff;}
+.quiz-feedback{
+  padding:12px 16px;border-radius:var(--radius);font-size:.85rem;line-height:1.55;margin-top:12px;
+  display:none;
+}
+.quiz-feedback.show{display:block;}
+.quiz-feedback.pass{background:var(--green-pale);color:var(--green-dark);border:1px solid var(--green-pale2);}
+.quiz-feedback.fail{background:var(--red-pale);color:var(--red);border:1px solid #ffcdd2;}
+
+/* Score results */
+.score-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;text-align:center;}
+.score-circle{
+  width:120px;height:120px;border-radius:50%;
+  border:6px solid var(--green);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin:0 auto 16px;background:var(--green-pale);
+}
+.score-big{font-size:2.2rem;font-weight:900;color:var(--green-dark);line-height:1;}
+.score-denom{font-size:.8rem;color:var(--text-muted);}
+.domain-result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:20px;text-align:left;}
+.domain-result-card{
+  background:var(--bg-soft);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;border-left:4px solid var(--green);
+}
+.domain-result-card.poor{border-left-color:var(--red);}
+.domain-result-card.ok  {border-left-color:var(--amber);}
+.dr-name{font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:4px;}
+.dr-score{font-size:1.1rem;font-weight:900;color:var(--green-dark);}
+.domain-result-card.poor .dr-score{color:var(--red);}
+.domain-result-card.ok   .dr-score{color:var(--amber);}
+.dr-label{font-size:.72rem;color:var(--text-muted);}
+
+/* ============================================================
+   WIDGET B: SPOT THE DISTRACTOR
+   ============================================================ */
+.distractor-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:20px;}
+.distractor-q-num{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:10px;}
+.distractor-q-text{font-size:.96rem;font-weight:600;color:var(--text);margin-bottom:18px;line-height:1.45;}
+.distractor-instructions{
+  font-size:.8rem;color:var(--text-muted);margin-bottom:14px;
+  padding:8px 14px;background:var(--amber-pale);border-radius:var(--radius);
+  border:1px solid var(--amber);color:var(--amber);
+}
+.distractor-options{display:flex;flex-direction:column;gap:8px;}
+.distractor-option{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;background:var(--bg-soft);
+  border:2px solid var(--border);border-radius:var(--radius);
+  text-align:left;font-size:.88rem;color:var(--text);
+  transition:all .2s;position:relative;width:100%;
+}
+.distractor-option:hover:not(.eliminated):not(.correct-opt):not([data-locked]){
+  border-color:var(--amber);background:var(--amber-pale);
+}
+.distractor-option.eliminated{
+  text-decoration:line-through;color:var(--text-muted);
+  border-color:var(--border);background:var(--bg-soft);
+  opacity:.55;
+}
+.distractor-option.correct-opt{
+  border-color:var(--green);background:var(--green-pale2);color:var(--green-dark);font-weight:600;
+}
+.distractor-option.wrong-select{
+  border-color:var(--red);background:var(--red-pale);color:var(--red);
+}
+.opt-action{
+  margin-left:auto;font-size:.7rem;font-weight:700;flex-shrink:0;
+  padding:3px 10px;border-radius:20px;
+  background:var(--amber);color:#fff;border:none;
+  transition:background .2s;
+}
+.opt-action.select-action{background:var(--green);}
+.distractor-option.eliminated .opt-action{display:none;}
+.distractor-explanation{
+  margin-top:12px;padding:12px 16px;border-radius:var(--radius);
+  font-size:.84rem;color:var(--text-mid);
+  background:var(--bg-soft);border:1px solid var(--border);
+  display:none;
+}
+.distractor-explanation.show{display:block;}
+.distractor-nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:10px;}
+
+/* ============================================================
+   WIDGET C: PBQ SANDBOX
+   ============================================================ */
+.pbq-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px;}
+.pbq-header{
+  background:var(--green-dark);color:#fff;padding:16px 24px;
+  display:flex;align-items:center;gap:12px;
+}
+.pbq-badge{
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);
+  font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;
+}
+.pbq-body{padding:24px;}
+.pbq-scenario{
+  background:var(--bg-soft);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;margin-bottom:20px;
+  font-size:.87rem;color:var(--text-mid);line-height:1.6;
+}
+/* Firewall Rule PBQ */
+.fw-table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+.fw-table th{background:var(--green-dark);color:#fff;padding:8px 12px;text-align:left;font-size:.78rem;}
+.fw-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:.84rem;color:var(--text-mid);}
+.fw-table tr:nth-child(even) td{background:var(--bg-soft);}
+.rule-drop{
+  min-height:36px;border:2px dashed var(--border-dark);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.78rem;color:var(--text-muted);
+  transition:border-color .2s,background .2s;padding:4px;
+}
+.rule-drop.over{border-color:var(--green);background:var(--green-pale);}
+.rule-drop.filled{border-style:solid;border-color:var(--green);background:var(--green-pale);}
+.draggable-chip{
+  background:var(--green-dark);color:#fff;
+  padding:5px 12px;border-radius:20px;
+  font-size:.78rem;font-weight:600;
+  cursor:grab;display:inline-block;margin:4px;
+  user-select:none;
+}
+.draggable-chip:active{cursor:grabbing;opacity:.7;}
+.chips-pool{
+  display:flex;flex-wrap:wrap;gap:4px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px;background:var(--bg-soft);margin-bottom:16px;
+  min-height:52px;
+}
+/* IR Priority PBQ */
+.ir-priority-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.priority-zone{
+  border:2px dashed var(--border-dark);border-radius:var(--radius);
+  padding:14px;min-height:100px;
+  transition:border-color .2s,background .2s;
+}
+.priority-zone.over{border-color:var(--green);background:var(--green-pale);}
+.priority-zone-label{
+  font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--text-muted);margin-bottom:8px;
+  display:flex;align-items:center;gap:6px;
+}
+.priority-chip{
+  padding:6px 12px;border-radius:20px;font-size:.78rem;font-weight:600;
+  cursor:grab;margin:3px;display:inline-block;user-select:none;
+  transition:opacity .2s;
+}
+.priority-chip.in-pool{background:var(--green-dark);color:#fff;}
+.priority-chip.placed{background:var(--bg-card);color:var(--text);border:1px solid var(--border);}
+.pbq-result{
+  margin-top:16px;padding:14px 18px;border-radius:var(--radius);
+  font-size:.88rem;display:none;
+}
+.pbq-result.show{display:block;}
+.pbq-result.pass{background:var(--green-pale);color:var(--green-dark);border:1px solid var(--green-pale2);}
+.pbq-result.fail{background:var(--red-pale);color:var(--red);border:1px solid #ffcdd2;}
+
+/* ============================================================
+   DOMAIN REVIEW SPRINT
+   ============================================================ */
+.sprint-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:24px;}
+.sprint-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+.sprint-card-header{
+  background:var(--green);color:#fff;
+  padding:12px 18px;display:flex;align-items:center;justify-content:space-between;
+}
+.sprint-card-header h4{font-size:.92rem;}
+.sprint-weight{
+  font-size:.68rem;font-weight:700;
+  background:rgba(0,0,0,.2);padding:3px 9px;border-radius:20px;
+}
+.sprint-card-body{padding:16px;}
+.sprint-card-body ul{font-size:.82rem;color:var(--text-mid);}
+.sprint-tip{
+  margin-top:10px;padding:10px 14px;
+  background:var(--amber-pale);border-radius:8px;
+  font-size:.8rem;color:var(--text-mid);border:1px solid var(--amber);
+}
+.sprint-tip strong{color:var(--amber);}
+
+/* Exam Strategy checklist */
+.strategy-list{display:flex;flex-direction:column;gap:10px;margin:16px 0;}
+.strategy-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 16px;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:var(--radius);
+  font-size:.87rem;color:var(--text-mid);
+}
+.strategy-num{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--green);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:700;flex-shrink:0;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:900px){
+  .app-wrapper{grid-template-columns:1fr;}
+  .sidebar{
+    position:static;height:auto;
+    display:flex;flex-wrap:wrap;gap:4px;
+    border-right:none;border-bottom:1px solid var(--border);
+    padding:12px;
+  }
+  .sidebar-title,.sidebar-divider,.sidebar-section-label{display:none;}
+  .nav-item{width:auto;font-size:.78rem;padding:7px 10px;}
+  .main-content{padding:20px 16px 48px;}
+  .card-grid,.card-grid-3,.ir-priority-grid{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .panel-hero{padding:20px 20px;}
+  .panel-hero h2{font-size:1.3rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="brand-icon">S+</div>
+      <div class="brand-info">
+        <h1>CompTIA Security+ SY0-701</h1>
+        <p>Lesson 12 of 12 &mdash; Final Review &amp; Exam Readiness</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="lesson-badge">Day 12</span>
+      <a href="index.html" class="nav-link">&#8592; Course Home</a>
+      <a href="lesson11.html" class="nav-link">&#8592; Lesson 11</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     APP WRAPPER: SIDEBAR + MAIN
+     ============================================================ -->
+<div class="app-wrapper">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" role="navigation" aria-label="Lesson navigation">
+    <div class="sidebar-title">Lesson Modules</div>
+
+    <button class="nav-item active" onclick="showPanel('overview',this)">
+      <span class="nav-icon">📋</span>Overview &amp; Objectives
+    </button>
+    <button class="nav-item" onclick="showPanel('domain-sprint',this)">
+      <span class="nav-icon">🏋️</span>Domain Review Sprint
+    </button>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Interactive Widgets</div>
+
+    <button class="nav-item" onclick="showPanel('pacing-clock',this)">
+      <span class="nav-icon">⏱</span>Widget A: Pacing Clock
+      <span class="nav-badge">10 Qs</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('distractor',this)">
+      <span class="nav-icon">🎯</span>Widget B: Spot the Distractor
+      <span class="nav-badge">5 Qs</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('pbq',this)">
+      <span class="nav-icon">🔧</span>Widget C: PBQ Sandbox
+      <span class="nav-badge">2 PBQs</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Exam Readiness</div>
+
+    <button class="nav-item" onclick="showPanel('strategies',this)">
+      <span class="nav-icon">🗺</span>Exam Day Strategies
+    </button>
+    <button class="nav-item" onclick="showPanel('resources',this)">
+      <span class="nav-icon">📚</span>Final Resources
+    </button>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- ======================================================
+         PANEL: OVERVIEW & OBJECTIVES
+         ====================================================== -->
+    <section class="panel active" id="panel-overview">
+      <div class="panel-hero" data-num="12">
+        <h2>Final Review &amp; Exam Readiness</h2>
+        <p>This lesson transforms 11 lessons of knowledge into exam performance. You will practice under time pressure, learn to eliminate distractors, complete performance-based questions, and build the pacing and confidence to succeed on exam day.</p>
+        <div class="panel-hero-meta">
+          <span class="panel-hero-tag">📖 Full Domain Review</span>
+          <span class="panel-hero-tag">⏱ Pacing Clock Drill</span>
+          <span class="panel-hero-tag">🎯 Distractor Elimination</span>
+          <span class="panel-hero-tag">🔧 PBQ Sandbox</span>
+          <span class="panel-hero-tag">🗺 Exam Day Strategy</span>
+        </div>
+      </div>
+
+      <div class="section-label">Learning Objectives</div>
+      <div class="obj-box">
+        <h3>By the end of this session, you will be able to:</h3>
+        <ul>
+          <li>Synthesize concepts across all five SY0-701 domains and demonstrate readiness on timed practice questions.</li>
+          <li>Apply a domain-weighted study strategy — spending time proportional to each domain's exam weight.</li>
+          <li>Identify and eliminate exam distractors using the process of elimination and key vocabulary signals.</li>
+          <li>Complete performance-based questions (PBQs) using a structured read-interpret-execute approach under time constraints.</li>
+          <li>Implement a personalized pacing strategy for the 90-minute, 90-question exam format.</li>
+          <li>Identify personal study gaps based on diagnostic quiz results and target final review accordingly.</li>
+        </ul>
+      </div>
+
+      <div class="section-label">Key Terms</div>
+      <div class="terms-grid">
+        <div class="term-card">
+          <div class="term-name">PBQ (Performance-Based Question)</div>
+          <div class="term-def">Interactive exam items that require you to perform a simulated task — drag-and-drop configuration, scenario analysis, command-line interpretation, or network diagram labeling. PBQs are scored differently and typically appear at the beginning of the exam. Never leave a PBQ blank.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Domain Weight</div>
+          <div class="term-def">The percentage of the exam devoted to each knowledge area. Like a course grade breakdown — a 28% domain is equivalent to a unit worth more than one-quarter of your final grade. Higher-weighted domains deserve proportionally more study time.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Distractor</div>
+          <div class="term-def">A wrong answer choice that is engineered to look plausible — often a related technology, a real concept used in the wrong context, or a partial answer that is true but incomplete. Recognizing distractor patterns is a trainable skill that significantly improves exam performance.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Exam Pacing</div>
+          <div class="term-def">The discipline of managing time across 90 questions in 90 minutes — averaging 60 seconds per question. PBQs require 3–5 minutes each; standard MCQs should take 45–75 seconds. Pacing strategy: answer confidently → flag uncertain questions → return after completing all.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Process of Elimination</div>
+          <div class="term-def">A structured strategy for MCQs: (1) Eliminate answers you know are wrong. (2) Identify which remaining choices might be distractors. (3) Choose the most specific, complete, and contextually correct answer from what remains. Always pick an answer — there is no penalty for guessing.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Residual Risk</div>
+          <div class="term-def">For exam purposes: the risk that remains after studying. Just as no mitigation eliminates all technical risk, no study session eliminates all exam uncertainty. The goal is to reduce residual knowledge gaps to an acceptable level before exam day.</div>
+        </div>
+      </div>
+
+      <div class="section-label">Exam Format Overview</div>
+      <div class="card-grid">
+        <div class="card">
+          <h4>📝 Exam Logistics</h4>
+          <ul>
+            <li><strong>Questions:</strong> Maximum 90 (mix of MCQ + PBQ)</li>
+            <li><strong>Time:</strong> 90 minutes</li>
+            <li><strong>Passing score:</strong> 750 out of 900</li>
+            <li><strong>Languages:</strong> English, Japanese, Portuguese, Spanish, Thai</li>
+            <li><strong>Delivery:</strong> Pearson VUE (in-person or online)</li>
+            <li><strong>Prerequisites:</strong> Network+ + 2 years IT experience (recommended)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>⚡ Pacing Math</h4>
+          <ul>
+            <li><strong>90 minutes ÷ 90 questions = 60 sec avg.</strong></li>
+            <li>PBQs (typically 5–10): budget 3–5 min each</li>
+            <li>Standard MCQs: target 45–60 seconds</li>
+            <li>Flag uncertain questions — come back with remaining time</li>
+            <li><strong>If a PBQ takes more than 6 min: skip and return</strong></li>
+            <li>Never leave any question unanswered — no penalty for guessing</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-label">SY0-701 Domain Weights</div>
+      <div class="callout">
+        <strong>Analogy — Domain Weight as Grade Breakdown:</strong> Domain weight is like your course grade breakdown. If Security Operations is worth 28% of your exam, it's like a unit worth 28% of your final grade. You wouldn't study the 12% unit as hard as the 28% unit. Spend your study time proportionally — and make sure your weakest domains in the higher-weight categories get addressed first.
+      </div>
+      <div class="domain-bars" id="domain-bars-overview">
+        <div class="domain-row"><span class="domain-label">General Security Concepts</span><div class="domain-bar-bg"><div class="domain-bar-fill" style="width:0%" data-width="12%"></div></div><span class="domain-pct">12%</span></div>
+        <div class="domain-row"><span class="domain-label">Threats, Vulns &amp; Mitigations</span><div class="domain-bar-bg"><div class="domain-bar-fill" style="width:0%" data-width="22%"></div></div><span class="domain-pct">22%</span></div>
+        <div class="domain-row"><span class="domain-label">Security Architecture</span><div class="domain-bar-bg"><div class="domain-bar-fill" style="width:0%" data-width="18%"></div></div><span class="domain-pct">18%</span></div>
+        <div class="domain-row"><span class="domain-label">Security Operations</span><div class="domain-bar-bg"><div class="domain-bar-fill" style="width:0%" data-width="28%" style="background:var(--green-dark)"></div></div><span class="domain-pct" style="color:var(--green-dark);font-weight:900;">28%</span></div>
+        <div class="domain-row"><span class="domain-label">Security Program Mgmt &amp; Oversight</span><div class="domain-bar-bg"><div class="domain-bar-fill" style="width:0%" data-width="20%"></div></div><span class="domain-pct">20%</span></div>
+      </div>
+
+      <div class="callout-blue" style="margin-top:16px;">
+        <strong>Your exam priority order by weight:</strong> Security Operations (28%) → Threats, Vulnerabilities &amp; Mitigations (22%) → Security Program Management (20%) → Security Architecture (18%) → General Security Concepts (12%). If you have limited study time remaining before your exam, address these domains in this order.
+      </div>
+    </section>
+
+    <!-- ======================================================
+         PANEL: DOMAIN REVIEW SPRINT
+         ====================================================== -->
+    <section class="panel" id="panel-domain-sprint">
+      <div class="panel-hero" data-num="DR">
+        <h2>Domain Review Sprint</h2>
+        <p>A rapid-fire, bullet-point review of the highest-probability exam topics from every domain. Use this as your final week study guide — not a replacement for the full lessons.</p>
+      </div>
+
+      <div class="section-label">Five-Domain Rapid Review</div>
+      <div class="sprint-grid">
+
+        <div class="sprint-card">
+          <div class="sprint-card-header">
+            <h4>Domain 1: General Security Concepts</h4>
+            <span class="sprint-weight">12%</span>
+          </div>
+          <div class="sprint-card-body">
+            <ul>
+              <li>CIA Triad: Confidentiality, Integrity, Availability</li>
+              <li>Non-repudiation = digital signatures</li>
+              <li>AAA: Authentication → Authorization → Accounting</li>
+              <li>Control categories: Managerial, Operational, Technical, Physical</li>
+              <li>Control types: Preventive, Detective, Corrective, Deterrent, Directive, Compensating</li>
+              <li>Symmetric (AES) = fast/shared key; Asymmetric (RSA) = key pairs/slow</li>
+              <li>Hashing = one-way integrity; SHA-256 is secure; MD5/SHA-1 are broken</li>
+              <li>PKI: CA → CSR → certificate → CRL/OCSP revocation</li>
+              <li>MFA requires different factor TYPES, not just two of the same</li>
+            </ul>
+            <div class="sprint-tip"><strong>⚡ Top exam trap:</strong> Password + PIN = NOT MFA (both are Type 1: Something you know)</div>
+          </div>
+        </div>
+
+        <div class="sprint-card">
+          <div class="sprint-card-header">
+            <h4>Domain 2: Threats, Vulnerabilities &amp; Mitigations</h4>
+            <span class="sprint-weight">22%</span>
+          </div>
+          <div class="sprint-card-body">
+            <ul>
+              <li>Nation-state APT: long dwell time, stealthy, espionage-focused</li>
+              <li>Supply chain attack: compromise vendor to reach downstream customer</li>
+              <li>Social engineering: phishing (email), vishing (voice), smishing (SMS), pretexting, BEC</li>
+              <li>Whaling = spear phishing targeting C-suite executives</li>
+              <li>Malware: ransomware (CIA violation × 3), rootkits (stealth), logic bombs (trigger condition)</li>
+              <li>Password spraying: few passwords × many accounts (avoids lockout)</li>
+              <li>Credential stuffing: reused pairs from breach databases</li>
+              <li>CVSS + exploitability + asset criticality = prioritization (not CVSS alone)</li>
+              <li>SQL injection → parameterized queries; XSS → output encoding + CSP</li>
+              <li>SSRF in cloud → retrieves IAM credentials from metadata service (169.254.169.254)</li>
+            </ul>
+            <div class="sprint-tip"><strong>⚡ Top exam trap:</strong> DLP stops authorized-channel exfiltration; firewall cannot</div>
+          </div>
+        </div>
+
+        <div class="sprint-card">
+          <div class="sprint-card-header">
+            <h4>Domain 3: Security Architecture</h4>
+            <span class="sprint-weight">18%</span>
+          </div>
+          <div class="sprint-card-body">
+            <ul>
+              <li>Shared Responsibility Model: customer owns config; provider owns infrastructure</li>
+              <li>Zero Trust: "never trust, always verify" — no implicit perimeter trust</li>
+              <li>ICS/OT: Availability &gt; Integrity &gt; Confidentiality (inverted CIA)</li>
+              <li>Data diode: hardware one-way flow — OT → IT only, nothing flows back</li>
+              <li>IaC: version-controlled, auditable infrastructure; secrets NEVER in code</li>
+              <li>RTO = max tolerable downtime; RPO = max acceptable data loss</li>
+              <li>Active-active = instant failover; warm site = hours; cold site = days</li>
+              <li>3-2-1-1-0: 3 copies, 2 media, 1 offsite, 1 immutable, 0 unverified</li>
+              <li>VM escape = guest breaks to hypervisor; Type 1 safer than Type 2</li>
+              <li>IoT: segment into dedicated VLAN; change defaults; monitor anomalies</li>
+            </ul>
+            <div class="sprint-tip"><strong>⚡ Top exam trap:</strong> ICS cannot use standard patching — test on identical lab first</div>
+          </div>
+        </div>
+
+        <div class="sprint-card">
+          <div class="sprint-card-header">
+            <h4>Domain 4: Security Operations</h4>
+            <span class="sprint-weight" style="background:rgba(0,0,0,.3);">28% ★</span>
+          </div>
+          <div class="sprint-card-body">
+            <ul>
+              <li>IDS = detect + alert (out-of-band); IPS = detect + block (inline)</li>
+              <li>WAF = web application attacks (SQLi, XSS, SSRF)</li>
+              <li>NAC = device compliance gate before network access</li>
+              <li>DLP = data content control; stops authorized channel misuse</li>
+              <li>EDR = behavioral detection; catches fileless malware antivirus misses</li>
+              <li>DNS filtering = block C2 domain without decrypting traffic</li>
+              <li>IR phases: Preparation → Identification → Containment → Eradication → Recovery → Lessons Learned</li>
+              <li>Containment: network-isolate (EDR), do NOT power off (RAM evidence lost)</li>
+              <li>Order of volatility: RAM → network state → running processes → disk image</li>
+              <li>Chain of custody = unbroken evidence handling record; write blocker for disk</li>
+              <li>Credentialed scan finds 5–10x more vulnerabilities than non-credentialed</li>
+              <li>RCA: identify root cause (control failure), not symptom (the malware)</li>
+            </ul>
+            <div class="sprint-tip"><strong>⚡ Top exam trap:</strong> "Next step" = next PICERL phase, not the most dramatic action</div>
+          </div>
+        </div>
+
+        <div class="sprint-card">
+          <div class="sprint-card-header">
+            <h4>Domain 5: Security Program Mgmt &amp; Oversight</h4>
+            <span class="sprint-weight">20%</span>
+          </div>
+          <div class="sprint-card-body">
+            <ul>
+              <li>Policy = what/mandatory; Standard = how much/measurable; Procedure = step-by-step; Guideline = recommended</li>
+              <li>Data Owner = accountability (classification); Data Custodian = technical implementation</li>
+              <li>PCI DSS = cardholder data; HIPAA = PHI (60-day notification); SOX = publicly traded financial controls</li>
+              <li>GDPR: 72-hour breach notification; 4% global revenue fine; right to erasure; extraterritorial</li>
+              <li>CMMC = DoD contractors handling CUI; based on NIST SP 800-171</li>
+              <li>Risk = Likelihood × Impact; ALE = SLE × ARO</li>
+              <li>Risk appetite = Board-level strategic; Risk tolerance = operational thresholds</li>
+              <li>4 treatments: Accept (document), Avoid (eliminate activity), Transfer (insurance), Mitigate (add controls)</li>
+              <li>RTO = max downtime; RPO = max data loss; BIA identifies which function first</li>
+              <li>SOC 2 Type I = controls exist; SOC 2 Type II = controls work over time</li>
+              <li>Black box = no knowledge; Gray box = partial; White box = full knowledge (code review)</li>
+            </ul>
+            <div class="sprint-tip"><strong>⚡ Top exam trap:</strong> GDPR's 72 hours is to the supervisory authority, not the individuals</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================
+         PANEL: WIDGET A — PACING CLOCK
+         ====================================================== -->
+    <section class="panel" id="panel-pacing-clock">
+      <div class="panel-hero" data-num="A">
+        <h2>Widget A: The Pacing Clock</h2>
+        <p>10 questions spanning all five domains. A countdown timer adds real exam pressure — watch how your decision-making changes as time runs low. After completion, see your score breakdown by domain to target final study.</p>
+      </div>
+
+      <div id="pacing-start">
+        <div class="card" style="text-align:center;padding:36px;margin-bottom:24px;">
+          <div style="font-size:3rem;margin-bottom:16px;">⏱</div>
+          <h3 style="margin-bottom:10px;color:var(--green-dark);">Ready to test your pacing?</h3>
+          <p style="color:var(--text-mid);margin-bottom:20px;max-width:480px;margin-left:auto;margin-right:auto;">You have <strong>10 minutes</strong> for 10 questions (60 sec/question — real exam pace). Subtle UI changes will appear as time runs low. Answer every question — no penalty for guessing.</p>
+          <button class="btn-primary" onclick="startPacingClock()">Start Pacing Clock ▶</button>
+        </div>
+      </div>
+
+      <div id="pacing-quiz" style="display:none;">
+        <div class="pacing-header">
+          <div>
+            <h3 style="font-size:1rem;color:var(--green-dark);">Question <span id="pc-q-num">1</span> of 10</h3>
+          </div>
+          <div class="timer-display" id="pc-timer">
+            <span class="timer-icon">⏱</span>
+            <span id="pc-time-display">10:00</span>
+          </div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-label">
+            <span>Progress</span>
+            <span id="pc-progress-text">0 of 10</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="pc-progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+        <div id="pc-question-area"></div>
+        <div style="display:flex;gap:10px;margin-top:16px;">
+          <button class="btn-secondary" id="pc-skip-btn" onclick="skipPacingQ()">Skip (flag) →</button>
+          <button class="btn-primary" id="pc-next-btn" onclick="nextPacingQ()" disabled>Next Question →</button>
+        </div>
+      </div>
+
+      <div id="pacing-results" style="display:none;"></div>
+    </section>
+
+    <!-- ======================================================
+         PANEL: WIDGET B — SPOT THE DISTRACTOR
+         ====================================================== -->
+    <section class="panel" id="panel-distractor">
+      <div class="panel-hero" data-num="B">
+        <h2>Widget B: Spot the Distractor</h2>
+        <p>Don't just pick the right answer — actively cross out the exam traps. Click "Eliminate" on answers you know are engineered distractors, then select the correct answer. Explanations reveal exactly why each wrong choice was designed to deceive.</p>
+      </div>
+
+      <div id="distractor-area"></div>
+    </section>
+
+    <!-- ======================================================
+         PANEL: WIDGET C — PBQ SANDBOX
+         ====================================================== -->
+    <section class="panel" id="panel-pbq">
+      <div class="panel-hero" data-num="C">
+        <h2>Widget C: PBQ Sandbox</h2>
+        <p>Performance-Based Questions require you to <em>do</em> something, not just recall a fact. Practice reading technical scenarios carefully, prioritizing actions, and completing tasks under the constraints of the real exam environment.</p>
+      </div>
+
+      <!-- PBQ 1: Firewall Rule Configuration -->
+      <div class="pbq-wrap">
+        <div class="pbq-header">
+          <span class="pbq-badge">PBQ 1</span>
+          <div>
+            <h3 style="font-size:.95rem;">Firewall Rule Configuration</h3>
+            <p style="font-size:.78rem;opacity:.8;margin-top:2px;">Drag the correct action keyword into each firewall rule</p>
+          </div>
+        </div>
+        <div class="pbq-body">
+          <div class="pbq-scenario">
+            <strong>Scenario:</strong> You are configuring the perimeter firewall for a mid-size company. The security policy requires: (1) All inbound web traffic on port 443 to the DMZ web server must be allowed. (2) All inbound Telnet traffic (port 23) must be blocked. (3) Outbound DNS queries from internal hosts on port 53 must be allowed. (4) All other inbound traffic not explicitly permitted must be denied. Drag the correct action (ALLOW / DENY) into each rule's Action column.
+          </div>
+
+          <p style="font-size:.83rem;font-weight:600;color:var(--text-mid);margin-bottom:8px;">Action Chips (drag to the table):</p>
+          <div class="chips-pool" id="fw-chips-pool">
+            <div class="draggable-chip" draggable="true" data-value="ALLOW" id="fw-chip-1" ondragstart="fwDragStart(event,'fw-chip-1')">ALLOW</div>
+            <div class="draggable-chip" draggable="true" data-value="DENY"  id="fw-chip-2" ondragstart="fwDragStart(event,'fw-chip-2')">DENY</div>
+            <div class="draggable-chip" draggable="true" data-value="ALLOW" id="fw-chip-3" ondragstart="fwDragStart(event,'fw-chip-3')">ALLOW</div>
+            <div class="draggable-chip" draggable="true" data-value="DENY"  id="fw-chip-4" ondragstart="fwDragStart(event,'fw-chip-4')">DENY</div>
+          </div>
+
+          <table class="fw-table">
+            <thead>
+              <tr><th>#</th><th>Direction</th><th>Protocol</th><th>Port</th><th>Destination</th><th>Action (Drop here)</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td><td>Inbound</td><td>TCP</td><td>443</td><td>DMZ Web Server</td>
+                <td>
+                  <div class="rule-drop" id="fw-drop-1" data-correct="ALLOW"
+                    ondragover="fwDragOver(event)" ondrop="fwDrop(event,'fw-drop-1')"
+                    ondragleave="this.classList.remove('over')"></div>
+                </td>
+              </tr>
+              <tr>
+                <td>2</td><td>Inbound</td><td>TCP</td><td>23</td><td>Any</td>
+                <td>
+                  <div class="rule-drop" id="fw-drop-2" data-correct="DENY"
+                    ondragover="fwDragOver(event)" ondrop="fwDrop(event,'fw-drop-2')"
+                    ondragleave="this.classList.remove('over')"></div>
+                </td>
+              </tr>
+              <tr>
+                <td>3</td><td>Outbound</td><td>UDP</td><td>53</td><td>Any DNS Server</td>
+                <td>
+                  <div class="rule-drop" id="fw-drop-3" data-correct="ALLOW"
+                    ondragover="fwDragOver(event)" ondrop="fwDrop(event,'fw-drop-3')"
+                    ondragleave="this.classList.remove('over')"></div>
+                </td>
+              </tr>
+              <tr>
+                <td>4</td><td>Inbound</td><td>ANY</td><td>ANY</td><td>Any</td>
+                <td>
+                  <div class="rule-drop" id="fw-drop-4" data-correct="DENY"
+                    ondragover="fwDragOver(event)" ondrop="fwDrop(event,'fw-drop-4')"
+                    ondragleave="this.classList.remove('over')"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn-primary" onclick="checkFW()">Submit Firewall Rules</button>
+            <button class="btn-secondary" onclick="resetFW()">Reset</button>
+          </div>
+          <div class="pbq-result" id="fw-result"></div>
+        </div>
+      </div>
+
+      <!-- PBQ 2: Incident Response Priority Matrix -->
+      <div class="pbq-wrap">
+        <div class="pbq-header">
+          <span class="pbq-badge">PBQ 2</span>
+          <div>
+            <h3 style="font-size:.95rem;">Incident Response Priority Matrix</h3>
+            <p style="font-size:.78rem;opacity:.8;margin-top:2px;">Drag each IR action to its correct PICERL phase</p>
+          </div>
+        </div>
+        <div class="pbq-body">
+          <div class="pbq-scenario">
+            <strong>Scenario:</strong> Your SOC has confirmed an active ransomware incident affecting 12 workstations. Below are six actions that need to be taken. Drag each action to the correct Incident Response phase — Containment, Eradication, or Recovery. Note: Preparation and Identification have already been completed; Lessons Learned will follow Recovery.
+          </div>
+
+          <p style="font-size:.83rem;font-weight:600;color:var(--text-mid);margin-bottom:8px;">Actions to classify:</p>
+          <div class="chips-pool" id="ir-pool">
+            <div class="priority-chip in-pool" draggable="true" id="ir-chip-1" ondragstart="irDragStart(event,'ir-chip-1')">Network-isolate infected workstations via EDR</div>
+            <div class="priority-chip in-pool" draggable="true" id="ir-chip-2" ondragstart="irDragStart(event,'ir-chip-2')">Remove ransomware artifacts and close initial access vector</div>
+            <div class="priority-chip in-pool" draggable="true" id="ir-chip-3" ondragstart="irDragStart(event,'ir-chip-3')">Restore clean workstations from verified backups</div>
+            <div class="priority-chip in-pool" draggable="true" id="ir-chip-4" ondragstart="irDragStart(event,'ir-chip-4')">Capture RAM image before any system is powered off</div>
+            <div class="priority-chip in-pool" draggable="true" id="ir-chip-5" ondragstart="irDragStart(event,'ir-chip-5')">Validate restored systems with EDR scan before production</div>
+            <div class="priority-chip in-pool" draggable="true" id="ir-chip-6" ondragstart="irDragStart(event,'ir-chip-6')">Reset all domain admin credentials</div>
+          </div>
+
+          <div class="ir-priority-grid">
+            <div class="priority-zone" id="ir-zone-C" data-zone="Containment"
+              ondragover="irDragOver(event)" ondrop="irDrop(event,'ir-zone-C')" ondragleave="this.classList.remove('over')">
+              <div class="priority-zone-label">
+                <span style="width:10px;height:10px;border-radius:50%;background:var(--amber);display:inline-block;flex-shrink:0;"></span>
+                Containment
+              </div>
+            </div>
+            <div class="priority-zone" id="ir-zone-E" data-zone="Eradication"
+              ondragover="irDragOver(event)" ondrop="irDrop(event,'ir-zone-E')" ondragleave="this.classList.remove('over')">
+              <div class="priority-zone-label">
+                <span style="width:10px;height:10px;border-radius:50%;background:var(--red);display:inline-block;flex-shrink:0;"></span>
+                Eradication
+              </div>
+            </div>
+            <div class="priority-zone" id="ir-zone-R" data-zone="Recovery"
+              ondragover="irDragOver(event)" ondrop="irDrop(event,'ir-zone-R')" ondragleave="this.classList.remove('over')">
+              <div class="priority-zone-label">
+                <span style="width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block;flex-shrink:0;"></span>
+                Recovery
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+            <button class="btn-primary" onclick="checkIR()">Submit IR Matrix</button>
+            <button class="btn-secondary" onclick="resetIR()">Reset</button>
+          </div>
+          <div class="pbq-result" id="ir-result"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================
+         PANEL: EXAM STRATEGIES
+         ====================================================== -->
+    <section class="panel" id="panel-strategies">
+      <div class="panel-hero" data-num="ES">
+        <h2>Exam Day Strategies</h2>
+        <p>Technical knowledge is necessary but not sufficient. Exam strategy — how you pace, eliminate distractors, handle PBQs, and manage uncertainty — directly determines your score independent of what you know.</p>
+      </div>
+
+      <div class="section-label">Proven Security+ Exam Strategies</div>
+      <div class="strategy-list">
+        <div class="strategy-item">
+          <div class="strategy-num">1</div>
+          <div><strong>Handle PBQs strategically.</strong> PBQs appear first. If you can answer one in 3–4 minutes — do it. If it's going to take 8+ minutes, mark it and return after completing all MCQs. Never leave a PBQ blank — make your best attempt regardless of confidence level. PBQs are often scored on partial credit.</div>
+        </div>
+        <div class="strategy-item">
+          <div class="strategy-num">2</div>
+          <div><strong>Read the scenario, then the question, then the answers.</strong> Security+ scenario questions bury the key clue in the scenario paragraph. Identify what kind of answer they want before reading the options: Are they asking for the control type? The attack name? The next IR step? The applicable regulation?</div>
+        </div>
+        <div class="strategy-item">
+          <div class="strategy-num">3</div>
+          <div><strong>Eliminate, don't guess randomly.</strong> Most Security+ questions have at least two answers you can eliminate immediately — they're clearly wrong, or they're the right concept in the wrong context. Eliminating to two choices increases your guess probability from 25% to 50%. Always start by crossing out what you know is wrong.</div>
+        </div>
+        <div class="strategy-item">
+          <div class="strategy-num">4</div>
+          <div><strong>Trust the "most complete" answer.</strong> Between two plausible options, CompTIA typically awards the answer that is most complete and most specific to the described scenario. "Implement MFA" is better than "change the password." "Deploy a WAF in front of the web application" is better than "update the firewall rules."</div>
+        </div>
+        <div class="strategy-item">
+          <div class="strategy-num">5</div>
+          <div><strong>Flag uncertain questions and move on.</strong> Spending 4 minutes on one uncertain question costs you three confident answers. Answer your best guess, flag the question, and return with remaining time. Your instinct on a flagged question is usually right — research consistently shows that changing answers reduces scores more often than it improves them.</div>
+        </div>
+        <div class="strategy-item">
+          <div class="strategy-num">6</div>
+          <div><strong>Watch for exam trap patterns.</strong> (1) "All of the above" is rare and usually wrong. (2) Extreme language ("always," "never," "only") is usually wrong in security. (3) The longest, most detailed answer is often correct. (4) If two answers contradict each other, one of them is likely correct. (5) "MOST appropriate" questions want the best primary control, not every possible control.</div>
+        </div>
+        <div class="strategy-item">
+          <div class="strategy-num">7</div>
+          <div><strong>Treat the night before as a rest day.</strong> Cramming the night before a certification exam is counterproductive. The brain consolidates learning during sleep — studying intensively the night before sleep-deprives you and disrupts consolidation. Review your weak domains lightly, get 8 hours of sleep, eat well, and arrive early. You have already done the work.</div>
+        </div>
+      </div>
+
+      <div class="callout-amber">
+        <strong>Common Distractor Patterns to Memorize:</strong>
+        • IDS when the question says "prevent/block" → answer is IPS
+        • Firewall when the question says "web application attack" → answer is WAF
+        • Encryption when the question says "data loss/exfiltration" → answer is DLP
+        • MFA when the question says "two passwords" → that is NOT MFA
+        • "User clicked phishing link" when asked for root cause → the root cause is the control failure (no email filtering, no MFA), not the user action
+      </div>
+    </section>
+
+    <!-- ======================================================
+         PANEL: FINAL RESOURCES
+         ====================================================== -->
+    <section class="panel" id="panel-resources">
+      <div class="panel-hero" data-num="FR">
+        <h2>Final Resources &amp; Study Guide</h2>
+        <p>Your curated reference for the final push — what to review, what to download, and how to schedule your final 72 hours before the exam.</p>
+      </div>
+
+      <div class="section-label">72-Hour Pre-Exam Schedule</div>
+      <div class="card-grid">
+        <div class="card">
+          <h4>🗓 72 Hours Before Exam</h4>
+          <ul>
+            <li>Complete Domain Review Sprint (this lesson)</li>
+            <li>Run the Pacing Clock drill — target 8+/10</li>
+            <li>Review any domains where score was below 60%</li>
+            <li>Practice 30–40 additional MCQs in weakest domain</li>
+            <li>Re-read key terms for all lessons</li>
+            <li>No marathon study sessions — 3 focused hours max</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>🗓 24 Hours Before Exam</h4>
+          <ul>
+            <li>Light review only — no new content</li>
+            <li>Review exam format and pacing strategy</li>
+            <li>Confirm exam appointment details and location</li>
+            <li>Prepare ID, snacks, directions</li>
+            <li>Complete Widget B (Distractor) one final time</li>
+            <li><strong>Stop studying by 8 PM. Sleep 8 hours.</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-label">Top 30 Must-Know Facts</div>
+      <div class="card" style="margin-bottom:24px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="font-size:.82rem;color:var(--text-mid);">1. CIA = Confidentiality, Integrity, Availability</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">2. Non-repudiation = private key digital signature</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">3. MFA = different factor CATEGORIES (not just two steps)</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">4. AES = symmetric; RSA/ECC = asymmetric</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">5. Hashing = one-way; SHA-256 = secure; MD5 = broken</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">6. IDS = detect/alert; IPS = detect/block (inline)</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">7. WAF = web app attacks; Firewall = port/protocol</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">8. NAC = device compliance gate before network access</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">9. DLP = data content; stops authorized channel misuse</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">10. EDR = behavioral; catches fileless malware</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">11. PICERL phases — know the sequence cold</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">12. Order of volatility: RAM → network → processes → disk</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">13. Chain of custody = unbroken evidence handling</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">14. Credentialed scan = 5–10x more findings</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">15. GDPR = 72-hour notification to supervisory authority</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">16. HIPAA breach = 60-day notification to HHS</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">17. PCI DSS = cardholder data; CMMC = DoD CUI</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">18. Policy = what; Standard = how much; Procedure = steps</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">19. Data Owner = accountability; Custodian = technical</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">20. RTO = downtime tolerance; RPO = data loss tolerance</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">21. ALE = SLE × ARO = annualized expected loss</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">22. SOC 2 Type II = controls working over time (not just designed)</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">23. Black box = no knowledge; White box = full knowledge</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">24. Supply chain attack = compromise vendor → reach customer</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">25. SSRF → retrieves cloud metadata IAM credentials</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">26. Ransomware = violates ALL three CIA properties</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">27. ICS: Availability &gt; Integrity &gt; Confidentiality</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">28. Zero Trust = "never trust, always verify"</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">29. Privilege creep = accumulated access not revoked during moves</div>
+          <div style="font-size:.82rem;color:var(--text-mid);">30. PAM = credential vaulting + JIT access + session recording</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>You are ready.</strong> You have covered all five SY0-701 domains across 12 lessons. The knowledge is there. On exam day, trust your preparation, manage your pacing, apply your elimination strategy, and answer every question. Good luck — you have got this. 🎓
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:var(--bg-soft);border-top:1px solid var(--border);padding:20px;text-align:center;font-size:.77rem;color:var(--text-muted);">
+  CompTIA Security+ SY0-701 &nbsp;|&nbsp; Lesson 12: Final Review &amp; Exam Readiness &nbsp;|&nbsp; Moraine Valley Community College &nbsp;|&nbsp; Department of Engineering &amp; Technology
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ---- THEME ---- */
+function toggleTheme(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const next=isDark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  document.getElementById('themeBtn').textContent=next==='dark'?'☀️ Light':'🌙 Dark';
+  localStorage.setItem('secplus-theme',next);
+}
+(function(){
+  const s=localStorage.getItem('secplus-theme');
+  if(s==='dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('themeBtn').textContent='☀️ Light';
+  }
+})();
+
+/* ---- PANEL NAVIGATION ---- */
+function showPanel(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  // Animate domain bars when overview panel shown
+  if(id==='overview'){
+    setTimeout(()=>{
+      document.querySelectorAll('.domain-bar-fill').forEach(el=>{
+        el.style.width=el.getAttribute('data-width')||el.dataset.width||'0%';
+      });
+    },100);
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+// Animate bars on load (overview is default)
+setTimeout(()=>{
+  document.querySelectorAll('.domain-bar-fill').forEach(el=>{
+    el.style.width=el.getAttribute('data-width')||'0%';
+  });
+},300);
+
+/* ============================================================
+   WIDGET A — PACING CLOCK DATA
+   ============================================================ */
+const pacingQuestions=[
+  {
+    domain:'General Security Concepts',domainColor:'#388e3c',
+    q:'A developer wants to ensure that any tampering with a software package can be detected after it is distributed. Which cryptographic mechanism BEST accomplishes this?',
+    opts:['AES-256 encryption of the package','A digital signature using the developer\'s private key','A TLS certificate attached to the download page','A password-protected ZIP archive'],
+    correct:1,
+    fb:'Digital signatures use the developer\'s private key to sign a hash of the package. Any modification invalidates the signature — proving both integrity (unchanged) and non-repudiation (who signed it). AES encrypts but does not prove integrity. TLS protects transit, not the file itself. Password ZIP provides no integrity verification.'
+  },
+  {
+    domain:'General Security Concepts',domainColor:'#388e3c',
+    q:'An administrator enables an IDS on a SPAN port to monitor traffic flowing through the core switch. An attacker successfully exploits a server during this monitoring period. What does the IDS do in response?',
+    opts:['Automatically drops the malicious packets in real time','Resets the attacker\'s TCP connection immediately','Generates an alert and logs the traffic — it does not block','Isolates the compromised server from the network'],
+    correct:2,
+    fb:'IDS is passive and out-of-band. It monitors a copy of traffic via SPAN port and generates alerts when suspicious patterns are detected — it cannot block or modify traffic. Only an IPS, deployed inline in the traffic path, can actively drop or reset malicious connections.'
+  },
+  {
+    domain:'Threats, Vulnerabilities & Mitigations',domainColor:'#1565c0',
+    q:'A security analyst finds that an attacker used a phishing email to steal employee credentials, then waited 3 weeks conducting reconnaissance, escalated privileges, and finally deployed ransomware on a Friday at 5 PM. Which threat actor profile BEST matches this behavior?',
+    opts:['Script Kiddie using automated ransomware toolkits','Nation-State APT conducting espionage','Organized Cybercriminal conducting a deliberate, professional ransomware operation','Hacktivist seeking public attention through service disruption'],
+    correct:2,
+    fb:'The profile matches Organized Cybercriminals: financially motivated, patient (3-week dwell time), professionally planned timing (Friday evening for maximum impact), using phishing for initial access, and deploying ransomware for payment. Nation-state APTs typically avoid ransomware (too visible). Script kiddies use automated tools without multi-week reconnaissance. Hacktivists seek publicity, not ransom.'
+  },
+  {
+    domain:'Threats, Vulnerabilities & Mitigations',domainColor:'#1565c0',
+    q:'A web application accepts user input in a search field and directly appends it to a SQL query string without any validation. An attacker enters the string <code>\' OR \'1\'=\'1</code> and gains access to all customer records. What type of vulnerability is this, and what is the PRIMARY code-level fix?',
+    opts:['Cross-Site Scripting (XSS) — fix with Content Security Policy headers','SQL Injection — fix with parameterized queries (prepared statements)','Buffer Overflow — fix with ASLR and DEP on the web server','SSRF — fix by blocking outbound server requests to internal addresses'],
+    correct:1,
+    fb:'SQL Injection occurs when user input is inserted directly into a SQL query, allowing attackers to manipulate the query\'s logic. The canonical fix is parameterized queries (prepared statements), which separate SQL code from user data so the database never interprets user input as executable SQL. WAF rules provide temporary protection but do not fix the underlying code.'
+  },
+  {
+    domain:'Security Architecture',domainColor:'#6a1b9a',
+    q:'An organization\'s manufacturing plant runs legacy PLCs that control assembly robots. The security team wants to prevent a breach of the corporate IT network from affecting production, but the operations team needs sensor telemetry data on corporate dashboards. Which architectural control BEST satisfies both requirements?',
+    opts:['Place PLCs on the same VLAN as corporate workstations to simplify monitoring','Install antivirus on all PLCs to prevent malware spread','Implement a data diode — data flows one way from OT to IT; no traffic can flow back','Encrypt all PLC communications with TLS to prevent eavesdropping'],
+    correct:2,
+    fb:'A data diode is a hardware-enforced unidirectional gateway — it is physically impossible for data to travel from IT to OT. Sensor telemetry can flow from the OT network to IT dashboards, but no IT network compromise can reach the PLCs. This satisfies both requirements: monitoring is possible, and the control network is protected. Antivirus cannot be installed on most PLCs (proprietary OS). TLS encrypts but doesn\'t prevent bidirectional access.'
+  },
+  {
+    domain:'Security Architecture',domainColor:'#6a1b9a',
+    q:'A company has an RTO of 2 hours and an RPO of 15 minutes for its customer portal. A cloud provider offers daily snapshots with a 6-hour restore SLA. Does this vendor meet the requirements?',
+    opts:['Yes — daily snapshots satisfy the RPO; the 6-hour restore is within industry norms','No — both RTO (6hr fails 2hr target) and RPO (daily fails 15-min target) are violated','Partially — the RTO is met because 6 hours is close enough to 2 hours','Yes — RPO and RTO are aspirational targets, not hard vendor requirements'],
+    correct:1,
+    fb:'The vendor fails BOTH requirements. RTO: the business requires service restoration within 2 hours; the vendor takes 6 hours — 3× the RTO. RPO: the business can tolerate only 15 minutes of data loss; daily snapshots could result in up to 24 hours of data loss — 96× the RPO. Both RTO and RPO are contractual requirements, not aspirational targets. A 15-minute RPO requires continuous replication or transaction log shipping.'
+  },
+  {
+    domain:'Security Operations',domainColor:'#e65100',
+    q:'During a ransomware incident, a junior analyst suggests immediately powering off all 14 infected workstations to stop the encryption. The senior analyst overrules this and directs the team to use EDR to network-isolate them while leaving them powered on. What is the MOST important reason for the senior analyst\'s decision?',
+    opts:['Powering off violates the acceptable use policy and requires executive approval','RAM contents — including encryption keys and attacker tools — are permanently lost on power-off, destroying critical forensic evidence','EDR network isolation is faster than physically pressing power buttons across 14 workstations','Network isolation allows the ransomware to continue so the full scope can be documented'],
+    correct:1,
+    fb:'RAM is the most volatile forensic evidence — it exists only while the system is powered on. RAM may contain the ransomware\'s encryption keys (enabling potential decryption without paying ransom), running attacker processes, active C2 connections, and memory-resident tools that never touch the disk. Network isolation via EDR stops lateral spread immediately without cutting power, preserving this critical evidence window for memory acquisition.'
+  },
+  {
+    domain:'Security Operations',domainColor:'#e65100',
+    q:'A security engineer is evaluating two approaches to assess the organization\'s patched web application: (1) running a Nessus vulnerability scan, and (2) commissioning a penetration test. Which statement BEST describes the difference in what each assessment provides?',
+    opts:['A vulnerability scan is more thorough than a pen test because it covers more CVEs automatically','A penetration test actively exploits vulnerabilities to demonstrate real impact; a vulnerability scan identifies potential vulnerabilities without attempting exploitation','Both assessments produce equivalent results but a penetration test costs more','A vulnerability scan should always be performed after a penetration test to verify findings'],
+    correct:1,
+    fb:'A vulnerability scan (automated tool like Nessus) identifies potential vulnerabilities by comparing software versions against CVE databases — it does NOT attempt exploitation. It answers: "What vulnerabilities might exist?" A penetration test has a skilled tester actively attempt exploitation — it answers: "Which vulnerabilities can actually be exploited, and how far can an attacker go?" Pen tests reveal impact and attack chains that scanners cannot. Scans are routine monitoring; pen tests are periodic deep assessments.'
+  },
+  {
+    domain:'Security Program Management',domainColor:'#00695c',
+    q:'A company\'s security documentation states: "All encryption keys used for data at rest must be a minimum of 256 bits, and AES-GCM is the required encryption mode for all production database encryption. Compliance must be verified by automated scan within 48 hours of deployment." What type of governance document does this BEST represent?',
+    opts:['Policy — it applies organization-wide and is approved by senior leadership','Standard — it provides specific, measurable, testable technical requirements implementing a higher-level policy','Procedure — it contains step-by-step numbered instructions for configuring encryption','Guideline — it uses recommended language and is not mandatory'],
+    correct:1,
+    fb:'This is a Standard. Standards are identified by specific, measurable, testable technical requirements — 256-bit minimum key length, AES-GCM as the required mode, 48-hour verification window. These are quantifiable thresholds that auditors can verify. A Policy would say "data must be encrypted" without specifying algorithm or key length. A Procedure would contain numbered steps. A Guideline would use "should" or "recommended" language.'
+  },
+  {
+    domain:'Security Program Management',domainColor:'#00695c',
+    q:'An EU citizen whose data is processed by a U.S. e-commerce company requests all personal data held about them AND requests permanent deletion of that data. The company\'s legal team says GDPR doesn\'t apply because they are a U.S. company. Is the legal team correct?',
+    opts:['Yes — GDPR only applies to organizations physically headquartered in EU member states','Yes — GDPR applies only to EU government agencies and financial institutions','No — GDPR applies to any organization processing EU residents\' personal data, regardless of where the organization is located. Both the Right of Access and Right to Erasure must be honored.','No — but GDPR penalties are too small for a U.S. company to worry about'],
+    correct:2,
+    fb:'The legal team is wrong. GDPR has extraterritorial scope (Article 3) — it applies to any organization worldwide that processes personal data of EU residents, regardless of headquarters location. The U.S. company is subject to GDPR because it processes EU customer data. The customer has invoked two GDPR rights: Right of Access (Article 15 — receive all data held, respond within 1 month) and Right to Erasure (Article 17 — request deletion). GDPR fines can reach 4% of global annual revenue — not small for any company.'
+  }
+];
+
+let pcCurrentQ=0,pcScore=0,pcAnswered=false,pcTimer=null,pcTotalSeconds=600;
+let pcDomainScores={};
+let pcAnswerRecord=[];
+
+function startPacingClock(){
+  document.getElementById('pacing-start').style.display='none';
+  document.getElementById('pacing-quiz').style.display='block';
+  // Init domain scores
+  pcDomainScores={};
+  pacingQuestions.forEach(q=>{if(!pcDomainScores[q.domain])pcDomainScores[q.domain]={correct:0,total:0};});
+  pcCurrentQ=0;pcScore=0;pcAnswerRecord=[];pcTotalSeconds=600;
+  renderPacingQ();
+  startPCTimer();
+}
+
+function startPCTimer(){
+  if(pcTimer)clearInterval(pcTimer);
+  pcTimer=setInterval(()=>{
+    pcTotalSeconds--;
+    updateTimerDisplay();
+    if(pcTotalSeconds<=0){clearInterval(pcTimer);showPacingResults(true);}
+  },1000);
+}
+
+function updateTimerDisplay(){
+  const m=Math.floor(pcTotalSeconds/60);
+  const s=pcTotalSeconds%60;
+  const disp=document.getElementById('pc-time-display');
+  const wrap=document.getElementById('pc-timer');
+  if(disp)disp.textContent=`${m}:${s<10?'0'+s:s}`;
+  if(wrap){
+    wrap.classList.remove('warn','danger');
+    if(pcTotalSeconds<=120)wrap.classList.add('danger');
+    else if(pcTotalSeconds<=300)wrap.classList.add('warn');
+  }
+}
+
+function renderPacingQ(){
+  if(pcCurrentQ>=pacingQuestions.length){showPacingResults(false);return;}
+  const qData=pacingQuestions[pcCurrentQ];
+  pcAnswered=false;
+  document.getElementById('pc-q-num').textContent=pcCurrentQ+1;
+  document.getElementById('pc-progress-text').textContent=`${pcCurrentQ} of ${pacingQuestions.length}`;
+  document.getElementById('pc-progress-fill').style.width=`${(pcCurrentQ/pacingQuestions.length)*100}%`;
+  document.getElementById('pc-next-btn').disabled=true;
+
+  const domainColors={
+    'General Security Concepts':'#388e3c',
+    'Threats, Vulnerabilities & Mitigations':'#1565c0',
+    'Security Architecture':'#6a1b9a',
+    'Security Operations':'#e65100',
+    'Security Program Management':'#00695c'
+  };
+  const col=domainColors[qData.domain]||'#2e7d32';
+
+  let optsHTML=qData.opts.map((o,i)=>`
+    <button class="quiz-option" onclick="selectPCAnswer(${i})" id="pc-opt-${i}">
+      <span class="opt-letter">${String.fromCharCode(65+i)}</span>
+      ${o}
+    </button>`).join('');
+
+  document.getElementById('pc-question-area').innerHTML=`
+    <div class="quiz-question-wrap">
+      <div class="quiz-q-meta">
+        Question ${pcCurrentQ+1} of ${pacingQuestions.length}
+        <span class="quiz-q-domain" style="background:${col}22;color:${col}">${qData.domain}</span>
+      </div>
+      <div class="quiz-q-text">${qData.q}</div>
+      <div class="quiz-options">${optsHTML}</div>
+      <div class="quiz-feedback" id="pc-feedback"></div>
+    </div>`;
+}
+
+function selectPCAnswer(idx){
+  if(pcAnswered)return;
+  pcAnswered=true;
+  const qData=pacingQuestions[pcCurrentQ];
+  const isCorrect=idx===qData.correct;
+  if(isCorrect){pcScore++;pcDomainScores[qData.domain].correct++;}
+  pcDomainScores[qData.domain].total++;
+  pcAnswerRecord.push({q:pcCurrentQ,selected:idx,correct:qData.correct,wasCorrect:isCorrect});
+
+  document.querySelectorAll('.quiz-option').forEach((el,i)=>{
+    el.disabled=true;
+    if(i===qData.correct)el.classList.add('correct');
+    else if(i===idx&&!isCorrect)el.classList.add('wrong');
+  });
+  const fb=document.getElementById('pc-feedback');
+  fb.className='quiz-feedback show '+(isCorrect?'pass':'fail');
+  fb.innerHTML=(isCorrect?'✅ Correct! ':'❌ Incorrect. ')+qData.fb;
+  document.getElementById('pc-next-btn').disabled=false;
+}
+
+function skipPacingQ(){
+  if(pcAnswered)return;
+  pcDomainScores[pacingQuestions[pcCurrentQ].domain].total++;
+  pcAnswerRecord.push({q:pcCurrentQ,selected:-1,correct:pacingQuestions[pcCurrentQ].correct,wasCorrect:false});
+  pcCurrentQ++;
+  renderPacingQ();
+}
+
+function nextPacingQ(){
+  pcCurrentQ++;
+  renderPacingQ();
+}
+
+function showPacingResults(timeUp){
+  if(pcTimer)clearInterval(pcTimer);
+  document.getElementById('pacing-quiz').style.display='none';
+  const pct=Math.round((pcScore/pacingQuestions.length)*100);
+  let domainCardsHTML=Object.entries(pcDomainScores).map(([dom,sc])=>{
+    const ratio=sc.total>0?sc.correct/sc.total:0;
+    const cls=ratio>=.8?'':'ratio'<.6?'poor':'ok';
+    const label=ratio>=.8?'Strong':'ratio'<.6?'Needs work':'Review needed';
+    return `<div class="domain-result-card ${ratio<.6?'poor':ratio<.8?'ok':''}">
+      <div class="dr-name">${dom}</div>
+      <div class="dr-score">${sc.correct}/${sc.total}</div>
+      <div class="dr-label">${sc.total>0?Math.round(ratio*100)+'%':'Not tested'}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('pacing-results').style.display='block';
+  document.getElementById('pacing-results').innerHTML=`
+    <div class="score-panel">
+      <div class="score-circle">
+        <div class="score-big">${pcScore}</div>
+        <div class="score-denom">out of ${pacingQuestions.length}</div>
+      </div>
+      <h3 style="color:${pct>=80?'var(--green-dark)':'var(--amber)'}">
+        ${pct>=80?'🎉 Excellent — Exam Ready!':pct>=60?'📚 Good — Review Weak Domains':'⚠️ More Practice Needed'}
+      </h3>
+      <p style="color:var(--text-mid);font-size:.9rem;margin:8px 0 16px;">
+        ${timeUp?'⏱ Time expired. ':''}Score: ${pct}% — 
+        ${pct>=80?'You are demonstrating exam-ready performance across all domains.':
+          pct>=60?'Focus additional study on the domains highlighted below.':
+          'Consider returning to the lesson pages for your weakest domains before exam day.'}
+      </p>
+      <div class="domain-result-grid">${domainCardsHTML}</div>
+      <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="retakePacing()">Retake Quiz</button>
+        <button class="btn-secondary" onclick="showPanel('domain-sprint',document.querySelector('.nav-item:nth-child(2)'))">Review Weak Domains →</button>
+      </div>
+    </div>`;
+}
+
+function retakePacing(){
+  document.getElementById('pacing-results').style.display='none';
+  document.getElementById('pacing-results').innerHTML='';
+  document.getElementById('pacing-start').style.display='block';
+}
+
+/* ============================================================
+   WIDGET B — DISTRACTOR DATA
+   ============================================================ */
+const distractorQuestions=[
+  {
+    q:'A security analyst discovers that an employee emailed a spreadsheet containing 5,000 customer Social Security Numbers to their personal Gmail account. The organization has a perimeter firewall, IPS, and antivirus. Why did none of these controls prevent this incident?',
+    opts:[
+      {text:'The firewall should have blocked Gmail traffic on port 443',distractor:true,why:'Firewalls control traffic by port/IP/protocol. Gmail on port 443 is legitimate HTTPS traffic — the firewall cannot distinguish a business email from a data exfiltration email without content inspection. Blocking port 443 would break nearly all web browsing.'},
+      {text:'IPS signatures were not updated to detect SSNs in email traffic',distractor:true,why:'IPS detects network-level attack signatures (exploit payloads, malware callbacks) — not data content patterns like SSN numbers in an email attachment. IPS is the wrong tool for this problem.'},
+      {text:'These controls address network attacks and malware — not authorized-channel data exfiltration. DLP (Data Loss Prevention) is the correct control for detecting and blocking sensitive data sent through legitimate communication channels.',distractor:false,why:''},
+      {text:'Antivirus should have detected the SSN spreadsheet as malicious before it was emailed',distractor:true,why:'Antivirus detects malware by file signatures and behavioral indicators. A legitimate spreadsheet containing SSNs is not malware — antivirus has no mechanism to detect sensitive data content or policy violations in files.'}
+    ]
+  },
+  {
+    q:'A hospital discovers it was breached on March 14th. The incident was confirmed on March 16th. Under HIPAA, by what date must the hospital notify HHS (Department of Health and Human Services)?',
+    opts:[
+      {text:'March 17th — within 24 hours of breach confirmation',distractor:true,why:'HIPAA does NOT require 24-hour notification. This is a common confusion with GDPR\'s 72-hour requirement to the supervisory authority. HIPAA\'s timeline is much longer — 60 days from the date of DISCOVERY.'},
+      {text:'March 19th — within 72 hours of breach discovery (like GDPR)',distractor:true,why:'72 hours is GDPR\'s notification requirement to the supervisory authority — not HIPAA. These are different regulations with different timelines. GDPR covers EU personal data; HIPAA covers U.S. Protected Health Information.'},
+      {text:'May 14th — within 60 days of breach discovery (March 14th + 60 days)',distractor:false,why:''},
+      {text:'May 16th — within 60 days of breach confirmation (March 16th + 60 days)',distractor:true,why:'The 60-day clock starts from DISCOVERY, not confirmation. The hospital discovered the breach on March 14th, so the deadline is 60 days from March 14th = May 13th (or May 14th accounting for the exact calendar). Confirmation date does not restart the clock.'}
+    ]
+  },
+  {
+    q:'During a penetration test engagement, the testing firm is given complete access to the application source code, architecture diagrams, and database schemas before they begin testing. What type of penetration test is this?',
+    opts:[
+      {text:'Black box — the testers are working from the attacker\'s perspective with limited information',distractor:true,why:'Black box is the OPPOSITE — testers receive NO prior knowledge and must conduct all reconnaissance themselves, simulating an external attacker who has done no pre-engagement research.'},
+      {text:'Gray box — the testers receive partial information to balance realism with efficiency',distractor:true,why:'Gray box provides PARTIAL information (user credentials, some network diagrams). Source code, architecture diagrams, AND database schemas together constitute full system knowledge — that is white box, not gray box.'},
+      {text:'White box — testers have full knowledge of the system, enabling the most thorough assessment including code-level logic flaws',distractor:false,why:''},
+      {text:'Red team — a full adversary simulation testing the blue team\'s detection and response capability',distractor:true,why:'Red team exercises simulate a sophisticated adversary\'s full attack campaign to test defensive response — they typically use black box (or gray box) knowledge levels, not white box. A red team with full source code access would not be a realistic adversary simulation.'}
+    ]
+  },
+  {
+    q:'A company\'s IT manager installs a hardware device between the industrial control network (OT) and the corporate IT network that physically prevents any traffic from flowing from IT to OT, while allowing sensor telemetry to flow from OT to IT. What is this device?',
+    opts:[
+      {text:'A Next-Generation Firewall (NGFW) with strict ACLs blocking all inbound traffic to the OT network',distractor:true,why:'A firewall is a software-based control that enforces rules — it can be misconfigured, bypassed through rule exceptions, or compromised by a vulnerability in the firewall OS itself. A firewall does NOT provide a physical guarantee of one-way traffic flow.'},
+      {text:'A VLAN separating the OT network from the corporate network with no routing between them',distractor:true,why:'VLANs provide logical (software-enforced) separation at Layer 2. They can be broken by misconfiguration or VLAN hopping attacks. VLANs do not enforce one-way data flow — they provide separation, not directional enforcement.'},
+      {text:'A data diode — a hardware device that enforces one-directional data flow at the physical layer, making it impossible for traffic to flow from IT to OT',distractor:false,why:''},
+      {text:'An IPS deployed inline on the OT network to block all inbound malicious traffic',distractor:true,why:'An IPS drops specific traffic matching attack signatures — it is bidirectional and does not enforce one-way data flow. An IPS also requires signature updates, has vulnerabilities, and can be bypassed by novel attack techniques.'}
+    ]
+  },
+  {
+    q:'A risk manager is documenting the organization\'s risk decisions. One entry states: "Due to the high cost of replacing the legacy payment processing system, the organization acknowledges the identified SQL injection vulnerability and will not remediate it at this time. The VP of Finance has reviewed and signed this decision." What risk treatment strategy does this entry describe?',
+    opts:[
+      {text:'Risk Mitigation — the organization is reducing the risk by documenting it in the register',distractor:true,why:'Risk mitigation means adding controls to reduce likelihood or impact — deploying a WAF, patching the code, implementing input validation. Simply documenting a vulnerability in the risk register does not mitigate it.'},
+      {text:'Risk Avoidance — the organization is eliminating the risk by not using the vulnerable system',distractor:true,why:'Risk avoidance means eliminating the activity that creates the risk entirely — for example, shutting down the payment system or switching to a new one. The organization is continuing to use the legacy system, so avoidance is not occurring.'},
+      {text:'Risk Acceptance — the organization acknowledges the risk exists, accepts it with formal authorization, and documents the decision',distractor:false,why:''},
+      {text:'Risk Transference — the organization has transferred liability by having the VP sign the form',distractor:true,why:'Risk transference moves the financial consequence to a third party — typically cyber insurance or contractual indemnification clauses. An internal signature authorizing risk acceptance is risk acceptance, not transference.'}
+    ]
+  }
+];
+let distCurrentQ=0;
+let distLocked=false;
+let distSelectedCorrect=false;
+
+function renderDistractorQ(){
+  const qData=distractorQuestions[distCurrentQ];
+  distLocked=false;
+  distSelectedCorrect=false;
+  const optsHTML=qData.opts.map((o,i)=>{
+    const elimBtn=o.distractor?`<button class="opt-action" onclick="eliminateOpt(${i})">Eliminate</button>`:`<button class="opt-action select-action" onclick="selectDistractorAnswer(${i})">Select</button>`;
+    return `<button class="distractor-option" id="dopt-${i}">
+      ${o.text}
+      ${elimBtn}
+    </button>
+    <div class="distractor-explanation" id="dexp-${i}">${o.why}</div>`;
+  }).join('');
+
+  document.getElementById('distractor-area').innerHTML=`
+    <div class="distractor-wrap">
+      <div class="distractor-q-num">Question ${distCurrentQ+1} of ${distractorQuestions.length}</div>
+      <div class="distractor-q-text">${qData.q}</div>
+      <div class="distractor-instructions">⚠️ <strong>Instructions:</strong> Click "Eliminate" on answer choices you recognize as exam traps/distractors. Then click "Select" on the correct answer. Elimination reveals why each wrong answer was engineered to look plausible.</div>
+      <div class="distractor-options" id="dopt-container">${optsHTML}</div>
+      <div class="distractor-nav">
+        <div style="font-size:.83rem;color:var(--text-muted);">Q ${distCurrentQ+1}/${distractorQuestions.length}</div>
+        <div style="display:flex;gap:10px;">
+          ${distCurrentQ>0?`<button class="btn-secondary" onclick="prevDistractorQ()">← Previous</button>`:''}
+          ${distCurrentQ<distractorQuestions.length-1?`<button class="btn-primary" id="dist-next-btn" onclick="nextDistractorQ()" ${distSelectedCorrect?'':'disabled'}>Next Question →</button>`:`<button class="btn-primary" id="dist-done-btn" onclick="showDistractorComplete()" ${distSelectedCorrect?'':'disabled'}>Complete ✓</button>`}
+        </div>
+      </div>
+    </div>`;
+}
+
+function eliminateOpt(idx){
+  if(distLocked)return;
+  const opt=document.getElementById(`dopt-${idx}`);
+  if(opt.classList.contains('eliminated'))return;
+  opt.classList.add('eliminated');
+  const exp=document.getElementById(`dexp-${idx}`);
+  exp.classList.add('show');
+}
+
+function selectDistractorAnswer(idx){
+  if(distLocked)return;
+  const qData=distractorQuestions[distCurrentQ];
+  const correctIdx=qData.opts.findIndex(o=>!o.distractor);
+  if(idx!==correctIdx){
+    const opt=document.getElementById(`dopt-${idx}`);
+    opt.classList.add('wrong-select');
+    setTimeout(()=>opt.classList.remove('wrong-select'),800);
+    return;
+  }
+  distLocked=true;
+  distSelectedCorrect=true;
+  document.getElementById(`dopt-${idx}`).classList.add('correct-opt');
+  // Reveal all explanations
+  qData.opts.forEach((_,i)=>{
+    if(i!==idx){
+      document.getElementById(`dopt-${i}`).classList.add('eliminated');
+      document.getElementById(`dexp-${i}`).classList.add('show');
+    }
+  });
+  // Enable next button
+  const nb=document.getElementById('dist-next-btn')||document.getElementById('dist-done-btn');
+  if(nb)nb.disabled=false;
+}
+
+function nextDistractorQ(){
+  distCurrentQ++;
+  renderDistractorQ();
+}
+function prevDistractorQ(){
+  if(distCurrentQ>0){distCurrentQ--;renderDistractorQ();}
+}
+function showDistractorComplete(){
+  document.getElementById('distractor-area').innerHTML=`
+    <div class="score-panel">
+      <div style="font-size:3rem;margin-bottom:16px;">🎯</div>
+      <h3 style="color:var(--green-dark);margin-bottom:10px;">Distractor Module Complete!</h3>
+      <p style="color:var(--text-mid);margin-bottom:20px;">You have completed all 5 distractor elimination exercises. Each time you recognized an engineered trap, you practiced a skill that will help you on the real exam — where distractors are designed by the same testing methodology. Repeat this widget until every distractor pattern feels familiar.</p>
+      <button class="btn-primary" onclick="distCurrentQ=0;renderDistractorQ()">Restart Widget B</button>
+    </div>`;
+}
+
+// Initialize distractor widget when its panel is first shown
+document.querySelector('[onclick*="distractor"]').addEventListener('click',function(){
+  if(!document.getElementById('distractor-area').innerHTML.trim()){
+    renderDistractorQ();
+  }
+});
+
+/* ============================================================
+   WIDGET C — FIREWALL PBQ
+   ============================================================ */
+let fwDraggingId=null;
+let fwDropValues={};
+
+function fwDragStart(e,id){fwDraggingId=id;}
+
+function fwDragOver(e){
+  e.preventDefault();
+  e.currentTarget.classList.add('over');
+}
+
+function fwDrop(e,zoneId){
+  e.preventDefault();
+  e.currentTarget.classList.remove('over');
+  const chip=document.getElementById(fwDraggingId);
+  if(!chip)return;
+  const zone=document.getElementById(zoneId);
+  const value=chip.dataset.value;
+  fwDropValues[zoneId]=value;
+  zone.textContent=value;
+  zone.classList.add('filled');
+  zone.style.color=value==='ALLOW'?'var(--green-dark)':'var(--red-mid)';
+  zone.style.fontWeight='700';
+}
+
+function checkFW(){
+  const correct={
+    'fw-drop-1':'ALLOW','fw-drop-2':'DENY',
+    'fw-drop-3':'ALLOW','fw-drop-4':'DENY'
+  };
+  let right=0,total=Object.keys(correct).length;
+  Object.entries(correct).forEach(([id,val])=>{
+    const zone=document.getElementById(id);
+    if(fwDropValues[id]===val){right++;zone.style.border='2px solid var(--green)';zone.style.background='var(--green-pale)';}
+    else{zone.style.border='2px solid var(--red)';zone.style.background='var(--red-pale)';}
+  });
+  const result=document.getElementById('fw-result');
+  result.classList.add('show');
+  if(right===total){
+    result.className='pbq-result show pass';
+    result.innerHTML='✅ Perfect firewall configuration! Rule #1: HTTPS (443) to DMZ web server = ALLOW (legitimate web traffic). Rule #2: Telnet (23) inbound = DENY (insecure cleartext protocol — never allow inbound Telnet). Rule #3: Outbound DNS (53) = ALLOW (internal hosts must resolve domain names). Rule #4: Implicit deny = DENY (all firewalls end with a default deny-all rule — any traffic not explicitly permitted is blocked).';
+  }else{
+    result.className='pbq-result show fail';
+    result.innerHTML=`${right}/${total} correct. Red cells are incorrect. Hint: Port 443 = HTTPS web traffic (ALLOW); Port 23 = Telnet (always DENY — cleartext, insecure); Port 53 = DNS queries (ALLOW outbound); Rule 4 = implicit deny-all (DENY — everything not explicitly permitted must be blocked).`;
+  }
+}
+
+function resetFW(){
+  ['fw-drop-1','fw-drop-2','fw-drop-3','fw-drop-4'].forEach(id=>{
+    const z=document.getElementById(id);
+    z.textContent='';z.classList.remove('filled');
+    z.style.color='';z.style.fontWeight='';z.style.border='';z.style.background='';
+  });
+  fwDropValues={};
+  document.getElementById('fw-result').classList.remove('show');
+  document.getElementById('fw-result').className='pbq-result';
+}
+
+/* ============================================================
+   WIDGET C — IR PRIORITY PBQ
+   ============================================================ */
+const irCorrect={
+  'ir-chip-1':'Containment',  // network isolate
+  'ir-chip-2':'Eradication',  // remove artifacts
+  'ir-chip-3':'Recovery',     // restore from backups
+  'ir-chip-4':'Containment',  // RAM image before power off
+  'ir-chip-5':'Recovery',     // validate before production
+  'ir-chip-6':'Eradication'   // reset credentials
+};
+let irDragging=null;
+let irPlaced={};
+
+function irDragStart(e,id){irDragging=id;}
+function irDragOver(e){e.preventDefault();e.currentTarget.classList.add('over');}
+
+function irDrop(e,zoneId){
+  e.preventDefault();
+  e.currentTarget.classList.remove('over');
+  const chip=document.getElementById(irDragging);
+  if(!chip||!irDragging)return;
+  // Move chip to zone
+  irPlaced[irDragging]=zoneId.replace('ir-zone-','');
+  const zone=document.getElementById(zoneId);
+  chip.classList.remove('in-pool');
+  chip.classList.add('placed');
+  chip.draggable=true;
+  chip.ondragstart=function(ev){irDragStart(ev,irDragging);};
+  const existing=zone.querySelector(`#${irDragging}`);
+  if(!existing)zone.appendChild(chip);
+  // Remove from pool if it was there
+  const pool=document.getElementById('ir-pool');
+  if(pool.contains(chip))pool.removeChild(chip);
+}
+
+function checkIR(){
+  let right=0,total=Object.keys(irCorrect).length;
+  const zoneMap={'Containment':'ir-zone-C','Eradication':'ir-zone-E','Recovery':'ir-zone-R'};
+  Object.entries(irCorrect).forEach(([chipId,correctZone])=>{
+    const chip=document.getElementById(chipId);
+    const parentZone=chip&&chip.closest('.priority-zone');
+    const parentZoneData=parentZone&&parentZone.dataset.zone;
+    if(parentZoneData===correctZone){
+      right++;
+      chip.style.background='var(--green-pale2)';chip.style.color='var(--green-dark)';chip.style.border='1px solid var(--green)';
+    }else if(chip){
+      chip.style.background='var(--red-pale)';chip.style.color='var(--red)';chip.style.border='1px solid var(--red)';
+    }
+  });
+  const result=document.getElementById('ir-result');
+  result.classList.add('show');
+  if(right===total){
+    result.className='pbq-result show pass';
+    result.innerHTML='✅ Perfect IR phase classification! Containment: network-isolate (stop spread) + capture RAM image (preserve evidence before power-off). Eradication: remove ransomware artifacts, close the initial access vector, AND reset compromised credentials (attackers persist through accounts, not just malware). Recovery: restore from verified backups AND validate restored systems before connecting to production — premature recovery re-starts the incident cycle.';
+  }else{
+    result.className='pbq-result show fail';
+    result.innerHTML=`${right}/${total} correct. Red chips are misclassified. Key: Containment = STOP the spread + preserve evidence (RAM before power-off). Eradication = REMOVE the threat completely (malware, access vector, AND compromised credentials). Recovery = RESTORE operations safely (verify backups, validate restored systems before production connection).`;
+  }
+}
+
+function resetIR(){
+  // Move all chips back to pool
+  Object.keys(irCorrect).forEach(id=>{
+    const chip=document.getElementById(id);
+    chip.className='priority-chip in-pool';
+    chip.style.background='';chip.style.color='';chip.style.border='';
+    const pool=document.getElementById('ir-pool');
+    pool.appendChild(chip);
+  });
+  irPlaced={};
+  document.getElementById('ir-result').classList.remove('show');
+  document.getElementById('ir-result').className='pbq-result';
+}
+</script>
+</body>
+</html>

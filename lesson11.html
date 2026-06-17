@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 11: Risk, Third-Party & Assessment | CompTIA Security+ SY0-701</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS — consistent with lessons 1–10
+   ============================================================ */
+:root {
+  --bg:          #ffffff;
+  --bg-soft:     #f7f9f7;
+  --bg-card:     #ffffff;
+  --border:      #d8e4d8;
+  --border-dark: #b2ccb2;
+  --text:        #111111;
+  --text-mid:    #3a4a3a;
+  --text-muted:  #5c6e5c;
+  --green-dark:  #1b5e20;
+  --green:       #2e7d32;
+  --green-mid:   #388e3c;
+  --green-light: #4caf50;
+  --green-pale:  #e8f5e9;
+  --green-pale2: #c8e6c9;
+  --red:         #b71c1c;
+  --red-pale:    #ffebee;
+  --red-mid:     #c62828;
+  --blue:        #1565c0;
+  --blue-pale:   #e3f2fd;
+  --purple:      #6a1b9a;
+  --purple-pale: #f3e5f5;
+  --amber:       #e65100;
+  --amber-pale:  #fff3e0;
+  --teal:        #00695c;
+  --teal-pale:   #e0f2f1;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.13);
+  --radius:      10px;
+  --radius-lg:   16px;
+}
+[data-theme="dark"] {
+  --bg:          #0e120e;
+  --bg-soft:     #141a14;
+  --bg-card:     #1a221a;
+  --border:      #2a3a2a;
+  --border-dark: #3a4e3a;
+  --text:        #e8f0e8;
+  --text-mid:    #b8ccb8;
+  --text-muted:  #7a9a7a;
+  --green-dark:  #81c784;
+  --green:       #4caf50;
+  --green-mid:   #66bb6a;
+  --green-light: #a5d6a7;
+  --green-pale:  #1a2e1a;
+  --green-pale2: #1e3a1e;
+  --red:         #ef9a9a;
+  --red-pale:    #2a1010;
+  --red-mid:     #ef9a9a;
+  --blue:        #90caf9;
+  --blue-pale:   #0d1f35;
+  --purple:      #ce93d8;
+  --purple-pale: #1f0d2a;
+  --amber:       #ffcc80;
+  --amber-pale:  #2a1a00;
+  --teal:        #80cbc4;
+  --teal-pale:   #0d2520;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.30);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.40);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.50);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',Arial,Helvetica,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.65;font-size:16px;
+  transition:background .3s,color .3s;
+}
+h1,h2,h3,h4{line-height:1.25;font-weight:700;}
+a{color:var(--green);text-decoration:none;}
+a:hover{text-decoration:underline;}
+ul{padding-left:1.4em;}
+li{margin-bottom:.35em;}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header{
+  background:var(--green-dark);color:#fff;
+  position:sticky;top:0;z-index:200;
+  box-shadow:0 2px 12px rgba(0,0,0,.25);
+}
+.header-inner{
+  max-width:1180px;margin:0 auto;padding:14px 24px;
+  display:flex;align-items:center;
+  justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.header-left{display:flex;align-items:center;gap:14px;}
+.brand-icon{
+  width:42px;height:42px;
+  background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:14px;letter-spacing:-.5px;color:#fff;flex-shrink:0;
+}
+.brand-info h1{font-size:1rem;font-weight:700;}
+.brand-info p {font-size:.74rem;opacity:.7;margin-top:1px;}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.lesson-badge{
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);
+  color:#fff;font-size:.7rem;font-weight:700;
+  padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.07em;
+}
+.nav-link{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+  color:#fff;font-size:.8rem;font-weight:600;
+  padding:6px 14px;border-radius:20px;
+  transition:background .2s;text-decoration:none;display:inline-block;
+}
+.nav-link:hover{background:rgba(255,255,255,.25);text-decoration:none;}
+.theme-btn{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+  color:#fff;font-size:.8rem;font-weight:600;
+  padding:6px 14px;border-radius:20px;cursor:pointer;transition:background .2s;
+}
+.theme-btn:hover{background:rgba(255,255,255,.25);}
+
+/* ============================================================
+   HERO — amber-tinted for "risk/assessment" domain
+   ============================================================ */
+.hero{
+  background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 40%,#e6510022 100%);
+  color:#fff;padding:48px 24px 40px;
+  position:relative;overflow:hidden;
+}
+.hero::after{
+  content:'11';
+  position:absolute;right:40px;bottom:-10px;
+  font-size:120px;font-weight:900;
+  opacity:.07;line-height:1;pointer-events:none;
+}
+.hero-inner{max-width:860px;margin:0 auto;}
+.hero-eyebrow{
+  font-size:.75rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;opacity:.8;margin-bottom:10px;
+}
+.hero h2{font-size:2rem;font-weight:800;margin-bottom:10px;}
+.hero-sub{font-size:1rem;opacity:.85;max-width:640px;}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;}
+.hero-tag{
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page-body{max-width:1180px;margin:0 auto;padding:36px 24px 64px;}
+.section-gap{margin-bottom:48px;}
+.section-label{
+  font-size:.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--green);
+  margin-bottom:14px;padding-bottom:8px;
+  border-bottom:2px solid var(--green-pale2);
+  display:flex;align-items:center;gap:8px;
+}
+.section-label::before{
+  content:'';display:block;width:4px;height:16px;
+  background:var(--green);border-radius:2px;
+}
+
+/* OBJECTIVES */
+.objectives-box{
+  background:var(--green-pale);border:1px solid var(--green-pale2);
+  border-left:5px solid var(--green);border-radius:var(--radius);padding:24px 28px;
+}
+.objectives-box h3{color:var(--green-dark);margin-bottom:12px;font-size:1rem;}
+.objectives-box li{margin-bottom:8px;color:var(--text-mid);font-size:.93rem;}
+.objectives-box li::marker{color:var(--green);}
+
+/* KEY TERMS */
+.terms-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;
+}
+.term-card{
+  background:var(--bg-soft);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;
+}
+.term-name{font-weight:700;font-size:.88rem;color:var(--green-dark);margin-bottom:4px;}
+.term-def {font-size:.82rem;color:var(--text-mid);line-height:1.5;}
+
+/* INTRO */
+.intro-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-left:5px solid var(--green-light);
+  border-radius:var(--radius-lg);padding:28px 32px;box-shadow:var(--shadow-sm);
+}
+.intro-card p{color:var(--text-mid);font-size:.97rem;line-height:1.75;}
+.intro-card p+p{margin-top:12px;}
+
+/* FLIP CARDS */
+.flip-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;
+}
+.flip-wrapper{perspective:1000px;height:240px;cursor:pointer;}
+.flip-inner{
+  position:relative;width:100%;height:100%;
+  transition:transform .6s cubic-bezier(.4,.2,.2,1);
+  transform-style:preserve-3d;
+}
+.flip-wrapper.flipped .flip-inner{transform:rotateY(180deg);}
+.flip-front,.flip-back{
+  position:absolute;width:100%;height:100%;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:var(--radius-lg);padding:24px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  border:1px solid var(--border);box-shadow:var(--shadow-md);
+}
+.flip-front{background:var(--bg-card);}
+.flip-back {background:var(--green-dark);color:#fff;transform:rotateY(180deg);}
+.flip-num  {font-size:2.5rem;font-weight:900;color:var(--green-pale2);line-height:1;}
+.flip-front h3{font-size:1.05rem;color:var(--green-dark);margin-bottom:6px;}
+.flip-front p {font-size:.82rem;color:var(--text-muted);}
+.flip-hint{font-size:.7rem;color:var(--text-muted);}
+.flip-back h3{font-size:.95rem;font-weight:700;margin-bottom:8px;opacity:.9;}
+.flip-back p {font-size:.82rem;opacity:.85;line-height:1.55;flex:1;}
+.flip-back a.dive-link{
+  display:inline-block;background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.3);
+  color:#fff;font-size:.78rem;font-weight:700;
+  padding:6px 14px;border-radius:20px;text-decoration:none;
+  transition:background .2s;margin-top:10px;align-self:flex-start;
+}
+.flip-back a.dive-link:hover{background:rgba(255,255,255,.28);}
+
+/* TOPIC SECTIONS */
+.topic-section{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;
+  margin-bottom:28px;box-shadow:var(--shadow-sm);
+}
+.topic-header{
+  background:var(--green);color:#fff;
+  padding:18px 28px;display:flex;align-items:center;gap:14px;
+}
+.topic-header-num{
+  width:36px;height:36px;background:rgba(0,0,0,.2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;font-weight:900;flex-shrink:0;
+}
+.topic-header h3{font-size:1.1rem;}
+.topic-header p {font-size:.8rem;opacity:.85;margin-top:2px;}
+.topic-body{padding:28px;}
+.topic-grid  {display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:18px;}
+.topic-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px;}
+
+.concept-block{
+  background:var(--bg-soft);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px;
+}
+.concept-block h4{
+  font-size:.92rem;color:var(--green-dark);
+  margin-bottom:8px;display:flex;align-items:center;gap:8px;
+}
+.concept-icon{
+  width:24px;height:24px;background:var(--green-pale2);
+  border-radius:6px;display:inline-flex;align-items:center;
+  justify-content:center;font-size:13px;
+}
+.concept-block p,.concept-block ul{font-size:.87rem;color:var(--text-mid);line-height:1.6;}
+
+/* Content cards with coloured left border */
+.doc-card{
+  background:var(--bg-soft);border:1px solid var(--border);
+  border-left:4px solid var(--green);
+  border-radius:var(--radius);padding:16px;
+}
+.doc-card.blue  {border-left-color:var(--blue);}
+.doc-card.purple{border-left-color:var(--purple);}
+.doc-card.amber {border-left-color:var(--amber);}
+.doc-card.teal  {border-left-color:var(--teal);}
+.doc-card.red   {border-left-color:var(--red);}
+.doc-card h4{
+  font-size:.9rem;margin-bottom:8px;color:var(--text);
+  display:flex;align-items:center;gap:8px;
+}
+.doc-card p,.doc-card ul{font-size:.84rem;color:var(--text-mid);line-height:1.55;}
+.doc-card ul{margin-top:6px;}
+
+/* Risk matrix visual */
+.risk-matrix{
+  display:grid;grid-template-columns:auto repeat(4,1fr);
+  gap:4px;margin-top:14px;font-size:.78rem;
+}
+.rm-header{
+  display:flex;align-items:center;justify-content:center;
+  background:var(--green-dark);color:#fff;
+  padding:8px 6px;border-radius:6px;font-weight:700;text-align:center;
+  font-size:.72rem;letter-spacing:.04em;
+}
+.rm-cell{
+  padding:10px 6px;border-radius:6px;text-align:center;
+  font-weight:700;font-size:.75rem;
+}
+.rm-label{
+  display:flex;align-items:center;justify-content:flex-end;
+  padding-right:8px;font-size:.78rem;font-weight:700;color:var(--text-mid);
+}
+.rm-low   {background:#e8f5e9;color:#1b5e20;}
+.rm-med   {background:#fff3e0;color:#e65100;}
+.rm-high  {background:#ffebee;color:#b71c1c;}
+.rm-crit  {background:#b71c1c;color:#fff;}
+
+/* Pen test comparison table */
+.pen-table{
+  width:100%;border-collapse:collapse;margin-top:16px;font-size:.84rem;
+}
+.pen-table th{
+  background:var(--green-dark);color:#fff;
+  padding:10px 14px;text-align:left;font-size:.79rem;letter-spacing:.04em;
+}
+.pen-table td{
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  color:var(--text-mid);vertical-align:top;
+}
+.pen-table tr:nth-child(even) td{background:var(--bg-soft);}
+.pen-table tr:hover td{background:var(--green-pale);}
+
+/* Callouts */
+.callout{background:var(--green-pale);border-left:4px solid var(--green);border-radius:0 var(--radius) var(--radius) 0;padding:14px 18px;margin-top:16px;font-size:.87rem;color:var(--text-mid);}
+.callout strong{color:var(--green-dark);}
+.callout-blue  {background:var(--blue-pale);border-left:4px solid var(--blue);border-radius:0 var(--radius) var(--radius) 0;padding:14px 18px;margin-top:16px;font-size:.87rem;color:var(--text-mid);}
+.callout-blue strong{color:var(--blue);}
+.callout-amber {background:var(--amber-pale);border-left:4px solid var(--amber);border-radius:0 var(--radius) var(--radius) 0;padding:14px 18px;margin-top:16px;font-size:.87rem;color:var(--text-mid);}
+.callout-amber strong{color:var(--amber);}
+.callout-red   {background:var(--red-pale);border-left:4px solid var(--red);border-radius:0 var(--radius) var(--radius) 0;padding:14px 18px;margin-top:16px;font-size:.87rem;color:var(--text-mid);}
+.callout-red strong{color:var(--red-mid);}
+.callout-purple{background:var(--purple-pale);border-left:4px solid var(--purple);border-radius:0 var(--radius) var(--radius) 0;padding:14px 18px;margin-top:16px;font-size:.87rem;color:var(--text-mid);}
+.callout-purple strong{color:var(--purple);}
+
+/* ============================================================
+   ACTIVITIES — common
+   ============================================================ */
+.activity-box{
+  background:var(--bg-card);border:2px solid var(--green-pale2);
+  border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-md);
+}
+.activity-header{
+  background:var(--green-dark);color:#fff;
+  padding:16px 24px;display:flex;align-items:center;gap:12px;
+}
+.activity-badge{
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);
+  font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:20px;
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.activity-header h3{font-size:1rem;}
+.activity-header p {font-size:.8rem;opacity:.8;margin-top:2px;}
+.activity-body{padding:24px;}
+.activity-instructions{
+  background:var(--bg-soft);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 16px;
+  font-size:.85rem;color:var(--text-mid);margin-bottom:20px;
+}
+.activity-result{
+  margin-top:14px;padding:12px 16px;border-radius:var(--radius);
+  font-size:.88rem;font-weight:600;display:none;
+}
+.result-pass{background:var(--green-pale);color:var(--green-dark);border:1px solid var(--green-pale2);}
+.result-fail{background:var(--red-pale);color:var(--red);border:1px solid #ffcdd2;}
+.activity-actions{margin-top:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.btn-primary{
+  background:var(--green-dark);color:#fff;border:none;
+  padding:10px 22px;border-radius:8px;font-size:.9rem;font-weight:700;
+  cursor:pointer;transition:background .2s,transform .15s;
+}
+.btn-primary:hover{background:var(--green);transform:translateY(-1px);}
+.btn-secondary{
+  background:var(--bg-soft);color:var(--text);
+  border:1px solid var(--border-dark);padding:10px 22px;
+  border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;
+  transition:background .2s;
+}
+.btn-secondary:hover{background:var(--border);}
+
+/* ============================================================
+   ACTIVITY 1 — RISK RESPONSE DRAG & DROP
+   ============================================================ */
+.drag-pool{
+  display:flex;flex-wrap:wrap;gap:10px;
+  margin-bottom:20px;min-height:56px;
+  background:var(--bg-soft);border:1px dashed var(--border-dark);
+  border-radius:var(--radius);padding:12px;
+}
+.drag-item{
+  background:var(--green-dark);color:#fff;
+  padding:7px 13px;border-radius:20px;
+  font-size:.79rem;font-weight:600;
+  cursor:grab;user-select:none;
+  transition:transform .15s,opacity .15s,box-shadow .15s;
+  box-shadow:var(--shadow-sm);
+}
+.drag-item:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.drag-item.dragging{opacity:.35;}
+.drop-zones-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.drop-zone{
+  border:2px dashed var(--border-dark);border-radius:var(--radius);
+  padding:12px;min-height:110px;
+  transition:border-color .2s,background .2s;
+}
+.drop-zone.drag-over{border-color:var(--green);background:var(--green-pale);}
+.drop-zone-label{
+  font-size:.74rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--text-muted);
+  margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.dz-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.dropped-item{
+  display:inline-block;padding:4px 11px;border-radius:20px;
+  font-size:.75rem;font-weight:600;margin:3px;
+}
+.dropped-item.correct  {background:var(--green-pale2);color:var(--green-dark);border:1px solid var(--green);}
+.dropped-item.incorrect{background:var(--red-pale);color:var(--red);border:1px solid var(--red);animation:shake .35s;}
+.dropped-item .rm{margin-left:5px;cursor:pointer;opacity:.6;}
+.dropped-item .rm:hover{opacity:1;}
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  20%{transform:translateX(-5px);}
+  40%{transform:translateX(5px);}
+  60%{transform:translateX(-3px);}
+  80%{transform:translateX(3px);}
+}
+
+/* ============================================================
+   ACTIVITY 2 — SCENARIO ANALYZER
+   ============================================================ */
+.scenario-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+.scenario-tab{
+  background:var(--bg-soft);border:1px solid var(--border-dark);
+  color:var(--text-mid);padding:8px 16px;border-radius:20px;
+  font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;
+}
+.scenario-tab.active,.scenario-tab:hover{
+  background:var(--green-dark);color:#fff;border-color:var(--green-dark);
+}
+.scenario-panel{display:none;}
+.scenario-panel.active{display:block;}
+.scenario-desc-box{
+  background:var(--bg-soft);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px;margin-bottom:16px;
+}
+.scenario-title{font-weight:700;font-size:1rem;color:var(--text);margin-bottom:6px;}
+.scenario-body {font-size:.88rem;color:var(--text-mid);line-height:1.6;}
+.sc-questions{display:flex;flex-direction:column;gap:12px;}
+.sc-q{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.sc-q-text{font-size:.9rem;font-weight:600;margin-bottom:10px;color:var(--text);}
+.sc-opts{display:flex;flex-direction:column;gap:7px;}
+.sc-opt{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:8px 12px;background:var(--bg-soft);
+  border:1px solid var(--border);border-radius:8px;
+  cursor:pointer;font-size:.86rem;
+  transition:background .2s,border-color .2s;
+}
+.sc-opt:hover{background:var(--green-pale);border-color:var(--green-light);}
+.sc-opt input{flex-shrink:0;margin-top:2px;accent-color:var(--green);}
+.sc-opt.correct{background:var(--green-pale2);border-color:var(--green);color:var(--green-dark);font-weight:600;}
+.sc-opt.wrong  {background:var(--red-pale);border-color:var(--red);color:var(--red);}
+.sc-fb{margin-top:10px;padding:10px 14px;border-radius:8px;font-size:.84rem;display:none;}
+.sc-fb.show{display:block;}
+.sc-fb.pass{background:var(--green-pale);color:var(--green-dark);border:1px solid var(--green-pale2);}
+.sc-fb.fail{background:var(--red-pale);color:var(--red);border:1px solid #ffcdd2;}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+.quiz-q{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px 24px;
+  margin-bottom:16px;transition:border-color .3s;
+}
+.quiz-q.answered-correct{border-color:var(--green);background:var(--green-pale);}
+.quiz-q.answered-wrong  {border-color:var(--red);  background:var(--red-pale);}
+.q-num {font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:8px;}
+.q-text{font-size:.95rem;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.45;}
+.q-options{display:flex;flex-direction:column;gap:8px;}
+.q-option{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 14px;background:var(--bg-soft);
+  border:1px solid var(--border);border-radius:var(--radius);
+  cursor:pointer;font-size:.88rem;
+  transition:background .2s,border-color .2s;
+}
+.q-option:hover{background:var(--green-pale);border-color:var(--green-light);}
+.q-option input[type="radio"]{margin-top:1px;flex-shrink:0;accent-color:var(--green);}
+.q-option.correct{background:var(--green-pale2);border-color:var(--green);color:var(--green-dark);font-weight:600;}
+.q-option.wrong  {background:var(--red-pale);border-color:var(--red);color:var(--red);}
+.q-feedback{margin-top:12px;padding:12px 16px;border-radius:var(--radius);font-size:.85rem;line-height:1.55;display:none;}
+.q-feedback.show{display:block;}
+.q-feedback.pass{background:var(--green-pale);color:var(--green-dark);border:1px solid var(--green-pale2);}
+.q-feedback.fail{background:var(--red-pale);color:var(--red);border:1px solid #ffcdd2;}
+.quiz-submit-row{margin-top:20px;display:flex;align-items:center;gap:14px;}
+#quiz-result{
+  padding:18px 24px;border-radius:var(--radius-lg);
+  font-size:1rem;font-weight:700;display:none;margin-top:20px;
+}
+.quiz-pass{background:var(--green-pale);color:var(--green-dark);border:2px solid var(--green-pale2);}
+.quiz-fail{background:var(--red-pale);color:var(--red);border:2px solid #ffcdd2;}
+
+/* FOOTER */
+.page-footer{
+  background:var(--bg-soft);border-top:1px solid var(--border);
+  padding:24px;text-align:center;font-size:.78rem;color:var(--text-muted);
+}
+.footer-nav{display:flex;justify-content:center;gap:20px;margin-bottom:12px;flex-wrap:wrap;}
+.footer-nav a{color:var(--green);font-weight:600;font-size:.85rem;}
+
+/* RESPONSIVE */
+@media(max-width:900px){.drop-zones-4{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){
+  .hero h2{font-size:1.4rem;}
+  .topic-grid,.topic-grid-3{grid-template-columns:1fr;}
+  .flip-grid{grid-template-columns:1fr;}
+  .risk-matrix{font-size:.7rem;}
+}
+@media(max-width:480px){.drop-zones-4{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="brand-icon">S+</div>
+      <div class="brand-info">
+        <h1>CompTIA Security+ SY0-701</h1>
+        <p>Lesson 11 of 12 &mdash; Risk, Third-Party &amp; Assessment</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="lesson-badge">Day 11</span>
+      <a href="index.html" class="nav-link">&#8592; Course Home</a>
+      <a href="lesson10.html" class="nav-link">&#8592; Lesson 10</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Lesson 11 &mdash; Security Program Management &amp; Oversight (20% of exam)</div>
+    <h2>Risk, Third-Party &amp; Assessment</h2>
+    <p class="hero-sub">Risk identification, analysis, appetite, tolerance, and treatment strategies — plus the risk register, Business Impact Analysis, third-party vendor risk management, audits, and penetration testing. The discipline of making informed, defensible security investment decisions.</p>
+    <div class="hero-meta">
+      <span class="hero-tag">📖 3 Topics</span>
+      <span class="hero-tag">🎯 2 Activities</span>
+      <span class="hero-tag">📝 5-Question Quiz</span>
+      <span class="hero-tag">⏱ ~60 min</span>
+      <span class="hero-tag">Domain: Security Program Management &amp; Oversight</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE BODY -->
+<div class="page-body">
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="section-gap">
+    <div class="section-label">Learning Objectives</div>
+    <div class="objectives-box">
+      <h3>By the end of this lesson, you will be able to:</h3>
+      <ul>
+        <li>Define risk in information security terms and calculate a risk score using the likelihood × impact formula.</li>
+        <li>Distinguish risk appetite from risk tolerance and explain how each guides organizational security investment decisions.</li>
+        <li>Compare the four risk treatment strategies — Accept, Avoid, Transfer, and Mitigate — and select the appropriate strategy for a described risk scenario.</li>
+        <li>Explain the purpose and structure of a risk register and a Business Impact Analysis (BIA), identifying the outputs each produces.</li>
+        <li>Describe the components of a vendor risk management program — including third-party assessments, right-to-audit clauses, and SLAs — and justify each as a supply chain risk control.</li>
+        <li>Differentiate among audit types (internal, external, regulatory) and penetration testing types (black, gray, white box), matching each to the appropriate use case.</li>
+        <li>Apply risk management concepts to a scenario to recommend a risk treatment strategy and identify the applicable BIA metrics (RTO, RPO, MTTR, MTBF).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- KEY TERMS -->
+  <div class="section-gap">
+    <div class="section-label">Key Terms</div>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">Risk</div>
+        <div class="term-def">The potential for loss or harm resulting from a threat exploiting a vulnerability. Expressed as Risk = Likelihood × Impact. Quantitative risk analysis assigns dollar values; qualitative analysis uses descriptive scales (Low/Medium/High/Critical).</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Risk Appetite</div>
+        <div class="term-def">The total amount and type of risk an organization is willing to accept in pursuit of its strategic objectives — set by the Board and senior leadership. Broad strategic statement: "We accept operational risk to enable innovation but have zero appetite for regulatory non-compliance."</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Risk Tolerance</div>
+        <div class="term-def">The acceptable deviation from the risk appetite — the specific, measurable threshold beyond which a risk requires escalation or treatment. More operational than appetite: "We will tolerate CVSS 7.0–7.9 vulnerabilities for 14 days; CVSS 8.0+ must be patched within 72 hours."</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Risk Register</div>
+        <div class="term-def">A centralized document or database that records all identified risks — including description, likelihood, impact, risk score, current controls, risk owner, treatment strategy, and residual risk after treatment. The operational backbone of a risk management program.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">BIA (Business Impact Analysis)</div>
+        <div class="term-def">A formal analysis that identifies the organization's critical business functions, quantifies the impact of their disruption (financial, operational, reputational), and establishes recovery time and recovery point objectives — informing resilience architecture and DR planning.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Vendor Risk Management</div>
+        <div class="term-def">The program and processes by which an organization identifies, assesses, monitors, and manages security risks introduced by third-party vendors, suppliers, and service providers that have access to organizational data, systems, or physical facilities.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Penetration Testing</div>
+        <div class="term-def">A security assessment in which authorized testers simulate real-world attack techniques against an organization's systems, applications, or people — with the explicit goal of discovering exploitable vulnerabilities before malicious actors do. Distinguished from vulnerability scanning by its active exploitation attempts.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Attestation</div>
+        <div class="term-def">A formal, written statement by an authorized party confirming that a system, process, or control meets a defined security or compliance requirement. Used in vendor risk management (vendor self-attestation questionnaires), compliance reporting, and audit evidence.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="section-gap">
+    <div class="section-label">Topic Introduction</div>
+    <div class="intro-card">
+      <p>Security resources — people, budget, technology — are always finite. Risk management is the discipline that answers the most consequential question a security professional faces: <em>which risks do we address first, and how much should we invest in each?</em> Without a structured risk framework, security spending becomes reactive — driven by the most recent incident or the most persuasive vendor, rather than by objective prioritization of the organization's actual threat landscape.</p>
+      <p>This lesson covers the risk management lifecycle and the assessment tools that feed it. You will learn how to quantify and prioritize risk, apply the four treatment strategies, use a risk register and BIA to document and communicate risk decisions, manage the expanded attack surface that third-party vendors create, and use audits and penetration tests to independently verify that your controls actually work. The Security+ exam tests these concepts heavily through scenario questions — read a business situation, calculate a risk score, choose the correct treatment strategy, or identify the right assessment type for the described context.</p>
+    </div>
+  </div>
+
+  <!-- FLIP CARDS -->
+  <div class="section-gap">
+    <div class="section-label">Topic Navigation — Click a Card to Explore</div>
+    <div class="flip-grid">
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">01</div>
+              <h3>Risk Identification &amp; Treatment</h3>
+              <p>Calculating risk scores, risk appetite vs. tolerance, the four treatment strategies, and the risk register as the operational backbone of risk management.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Risk &amp; Treatment</h3>
+              <p>Risk = Likelihood × Impact. Appetite = strategic "how much risk is acceptable"; Tolerance = operational "how far above the line before we act." Four treatments: Accept (live with it), Avoid (eliminate the activity), Transfer (insurance/contract), Mitigate (add controls). Document every decision in the risk register.</p>
+            </div>
+            <a class="dive-link" href="lesson11-part01.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">02</div>
+              <h3>BIA &amp; Third-Party Risk</h3>
+              <p>Business Impact Analysis outputs (RTO, RPO, MTTR, MTBF), critical function ranking, and the vendor risk management program that closes supply chain exposure.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>BIA &amp; Third-Party Risk</h3>
+              <p>BIA identifies critical functions and sets recovery targets — RTO (maximum tolerable downtime) and RPO (maximum acceptable data loss). Vendor risk adds supply chain attack surface. Controls: questionnaires, right-to-audit clauses, SOC 2 reports, SLAs, and ongoing monitoring — not just at onboarding.</p>
+            </div>
+            <a class="dive-link" href="lesson11-part02.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">03</div>
+              <h3>Audits &amp; Penetration Testing</h3>
+              <p>Internal vs. external vs. regulatory audits, black/gray/white box pen testing, red team vs. blue team, and vulnerability assessment vs. penetration test.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Audits &amp; Pen Testing</h3>
+              <p>Audits verify controls exist and are effective — internal (self-assessment), external (third party), regulatory (mandated by law). Pen tests actively exploit vulnerabilities. Black box = zero prior knowledge; Gray box = partial; White box = full. Vulnerability scan ≠ penetration test — scanning finds; pen testing exploits.</p>
+            </div>
+            <a class="dive-link" href="lesson11-part03.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 1 — RISK IDENTIFICATION & TREATMENT
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 1 Content</div>
+    <div class="topic-section">
+      <div class="topic-header">
+        <div class="topic-header-num">1</div>
+        <div>
+          <h3>Risk Identification, Analysis &amp; Treatment</h3>
+          <p>Calculating risk, setting appetite and tolerance, choosing treatment strategies, and operating the risk register</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:.92rem;margin-bottom:18px;">Every security decision is a risk decision. Understanding risk management frameworks gives security professionals the language and structure to make defensible choices about which threats to address, in what order, and through which approach — and to communicate those choices to leadership in terms of business impact, not just technical severity.</p>
+
+        <div class="callout">
+          <strong>Analogy — Auto Insurance as Risk Management:</strong> You already practice risk management every day. When you buy car insurance (Transfer), you are choosing not to self-fund the cost of a potential accident. When you choose not to drive in an ice storm (Avoid), you eliminate the risk entirely. When you buckle your seatbelt (Mitigate), you reduce the impact of an accident without eliminating the possibility. When you decide your ten-year-old car isn't worth comprehensive coverage (Accept), you consciously live with the financial risk of total loss. The same four strategies — Transfer, Avoid, Mitigate, Accept — apply to every organizational security risk.
+        </div>
+
+        <h4 style="font-size:.95rem;color:var(--green-dark);margin-top:22px;margin-bottom:14px;">Risk Calculation — Likelihood × Impact</h4>
+        <div class="topic-grid">
+          <div class="concept-block">
+            <h4><span class="concept-icon">📊</span> Qualitative vs. Quantitative Risk Analysis</h4>
+            <p><strong>Qualitative:</strong> Rates likelihood and impact on descriptive scales (Low/Medium/High/Critical). Faster, requires less data, easier to communicate to non-technical stakeholders. Results in a risk heat map or matrix. Most common in enterprise risk management and Security+ exam questions.</p>
+            <p style="margin-top:8px;"><strong>Quantitative:</strong> Assigns dollar values to risk. Key formulas:</p>
+            <ul style="margin-top:6px;">
+              <li><strong>AV (Asset Value):</strong> What the asset is worth</li>
+              <li><strong>EF (Exposure Factor):</strong> % of asset value lost if the risk materializes (0–100%)</li>
+              <li><strong>SLE (Single Loss Expectancy):</strong> AV × EF = expected loss from one event</li>
+              <li><strong>ARO (Annual Rate of Occurrence):</strong> Expected frequency per year</li>
+              <li><strong>ALE (Annual Loss Expectancy):</strong> SLE × ARO = expected annual cost of the risk</li>
+              <li><strong>Example:</strong> Server worth $200,000; 50% EF for fire; fire likely once every 10 years (ARO = 0.1). SLE = $100,000; ALE = $10,000/year</li>
+            </ul>
+          </div>
+          <div>
+            <p style="font-size:.87rem;color:var(--text-mid);margin-bottom:12px;font-weight:600;">Qualitative Risk Matrix — Likelihood × Impact</p>
+            <div class="risk-matrix">
+              <!-- Row headers + column headers -->
+              <div class="rm-header" style="background:transparent;"></div>
+              <div class="rm-header">Low Impact</div>
+              <div class="rm-header">Medium Impact</div>
+              <div class="rm-header">High Impact</div>
+              <div class="rm-header">Critical Impact</div>
+              <!-- Row 1 -->
+              <div class="rm-label">High Likelihood</div>
+              <div class="rm-cell rm-med">Medium</div>
+              <div class="rm-cell rm-high">High</div>
+              <div class="rm-cell rm-crit">Critical</div>
+              <div class="rm-cell rm-crit">Critical</div>
+              <!-- Row 2 -->
+              <div class="rm-label">Med Likelihood</div>
+              <div class="rm-cell rm-low">Low</div>
+              <div class="rm-cell rm-med">Medium</div>
+              <div class="rm-cell rm-high">High</div>
+              <div class="rm-cell rm-crit">Critical</div>
+              <!-- Row 3 -->
+              <div class="rm-label">Low Likelihood</div>
+              <div class="rm-cell rm-low">Low</div>
+              <div class="rm-cell rm-low">Low</div>
+              <div class="rm-cell rm-med">Medium</div>
+              <div class="rm-cell rm-high">High</div>
+              <!-- Row 4 -->
+              <div class="rm-label">Very Low</div>
+              <div class="rm-cell rm-low">Low</div>
+              <div class="rm-cell rm-low">Low</div>
+              <div class="rm-cell rm-low">Low</div>
+              <div class="rm-cell rm-med">Medium</div>
+            </div>
+            <p style="font-size:.78rem;color:var(--text-muted);margin-top:8px;">Critical risks require immediate treatment. High risks require treatment within defined SLAs. Medium risks are scheduled for treatment. Low risks may be accepted with documentation.</p>
+          </div>
+        </div>
+
+        <h4 style="font-size:.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Risk Appetite vs. Risk Tolerance — A Critical Distinction</h4>
+        <div class="topic-grid">
+          <div class="doc-card blue">
+            <h4>🎯 Risk Appetite — The Strategic Direction</h4>
+            <p>Set by the Board and CEO. A broad strategic statement that defines the organization's overall posture toward risk-taking in pursuit of business objectives. Risk appetite is expressed qualitatively and guides the design of the entire risk management program.</p>
+            <ul>
+              <li><strong>High-appetite example:</strong> "A technology startup accepts significant technical and market risk to achieve rapid growth — we accept the risk of security incidents from moving fast, and invest in detection and response rather than prevention."</li>
+              <li><strong>Low-appetite example:</strong> "A nuclear power operator has zero appetite for safety system compromise — every possible technical risk must be mitigated regardless of cost."</li>
+              <li><strong>Exam tip:</strong> Risk appetite is set at the top and describes what the organization is willing to accept broadly.</li>
+            </ul>
+          </div>
+          <div class="doc-card amber">
+            <h4>📏 Risk Tolerance — The Operational Threshold</h4>
+            <p>The specific, measurable deviation from the risk appetite that triggers action. Tolerance translates the strategic appetite into operational thresholds that security teams can act on daily.</p>
+            <ul>
+              <li><strong>Example for patch management:</strong> Risk appetite is "we accept low residual risk from software vulnerabilities." Risk tolerance is "CVSS 9.0+ must be patched within 24 hours; CVSS 7.0–8.9 within 7 days; CVSS 4.0–6.9 within 30 days."</li>
+              <li><strong>Example for uptime:</strong> Risk appetite is "we accept some availability risk for cost efficiency." Risk tolerance is "production systems may not exceed 4 hours of unplanned downtime per quarter."</li>
+              <li><strong>Exam tip:</strong> When a risk exceeds tolerance, escalation or treatment is required — it cannot remain accepted.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">The Four Risk Treatment Strategies</h4>
+        <div class="topic-grid">
+          <div class="doc-card">
+            <h4>✅ Accept (Risk Acceptance)</h4>
+            <p>The organization acknowledges the risk exists and consciously decides to operate with it — because the cost of treatment exceeds the expected loss, or because the risk is within tolerance. Risk acceptance must be <em>documented and signed off</em> by an appropriate authority, not simply ignored.</p>
+            <ul>
+              <li><strong>When appropriate:</strong> Low likelihood + low impact; treatment cost exceeds ALE; compensating controls already reduce impact adequately</li>
+              <li><strong>Documentation required:</strong> Formal risk acceptance sign-off by asset owner and risk owner; entry in risk register with justification; defined re-evaluation date</li>
+              <li><strong>Example:</strong> Accepting the risk of a low-severity CVE on an air-gapped development server that contains no sensitive data</li>
+            </ul>
+          </div>
+          <div class="doc-card red">
+            <h4>🚫 Avoid (Risk Avoidance)</h4>
+            <p>Eliminating the risk entirely by not engaging in the activity that creates it. Avoidance is the most complete risk treatment — if you don't do the thing, you don't have the risk. However, avoidance often means giving up a business opportunity.</p>
+            <ul>
+              <li><strong>When appropriate:</strong> Risk is unacceptably high and cannot be reduced to tolerance; no compensating controls are sufficient; regulatory exposure is too severe</li>
+              <li><strong>Business trade-off:</strong> Avoidance always has a cost — the foregone business activity, revenue, or capability</li>
+              <li><strong>Example:</strong> A bank deciding not to offer cryptocurrency exchange services because the regulatory and fraud risk cannot be adequately mitigated</li>
+            </ul>
+          </div>
+          <div class="doc-card purple">
+            <h4>🔄 Transfer (Risk Transference)</h4>
+            <p>Shifting the financial consequence of a risk to a third party — most commonly through cyber insurance or contractual liability clauses. Transferring risk does not eliminate it; the event can still occur, but another party absorbs the financial loss.</p>
+            <ul>
+              <li><strong>Cyber insurance covers:</strong> Breach response costs (IR firm, legal counsel, notification), ransomware payments, business interruption losses, regulatory fines (policy-dependent), liability for third-party data exposure</li>
+              <li><strong>Contractual transfer:</strong> SLAs with financial penalties, indemnification clauses, requiring vendors to carry their own cyber insurance</li>
+              <li><strong>Limitation:</strong> Insurance does not prevent incidents — it reduces financial impact after they occur. Underwriters increasingly require evidence of security controls.</li>
+            </ul>
+          </div>
+          <div class="doc-card teal">
+            <h4>🛡️ Mitigate (Risk Mitigation)</h4>
+            <p>Implementing security controls that reduce either the likelihood of the risk occurring, the impact when it does occur, or both. Mitigation is the most commonly used strategy and encompasses all the technical and operational controls studied in previous lessons.</p>
+            <ul>
+              <li><strong>Reducing likelihood:</strong> Patching vulnerabilities, deploying MFA, implementing IPS — make the attack harder to succeed</li>
+              <li><strong>Reducing impact:</strong> Network segmentation limits blast radius; immutable backups enable recovery; insurance reduces financial impact</li>
+              <li><strong>Residual risk:</strong> After mitigation, some risk always remains — residual risk must still be accepted or further treated. No mitigation eliminates risk entirely.</li>
+              <li><strong>Example:</strong> Deploying EDR to detect ransomware earlier, reducing encryption time and blast radius</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">The Risk Register</h4>
+        <div class="concept-block">
+          <h4><span class="concept-icon">📋</span> Structure and Purpose of a Risk Register</h4>
+          <p>The risk register is the operational record of every identified risk in the organization — providing a centralized, auditable, and manageable view of the risk landscape. It is the primary artifact produced by the risk management process and the primary input to security investment decisions.</p>
+          <div style="overflow-x:auto;margin-top:14px;">
+            <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+              <thead>
+                <tr style="background:var(--green-dark);color:#fff;">
+                  <th style="padding:9px 12px;text-align:left;">Risk ID</th>
+                  <th style="padding:9px 12px;text-align:left;">Description</th>
+                  <th style="padding:9px 12px;text-align:left;">Likelihood</th>
+                  <th style="padding:9px 12px;text-align:left;">Impact</th>
+                  <th style="padding:9px 12px;text-align:left;">Score</th>
+                  <th style="padding:9px 12px;text-align:left;">Treatment</th>
+                  <th style="padding:9px 12px;text-align:left;">Owner</th>
+                  <th style="padding:9px 12px;text-align:left;">Residual Risk</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">R-001</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Ransomware via phishing email</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--amber);">High</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--red);">Critical</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--red);">Critical</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Mitigate + Transfer</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">CISO</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--amber);">Medium</td>
+                </tr>
+                <tr style="background:var(--bg-soft);">
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">R-002</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Insider data exfiltration</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Medium</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--red);">High</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--red);">High</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Mitigate</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">HR / IT</td>
+                  <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--blue);">Low</td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 12px;color:var(--text-mid);">R-003</td>
+                  <td style="padding:8px 12px;color:var(--text-mid);">EOL server OS — no patches available</td>
+                  <td style="padding:8px 12px;color:var(--text-mid);">Low</td>
+                  <td style="padding:8px 12px;color:var(--amber);">Medium</td>
+                  <td style="padding:8px 12px;font-weight:700;color:var(--text-mid);">Low</td>
+                  <td style="padding:8px 12px;color:var(--text-mid);">Accept (documented)</td>
+                  <td style="padding:8px 12px;color:var(--text-mid);">IT Mgr</td>
+                  <td style="padding:8px 12px;color:var(--green-dark);">Low</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 2 — BIA & THIRD-PARTY RISK
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 2 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-dark);">
+        <div class="topic-header-num">2</div>
+        <div>
+          <h3>Business Impact Analysis &amp; Third-Party Risk Management</h3>
+          <p>Identifying critical functions, setting recovery targets, and closing vendor supply chain risk</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:.92rem;margin-bottom:18px;">The Business Impact Analysis and vendor risk management program address two different dimensions of organizational risk: the BIA focuses on how the organization itself would be affected by disruption, while vendor risk management focuses on how the organization's extended ecosystem of suppliers and service providers expands its attack surface and risk exposure.</p>
+
+        <h4 style="font-size:.95rem;color:var(--green-dark);margin-bottom:14px;">Business Impact Analysis (BIA)</h4>
+        <div class="topic-grid">
+          <div class="concept-block">
+            <h4><span class="concept-icon">📊</span> BIA Purpose &amp; Process</h4>
+            <p>A BIA identifies which business functions are most critical to the organization's survival and quantifies the impact of their disruption — in financial, operational, reputational, and regulatory terms. BIA outputs directly drive resilience architecture decisions (Lesson 5), backup strategy, and disaster recovery planning.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Step 1 — Identify critical functions:</strong> Interview business owners; identify revenue-generating and legally required processes</li>
+              <li><strong>Step 2 — Determine dependencies:</strong> What systems, people, and suppliers does each function depend on?</li>
+              <li><strong>Step 3 — Quantify impact:</strong> What is the hourly/daily cost of disruption? Legal penalties? Reputational damage?</li>
+              <li><strong>Step 4 — Establish recovery targets:</strong> RTO, RPO, MTTR, MTBF for each critical function</li>
+              <li><strong>Step 5 — Prioritize recovery:</strong> Order in which functions must be restored in a disaster — determines DR architecture</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">⏱</span> BIA Metrics — The Four Key Targets</h4>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+              <div style="padding:10px 14px;border-radius:8px;background:var(--blue-pale);border:1px solid var(--blue);font-size:.83rem;">
+                <strong style="color:var(--blue);">RTO — Recovery Time Objective:</strong> The maximum acceptable time from a disruption event to full service restoration. Drives the choice between hot site (instant), warm site (hours), and cold site (days) recovery architectures.
+              </div>
+              <div style="padding:10px 14px;border-radius:8px;background:var(--purple-pale);border:1px solid var(--purple);font-size:.83rem;">
+                <strong style="color:var(--purple);">RPO — Recovery Point Objective:</strong> The maximum acceptable amount of data loss, measured in time. An RPO of 1 hour means backups must be no more than 1 hour old. Drives backup frequency and replication strategy.
+              </div>
+              <div style="padding:10px 14px;border-radius:8px;background:var(--teal-pale);border:1px solid var(--teal);font-size:.83rem;">
+                <strong style="color:var(--teal);">MTTR — Mean Time To Repair:</strong> The average time required to restore a failed system or component to operation. A performance metric of the IT/security operations team — lower is better.
+              </div>
+              <div style="padding:10px 14px;border-radius:8px;background:var(--amber-pale);border:1px solid var(--amber);font-size:.83rem;">
+                <strong style="color:var(--amber);">MTBF — Mean Time Between Failures:</strong> The average time a system operates between failures. A reliability metric — higher is better. Used to estimate component replacement schedules and redundancy requirements.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout-blue">
+          <strong>BIA Exam Distinction — RTO vs. RPO:</strong> These two metrics are consistently tested and frequently confused. <strong>RTO answers: "How long can the business function without the system?"</strong> It measures TIME to restore service. A hospital EHR system with RTO of 2 hours means it must be restored to operational status within 2 hours of failure. <strong>RPO answers: "How much data can the business afford to lose?"</strong> It measures the TIME gap that backups must cover. An RPO of 15 minutes means backups must occur at least every 15 minutes — any data created in that window would be lost in a restore. RTO drives your failover architecture; RPO drives your backup frequency and replication strategy.
+        </div>
+
+        <h4 style="font-size:.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Third-Party Vendor Risk Management</h4>
+        <div class="topic-grid">
+          <div class="doc-card blue">
+            <h4>🔍 Why Vendors Create Risk</h4>
+            <p>Every vendor with access to your data, systems, or facilities expands your attack surface. The organization is responsible for the security of its data regardless of who holds it or processes it — regulators hold the data controller accountable for vendor failures.</p>
+            <ul>
+              <li><strong>Direct system access:</strong> Managed service providers, IT support vendors, SaaS platforms with data integration</li>
+              <li><strong>Physical access:</strong> Facilities maintenance, cleaning services, HVAC contractors — all require physical security assessment</li>
+              <li><strong>Software supply chain:</strong> Open source dependencies, commercial software with update mechanisms — SolarWinds/3CX demonstrated catastrophic scale</li>
+              <li><strong>Data processing:</strong> Payroll processors, legal firms, marketing databases — third parties holding your most sensitive data</li>
+            </ul>
+          </div>
+          <div class="doc-card amber">
+            <h4>📋 Vendor Risk Program Components</h4>
+            <p>A mature vendor risk management program addresses vendor security at every stage of the relationship — not just during initial onboarding.</p>
+            <ul>
+              <li><strong>Pre-contract due diligence:</strong> Security questionnaires (SIG, CAIQ), evidence of controls, reference checks, penetration test results</li>
+              <li><strong>Right-to-audit clause:</strong> Contractual right to assess the vendor's security controls — either directly or via third-party attestation. Without this clause, you have no mechanism to verify claimed controls</li>
+              <li><strong>SOC 2 Type II report:</strong> Independent auditor's assessment that a vendor's security controls have been operating effectively over a defined period (typically 12 months). Type I verifies controls exist; Type II verifies they work over time.</li>
+              <li><strong>SLA with security requirements:</strong> Incident notification timelines (e.g., notify within 24 hours of discovering a breach affecting your data), uptime commitments, patch SLAs</li>
+              <li><strong>Data Processing Agreements (DPAs):</strong> Required under GDPR when sharing personal data with processors — defines each party's data protection obligations</li>
+              <li><strong>Ongoing monitoring:</strong> Continuous vendor security rating services (SecurityScorecard, BitSight), annual questionnaire updates, review of published breach reports</li>
+              <li><strong>Offboarding:</strong> Data destruction certificates, access revocation verification, return of organizational assets</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout-purple">
+          <strong>SOC 2 Type I vs. Type II — The Exam Distinction:</strong> When evaluating vendor security, a SOC 2 Type II report is significantly more meaningful than Type I. <strong>SOC 2 Type I</strong> says: "An auditor looked at the vendor's controls on a specific date and confirmed they were designed appropriately." <strong>SOC 2 Type II</strong> says: "An auditor tested whether those controls actually operated effectively over a 6–12 month period." Type I is a snapshot; Type II is a track record. For high-risk vendors handling sensitive data, always request SOC 2 Type II. A vendor that can only provide Type I may have controls that exist on paper but are not consistently enforced.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 3 — AUDITS & PENETRATION TESTING
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 3 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-mid);">
+        <div class="topic-header-num">3</div>
+        <div>
+          <h3>Audits &amp; Penetration Testing</h3>
+          <p>Independently verifying that your security controls actually work — through audit, assessment, and adversarial simulation</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:.92rem;margin-bottom:18px;">Organizations cannot rely solely on their own assessment of their security posture. Audits and penetration tests provide independent verification — audits confirm controls are in place and operating effectively, while penetration tests determine whether those controls can actually withstand real attack techniques. Both are required by major compliance frameworks and are the primary mechanism for closing the gap between "we believe our controls work" and "we have evidence our controls work."</p>
+
+        <h4 style="font-size:.95rem;color:var(--green-dark);margin-bottom:14px;">Audit Types</h4>
+        <div class="topic-grid-3">
+          <div class="doc-card">
+            <h4>🏢 Internal Audit</h4>
+            <p>Conducted by the organization's own internal audit function or security team. Provides continuous visibility into control effectiveness and compliance status, but lacks the objectivity of external review.</p>
+            <ul>
+              <li><strong>Purpose:</strong> Ongoing monitoring, policy compliance, readiness assessment for external audits</li>
+              <li><strong>Strengths:</strong> Deep organizational knowledge; can assess continuously, not just annually; lower cost</li>
+              <li><strong>Limitation:</strong> Self-assessment bias — unlikely to challenge leadership decisions; regulators and major customers may require external validation</li>
+              <li><strong>Output:</strong> Internal audit report with findings and management responses</li>
+            </ul>
+          </div>
+          <div class="doc-card blue">
+            <h4>🔍 External Audit</h4>
+            <p>Conducted by an independent third-party auditing firm. Provides objective, credible assessment that is trusted by regulators, partners, and customers — because the auditor has no stake in the outcome.</p>
+            <ul>
+              <li><strong>Purpose:</strong> SOC 2 attestation, ISO 27001 certification, PCI DSS QSA assessment, pre-merger due diligence</li>
+              <li><strong>Strengths:</strong> Objectivity; credibility with external stakeholders; independent professional judgment</li>
+              <li><strong>Output:</strong> Formal audit report with opinion; certifications; attestations shared with relying parties</li>
+            </ul>
+          </div>
+          <div class="doc-card purple">
+            <h4>⚖️ Regulatory / Compliance Audit</h4>
+            <p>Mandated by law or regulation — conducted by the regulator itself or by a regulator-approved assessor. Organizations have no choice about participation; non-compliance can result in fines, sanctions, or loss of operating license.</p>
+            <ul>
+              <li><strong>Examples:</strong> HIPAA OCR investigation following a breach notification; FDIC safety and soundness examination; SEC cybersecurity disclosure review; PCI DSS QSA assessment for Level 1 merchants</li>
+              <li><strong>Consequence of failure:</strong> Regulatory fines, consent decrees, mandatory remediation plans, public disclosure, criminal referrals</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Penetration Testing — Types and Methodologies</h4>
+
+        <table class="pen-table">
+          <thead>
+            <tr>
+              <th style="width:15%">Test Type</th>
+              <th style="width:20%">Prior Knowledge Given</th>
+              <th style="width:25%">Best Use Case</th>
+              <th>Strengths / Limitations</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Black Box</strong></td>
+              <td>None — testers start with only the target organization's name (simulates external attacker)</td>
+              <td>External perimeter testing; realistic external threat simulation; assessing internet-facing attack surface</td>
+              <td>Most realistic external attacker simulation. Time-consuming — testers must perform all reconnaissance. May miss internal vulnerabilities entirely. High cost per finding.</td>
+            </tr>
+            <tr>
+              <td><strong>Gray Box</strong></td>
+              <td>Partial — testers receive some information (network diagrams, user-level credentials, application documentation)</td>
+              <td>Application testing; insider threat simulation; testing where full realism is balanced against efficiency</td>
+              <td>Best value — realistic but more efficient. Simulates an attacker who has done some reconnaissance or an insider with standard user access. Industry-standard for most enterprise engagements.</td>
+            </tr>
+            <tr>
+              <td><strong>White Box</strong></td>
+              <td>Full — testers receive complete information (source code, architecture diagrams, all credentials, admin access)</td>
+              <td>Developer security review; secure code audit; SDLC integration; pre-production assessment of new systems</td>
+              <td>Most thorough coverage — finds logic flaws that black/gray box miss. Not realistic as an attack simulation. Best for validating that specific known vulnerabilities are addressed. Highest cost but deepest coverage.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="topic-grid" style="margin-top:20px;">
+          <div class="doc-card amber">
+            <h4>⚔️ Red Team vs. Blue Team vs. Purple Team</h4>
+            <p><strong>Red Team:</strong> The offensive simulation team — specialized testers who conduct realistic, adversary-simulated attacks using the same TTPs (Tactics, Techniques, and Procedures) as real threat actors. Red team exercises test the entire kill chain, not just technical controls.</p>
+            <p style="margin-top:8px;"><strong>Blue Team:</strong> The defensive security team — the organization's own security operations (SOC, IR team) who detect, respond to, and recover from the red team's attack simulation. Blue team exercises measure real detection and response capability.</p>
+            <p style="margin-top:8px;"><strong>Purple Team:</strong> A collaborative exercise where red and blue teams work together — red team shares their techniques with blue team in real time, allowing blue team to test and tune detection capabilities interactively. Most effective for improving detection coverage rapidly.</p>
+          </div>
+          <div class="doc-card teal">
+            <h4>🔬 Vulnerability Assessment vs. Penetration Test</h4>
+            <p>One of the most tested distinctions in Security+ — these two assessment types are frequently confused but serve fundamentally different purposes.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Vulnerability Scan:</strong> Automated tool (Nessus, Qualys) that identifies potential vulnerabilities by comparing installed software versions to CVE databases. Does NOT attempt to exploit the vulnerability — only identifies it. Fast, scalable, can run continuously.</li>
+              <li><strong>Penetration Test:</strong> A skilled human tester who actively attempts to exploit vulnerabilities to demonstrate real-world impact. Answers: "Can this vulnerability actually be used to compromise the system, and how far can an attacker go?"</li>
+              <li><strong>Analogy:</strong> A vulnerability scan is a security camera that identifies an unlocked door. A penetration test is a security consultant who actually walks through the door, explores the building, and reports what they found.</li>
+            </ul>
+            <div class="callout" style="margin-top:10px;font-size:.82rem;">
+              <strong>Rules of Engagement (ROE):</strong> Every penetration test must begin with a documented Rules of Engagement document — defining authorized targets, prohibited actions, testing windows, emergency contacts, and evidence handling. Testing without ROE is unauthorized access — illegal even with good intentions.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 1 — RISK TREATMENT DRAG & DROP
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 1</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 1</span>
+        <div>
+          <h3>Risk Treatment Strategy Sort — Drag &amp; Drop</h3>
+          <p>Match each risk scenario to the MOST appropriate risk treatment strategy</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Each chip describes a risk scenario and the organization's decision. Drag it to the risk treatment strategy zone it BEST represents — Accept, Avoid, Transfer, or Mitigate. Multiple chips will map to each zone. Submit for graded feedback.
+        </div>
+
+        <div class="drag-pool" id="dp11">
+          <div class="drag-item" draggable="true" data-answer="Mitigate" id="d11-1">Deploy EDR on all endpoints to detect ransomware</div>
+          <div class="drag-item" draggable="true" data-answer="Transfer" id="d11-2">Purchase cyber liability insurance for breach costs</div>
+          <div class="drag-item" draggable="true" data-answer="Accept" id="d11-3">Document and accept CVSS 2.5 flaw on air-gapped dev server</div>
+          <div class="drag-item" draggable="true" data-answer="Avoid" id="d11-4">Cancel the cryptocurrency trading platform project</div>
+          <div class="drag-item" draggable="true" data-answer="Mitigate" id="d11-5">Enforce MFA on all remote access connections</div>
+          <div class="drag-item" draggable="true" data-answer="Transfer" id="d11-6">Require SLA with $1M penalty for vendor data breaches</div>
+          <div class="drag-item" draggable="true" data-answer="Avoid" id="d11-7">Stop storing European customer PII due to GDPR compliance cost</div>
+          <div class="drag-item" draggable="true" data-answer="Accept" id="d11-8">Sign off on low-risk cosmetic vulnerability with no sensitive data exposure</div>
+          <div class="drag-item" draggable="true" data-answer="Mitigate" id="d11-9">Segment IoT devices into an isolated VLAN</div>
+          <div class="drag-item" draggable="true" data-answer="Transfer" id="d11-10">Contract vendor with indemnification clause for data handling errors</div>
+        </div>
+
+        <div class="drop-zones-4">
+          <div class="drop-zone" id="zone11-Accept" data-zone="Accept">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--green);"></span> Accept</div>
+          </div>
+          <div class="drop-zone" id="zone11-Avoid" data-zone="Avoid">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--red);"></span> Avoid</div>
+          </div>
+          <div class="drop-zone" id="zone11-Transfer" data-zone="Transfer">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--purple);"></span> Transfer</div>
+          </div>
+          <div class="drop-zone" id="zone11-Mitigate" data-zone="Mitigate">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--blue);"></span> Mitigate</div>
+          </div>
+        </div>
+
+        <div class="activity-actions">
+          <button class="btn-primary" onclick="checkAct11()">Check Answers</button>
+          <button class="btn-secondary" onclick="resetAct11()">Reset</button>
+        </div>
+        <div class="activity-result" id="act11-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 2 — RISK & ASSESSMENT SCENARIO ANALYZER
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 2</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 2</span>
+        <div>
+          <h3>Risk &amp; Assessment Scenario Analyzer</h3>
+          <p>Select a scenario and answer questions about risk treatment, BIA metrics, vendor risk, and assessment selection</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Select a scenario tab. Read the situation, then answer each question individually for graded feedback with detailed explanations.
+        </div>
+
+        <div class="scenario-tabs">
+          <button class="scenario-tab active" onclick="showSc11(0,this)">Scenario A: E-Commerce BIA</button>
+          <button class="scenario-tab" onclick="showSc11(1,this)">Scenario B: Vendor Risk Failure</button>
+          <button class="scenario-tab" onclick="showSc11(2,this)">Scenario C: Assessment Selection</button>
+        </div>
+
+        <!-- Scenario A -->
+        <div class="scenario-panel active" id="sc11-0">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🛒 Scenario A: Online Retailer — Business Impact Analysis</div>
+            <div class="scenario-body">A national online retailer processes an average of $2.4 million in orders per hour during peak holiday periods. Their e-commerce platform and payment processing systems are hosted in a single cloud region. Last year they experienced a 6-hour outage due to a database failure — the post-incident analysis revealed that their most recent database backup was from 8 hours before the failure, meaning they lost 8 hours of order and inventory data. The CEO has directed the CISO to conduct a formal BIA and design a resilience architecture to ensure the business can survive a similar event without significant impact.</div>
+          </div>
+          <div class="sc-questions">
+            <div class="sc-q" id="sq-a1">
+              <div class="sc-q-text">Q1: The CISO determines that the business can tolerate no more than 30 minutes of downtime before significant financial and reputational harm. What BIA metric does this represent, and what architecture does it drive?</div>
+              <div class="sc-opts">
+                <label class="sc-opt"><input type="radio" name="sqa1" value="A"> RPO of 30 minutes — requires backups every 30 minutes or synchronous replication</label>
+                <label class="sc-opt"><input type="radio" name="sqa1" value="B"> RTO of 30 minutes — requires an active-active or hot standby architecture capable of restoring service within 30 minutes without manual intervention</label>
+                <label class="sc-opt"><input type="radio" name="sqa1" value="C"> MTTR of 30 minutes — the IT team must be able to repair any failure within 30 minutes on average</label>
+                <label class="sc-opt"><input type="radio" name="sqa1" value="D"> MTBF of 30 minutes — the systems must be reliable enough to fail no more than once every 30 minutes</label>
+              </div>
+              <div class="sc-fb" id="sq-a1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkSc11('sq-a1','B','sqa1','✅ Correct! RTO (Recovery Time Objective) is the maximum tolerable time from a disruption event to full service restoration. The CEO\'s requirement — no more than 30 minutes of downtime — is an RTO. An RTO of 30 minutes requires an architecture that can automatically fail over without manual intervention: either active-active (both sites process traffic simultaneously; failover is instant) or a hot standby with automated failover that activates within minutes. A warm site (requires 4–8 hours of manual configuration) and cold site (days) both exceed the 30-minute RTO. RPO refers to data loss tolerance, not downtime tolerance.','❌ Correct answer: B — RTO (Recovery Time Objective). RTO measures TIME to restore service. The 30-minute downtime limit is a recovery time objective — it tells the architecture team how quickly they must be able to restore service. RPO measures DATA LOSS tolerance (how old can the restored data be). MTTR is an operational performance metric (average repair time). MTBF measures reliability (how often failures occur). The 30-minute service restoration requirement is definitionally an RTO.')">Submit</button></div>
+            </div>
+            <div class="sc-q" id="sq-a2">
+              <div class="sc-q-text">Q2: The BIA analysis reveals that the last outage resulted in 8 hours of lost order and transaction data. The business determines it can tolerate no more than 15 minutes of data loss. Which BIA metric represents this requirement, and what backup/replication strategy does it mandate?</div>
+              <div class="sc-opts">
+                <label class="sc-opt"><input type="radio" name="sqa2" value="A"> RTO of 15 minutes — backups must complete within 15 minutes of being triggered</label>
+                <label class="sc-opt"><input type="radio" name="sqa2" value="B"> MTBF of 15 minutes — systems must be available for 15-minute intervals between failures</label>
+                <label class="sc-opt"><input type="radio" name="sqa2" value="C"> RPO of 15 minutes — requires continuous data replication or transaction log backups every 15 minutes or less, ensuring no more than 15 minutes of data can be lost in a failure</label>
+                <label class="sc-opt"><input type="radio" name="sqa2" value="D"> MTTR of 15 minutes — database administrators must restore from backup within 15 minutes</label>
+              </div>
+              <div class="sc-fb" id="sq-a2-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkSc11('sq-a2','C','sqa2','✅ Correct! RPO (Recovery Point Objective) is the maximum amount of data loss the business can tolerate — measured in time. The previous 8-hour backup gap meant 8 hours of orders were lost. With an RPO of 15 minutes, the architecture must ensure data is replicated or backed up frequently enough that no more than 15 minutes of data can be lost. This typically requires: continuous database transaction log shipping or synchronous replication to a secondary region. An 8-hour daily backup cycle produces an RPO of up to 8 hours — dramatically violating the 15-minute requirement.','❌ Correct answer: C — RPO (Recovery Point Objective). RPO measures DATA LOSS tolerance — specifically, how old can the most recent good backup be? A 15-minute RPO means backups or replication must ensure data is preserved with no more than a 15-minute lag. The 8-hour backup cycle that caused the previous loss produced an 8-hour RPO — far exceeding the new 15-minute target. RTO measures service restoration time (downtime), not data loss. MTBF measures reliability. MTTR measures repair speed.')">Submit</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scenario B -->
+        <div class="scenario-panel" id="sc11-1">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🏭 Scenario B: Third-Party Payroll Processor Breach</div>
+            <div class="scenario-body">A regional bank's payroll is processed by a third-party HR/payroll vendor. The bank receives notification from the vendor that the vendor's systems were breached — and that the bank's employee Social Security Numbers, bank account routing numbers, and salary data for 340 employees were exposed. The bank's contract with the vendor includes an SLA, but no right-to-audit clause. The vendor provided only a vendor self-attestation questionnaire during onboarding 3 years ago — no SOC 2 report was requested. The vendor's contract has no data breach notification timeline requirement and no indemnification clause for data exposure.</div>
+          </div>
+          <div class="sc-questions">
+            <div class="sc-q" id="sq-b1">
+              <div class="sc-q-text">Q1: Which vendor risk management control failure MOST directly contributed to the bank's inability to verify the vendor's security posture before this breach occurred?</div>
+              <div class="sc-opts">
+                <label class="sc-opt"><input type="radio" name="sqb1" value="A"> The bank should have required the vendor to use a specific cloud provider with better security</label>
+                <label class="sc-opt"><input type="radio" name="sqb1" value="B"> The absence of a right-to-audit clause and the acceptance of a self-attestation questionnaire instead of a SOC 2 Type II report left the bank with no independent verification of the vendor's actual security controls over time</label>
+                <label class="sc-opt"><input type="radio" name="sqb1" value="C"> The SLA should have specified higher uptime requirements for payroll processing</label>
+                <label class="sc-opt"><input type="radio" name="sqb1" value="D"> The bank should have hired a full-time employee to work at the vendor's facility</label>
+              </div>
+              <div class="sc-fb" id="sq-b1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkSc11('sq-b1','B','sqb1','✅ Correct! Two vendor risk control failures compounded each other: (1) No right-to-audit clause meant the bank had no contractual mechanism to independently verify the vendor\'s security controls — they could only rely on what the vendor told them. (2) Accepting a self-attestation questionnaire instead of requiring a SOC 2 Type II report meant the bank accepted unverified vendor claims as evidence of security effectiveness. A SOC 2 Type II report provides independent auditor confirmation that controls worked effectively over 12 months — not just that they existed. Self-attestation questionnaires are the weakest form of vendor assurance because the vendor grades their own homework. The right-to-audit clause would have allowed the bank to commission an independent assessment.','❌ Correct answer: B — no right-to-audit clause and acceptance of self-attestation instead of SOC 2 Type II. The fundamental vendor risk failure is the inability to independently verify security controls. Self-attestation questionnaires have the vendor evaluate their own controls — it is the least reliable assurance method. A right-to-audit clause gives the contracting organization the ability to have an independent party assess the vendor\'s controls. A SOC 2 Type II report provides that independent assessment of operational effectiveness over time. Without either, the bank had no verified information about the vendor\'s actual security posture.')">Submit</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scenario C -->
+        <div class="scenario-panel" id="sc11-2">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🔍 Scenario C: Selecting the Right Security Assessment</div>
+            <div class="scenario-body">A healthcare company is preparing its annual security assessment program. The CISO has four different assessment needs: (1) An evaluation of whether the company's clinical application development team is writing secure code — the assessors need to see the full source code and architecture diagrams. (2) A test of the external internet-facing patient portal to simulate what an external attacker with no inside knowledge could accomplish. (3) An evaluation of the company's own security operations team's ability to detect and respond to a sophisticated, realistic attack campaign. (4) A compliance check to confirm all 110 NIST SP 800-171 controls are in place and documented for the company's government contract requirements.</div>
+          </div>
+          <div class="sc-questions">
+            <div class="sc-q" id="sq-c1">
+              <div class="sc-q-text">Q1: Match the correct assessment type to the clinical application source code review (Need #1) and the external patient portal test (Need #2). Which answer correctly pairs both?</div>
+              <div class="sc-opts">
+                <label class="sc-opt"><input type="radio" name="sqc1" value="A"> Need #1: Black box pen test; Need #2: White box pen test</label>
+                <label class="sc-opt"><input type="radio" name="sqc1" value="B"> Need #1: White box pen test / secure code review; Need #2: Black box pen test</label>
+                <label class="sc-opt"><input type="radio" name="sqc1" value="C"> Need #1: Vulnerability scan; Need #2: Internal audit</label>
+                <label class="sc-opt"><input type="radio" name="sqc1" value="D"> Need #1: Red team exercise; Need #2: Gray box pen test</label>
+              </div>
+              <div class="sc-fb" id="sq-c1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkSc11('sq-c1','B','sqc1','✅ Correct! Need #1 (source code + architecture diagrams shared with assessors) is the definition of white box testing — assessors have full knowledge of the system internals. White box testing enables a thorough secure code review that can identify logic flaws, injection vulnerabilities, and insecure cryptographic implementations that would be invisible to a black or gray box tester. Need #2 (external portal, no inside knowledge, simulating an attacker) is the definition of black box testing — the testers start with only the target\'s public-facing information and must conduct all their own reconnaissance, exactly as an external attacker would. This provides the most realistic simulation of the external attack surface.','❌ Correct answer: B — White box for source code review, Black box for external portal. White box: assessors receive full information (source code, architecture) — the only assessment type that can thoroughly review code quality and logic flaws. Black box: assessors receive no prior knowledge — they simulate an external attacker\'s perspective. Vulnerability scan (automated tool) would find known CVEs but not custom application logic flaws. A red team exercise tests the full kill chain against the defensive team\'s detection capability — that\'s Need #3 (security operations team testing).')">Submit</button></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       QUIZ
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Lesson 11 Quiz — 5 Questions</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Assessment</span>
+        <div>
+          <h3>Knowledge Check: Risk, Third-Party &amp; Assessment</h3>
+          <p>Select the best answer for each question, then submit for graded feedback</p>
+        </div>
+      </div>
+      <div class="activity-body">
+
+        <!-- Q1 -->
+        <div class="quiz-q" id="q1">
+          <div class="q-num">Question 1 of 5</div>
+          <div class="q-text">A security manager calculates that a company's customer database server has an asset value of $500,000. A ransomware attack would render 80% of that value inaccessible (EF = 0.80), and the organization estimates ransomware attacks occur approximately once every 5 years (ARO = 0.2). What is the Annual Loss Expectancy (ALE) for this risk?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q1" value="A"> $400,000</label>
+            <label class="q-option"><input type="radio" name="q1" value="B"> $80,000</label>
+            <label class="q-option"><input type="radio" name="q1" value="C"> $100,000</label>
+            <label class="q-option"><input type="radio" name="q1" value="D"> $1,000,000</label>
+          </div>
+          <div class="q-feedback" id="q1-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-q" id="q2">
+          <div class="q-num">Question 2 of 5</div>
+          <div class="q-text">An organization's Board has stated: "We will accept calculated financial risk to expand into new markets, but we have zero tolerance for regulatory violations." The CISO is translating this into operational policy. The security team identifies a potential GDPR violation risk in a new product feature. Based on the Board's stated risk appetite, which risk treatment is MOST appropriate for the GDPR violation risk?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q2" value="A"> Accept the risk — it is consistent with the Board's appetite for financial risk</label>
+            <label class="q-option"><input type="radio" name="q2" value="B"> Transfer the risk — purchase cyber insurance to cover potential GDPR fines</label>
+            <label class="q-option"><input type="radio" name="q2" value="C"> Avoid or Mitigate — the Board's zero tolerance for regulatory violations means this risk cannot be accepted; the feature must be redesigned or not released</label>
+            <label class="q-option"><input type="radio" name="q2" value="D"> Accept the risk — GDPR enforcement is rare and the financial exposure is manageable</label>
+          </div>
+          <div class="q-feedback" id="q2-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-q" id="q3">
+          <div class="q-num">Question 3 of 5</div>
+          <div class="q-text">A hospital's BIA establishes that the Electronic Health Record (EHR) system must be restored within 2 hours of any failure, and no more than 15 minutes of patient data may be lost in a worst-case scenario. A new vendor offers a cloud-hosted EHR with daily snapshots at midnight and a documented restore time of 6 hours. Does this vendor's solution meet the hospital's BIA requirements?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q3" value="A"> Yes — the daily backup satisfies the RPO, and the 6-hour restore time can be waived for critical healthcare systems</label>
+            <label class="q-option"><input type="radio" name="q3" value="B"> No — the vendor's solution fails both requirements: a 6-hour restore time exceeds the 2-hour RTO, and daily snapshots could result in up to 24 hours of data loss — far exceeding the 15-minute RPO</label>
+            <label class="q-option"><input type="radio" name="q3" value="C"> Partially — the 2-hour RTO is met because the vendor can restore within 6 hours, and daily backups are industry standard</label>
+            <label class="q-option"><input type="radio" name="q3" value="D"> Yes — BIA requirements are aspirational targets, not hard contractual requirements for vendor selection</label>
+          </div>
+          <div class="q-feedback" id="q3-feedback"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-q" id="q4">
+          <div class="q-num">Question 4 of 5</div>
+          <div class="q-text">A penetration testing firm is hired to assess a financial institution's trading platform. The firm is given full access to the application's source code, architecture diagrams, database schemas, and administrator credentials. What type of penetration test is this, and what is its primary advantage over other test types?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q4" value="A"> Black box — simulates a sophisticated external attacker who has obtained insider credentials through spear phishing</label>
+            <label class="q-option"><input type="radio" name="q4" value="B"> Gray box — provides testers with partial knowledge to balance realism and efficiency</label>
+            <label class="q-option"><input type="radio" name="q4" value="C"> White box — testers have complete knowledge of the system, enabling the most thorough assessment including code-level logic flaws, business logic vulnerabilities, and cryptographic implementation errors that external testing cannot reach</label>
+            <label class="q-option"><input type="radio" name="q4" value="D"> Red team — a full adversary simulation that tests the defensive team's detection and response capabilities</label>
+          </div>
+          <div class="q-feedback" id="q4-feedback"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-q" id="q5">
+          <div class="q-num">Question 5 of 5</div>
+          <div class="q-text">A SaaS company uses a third-party cloud storage provider to store customer financial records. The SaaS company's contract with the cloud storage provider includes an SLA for uptime but no security requirements, no breach notification timeline, and no right-to-audit clause. A data breach at the cloud storage provider exposes the SaaS company's customer records. Which vendor risk management failure MOST increased the SaaS company's exposure in this situation?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q5" value="A"> The SaaS company should have used a different cloud provider with better security ratings</label>
+            <label class="q-option"><input type="radio" name="q5" value="B"> The absence of a right-to-audit clause, security requirements, and breach notification timeline in the contract left the SaaS company unable to verify the vendor's security posture, unable to require timely breach disclosure, and without contractual recourse for security failures</label>
+            <label class="q-option"><input type="radio" name="q5" value="C"> The SaaS company's own security team should have monitored the cloud storage provider's systems directly</label>
+            <label class="q-option"><input type="radio" name="q5" value="D"> The SaaS company should have encrypted all data locally before transmitting to the cloud — the cloud provider's breach is entirely the cloud provider's responsibility</label>
+          </div>
+          <div class="q-feedback" id="q5-feedback"></div>
+        </div>
+
+        <div class="quiz-submit-row">
+          <button class="btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          <button class="btn-secondary" onclick="resetQuiz()">Reset</button>
+        </div>
+        <div id="quiz-result"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-body -->
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <div class="footer-nav">
+    <a href="index.html">← Course Home</a>
+    <a href="lesson10.html">← Lesson 10: Security Governance &amp; Policy</a>
+    <a href="lesson11-part01.html">Topic 1 Deep Dive</a>
+    <a href="lesson11-part02.html">Topic 2 Deep Dive</a>
+    <a href="lesson11-part03.html">Topic 3 Deep Dive</a>
+    <a href="lesson12.html">Next: Final Review &amp; Exam Readiness →</a>
+  </div>
+  CompTIA Security+ SY0-701 &nbsp;|&nbsp; Lesson 11: Risk, Third-Party &amp; Assessment &nbsp;|&nbsp; Moraine Valley Community College
+</div>
+
+<!-- JAVASCRIPT -->
+<script>
+/* THEME */
+function toggleTheme(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const next=isDark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  document.getElementById('themeBtn').textContent=next==='dark'?'☀️ Light':'🌙 Dark';
+  localStorage.setItem('secplus-theme',next);
+}
+(function(){
+  const s=localStorage.getItem('secplus-theme');
+  if(s==='dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('themeBtn').textContent='☀️ Light';
+  }
+})();
+
+/* ACTIVITY 1 — DRAG & DROP */
+let drag11=null;
+document.querySelectorAll('#dp11 .drag-item').forEach(item=>{
+  item.addEventListener('dragstart',e=>{
+    drag11=item.id;item.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move';
+  });
+  item.addEventListener('dragend',()=>item.classList.remove('dragging'));
+});
+document.querySelectorAll('[id^="zone11-"]').forEach(zone=>{
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+  zone.addEventListener('drop',e=>{
+    e.preventDefault();zone.classList.remove('drag-over');
+    const item=document.getElementById(drag11);if(!item)return;
+    const isCorrect=item.dataset.answer===zone.dataset.zone;
+    const chip=document.createElement('span');
+    chip.className='dropped-item '+(isCorrect?'correct':'incorrect');
+    chip.dataset.itemId=drag11;
+    const lbl=item.textContent.length>38?item.textContent.substring(0,38)+'…':item.textContent;
+    chip.innerHTML=lbl+' <span class="rm">×</span>';
+    chip.querySelector('.rm').addEventListener('click',()=>returnItem11(drag11,chip));
+    zone.appendChild(chip);item.style.display='none';
+    document.getElementById('act11-result').style.display='none';
+  });
+});
+function returnItem11(id,chip){const item=document.getElementById(id);if(item)item.style.display='';chip.remove();}
+function checkAct11(){
+  let correct=0,total=0;
+  document.querySelectorAll('[id^="zone11-"]').forEach(zone=>{
+    zone.querySelectorAll('.dropped-item').forEach(chip=>{
+      total++;
+      const item=document.getElementById(chip.dataset.itemId);
+      if(item&&item.dataset.answer===zone.dataset.zone){chip.className='dropped-item correct';correct++;}
+      else{chip.className='dropped-item incorrect';chip.style.animation='none';void chip.offsetWidth;chip.style.animation='';}
+    });
+  });
+  const res=document.getElementById('act11-result');res.style.display='block';
+  if(total===0){res.className='activity-result result-fail';res.textContent='Sort at least one item first.';return;}
+  if(correct===total&&total===10){
+    res.className='activity-result result-pass';
+    res.textContent='✅ Perfect! All 10 risk scenarios correctly matched. You can select the right risk treatment strategy.';
+  }else{
+    res.className='activity-result result-fail';
+    res.textContent=`${correct}/${total} correct. Red chips are mismatched. Key: Accept = live with documented risk; Avoid = eliminate the activity; Transfer = shift financial consequence; Mitigate = add controls to reduce likelihood or impact.`;
+  }
+}
+function resetAct11(){
+  document.querySelectorAll('[id^="zone11-"] .dropped-item').forEach(chip=>returnItem11(chip.dataset.itemId,chip));
+  document.getElementById('act11-result').style.display='none';
+}
+
+/* ACTIVITY 2 — SCENARIOS */
+function showSc11(idx,btn){
+  document.querySelectorAll('.scenario-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+  document.querySelectorAll('.scenario-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+}
+function checkSc11(qId,correct,radioName,passMsg,failMsg){
+  const qDiv=document.getElementById(qId);
+  const selected=qDiv.querySelector(`input[name="${radioName}"]:checked`);
+  const fb=document.getElementById(qId+'-fb');
+  qDiv.querySelectorAll('input').forEach(r=>r.disabled=true);
+  qDiv.querySelector('button').disabled=true;
+  if(!selected){fb.className='sc-fb show fail';fb.textContent='⚠️ Please select an answer first.';return;}
+  const isCorrect=selected.value===correct;
+  qDiv.querySelectorAll('.sc-opt').forEach(opt=>{
+    if(opt.querySelector('input').value===correct)opt.classList.add('correct');
+    else if(opt.querySelector('input').value===selected.value&&!isCorrect)opt.classList.add('wrong');
+  });
+  fb.className='sc-fb show '+(isCorrect?'pass':'fail');
+  fb.textContent=isCorrect?passMsg:failMsg;
+}
+
+/* QUIZ */
+const qA={q1:'B',q2:'C',q3:'B',q4:'C',q5:'B'};
+const qFB={
+  q1:{
+    correct:"✅ Correct! The calculation: SLE = AV × EF = $500,000 × 0.80 = $400,000 (the expected loss from a single ransomware event). ALE = SLE × ARO = $400,000 × 0.2 = $80,000 per year. This means the organization expects to lose an average of $80,000 per year from ransomware attacks on this server. Any security investment up to $80,000 per year that effectively prevents ransomware would be cost-justified on this server alone. This quantitative analysis framework (SLE → ALE) is the foundation of security ROI calculations.",
+    wrong:"❌ Correct answer: B — $80,000. The calculation: SLE (Single Loss Expectancy) = AV × EF = $500,000 × 0.80 = $400,000. This is the expected loss from a SINGLE event. But the event doesn't happen every year — it happens approximately once every 5 years (ARO = 0.2). ALE = SLE × ARO = $400,000 × 0.2 = $80,000. The $400,000 is the SLE (per-event loss), not the ALE. The ALE is the annualized expected cost: $80,000/year."
+  },
+  q2:{
+    correct:"✅ Correct! Risk appetite is the strategic direction set by the Board. When the Board states 'zero tolerance for regulatory violations,' they are expressing a risk appetite that cannot be overridden by operational convenience or financial calculation. GDPR violations fall squarely in the regulatory violation category. The risk cannot be Accepted (zero tolerance means no acceptance), and insurance (Transfer) cannot cover all GDPR consequences (fines + reputational damage + regulatory orders to stop processing). The feature must be Avoided (not released) or Mitigated (redesigned to eliminate the GDPR compliance gap). Risk appetite from the Board is the highest-authority direction for risk decisions.",
+    wrong:"❌ Correct answer: C — Avoid or Mitigate. The Board explicitly stated zero tolerance for regulatory violations. GDPR violations are regulatory violations. Zero tolerance means the risk cannot be Accepted regardless of financial calculation. Insurance (Transfer) may cover some financial penalties but cannot cover all regulatory consequences (enforcement orders, reputational damage, operational restrictions). The only options consistent with zero regulatory tolerance are Avoid (don't release the feature) or Mitigate (redesign it to eliminate the compliance gap). Risk appetite from the Board overrides all other considerations."
+  },
+  q3:{
+    correct:"✅ Correct! The vendor's solution fails BOTH BIA requirements: (1) RTO violation — the hospital requires service restoration within 2 hours; the vendor's documented restore time is 6 hours — 3× the RTO requirement. (2) RPO violation — the hospital requires no more than 15 minutes of data loss; daily snapshots at midnight could result in up to 23+ hours of data loss if an outage occurs at 11:59 PM — approximately 92 times the RPO requirement. A vendor solution must meet both the RTO (time to restore service) AND the RPO (acceptable data loss) to satisfy the BIA. This vendor meets neither. The correct solution would require near-real-time replication (RPO) and active-active architecture (RTO).",
+    wrong:"❌ Correct answer: B — the vendor fails both RTO and RPO. RTO: hospital requires 2-hour restoration; vendor provides 6-hour restore = FAIL (3× the requirement). RPO: hospital requires maximum 15-minute data loss; daily midnight snapshots could result in up to 24 hours of data loss = FAIL (96× the requirement). Both metrics must be met. Daily backups are completely inadequate for a 15-minute RPO — that requires continuous replication or transaction log shipping every few minutes. 'Industry standard' does not override a healthcare organization's specific BIA requirements."
+  },
+  q4:{
+    correct:"✅ Correct! Providing full access to source code, architecture diagrams, database schemas, and administrator credentials is the definition of white box (clear box) penetration testing. The primary advantage is depth of coverage: white box testers can identify vulnerabilities that are invisible to black or gray box testers, including: business logic flaws that only make sense when you understand the application's intended behavior, cryptographic implementation errors embedded in the code, hardcoded credentials or API keys in source files, and insecure database query patterns. White box testing is the only type that can comprehensively assess code quality — it is the standard approach for developer security reviews and SDLC integration.",
+    wrong:"❌ Correct answer: C — White box penetration test. Full knowledge of source code, architecture, database schemas, and admin credentials = white box. Black box: zero prior knowledge; testers must do all reconnaissance. Gray box: partial knowledge. Red team: adversary simulation testing the blue team's response capability — typically black box approach. White box's primary advantage is depth: it can find logic flaws and code-level vulnerabilities that are invisible from the outside. A financial trading platform with complex business logic (potential for logic-based fraud, incorrect calculation handling) especially benefits from white box assessment."
+  },
+  q5:{
+    correct:"✅ Correct! Three critical vendor contract failures compounded each other: (1) No right-to-audit clause: the SaaS company had no mechanism to independently verify the cloud storage provider's security controls — they could only accept the vendor's word. (2) No security requirements in the contract: the vendor had no contractual obligation to maintain specific security controls. (3) No breach notification timeline: when the breach occurred, the SaaS company had no contractual basis to demand timely notification — the vendor could delay disclosure indefinitely. Together, these failures left the SaaS company completely dependent on the vendor's voluntary security decisions with no visibility, no requirements, and no recourse. Note: encryption at rest (D) is also an important additional control, but it doesn't address the governance failures that allowed the breach to occur undetected and unreported.",
+    wrong:"❌ Correct answer: B — missing right-to-audit clause, security requirements, and breach notification timeline. A contract that specifies only uptime SLAs leaves security entirely at the vendor's discretion — there are no requirements, no verification mechanisms, and no consequences for security failures. Changing cloud providers (A) doesn't solve the governance problem — a new provider with the same contract terms would have the same issues. Direct monitoring of vendor systems (C) is not feasible or authorized. Encryption at rest (D) is an important additional safeguard but doesn't substitute for vendor governance controls that verify security and require breach notification."
+  }
+};
+
+function submitQuiz(){
+  let score=0;
+  Object.keys(qA).forEach(qid=>{
+    const selected=document.querySelector(`input[name="${qid}"]:checked`);
+    const qDiv=document.getElementById(qid);
+    const fb=document.getElementById(qid+'-feedback');
+    qDiv.querySelectorAll('input[type="radio"]').forEach(r=>r.disabled=true);
+    if(!selected){
+      fb.className='q-feedback show fail';
+      fb.innerHTML='⚠️ No answer selected. '+qFB[qid].wrong;
+      qDiv.className='quiz-q answered-wrong';return;
+    }
+    const isCorrect=selected.value===qA[qid];
+    if(isCorrect)score++;
+    qDiv.className='quiz-q '+(isCorrect?'answered-correct':'answered-wrong');
+    fb.className='q-feedback show '+(isCorrect?'pass':'fail');
+    fb.innerHTML=qFB[qid][isCorrect?'correct':'wrong'];
+    qDiv.querySelectorAll('.q-option').forEach(opt=>{
+      const v=opt.querySelector('input').value;
+      if(v===qA[qid])opt.classList.add('correct');
+      else if(selected&&v===selected.value&&!isCorrect)opt.classList.add('wrong');
+    });
+  });
+  const result=document.getElementById('quiz-result');
+  result.style.display='block';
+  const pct=Math.round((score/5)*100);
+  if(score>=4){
+    result.className='quiz-pass';
+    result.innerHTML=`🎉 <strong>Excellent! ${score}/5 (${pct}%)</strong> — Strong command of risk management, BIA metrics, vendor risk controls, and penetration testing types. Ready for Lesson 12: Final Review &amp; Exam Readiness. <a href="lesson12.html" style="color:var(--green-dark);font-weight:700;margin-left:8px;">Next Lesson →</a>`;
+  }else{
+    result.className='quiz-fail';
+    result.innerHTML=`📚 <strong>${score}/5 (${pct}%)</strong> — Review the feedback above. Focus on: the ALE calculation (SLE × ARO) (Q1), risk appetite driving treatment strategy selection (Q2), RTO vs. RPO BIA metrics (Q3), white vs. black vs. gray box test types (Q4), and vendor contract security requirements (Q5). The Risk Treatment Sort activity and BIA scenario are good review resources.`;
+  }
+  result.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function resetQuiz(){
+  document.querySelectorAll('.quiz-q').forEach(q=>q.className='quiz-q');
+  document.querySelectorAll('input[type="radio"]').forEach(r=>{r.checked=false;r.disabled=false;});
+  document.querySelectorAll('.q-option').forEach(o=>o.classList.remove('correct','wrong'));
+  document.querySelectorAll('.q-feedback').forEach(f=>{f.className='q-feedback';f.innerHTML='';});
+  const result=document.getElementById('quiz-result');
+  result.style.display='none';result.className='';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructional Module: Mitigating Cloud & Enterprise Vulnerabilities</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --primary-green: #2e7d32;
+            --dark-green: #1b5e20;
+            --light-green: #e8f5e9;
+            --border-color: #cccccc;
+            --terminal-bg: #111111;
+            --terminal-text: #4af626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 30px;
+        }
+
+        header {
+            border-bottom: 3px solid var(--text-color);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-box {
+            width: 40px;
+            height: 40px;
+            background-color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-color);
+            font-weight: bold;
+            font-size: 24px;
+            border: 2px solid var(--primary-green);
+        }
+
+        .title-area h1 {
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .title-area p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        h2 {
+            font-size: 20px;
+            text-transform: uppercase;
+            margin: 25px 0 15px 0;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 16px;
+            margin: 15px 0 10px 0;
+            color: var(--dark-green);
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--text-color);
+            margin-top: 20px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Lab Link Card Styling */
+        .activity-card {
+            border: 2px solid var(--text-color);
+            border-left: 8px solid var(--primary-green);
+            background-color: var(--light-green);
+            border-radius: 4px;
+            padding: 20px;
+            margin: 25px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .activity-info h3 {
+            margin-top: 0;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+
+        .activity-info p {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Interactive Knowledge Check Arena */
+        .quiz-container {
+            border: 2px solid var(--text-color);
+            border-radius: 4px;
+            padding: 20px;
+            background-color: #fafafa;
+            margin-top: 20px;
+        }
+
+        .question {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .option-label:hover {
+            border-color: var(--primary-green);
+        }
+
+        .btn {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            border: 2px solid var(--text-color);
+            padding: 10px 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+            color: var(--bg-color);
+        }
+
+        .alert-box {
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background-color: var(--light-green);
+            border: 1px solid var(--primary-green);
+            color: var(--dark-green);
+        }
+
+        .alert-error {
+            background-color: #ffebee;
+            border: 1px solid #c62828;
+            color: #c62828;
+        }
+
+        /* Terminal Sandbox for lesson commands */
+        .mini-terminal {
+            background-color: var(--terminal-bg);
+            color: var(--terminal-text);
+            font-family: "Courier New", Courier, monospace;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .term-line { margin-bottom: 5px; }
+
+        .term-input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .term-field {
+            background: transparent;
+            border: none;
+            color: var(--terminal-text);
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+            flex-grow: 1;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-box">W</div>
+            <div class="title-area">
+                <h1>Instructional Design Evaluation & Companion Lesson</h1>
+                <p>Course Blueprint: Architectural Vulnerability Mapping & Command Execution</p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h2>1. Instructional Design Analysis</h2>
+        <p>
+            The <strong>Cloud Administration Simulator</strong> uses an experiential sandbox framework to meet its target objectives. Below is a structural analysis of its design components:
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Design Framework</th>
+                    <th>Implementation Strategy</th>
+                    <th>Target Pedagogical Outcome</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Target Audience Alignment</strong></td>
+                    <td>Intermediate Network Security Students studying asset vulnerabilities and defensive mitigations.</td>
+                    <td>Applies theoretical framework classes directly into pseudo-production workloads.</td>
+                </tr>
+                <tr>
+                    <td><strong>Cognitive Domain Level</strong></td>
+                    <td>Bloom's Taxonomy: <em>Analysis</em> and <em>Evaluation</em>.</td>
+                    <td>Students must isolate a threat's root cause and choose matching defensive mitigations instead of relying on basic rote recall.</td>
+                </tr>
+                <tr>
+                    <td><strong>Scaffolding & Feedback Loop</strong></td>
+                    <td>The simulation drops students directly into a live crisis. Remediation feedback updates the interactive layout dynamically.</td>
+                    <td>Builds immediate, safe failure states that mimic actual production incident responses.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="activity-card">
+            <div class="activity-info">
+                <h3>Hands-On Laboratory Exercise</h3>
+                <p>Apply the alignment frameworks and terminal diagnostics explored in this lesson within the high-fidelity sandbox environment.</p>
+            </div>
+            <div>
+                <a href="lesson04-activity.html" class="btn">Launch Cloud Simulator</a>
+            </div>
+        </div>
+
+        <h2>2. Concept Companion & Command Lab</h2>
+        <p>
+            Use the tabs below to toggle between learning the theoretical defense concepts and testing diagnostic commands inside the sandbox environment.
+        </p>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'theory-tab')">Core Defense Theory</button>
+            <button class="tab-btn" onclick="switchTab(event, 'command-tab')">Diagnostic Commands</button>
+            <button class="tab-btn" onclick="switchTab(event, 'check-tab')">Interactive Assessment</button>
+        </div>
+
+        <div id="theory-tab" class="tab-content active">
+            <h3>Mapping Safeguards to Threat Vectors</h3>
+            <p>
+                Effective risk remediation requires pairing specific engineering vulnerabilities with their appropriate matching defensive categories. Misaligned configurations leave assets vulnerable to exploits.
+            </p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Remediation Framework</th>
+                        <th>Target Flaw Profiles Addressed</th>
+                        <th>Real-World Implementation Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Patching</strong></td>
+                        <td>Outdated services, kernel memory leaks, documented public CVE listings.</td>
+                        <td>Applying vendor security updates via code changes or binary replacements.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hardening</strong></td>
+                        <td>Factory-default accounts, active unused protocols, unencrypted management daemons.</td>
+                        <td>Disabling root access over SSH, closing untrusted open ports, setting custom policies.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Network Segmentation</strong></td>
+                        <td>Flat enterprise routing, lateral network movement, exposed backend databases.</td>
+                        <td>Placing operational layers in isolated private subnets behind Access Control Lists (ACLs).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Isolation</strong></td>
+                        <td>Untrusted dynamic user libraries, sideloading executables, high-blast-radius services.</td>
+                        <td>Running application processes inside isolated containers or restricted execution spaces.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Access Control</strong></td>
+                        <td>Over-privileged tokens, static hardcoded credentials, insecure identity profiles.</td>
+                        <td>Enforcing explicit Role-Based Access Control (RBAC) and Least Privilege boundaries.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="command-tab" class="tab-content">
+            <h3>Interactive Sandbox Diagnostics Terminal</h3>
+            <p>
+                Security administrators use targeted terminal queries to audit active systems before selecting a mitigation path. Try testing live commands in the mock workspace below.
+            </p>
+            <p><strong>Available Diagnostic Prompts:</strong> <code>help</code>, <code>show nodes</code>, <code>sysinfo</code></p>
+
+            <div class="mini-terminal">
+                <div id="mini-log-container">
+                    <div class="term-line">[*] Interactive Lesson Diagnostic Console initialized.</div>
+                    <div class="term-line">[*] Enter an audit query from the list above to view infrastructure assets.</div>
+                </div>
+                <div class="term-input-row">
+                    <span style="font-weight: bold; color: var(--terminal-text);">student@lab-audit:~$</span>
+                    <input type="text" id="mini-input" class="term-field" placeholder="Type a prompt here..." autocomplete="off">
+                </div>
+            </div>
+        </div>
+
+        <div id="check-tab" class="tab-content">
+            <h3>Knowledge Check Validation</h3>
+            <p>Test your mitigation alignment choices before stepping back into production simulation tasks.</p>
+
+            <div class="quiz-container">
+                <div class="question" id="quiz-question-text">
+                    Scenario: A routine scan reports that a database server containing customer information is deployed directly on a public-facing network tier. The server leaves itself open to unauthorized lateral access from the web server tier. Which protection framework should you implement?
+                </div>
+                <div class="options-group">
+                    <label class="option-label">
+                        <input type="radio" name="quiz-opt" value="patching"> Patching (Deploying code fixes for database vulnerabilities)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="quiz-opt" value="hardening"> Hardening (Modifying default database configuration attributes)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="quiz-opt" value="segmentation"> Network Segmentation (Moving the resource into a distinct private subnet behind restrictive firewall filters)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="quiz-opt" value="access_control"> Access Control (Modifying individual consumer access roles)
+                    </label>
+                </div>
+                <button class="btn" onclick="evaluateQuizAnswer()">Submit Assessment Choice</button>
+                <div class="alert-box" id="quiz-alert"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Tab Navigation Element Control
+        function switchTab(evt, tabId) {
+            const tabs = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            const tabButtons = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove("active");
+            }
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Mini Diagnostic Console Execution Scripts
+        const miniInput = document.getElementById('mini-input');
+        const miniLogContainer = document.getElementById('mini-log-container');
+
+        const DIALOG_DATA = {
+            'help': "Available Lesson Actions:\n  help       - Print this dynamic help message\n  show nodes - Disclose infrastructure target components and exposures\n  sysinfo    - Output active operating environment specifications",
+            'sysinfo': "[OS ENVIRONMENT INFRASTRUCTURE]\nKernel Version: Linux 5.15-generic #42-Ubuntu\nEnvironment Class: Simulated Network Architecture\nStatus: Pending administrative baseline verification rules.",
+            'show nodes': "[FOUND ASSET COMPONENT METRICS]\n* Prod-Web-01   -> VULNERABLE: Web platform framework contains open public CVE targets.\n* Core-DB-Data  -> EXPOSED: Database sits on shared, flat communication channels.\n* Internal-API  -> UNHARDENED: Service principal account utilizes root permission tokens.\n* Mobile-Gateway-> RISK PROFILE: Peripheral entry system permits untrusted package paths."
+        };
+
+        miniInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const userVal = miniInput.value.trim().toLowerCase();
+                if(!userVal) return;
+
+                // Echo the command line input
+                const userEcho = document.createElement('div');
+                userEcho.className = 'term-line';
+                userEcho.style.color = '#ffffff';
+                userEcho.innerText = `student@lab-audit:~$ ${miniInput.value}`;
+                miniLogContainer.appendChild(userEcho);
+
+                // Print command outputs
+                const responseEcho = document.createElement('div');
+                responseEcho.className = 'term-line';
+                
+                if (DIALOG_DATA[userVal]) {
+                    responseEcho.innerText = DIALOG_DATA[userVal];
+                } else {
+                    responseEcho.style.color = '#ff3333';
+                    responseEcho.innerText = `[CMD ERROR] Specified instruction context "${userVal}" was not found. Try running "help".`;
+                }
+
+                miniLogContainer.appendChild(responseEcho);
+                miniInput.value = '';
+            }
+        });
+
+        // Quiz Evaluation Framework logic
+        function evaluateQuizAnswer() {
+            const selectedOpt = document.querySelector('input[name="quiz-opt"]:checked');
+            const alertBox = document.getElementById('quiz-alert');
+            
+            if (!selectedOpt) {
+                alertBox.style.display = "block";
+                alertBox.className = "alert-box alert-error";
+                alertBox.innerText = "Please choose a mitigation path choice before submission.";
+                return;
+            }
+
+            alertBox.style.display = "block";
+            if (selectedOpt.value === "segmentation") {
+                alertBox.className = "alert-box alert-success";
+                alertBox.innerText = "Correct! Moving the asset into an isolated subnet blocks unauthorized lateral pivoting across the flat network layout.";
+            } else {
+                alertBox.className = "alert-box alert-error";
+                alertBox.innerText = "Incorrect choice. While other mitigation strategies improve asset host defense metrics, isolation from lateral web tier exposure requires structural Network Segmentation controls.";
+            }
+        }
+    </script>
+</body>
+</html>

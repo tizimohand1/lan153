@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 2: Cryptography & PKI | CompTIA Security+ SY0-701</title>
+<style>
+/* =============================================
+   DESIGN TOKENS — matches lesson01 system
+   ============================================= */
+:root {
+  --bg:          #ffffff;
+  --bg-soft:     #f7f9f7;
+  --bg-card:     #ffffff;
+  --border:      #d8e4d8;
+  --border-dark: #b2ccb2;
+  --text:        #111111;
+  --text-mid:    #3a4a3a;
+  --text-muted:  #5c6e5c;
+  --green-dark:  #1b5e20;
+  --green:       #2e7d32;
+  --green-mid:   #388e3c;
+  --green-light: #4caf50;
+  --green-pale:  #e8f5e9;
+  --green-pale2: #c8e6c9;
+  --accent:      #1b5e20;
+  --red:         #b71c1c;
+  --red-pale:    #ffebee;
+  --blue:        #1565c0;
+  --blue-pale:   #e3f2fd;
+  --purple:      #6a1b9a;
+  --purple-pale: #f3e5f5;
+  --amber:       #e65100;
+  --amber-pale:  #fff3e0;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.13);
+  --radius:      10px;
+  --radius-lg:   16px;
+}
+[data-theme="dark"] {
+  --bg:          #0e120e;
+  --bg-soft:     #141a14;
+  --bg-card:     #1a221a;
+  --border:      #2a3a2a;
+  --border-dark: #3a4e3a;
+  --text:        #e8f0e8;
+  --text-mid:    #b8ccb8;
+  --text-muted:  #7a9a7a;
+  --green-dark:  #81c784;
+  --green:       #4caf50;
+  --green-mid:   #66bb6a;
+  --green-light: #a5d6a7;
+  --green-pale:  #1a2e1a;
+  --green-pale2: #1e3a1e;
+  --accent:      #4caf50;
+  --red:         #ef9a9a;
+  --red-pale:    #2a1010;
+  --blue:        #90caf9;
+  --blue-pale:   #0d1f35;
+  --purple:      #ce93d8;
+  --purple-pale: #1f0d2a;
+  --amber:       #ffcc80;
+  --amber-pale:  #2a1a00;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.30);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.40);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.50);
+}
+
+/* =============================================
+   RESET & BASE
+   ============================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  font-size: 16px;
+  transition: background 0.3s, color 0.3s;
+}
+h1,h2,h3,h4 { line-height: 1.25; font-weight: 700; }
+a { color: var(--green); text-decoration: none; }
+a:hover { text-decoration: underline; }
+ul { padding-left: 1.4em; }
+li { margin-bottom: 0.35em; }
+
+/* =============================================
+   HEADER
+   ============================================= */
+header {
+  background: var(--green-dark);
+  color: #fff;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+.header-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.brand-icon {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px; letter-spacing: -0.5px; color: #fff;
+  flex-shrink: 0;
+}
+.brand-info h1 { font-size: 1rem; font-weight: 700; }
+.brand-info p  { font-size: 0.74rem; opacity: 0.7; margin-top: 1px; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.lesson-badge {
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.28);
+  color: #fff; font-size: 0.7rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.nav-link {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px; cursor: pointer;
+  transition: background 0.2s; text-decoration: none; display: inline-block;
+}
+.nav-link:hover { background: rgba(255,255,255,0.25); text-decoration: none; }
+.theme-btn {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px; cursor: pointer;
+  transition: background 0.2s;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* =============================================
+   HERO
+   ============================================= */
+.hero {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 45%, #1565c044 100%);
+  color: #fff;
+  padding: 48px 24px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '02';
+  position: absolute;
+  right: 40px; bottom: -10px;
+  font-size: 120px; font-weight: 900;
+  opacity: 0.07; line-height: 1; pointer-events: none;
+}
+.hero-inner { max-width: 860px; margin: 0 auto; }
+.hero-eyebrow {
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; opacity: 0.8; margin-bottom: 10px;
+}
+.hero h2 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+.hero-sub { font-size: 1rem; opacity: 0.85; max-width: 640px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.hero-tag {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  font-size: 0.75rem; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px;
+}
+
+/* =============================================
+   LAYOUT
+   ============================================= */
+.page-body { max-width: 1180px; margin: 0 auto; padding: 36px 24px 64px; }
+.section-gap { margin-bottom: 48px; }
+.section-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--green);
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--green-pale2);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: block;
+  width: 4px; height: 16px;
+  background: var(--green); border-radius: 2px;
+}
+
+/* =============================================
+   OBJECTIVES
+   ============================================= */
+.objectives-box {
+  background: var(--green-pale);
+  border: 1px solid var(--green-pale2);
+  border-left: 5px solid var(--green);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+}
+.objectives-box h3 { color: var(--green-dark); margin-bottom: 12px; font-size: 1rem; }
+.objectives-box li { margin-bottom: 8px; color: var(--text-mid); font-size: 0.93rem; }
+.objectives-box li::marker { color: var(--green); }
+
+/* =============================================
+   KEY TERMS
+   ============================================= */
+.terms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.term-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.term-name { font-weight: 700; font-size: 0.88rem; color: var(--green-dark); margin-bottom: 4px; }
+.term-def  { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; }
+
+/* =============================================
+   INTRO CARD
+   ============================================= */
+.intro-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--green-light);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  box-shadow: var(--shadow-sm);
+}
+.intro-card p { color: var(--text-mid); font-size: 0.97rem; line-height: 1.75; }
+.intro-card p + p { margin-top: 12px; }
+
+/* =============================================
+   FLIP CARDS
+   ============================================= */
+.flip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+.flip-wrapper {
+  perspective: 1000px;
+  height: 240px;
+  cursor: pointer;
+}
+.flip-inner {
+  position: relative; width: 100%; height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4,0.2,0.2,1);
+  transform-style: preserve-3d;
+}
+.flip-wrapper.flipped .flip-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back {
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-lg); padding: 24px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border: 1px solid var(--border); box-shadow: var(--shadow-md);
+}
+.flip-front { background: var(--bg-card); }
+.flip-back  { background: var(--green-dark); color: #fff; transform: rotateY(180deg); }
+.flip-num   { font-size: 2.5rem; font-weight: 900; color: var(--green-pale2); line-height: 1; }
+.flip-front h3 { font-size: 1.05rem; color: var(--green-dark); margin-bottom: 6px; }
+.flip-front p  { font-size: 0.82rem; color: var(--text-muted); }
+.flip-hint { font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+.flip-back h3  { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; opacity: 0.9; }
+.flip-back p   { font-size: 0.82rem; opacity: 0.85; line-height: 1.55; flex: 1; }
+.flip-back a.dive-link {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 0.78rem; font-weight: 700;
+  padding: 6px 14px; border-radius: 20px; text-decoration: none;
+  transition: background 0.2s; margin-top: 10px; align-self: flex-start;
+}
+.flip-back a.dive-link:hover { background: rgba(255,255,255,0.28); }
+
+/* =============================================
+   EXTERNAL RESOURCES SYSTEM
+   ============================================= */
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 10px;
+}
+.resource-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--green);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.resource-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--green-light);
+}
+.resource-card h4 {
+  font-size: 1rem;
+  color: var(--green-dark);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.resource-card p {
+  font-size: 0.85rem;
+  color: var(--text-mid);
+  line-height: 1.5;
+  margin-bottom: 16px;
+  flex-grow: 1;
+}
+.resource-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-soft);
+  color: var(--green-dark);
+  border: 1px solid var(--border-dark);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: background 0.2s, color 0.2s;
+}
+.resource-link:hover {
+  background: var(--green-dark);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* =============================================
+   TOPIC SECTIONS
+   ============================================= */
+.topic-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+}
+.topic-header {
+  background: var(--green);
+  color: #fff; padding: 18px 28px;
+  display: flex; align-items: center; gap: 14px;
+}
+.topic-header-num {
+  width: 36px; height: 36px;
+  background: rgba(0,0,0,0.2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 900; flex-shrink: 0;
+}
+.topic-header h3 { font-size: 1.1rem; }
+.topic-header p  { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+.topic-body { padding: 28px; }
+
+.topic-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 18px; }
+.topic-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 18px; }
+
+.concept-block {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.concept-block h4 {
+  font-size: 0.92rem; color: var(--green-dark);
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.concept-icon {
+  width: 24px; height: 24px;
+  background: var(--green-pale2);
+  border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+.concept-block p, .concept-block ul { font-size: 0.87rem; color: var(--text-mid); line-height: 1.6; }
+
+.callout {
+  background: var(--green-pale);
+  border-left: 4px solid var(--green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px;
+  font-size: 0.87rem; color: var(--text-mid);
+}
+.callout strong { color: var(--green-dark); }
+
+.callout-blue {
+  background: var(--blue-pale);
+  border-left: 4px solid var(--blue);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px;
+  font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-blue strong { color: var(--blue); }
+
+/* Comparison table */
+.compare-table {
+  width: 100%; border-collapse: collapse;
+  margin-top: 16px; font-size: 0.85rem;
+}
+.compare-table th {
+  padding: 10px 14px; text-align: left;
+  font-size: 0.8rem; letter-spacing: 0.04em; color: #fff;
+}
+.th-sym  { background: var(--blue); }
+.th-asym { background: var(--purple); }
+.compare-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-mid); vertical-align: top;
+}
+.compare-table tr:nth-child(even) td { background: var(--bg-soft); }
+.compare-table .row-label { font-weight: 700; color: var(--text); background: var(--bg-soft) !important; }
+
+/* PKI Timeline */
+.pki-timeline {
+  display: flex; flex-direction: column; gap: 0;
+  margin-top: 16px; position: relative;
+}
+.pki-timeline::before {
+  content: ''; position: absolute;
+  left: 22px; top: 0; bottom: 0;
+  width: 2px; background: var(--green-pale2);
+}
+.pki-step {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 12px 0; position: relative;
+}
+.pki-dot {
+  width: 44px; height: 44px; flex-shrink: 0;
+  background: var(--green-dark); color: #fff;
+  border-radius: 50%; display: flex;
+  align-items: center; justify-content: center;
+  font-weight: 900; font-size: 0.85rem;
+  z-index: 1; box-shadow: 0 0 0 4px var(--bg-card);
+}
+.pki-content h4 { font-size: 0.9rem; color: var(--green-dark); margin-bottom: 4px; }
+.pki-content p  { font-size: 0.83rem; color: var(--text-mid); line-height: 1.5; }
+
+/* TLS Inspector mockup */
+.tls-cert-box {
+  background: #0d1117;
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8rem;
+  color: #c9d1d9;
+  margin-top: 16px;
+  overflow-x: auto;
+  line-height: 1.7;
+  border: 1px solid #30363d;
+}
+.tls-key   { color: #79c0ff; }
+.tls-val   { color: #a5d6a7; }
+.tls-head  { color: #f78166; font-weight: 700; }
+.tls-comment { color: #8b949e; font-style: italic; }
+
+/* =============================================
+   ACTIVITY — CRYPTO MATCHER
+   ============================================= */
+.activity-box {
+  background: var(--bg-card);
+  border: 2px solid var(--green-pale2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.activity-header {
+  background: var(--green-dark);
+  color: #fff; padding: 16px 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.activity-badge {
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.28);
+  font-size: 0.68rem; font-weight: 700;
+  padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.activity-header h3 { font-size: 1rem; }
+.activity-body { padding: 24px; }
+.activity-instructions {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 0.85rem; color: var(--text-mid);
+  margin-bottom: 20px;
+}
+
+/* Drag-drop */
+.drag-pool {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 24px; min-height: 60px;
+  background: var(--bg-soft);
+  border: 1px dashed var(--border-dark);
+  border-radius: var(--radius); padding: 14px;
+}
+.drag-item {
+  background: var(--green-dark); color: #fff;
+  padding: 8px 14px; border-radius: 20px;
+  font-size: 0.82rem; font-weight: 600;
+  cursor: grab; user-select: none;
+  transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.drag-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.drag-item.dragging { opacity: 0.4; }
+
+.drop-zones-3 {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 14px;
+}
+.drop-zone {
+  border: 2px dashed var(--border-dark);
+  border-radius: var(--radius); padding: 12px;
+  min-height: 120px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.drop-zone.drag-over { border-color: var(--green); background: var(--green-pale); }
+.drop-zone-label {
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-muted);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.dz-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-sym  { background: var(--blue); }
+.dot-asym { background: var(--purple); }
+.dot-hash { background: var(--amber); }
+.dropped-item {
+  display: inline-block; padding: 5px 12px;
+  border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+  margin: 3px; cursor: default;
+}
+.dropped-item.correct   { background: var(--green-pale2); color: var(--green-dark); border: 1px solid var(--green); }
+.dropped-item.incorrect { background: var(--red-pale); color: var(--red); border: 1px solid var(--red); animation: shake 0.35s; }
+.dropped-item .remove-btn { margin-left: 6px; cursor: pointer; opacity: 0.6; }
+.dropped-item .remove-btn:hover { opacity: 1; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.activity-actions { margin-top: 18px; display: flex; gap: 10px; align-items: center; }
+.btn-primary {
+  background: var(--green-dark); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px;
+  font-size: 0.9rem; font-weight: 700; cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--green); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--bg-soft); color: var(--text);
+  border: 1px solid var(--border-dark);
+  padding: 10px 22px; border-radius: 8px;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: var(--border); }
+.activity-result {
+  margin-top: 14px; padding: 12px 16px;
+  border-radius: var(--radius); font-size: 0.88rem; font-weight: 600;
+  display: none;
+}
+.result-pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.result-fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+
+/* =============================================
+   ACTIVITY 2 — TLS CERTIFICATE ANALYZER
+   ============================================= */
+.cert-analyzer { }
+.cert-fields {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  margin-bottom: 20px;
+}
+.cert-field-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+}
+.cert-field-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 6px; }
+.cert-field-value { font-size: 0.88rem; font-weight: 600; color: var(--text); font-family: 'Courier New', monospace; }
+.cert-question-set { }
+.cert-q {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px; margin-bottom: 12px;
+}
+.cert-q-text { font-size: 0.92rem; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+.cert-options { display: flex; flex-direction: column; gap: 7px; }
+.cert-option {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: 8px; cursor: pointer; font-size: 0.86rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.cert-option:hover { background: var(--green-pale); border-color: var(--green-light); }
+.cert-option input { flex-shrink: 0; margin-top: 2px; accent-color: var(--green); }
+.cert-option.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.cert-option.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.cert-feedback {
+  margin-top: 10px; padding: 10px 14px;
+  border-radius: 8px; font-size: 0.84rem; display: none;
+}
+.cert-feedback.show { display: block; }
+.cert-feedback.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.cert-feedback.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+
+/* =============================================
+   QUIZ
+   ============================================= */
+.quiz-q {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 16px; transition: border-color 0.3s;
+}
+.quiz-q.answered-correct { border-color: var(--green); background: var(--green-pale); }
+.quiz-q.answered-wrong   { border-color: var(--red); background: var(--red-pale); }
+.q-num  { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+.q-text { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.45; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-option {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); cursor: pointer;
+  transition: background 0.2s, border-color 0.2s; font-size: 0.88rem;
+}
+.q-option:hover { background: var(--green-pale); border-color: var(--green-light); }
+.q-option input[type="radio"] { margin-top: 1px; flex-shrink: 0; accent-color: var(--green); }
+.q-option.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.q-option.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.q-feedback {
+  margin-top: 12px; padding: 12px 16px;
+  border-radius: var(--radius); font-size: 0.85rem;
+  line-height: 1.55; display: none;
+}
+.q-feedback.show { display: block; }
+.q-feedback.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.q-feedback.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.quiz-submit-row { margin-top: 20px; display: flex; align-items: center; gap: 14px; }
+#quiz-result {
+  padding: 18px 24px; border-radius: var(--radius-lg);
+  font-size: 1rem; font-weight: 700; display: none; margin-top: 20px;
+}
+.quiz-pass { background: var(--green-pale); color: var(--green-dark); border: 2px solid var(--green-pale2); }
+.quiz-fail { background: var(--red-pale); color: var(--red); border: 2px solid #ffcdd2; }
+
+/* =============================================
+   PAGE FOOTER
+   ============================================= */
+.page-footer {
+  background: var(--bg-soft); border-top: 1px solid var(--border);
+  padding: 24px; text-align: center;
+  font-size: 0.78rem; color: var(--text-muted);
+}
+.footer-nav { display: flex; justify-content: center; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
+.footer-nav a { color: var(--green); font-weight: 600; font-size: 0.85rem; }
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+  .hero h2 { font-size: 1.4rem; }
+  .topic-grid, .topic-grid-3, .cert-fields, .resources-grid { grid-template-columns: 1fr; }
+  .drop-zones-3 { grid-template-columns: 1fr; }
+  .flip-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="brand-icon">S+</div>
+      <div class="brand-info">
+        <h1>CompTIA Security+ SY0-701</h1>
+        <p>Lesson 2 of 12 &mdash; Cryptography &amp; PKI</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="lesson-badge">Day 2</span>
+      <a href="index.html" class="nav-link">&#8592; Course Home</a>
+      <a href="lesson01.html" class="nav-link">&#8592; Lesson 1</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Lesson 2 &mdash; General Security Concepts (12% of exam)</div>
+    <h2>Cryptography &amp; PKI</h2>
+    <p class="hero-sub">Symmetric and asymmetric encryption, hashing algorithms, digital signatures, certificate authorities, the PKI lifecycle, and real-world TLS certificate analysis — the mathematical backbone of modern security.</p>
+    <div class="hero-meta">
+      <span class="hero-tag">📖 3 Topics</span>
+      <span class="hero-tag">🎯 2 Activities</span>
+      <span class="hero-tag">📝 5-Question Quiz</span>
+      <span class="hero-tag">⏱ ~60 min</span>
+      <span class="hero-tag">Domain: General Security Concepts</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <div class="section-gap">
+    <div class="section-label">Learning Objectives</div>
+    <div class="objectives-box">
+      <h3>By the end of this lesson, you will be able to:</h3>
+      <ul>
+        <li>Compare and contrast symmetric and asymmetric encryption, identifying the correct algorithm for a given security scenario.</li>
+        <li>Explain how cryptographic hashing ensures data integrity and describe the properties of a secure hash function.</li>
+        <li>Describe how digital signatures provide authentication, integrity, and non-repudiation using asymmetric cryptography.</li>
+        <li>Define the role of a Certificate Authority (CA) and explain the purpose of X.509 digital certificates in a PKI environment.</li>
+        <li>Outline the PKI certificate lifecycle — from generation and distribution to renewal and revocation.</li>
+        <li>Interpret the fields of a real TLS certificate and identify which field addresses which security concern.</li>
+        <li>Distinguish obfuscation from encryption and explain why obfuscation alone does not constitute a security control.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Interactive Companion Laboratories</div>
+    <div class="resources-grid">
+      
+      <div class="resource-card">
+        <div>
+          <h4><span>🏛️</span> PKI &amp; Digital Certificates</h4>
+          <p>Explore certificate authorities, trust validation systems, and public key deployment architectures in this interactive simulation portal.</p>
+        </div>
+        <a href="digitalsignature.html" target="_blank" class="resource-link">Open Laboratory →</a>
+      </div>
+
+      <div class="resource-card">
+        <div>
+          <h4><span>🔐</span> Symmetrical Encryption</h4>
+          <p>Analyze bulk-data cryptographic mechanisms, cipher modes, and the shared-secret distribution pipeline under active environments.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/EncryptData/EncryptData.html" target="_blank" class="resource-link">Open Laboratory →</a>
+      </div>
+
+      <div class="resource-card">
+        <div>
+          <h4><span>🔢</span> Cryptographic Hashing</h4>
+          <p>Examine fixed-length message digests, collision resistance properties, and mathematical integrity checks through real-time processing models.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/hashing/Hashing.html" target="_blank" class="resource-link">Open Laboratory →</a>
+      </div>
+
+      <div class="resource-card">
+        <div>
+          <h4><span>🔑</span> RSA Architecture</h4>
+          <p>Study the prime factorization foundations of asymmetric cryptography, public/private key-pair mechanics, and mathematical complexity profiles.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/RSA/RSA.html" target="_blank" class="resource-link">Open Laboratory →</a>
+      </div>
+
+      <div class="resource-card">
+        <div>
+          <h4><span>🐕</span> Kerberos Authentication</h4>
+          <p>Deconstruct ticket-granting structures, symmetric key distributions, and domain security interactions within corporate network parameters.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/kerberos/kerberos.html" target="_blank" class="resource-link">Open Laboratory →</a>
+      </div>
+
+      <div class="resource-card">
+        <div>
+          <h4><span>🛡️</span> Cybersecurity Design Principles</h4>
+          <p>Evaluate defensive strategies including defense-in-depth, least privilege, and secure architectural frameworks essential for modern network posture.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/design/cybersecuritydesignprinciples.html" target="_blank" class="resource-link">Open Laboratory →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Key Terms</div>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">Encryption</div>
+        <div class="term-def">The process of encoding plaintext into ciphertext using a cryptographic algorithm and key, making it unreadable to unauthorized parties.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Hashing</div>
+        <div class="term-def">A one-way cryptographic function that converts data of any size into a fixed-length digest. The same input always produces the same output; any change to input produces a completely different digest.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">PKI (Public Key Infrastructure)</div>
+        <div class="term-def">The complete framework of hardware, software, policies, and procedures used to create, manage, distribute, use, store, and revoke digital certificates and public-key encryption.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Digital Signature</div>
+        <div class="term-def">A cryptographic mechanism that uses the sender's private key to sign a message hash, allowing any recipient to verify the sender's identity and confirm the message was not altered.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">CA (Certificate Authority)</div>
+        <div class="term-def">A trusted third-party entity that issues, signs, and revokes digital certificates. The CA's own certificate must be trusted by relying parties for the chain of trust to function.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Obfuscation</div>
+        <div class="term-def">The practice of making data or code difficult to understand without actually encrypting it. Obfuscation does NOT provide true confidentiality because it can be reversed without a cryptographic key.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Certificate Revocation List (CRL)</div>
+        <div class="term-def">A published list maintained by a CA containing the serial numbers of certificates that have been revoked before their expiration date.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Blockchain</div>
+        <div class="term-def">A distributed, append-only ledger that uses cryptographic hashing to link blocks of records, providing tamper-evident integrity for transactional data without a central authority.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Course Introduction</div>
+    <div class="intro-card">
+      <p>Every time you visit an HTTPS website, send a digitally signed email, or log into a corporate VPN, cryptography is working silently in the background. It is the mathematical engine that makes trustworthy digital communication possible — and it accounts for significant question coverage across every Security+ domain, not just General Concepts. Understanding cryptography is not optional for a security professional; it is a prerequisite.</p>
+      <p>This lesson demystifies the core cryptographic building blocks: how symmetric encryption provides fast, bulk data protection; how asymmetric encryption solves the key distribution problem; how hashing proves data integrity without revealing the data; and how all three come together in the PKI ecosystem to create the digital certificates that power secure web browsing, code signing, and email encryption. By the end of today, you will be able to read an actual TLS certificate and understand exactly what every field is telling you — and why an attacker cares about it.</p>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Topic Navigation — Click a Card to Explore</div>
+    <div class="flip-grid">
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">01</div>
+              <h3>Encryption &amp; Hashing</h3>
+              <p>Symmetric vs. asymmetric encryption algorithms, key types, use cases, and one-way hash functions that prove integrity.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Encryption &amp; Hashing</h3>
+              <p>Symmetric (AES, 3DES) uses one shared key — fast but requires secure key exchange. Asymmetric (RSA, ECC) uses a public/private key pair — solves distribution but is computationally slow. Hashing (SHA-256, MD5) is a one-way function for integrity verification.</p>
+            </div>
+            <a class="dive-link" href="https://d2hie3dpn9wvbb.cloudfront.net/hashing/Hashing.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">02</div>
+              <h3>Digital Signatures &amp; Certificates</h3>
+              <p>How private keys produce signatures that prove identity and integrity — and what an X.509 certificate actually contains.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Digital Signatures &amp; Certificates</h3>
+              <p>A digital signature is a hash of a message, encrypted with the sender's private key. X.509 certificates bind a public key to an identity, signed by a trusted CA. Certificates enable TLS, code signing, email encryption (S/MIME), and client authentication.</p>
+            </div>
+            <a class="dive-link" href="https://d2hie3dpn9wvbb.cloudfront.net/pki/pki.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">03</div>
+              <h3>RSA &amp; and Asymmetrical Key Pairs</h3>
+              <p>RSA stands for Rivest-Shamir-Adleman. It is one of the world's most widely used asymmetric cryptography algorithms. It is used to securely transmit data over the internet, protect sensitive financial transactions, and verify digital identities</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>PKI Lifecycle &amp; TLS Analysis</h3>
+              <p>The PKI lifecycle: generate key pair → create CSR → CA validates → CA issues signed certificate → deploy → monitor expiry → renew or revoke via CRL / OCSP. Real TLS certificates expose the Subject, Issuer, SAN, validity window, algorithm, and public key details.</p>
+            </div>
+            <a class="dive-link" href="rsa.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Topic 1 Content</div>
+    <div class="topic-section">
+      <div class="topic-header">
+        <div class="topic-header-num">1</div>
+        <div>
+          <h3>Encryption &amp; Hashing Fundamentals</h3>
+          <p>Symmetric algorithms, asymmetric key pairs, hash functions, and obfuscation</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Cryptography rests on two primary operations: <strong>encryption</strong> (a reversible transformation requiring a key) and <strong>hashing</strong> (a one-way transformation producing a fixed-length digest). Security+ tests both the theoretical properties of these operations and your ability to select the right tool for a given scenario.</p>
+
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th style="background:var(--bg-soft);color:var(--text);width:18%;">Property</th>
+              <th class="th-sym">Symmetric Encryption</th>
+              <th class="th-asym">Asymmetric Encryption</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="row-label">Keys Used</td><td>Single shared secret key for encrypt &amp; decrypt</td><td>Public key encrypts; private key decrypts (or vice versa for signatures)</td></tr>
+            <tr><td class="row-label">Speed</td><td>Very fast — suited for bulk data encryption</td><td>Computationally slow — not used for large data volumes</td></tr>
+            <tr><td class="row-label">Key Problem</td><td>Secure key distribution is the fundamental challenge</td><td>Solves key distribution — public key can be shared freely</td></tr>
+            <tr><td class="row-label">Key Algorithms</td><td>AES (128/256-bit), 3DES, ChaCha20</td><td>RSA (2048/4096-bit), ECC (P-256, P-384), Diffie-Hellman</td></tr>
+            <tr><td class="row-label">Key Length</td><td>128–256 bits is standard; shorter keys are weaker</td><td>2048-bit RSA ≈ 112-bit symmetric security level</td></tr>
+            <tr><td class="row-label">Use Cases</td><td>Encrypting files, database fields, full-disk encryption, VPN tunnel data</td><td>TLS key exchange, digital signatures, certificate issuance, SSH keys</td></tr>
+            <tr><td class="row-label">Common Hybrid Use</td><td colspan="2" style="text-align:center;font-style:italic;color:var(--text-muted);">TLS uses asymmetric to exchange a symmetric session key — combining security of asymmetric with speed of symmetric</td></tr>
+          </tbody>
+        </table>
+
+        <div class="topic-grid" style="margin-top:22px;">
+          <div class="concept-block">
+            <h4><span class="concept-icon">🔐</span> AES — Advanced Encryption Standard</h4>
+            <p>The gold standard for symmetric encryption, adopted by NIST in 2001. AES operates on 128-bit blocks and supports 128-, 192-, or 256-bit key lengths. AES-256 is considered computationally unbreakable with current technology and is used by U.S. government agencies to protect classified information.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Modes:</strong> CBC (Cipher Block Chaining), GCM (Galois/Counter Mode — adds authentication), CTR</li>
+              <li><strong>GCM preference:</strong> AES-GCM is authenticated encryption — provides both confidentiality AND integrity in one operation</li>
+              <li><strong>Exam tip:</strong> If a question asks for the strongest symmetric algorithm, AES-256 is the correct answer</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">🔑</span> RSA &amp; ECC — Asymmetric Algorithms</h4>
+            <p>RSA (Rivest–Shamir–Adleman) is the most widely deployed asymmetric algorithm, used in TLS certificates, SSH, and PGP. Its security depends on the computational difficulty of factoring large prime numbers. ECC (Elliptic Curve Cryptography) achieves equivalent security at much shorter key lengths.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>RSA 2048-bit</strong> ≈ <strong>ECC 224-bit</strong> in security strength</li>
+              <li>ECC is preferred for mobile/IoT devices due to lower computational overhead</li>
+              <li><strong>Exam tip:</strong> ECC provides equivalent security to RSA with shorter keys — better performance on constrained devices</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="topic-grid" style="margin-top:16px;">
+          <div class="concept-block">
+            <h4><span class="concept-icon">🔢</span> Cryptographic Hashing</h4>
+            <p>A hash function takes any input and produces a fixed-length output (digest) that uniquely represents the input. Hash functions are one-way — you cannot reverse a hash to get the original data. They are deterministic — the same input always produces the same digest.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>SHA-256:</strong> 256-bit digest; NIST-recommended; used in TLS, code signing, Bitcoin</li>
+              <li><strong>SHA-3:</strong> Alternative to SHA-2; different internal design, useful for defense-in-depth</li>
+              <li><strong>MD5 &amp; SHA-1:</strong> Both are cryptographically broken — collision attacks demonstrated; do NOT use for security</li>
+              <li><strong>HMAC:</strong> Hash-based Message Authentication Code — adds a secret key to a hash for integrity + authentication</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">🎭</span> Obfuscation — What It Is NOT</h4>
+            <p>Obfuscation makes data or code harder to understand without actually encrypting it. Common examples include Base64 encoding, ROT13, and code minification. These are <em>not</em> encryption because they do not require a key and can be reversed without one.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Base64</strong> is encoding, not encryption — any tool can decode it instantly</li>
+              <li>Malware authors use obfuscation to evade signature-based detection</li>
+              <li>Steganography (hiding data inside images or audio) is a form of obfuscation</li>
+              <li><strong>Exam trap:</strong> Obfuscation does NOT provide Confidentiality — it is NOT a substitute for encryption</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Hybrid Encryption in Practice (TLS 1.3):</strong> TLS 1.3 uses the Diffie-Hellman Ephemeral (DHE) or Elliptic Curve DHE (ECDHE) key exchange — an asymmetric operation — to negotiate a unique symmetric session key for each connection. The actual data transfer is then encrypted with AES-GCM (symmetric), combining the key-distribution security of asymmetric cryptography with the bulk-data speed of symmetric encryption. This is the pattern behind every HTTPS connection you make.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Topic 2 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-dark);">
+        <div class="topic-header-num">2</div>
+        <div>
+          <h3>Digital Signatures &amp; X.509 Certificates</h3>
+          <p>How asymmetric cryptography enables authentication, integrity, and non-repudiation</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">A digital signature is not a scanned image of a handwritten signature — it is a cryptographic proof of identity and message integrity. Digital certificates are the mechanism by which public keys are bound to real-world identities and made trustworthy.</p>
+
+        <div class="topic-grid">
+          <div class="concept-block">
+            <h4><span class="concept-icon">✍️</span> How Digital Signatures Work</h4>
+            <p><strong>Signing (sender side):</strong></p>
+            <ol style="font-size:0.87rem;color:var(--text-mid);padding-left:1.2em;margin-top:6px;">
+              <li>Hash the message using SHA-256 (produces a fixed-length digest)</li>
+              <li>Encrypt that hash with the sender's <em>private key</em> → this is the digital signature</li>
+              <li>Send the message + signature together</li>
+            </ol>
+            <p style="margin-top:10px;"><strong>Verification (recipient side):</strong></p>
+            <ol style="font-size:0.87rem;color:var(--text-mid);padding-left:1.2em;margin-top:6px;">
+              <li>Decrypt the signature using the sender's <em>public key</em> → recovers the original hash</li>
+              <li>Hash the received message independently</li>
+              <li>Compare the two hashes — if they match, the message is authentic and unaltered</li>
+            </ol>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">🏆</span> What Digital Signatures Provide</h4>
+            <ul style="margin-top:6px;">
+              <li><strong>Authentication:</strong> Only the holder of the private key could have created the signature — proves sender identity</li>
+              <li><strong>Integrity:</strong> Any modification to the message after signing invalidates the signature (hash mismatch)</li>
+              <li><strong>Non-Repudiation:</strong> The sender cannot deny having signed the message — only their private key could have produced it</li>
+            </ul>
+            <div style="margin-top:12px;padding:10px 12px;background:var(--amber-pale);border-radius:8px;font-size:0.83rem;color:var(--text-mid);">
+              <strong style="color:var(--amber);">Exam Distinction:</strong> Encryption provides <em>Confidentiality</em>. Signing provides <em>Authentication + Integrity + Non-Repudiation</em>. In practice, a message can be both encrypted AND signed simultaneously.
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">X.509 Certificate Structure — What Every Field Means</h4>
+          <div class="topic-grid-3">
+            <div class="concept-block">
+              <h4><span class="concept-icon">🏷</span> Subject &amp; Subject Alternative Name</h4>
+              <p>The <strong>Subject</strong> field identifies the entity the certificate was issued to (e.g., Common Name = www.example.com, Organization = Example Corp). The <strong>SAN (Subject Alternative Name)</strong> lists all additional domain names and IP addresses the certificate is valid for — modern browsers only trust the SAN, not the CN.</p>
+            </div>
+            <div class="concept-block">
+              <h4><span class="concept-icon">🏛</span> Issuer &amp; Signature</h4>
+              <p>The <strong>Issuer</strong> field identifies the CA that signed the certificate (e.g., DigiCert Global Root G2). The CA's <strong>digital signature</strong> over the certificate contents is what makes the certificate trustworthy — any tampering invalidates the signature.</p>
+            </div>
+            <div class="concept-block">
+              <h4><span class="concept-icon">📅</span> Validity Period</h4>
+              <p>The <strong>Not Before / Not After</strong> fields define the certificate's active window. Expired certificates trigger browser warnings. Since September 2020, publicly trusted TLS certificates are capped at 398-day validity to reduce long-term exposure from compromised keys.</p>
+            </div>
+            <div class="concept-block">
+              <h4><span class="concept-icon">🔑</span> Public Key &amp; Algorithm</h4>
+              <p>The certificate embeds the subject's <strong>public key</strong> and specifies the key algorithm (RSA 2048, ECDSA P-256, etc.). Browsers use this public key to establish the TLS session. The <strong>signature algorithm</strong> field specifies how the CA signed the certificate (e.g., sha256WithRSAEncryption).</p>
+            </div>
+            <div class="concept-block">
+              <h4><span class="concept-icon">🆔</span> Serial Number</h4>
+              <p>A unique identifier assigned by the CA to each certificate it issues. The serial number is used in Certificate Revocation Lists (CRLs) and OCSP (Online Certificate Status Protocol) responses to identify revoked certificates.</p>
+            </div>
+            <div class="concept-block">
+              <h4><span class="concept-icon">🎯</span> Certificate Extensions</h4>
+              <p>Extensions encode additional policy information: <strong>Key Usage</strong> restricts what the key may be used for (e.g., digital signature, key encipherment). <strong>Extended Key Usage</strong> specifies application purposes (TLS server authentication, code signing, email protection). <strong>Basic Constraints</strong> indicates whether the certificate is a CA certificate.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout-blue">
+          <strong>Certificate Trust Chains:</strong> No browser trusts a website's certificate directly. Instead, it follows a <em>chain of trust</em>: the website certificate was signed by an Intermediate CA, which was signed by a Root CA. Root CA certificates are pre-installed in operating systems and browsers. If any link in the chain is broken (revoked, expired, or untrusted), the entire chain fails. This is why proper certificate chain configuration on servers is a critical operational security task.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Topic 3 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-mid);">
+        <div class="topic-header-num">3</div>
+        <div>
+          <h3>PKI Lifecycle &amp; TLS Certificate Analysis</h3>
+          <p>From key generation to revocation — and how to read a real certificate</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">PKI is not a single product — it is an ecosystem of roles, processes, and policies that govern the complete lifecycle of digital certificates. Understanding this lifecycle is essential for Security+ because both mismanagement (expired certs, weak keys, improper revocation) and deliberate attacks target every phase.</p>
+
+        <div class="pki-timeline">
+          <div class="pki-step">
+            <div class="pki-dot">1</div>
+            <div class="pki-content">
+              <h4>Key Pair Generation</h4>
+              <p>The entity (server, user, or device) generates an asymmetric key pair. The private key is created and stored securely — ideally in a Hardware Security Module (HSM) or a TPM (Trusted Platform Module) to prevent extraction. The private key must never leave the HSM in plaintext. Key length matters: RSA 2048-bit minimum; RSA 4096 or ECDSA P-256 preferred for new deployments.</p>
+            </div>
+          </div>
+          <div class="pki-step">
+            <div class="pki-dot">2</div>
+            <div class="pki-content">
+              <h4>Certificate Signing Request (CSR)</h4>
+              <p>The entity creates a CSR — a structured message containing the public key and identity information (subject, organization, domain). The CSR is signed with the entity's private key to prove possession of it. The CSR is submitted to the CA; it contains no secrets and can be transmitted over insecure channels.</p>
+            </div>
+          </div>
+          <div class="pki-step">
+            <div class="pki-dot">3</div>
+            <div class="pki-content">
+              <h4>CA Validation &amp; Issuance</h4>
+              <p>The CA performs identity validation — the rigor depends on the certificate type. Domain Validation (DV) only confirms domain control (automated, minutes). Organization Validation (OV) verifies organizational identity (hours to days). Extended Validation (EV) performs thorough legal entity verification (days to weeks). The CA then signs the certificate with its private key and returns it to the requester.</p>
+            </div>
+          </div>
+          <div class="pki-step">
+            <div class="pki-dot">4</div>
+            <div class="pki-content">
+              <h4>Deployment &amp; Distribution</h4>
+              <p>The signed certificate is installed on the server (or device). For web servers, the full certificate chain (leaf + intermediate(s)) must be configured — a missing intermediate is one of the most common TLS configuration errors. Certificates can also be published to LDAP directories for S/MIME email encryption lookup.</p>
+            </div>
+          </div>
+          <div class="pki-step">
+            <div class="pki-dot">5</div>
+            <div class="pki-content">
+              <h4>Monitoring &amp; Renewal</h4>
+              <p>Certificate expiry monitoring is a critical operational task — expired certificates cause outages (systems refuse connections) and security alerts. Certificates should be renewed 30–60 days before expiration. Let's Encrypt's ACME protocol automates this process for public websites. Enterprises use certificate lifecycle management (CLM) tools to track their entire certificate inventory.</p>
+            </div>
+          </div>
+          <div class="pki-step">
+            <div class="pki-dot">6</div>
+            <div class="pki-content">
+              <h4>Revocation — CRL &amp; OCSP</h4>
+              <p>When a certificate is compromised, mis-issued, or the entity's status changes, it must be revoked before expiration. <strong>CRL (Certificate Revocation List):</strong> A periodically published list of revoked serial numbers — can be large and stale. <strong>OCSP (Online Certificate Status Protocol):</strong> Real-time single-certificate status check — more efficient but requires server availability. <strong>OCSP Stapling:</strong> The server pre-fetches its own OCSP response and staples it to the TLS handshake, improving privacy and performance.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;">
+          <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:10px;">Sample TLS Certificate — Annotated</h4>
+          <div class="tls-cert-box">
+<span class="tls-head">Certificate:</span>
+    <span class="tls-key">Version:</span>           <span class="tls-val">3 (0x2)</span>
+    <span class="tls-key">Serial Number:</span>     <span class="tls-val">03:e4:2a:7c:91:b8:4f:0a:12:cd:78:55:aa:22:01:bc:9f</span>
+    <span class="tls-comment">    ↑ Unique identifier; used in CRL/OCSP to revoke this certificate</span>
+
+    <span class="tls-key">Signature Algorithm:</span> <span class="tls-val">sha256WithRSAEncryption</span>
+    <span class="tls-comment">    ↑ SHA-256 hash + RSA signature — how the CA digitally signed this cert</span>
+
+    <span class="tls-head">Issuer:</span>
+        <span class="tls-key">O=</span><span class="tls-val">DigiCert Inc</span>, <span class="tls-key">CN=</span><span class="tls-val">DigiCert TLS RSA SHA256 2020 CA1</span>
+    <span class="tls-comment">    ↑ Intermediate CA that signed this cert — the CA's identity</span>
+
+    <span class="tls-head">Validity:</span>
+        <span class="tls-key">Not Before:</span> <span class="tls-val">Sep 15 00:00:00 2024 GMT</span>
+        <span class="tls-key">Not After :</span> <span class="tls-val">Oct 14 23:59:59 2025 GMT</span>
+    <span class="tls-comment">    ↑ 398-day validity window — expired certs = outages + browser warnings</span>
+
+    <span class="tls-head">Subject:</span>
+        <span class="tls-key">CN=</span><span class="tls-val">www.example-corp.com</span>
+        <span class="tls-key">O=</span><span class="tls-val">Example Corporation, Inc.</span>, <span class="tls-key">C=</span><span class="tls-val">US</span>
+
+    <span class="tls-head">Subject Public Key Info:</span>
+        <span class="tls-key">Public Key Algorithm:</span> <span class="tls-val">rsaEncryption</span>
+        <span class="tls-key">RSA Public-Key:</span> <span class="tls-val">(2048 bit)</span>
+    <span class="tls-comment">    ↑ The public key browsers use to establish the encrypted session</span>
+
+    <span class="tls-head">X509v3 Extensions:</span>
+        <span class="tls-key">Subject Alternative Name (SAN):</span>
+            <span class="tls-val">DNS:www.example-corp.com</span>
+            <span class="tls-val">DNS:example-corp.com</span>
+            <span class="tls-val">DNS:api.example-corp.com</span>
+    <span class="tls-comment">    ↑ All valid hostnames — modern browsers REQUIRE the SAN field</span>
+
+        <span class="tls-key">Key Usage:</span>          <span class="tls-val">Digital Signature, Key Encipherment</span>
+        <span class="tls-key">Extended Key Usage:</span> <span class="tls-val">TLS Web Server Authentication</span>
+    <span class="tls-comment">    ↑ Restricts use: this cert is only valid for TLS server auth</span>
+
+        <span class="tls-key">CRL Distribution Points:</span>
+            <span class="tls-val">http://crl3.digicert.com/DigiCertTLSRSASHA2562020CA1-4.crl</span>
+        <span class="tls-key">OCSP URL:</span>
+            <span class="tls-val">http://ocsp.digicert.com</span>
+    <span class="tls-comment">    ↑ Where to check if this certificate has been revoked</span>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Security+ Exam Insight — Certificate Types:</strong> Know the difference between DV, OV, and EV certificates. DV certificates are quick to obtain and provide encryption but no organizational verification — they are widely abused by phishing sites. OV and EV certificates verify organizational identity, making them more trustworthy for e-commerce and financial services. Since browsers removed the EV green bar indicator, the practical distinction for end-users has diminished, but the exam still tests it.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 1</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 1</span>
+        <div>
+          <h3>Cryptography Concept Sort — Drag &amp; Drop</h3>
+          <p style="font-size:0.8rem;opacity:0.8;margin-top:2px;">Sort each algorithm or technique into the correct cryptographic category</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Drag each chip from the pool below into its correct cryptographic category. Some may seem tricky — think carefully about the key structure. Submit to receive instant feedback. Click × on a placed chip to return it.
+        </div>
+
+        <div class="drag-pool" id="drag-pool-2">
+          <div class="drag-item" draggable="true" data-answer="Symmetric" id="d2-1">AES-256</div>
+          <div class="drag-item" draggable="true" data-answer="Asymmetric" id="d2-2">RSA-2048</div>
+          <div class="drag-item" draggable="true" data-answer="Hashing" id="d2-3">SHA-256</div>
+          <div class="drag-item" draggable="true" data-answer="Symmetric" id="d2-4">3DES</div>
+          <div class="drag-item" draggable="true" data-answer="Asymmetric" id="d2-5">ECC (P-256)</div>
+          <div class="drag-item" draggable="true" data-answer="Hashing" id="d2-6">MD5</div>
+          <div class="drag-item" draggable="true" data-answer="Symmetric" id="d2-7">ChaCha20</div>
+          <div class="drag-item" draggable="true" data-answer="Hashing" id="d2-8">HMAC-SHA256</div>
+          <div class="drag-item" draggable="true" data-answer="Asymmetric" id="d2-9">Diffie-Hellman</div>
+        </div>
+
+        <div class="drop-zones-3">
+          <div class="drop-zone" id="zone2-Symmetric" data-zone="Symmetric">
+            <div class="drop-zone-label"><span class="dz-dot dot-sym"></span> Symmetric Encryption</div>
+          </div>
+          <div class="drop-zone" id="zone2-Asymmetric" data-zone="Asymmetric">
+            <div class="drop-zone-label"><span class="dz-dot dot-asym"></span> Asymmetric Encryption</div>
+          </div>
+          <div class="drop-zone" id="zone2-Hashing" data-zone="Hashing">
+            <div class="drop-zone-label"><span class="dz-dot dot-hash"></span> Hashing / One-Way</div>
+          </div>
+        </div>
+
+        <div class="activity-actions">
+          <button class="btn-primary" onclick="checkActivity2()">Check Answers</button>
+          <button class="btn-secondary" onclick="resetActivity2()">Reset</button>
+        </div>
+        <div class="activity-result" id="activity2-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 2</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 2</span>
+        <div>
+          <h3>TLS Certificate Field Analyzer</h3>
+          <p style="font-size:0.8rem;opacity:0.8;margin-top:2px;">Read the sample certificate data, then answer questions about what each field reveals</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Examine the certificate fields from the annotated certificate in Topic 3. Answer each question below by selecting the best option. Submit each question individually to get immediate feedback.
+        </div>
+
+        <div class="cert-fields" style="margin-bottom:20px;">
+          <div class="cert-field-card">
+            <div class="cert-field-label">Subject CN</div>
+            <div class="cert-field-value">www.example-corp.com</div>
+          </div>
+          <div class="cert-field-card">
+            <div class="cert-field-label">Issuer</div>
+            <div class="cert-field-value">DigiCert TLS RSA SHA256 2020 CA1</div>
+          </div>
+          <div class="cert-field-card">
+            <div class="cert-field-label">Valid Until</div>
+            <div class="cert-field-value">Oct 14 23:59:59 2025 GMT</div>
+          </div>
+          <div class="cert-field-card">
+            <div class="cert-field-label">Public Key</div>
+            <div class="cert-field-value">RSA 2048-bit</div>
+          </div>
+          <div class="cert-field-card">
+            <div class="cert-field-label">Signature Algorithm</div>
+            <div class="cert-field-value">sha256WithRSAEncryption</div>
+          </div>
+          <div class="cert-field-card">
+            <div class="cert-field-label">SAN Entries</div>
+            <div class="cert-field-value">www.example-corp.com, example-corp.com, api.example-corp.com</div>
+          </div>
+        </div>
+
+        <div class="cert-question-set">
+
+          <div class="cert-q" id="cq1">
+            <div class="cert-q-text">Q1: A browser connects to <code>api.example-corp.com</code>. Based on the certificate, will the TLS connection succeed without a certificate warning?</div>
+            <div class="cert-options">
+              <label class="cert-option"><input type="radio" name="cq1" value="A"> No — the certificate was only issued for www.example-corp.com</label>
+              <label class="cert-option"><input type="radio" name="cq1" value="B"> Yes — api.example-corp.com is listed in the Subject Alternative Name (SAN)</label>
+              <label class="cert-option"><input type="radio" name="cq1" value="C"> No — RSA-2048 is too weak for API connections</label>
+              <label class="cert-option"><input type="radio" name="cq1" value="D"> Yes — the Issuer field covers all subdomains automatically</label>
+            </div>
+            <div class="cert-feedback" id="cq1-fb"></div>
+            <div style="margin-top:10px;"><button class="btn-primary" onclick="checkCertQ('cq1','B')">Submit</button></div>
+          </div>
+
+          <div class="cert-q" id="cq2">
+            <div class="cert-q-text">Q2: What entity vouches for the authenticity of this certificate and ensures it is trustworthy?</div>
+            <div class="cert-options">
+              <label class="cert-option"><input type="radio" name="cq2" value="A"> The Subject — Example Corporation signed it themselves</label>
+              <label class="cert-option"><input type="radio" name="cq2" value="B"> The browser — it validates all certificates automatically</label>
+              <label class="cert-option"><input type="radio" name="cq2" value="C"> The Issuer — DigiCert TLS RSA SHA256 2020 CA1 (an Intermediate CA)</label>
+              <label class="cert-option"><input type="radio" name="cq2" value="D"> The CRL server — it approves each connection in real time</label>
+            </div>
+            <div class="cert-feedback" id="cq2-fb"></div>
+            <div style="margin-top:10px;"><button class="btn-primary" onclick="checkCertQ('cq2','C')">Submit</button></div>
+          </div>
+
+          <div class="cert-q" id="cq3">
+            <div class="cert-q-text">Q3: It is November 1, 2025. A user visits www.example-corp.com and their browser displays a security warning. Based solely on the certificate data provided, what is the most likely cause?</div>
+            <div class="cert-options">
+              <label class="cert-option"><input type="radio" name="cq3" value="A"> The RSA-2048 key is too short and has been flagged as insecure</label>
+              <label class="cert-option"><input type="radio" name="cq3" value="B"> The certificate expired on October 14, 2025 — it is no longer valid</label>
+              <label class="cert-option"><input type="radio" name="cq3" value="C"> DigiCert is not a trusted CA in this browser</label>
+              <label class="cert-option"><input type="radio" name="cq3" value="D"> The SAN field is missing the www prefix</label>
+            </div>
+            <div class="cert-feedback" id="cq3-fb"></div>
+            <div style="margin-top:10px;"><button class="btn-primary" onclick="checkCertQ('cq3','B')">Submit</button></div>
+          </div>
+
+          <div class="cert-q" id="cq4">
+            <div class="cert-q-text">Q4: The security team discovers that the private key associated with this certificate has been compromised. Which PKI mechanism should they use to immediately invalidate the certificate before it expires?</div>
+            <div class="cert-options">
+              <label class="cert-option"><input type="radio" name="cq4" value="A"> Re-issue the certificate with a new validity date</label>
+              <label class="cert-option"><input type="radio" name="cq4" value="B"> Revoke the certificate — add its serial number to the CRL or update via OCSP</label>
+              <label class="cert-option"><input type="radio" name="cq4" value="C"> Change the Subject field to a different domain name</label>
+              <label class="cert-option"><input type="radio" name="cq4" value="D"> Delete the certificate from the web server — no further action required</label>
+            </div>
+            <div class="cert-feedback" id="cq4-fb"></div>
+            <div style="margin-top:10px;"><button class="btn-primary" onclick="checkCertQ('cq4','B')">Submit</button></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Lesson 2 Quiz — 5 Questions</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Assessment</span>
+        <div>
+          <h3>Knowledge Check: Cryptography &amp; PKI</h3>
+          <p style="font-size:0.8rem;opacity:0.8;margin-top:2px;">Select the best answer for each question, then submit for graded feedback</p>
+        </div>
+      </div>
+      <div class="activity-body">
+
+        <div class="quiz-q" id="q1">
+          <div class="q-num">Question 1 of 5</div>
+          <div class="q-text">An organization needs to encrypt large volumes of backup data stored on tape drives. The encryption must be fast and the keys will be managed internally. Which type of encryption is MOST appropriate?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q1" value="A"> Asymmetric encryption using RSA-4096</label>
+            <label class="q-option"><input type="radio" name="q1" value="B"> Symmetric encryption using AES-256</label>
+            <label class="q-option"><input type="radio" name="q1" value="C"> Hashing using SHA-512 to protect the backup data</label>
+            <label class="q-option"><input type="radio" name="q1" value="D"> Obfuscation using Base64 encoding</label>
+          </div>
+          <div class="q-feedback" id="q1-feedback"></div>
+        </div>
+
+        <div class="quiz-q" id="q2">
+          <div class="q-num">Question 2 of 5</div>
+          <div class="q-text">A developer digitally signs a software release package before publishing it to users. Which of the following security properties does the digital signature DIRECTLY provide? (Select the BEST answer.)</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q2" value="A"> Confidentiality — the package is encrypted and cannot be read by attackers</label>
+            <label class="q-option"><input type="radio" name="q2" value="B"> Availability — the package is always downloadable from a CDN</label>
+            <label class="q-option"><input type="radio" name="q2" value="C"> Integrity and Non-Repudiation — proves the package is unaltered and from the developer</label>
+            <label class="q-option"><input type="radio" name="q2" value="D"> Authorization — only authorized users can install the signed package</label>
+          </div>
+          <div class="q-feedback" id="q2-feedback"></div>
+        </div>
+
+        <div class="quiz-q" id="q3">
+          <div class="q-num">Question 3 of 5</div>
+          <div class="q-text">A security analyst discovers that a critical system's TLS certificate is using SHA-1 as its signature algorithm. Why is this a security concern?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q3" value="A"> SHA-1 produces digests that are too short to verify certificate integrity</label>
+            <label class="q-option"><input type="radio" name="q3" value="B"> SHA-1 is a symmetric algorithm and cannot be used with RSA certificates</label>
+            <label class="q-option"><input type="radio" name="q3" value="C"> SHA-1 has demonstrated collision vulnerabilities — two different inputs can produce the same digest, allowing certificate forgery</label>
+            <label class="q-option"><input type="radio" name="q3" value="D"> SHA-1 does not support the X.509 v3 certificate format required by modern browsers</label>
+          </div>
+          <div class="q-feedback" id="q3-feedback"></div>
+        </div>
+
+        <div class="quiz-q" id="q4">
+          <div class="q-num">Question 4 of 5</div>
+          <div class="q-text">An employee submits a Certificate Signing Request (CSR) to the internal CA to obtain a certificate for a new internal application server. Which component of the key pair is included in the CSR?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q4" value="A"> The private key — so the CA can sign the certificate</label>
+            <label class="q-option"><input type="radio" name="q4" value="B"> Both the public and private key — to prove identity</label>
+            <label class="q-option"><input type="radio" name="q4" value="C"> The public key — the CA uses it to create the signed certificate binding identity to that key</label>
+            <label class="q-option"><input type="radio" name="q4" value="D"> Neither key — the CA generates a new key pair on behalf of the applicant</label>
+          </div>
+          <div class="q-feedback" id="q4-feedback"></div>
+        </div>
+
+        <div class="quiz-q" id="q5">
+          <div class="q-num">Question 5 of 5</div>
+          <div class="q-text">A penetration tester reviews an application's source code and discovers that sensitive internal routing information is protected only by Base64 encoding. Which statement BEST characterizes this finding?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q5" value="A"> Base64 is a form of symmetric encryption that provides adequate confidentiality for internal data</label>
+            <label class="q-option"><input type="radio" name="q5" value="B"> This is an obfuscation technique, not encryption — the data provides no meaningful confidentiality protection and can be trivially decoded</label>
+            <label class="q-option"><input type="radio" name="q5" value="C"> Base64 combined with SHA-256 hashing would make this an adequate security control</label>
+            <label class="q-option"><input type="radio" name="q5" value="D"> This is acceptable because the data is internal-only and does not cross a network boundary</label>
+          </div>
+          <div class="q-feedback" id="q5-feedback"></div>
+        </div>
+
+        <div class="quiz-submit-row">
+          <button class="btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          <button class="btn-secondary" onclick="resetQuiz()">Reset</button>
+        </div>
+        <div id="quiz-result"></div>
+      </div>
+    </div>
+  </div>
+
+</div><div class="page-footer">
+  <div class="footer-nav">
+    <a href="index.html">← Course Home</a>
+    <a href="lesson01.html">← Lesson 1: Security Fundamentals</a>
+    <a href="lesson02-part01.html">Topic 1 Deep Dive</a>
+    <a href="lesson02-part02.html">Topic 2 Deep Dive</a>
+    <a href="lesson02-part03.html">Topic 3 Deep Dive</a>
+    <a href="lesson03.html">Next: Threat Actors &amp; Attack Surface →</a>
+  </div>
+  CompTIA Security+ SY0-701 &nbsp;|&nbsp; Lesson 2: Cryptography &amp; PKI &nbsp;|&nbsp; Moraine Valley Community College
+</div>
+
+<script>
+/* ---- THEME ---- */
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+  localStorage.setItem('secplus-theme', next);
+}
+(function(){
+  const saved = localStorage.getItem('secplus-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('themeBtn').textContent = '☀️ Light';
+  }
+})();
+
+/* =============================================
+   ACTIVITY 1 — DRAG & DROP (pool: drag-pool-2)
+   ============================================= */
+let dragging2 = null;
+
+document.querySelectorAll('#drag-pool-2 .drag-item').forEach(item => {
+  item.addEventListener('dragstart', e => {
+    dragging2 = item.id;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  item.addEventListener('dragend', () => item.classList.remove('dragging'));
+});
+
+document.querySelectorAll('[id^="zone2-"]').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const item = document.getElementById(dragging2);
+    if (!item) return;
+    const zoneName = zone.dataset.zone;
+    const isCorrect = item.dataset.answer === zoneName;
+
+    const chip = document.createElement('span');
+    chip.className = 'dropped-item ' + (isCorrect ? 'correct' : 'incorrect');
+    chip.dataset.itemId = dragging2;
+    chip.innerHTML = item.textContent.trim() + ' <span class="remove-btn" title="Return to pool">×</span>';
+    chip.querySelector('.remove-btn').addEventListener('click', () => returnToPool2(dragging2, chip));
+    zone.appendChild(chip);
+    item.style.display = 'none';
+    document.getElementById('activity2-result').style.display = 'none';
+  });
+});
+
+function returnToPool2(id, chip) {
+  const item = document.getElementById(id);
+  if (item) item.style.display = '';
+  chip.remove();
+}
+
+function checkActivity2() {
+  let correct = 0, total = 0;
+  document.querySelectorAll('[id^="zone2-"]').forEach(zone => {
+    const zoneName = zone.dataset.zone;
+    zone.querySelectorAll('.dropped-item').forEach(chip => {
+      total++;
+      const item = document.getElementById(chip.dataset.itemId);
+      if (item && item.dataset.answer === zoneName) {
+        chip.className = 'dropped-item correct'; correct++;
+      } else {
+        chip.className = 'dropped-item incorrect';
+        chip.style.animation = 'none'; void chip.offsetWidth; chip.style.animation = '';
+      }
+    });
+  });
+  const res = document.getElementById('activity2-result');
+  res.style.display = 'block';
+  if (total === 0) { res.className = 'activity-result result-fail'; res.textContent = 'Sort at least one item first.'; return; }
+  if (correct === total && total === 9) {
+    res.className = 'activity-result result-pass';
+    res.textContent = `✅ Perfect score — all 9 algorithms correctly categorized! You understand the three cryptographic families.`;
+  } else {
+    res.className = 'activity-result result-fail';
+    res.textContent = `${correct}/${total} correct. Red chips are misplaced — consider: Does this algorithm use one key, two keys, or no key (one-way)?`;
+  }
+}
+
+function resetActivity2() {
+  document.querySelectorAll('[id^="zone2-"] .dropped-item').forEach(chip => {
+    returnToPool2(chip.dataset.itemId, chip);
+  });
+  const res = document.getElementById('activity2-result');
+  res.style.display = 'none';
+}
+
+/* =============================================
+   ACTIVITY 2 — CERT QUESTION GRADER
+   ============================================= */
+const certFeedback = {
+  cq1: {
+    pass: "✅ Correct! The Subject Alternative Name (SAN) field is what browsers actually check when validating a hostname. Since api.example-corp.com is listed in the SAN, the TLS handshake will succeed without any warning. Modern browsers completely ignore the Subject CN for hostname validation — the SAN is authoritative.",
+    fail: "❌ The correct answer is B. The SAN (Subject Alternative Name) field explicitly lists api.example-corp.com as a valid hostname. Browsers validate the SAN, not just the Subject CN — any domain listed in the SAN is covered by this certificate."
+  },
+  cq2: {
+    pass: "✅ Correct! The Issuer — DigiCert TLS RSA SHA256 2020 CA1 — is the Intermediate Certificate Authority that digitally signed this certificate. Its signature is what makes the certificate trustworthy. The chain of trust extends from this intermediate CA up to a Root CA that is pre-trusted in the operating system.",
+    fail: "❌ The correct answer is C — the Issuer (the Intermediate CA). A CA vouches for the certificate by digitally signing it. The browser follows the chain: leaf cert ← Intermediate CA ← Root CA. The Root CA certificate is pre-installed in the browser/OS trust store."
+  },
+  cq3: {
+    pass: "✅ Correct! The certificate's 'Not After' date is October 14, 2025. On November 1, 2025, the certificate is expired. Browsers treat expired certificates as untrusted and display a security warning — the connection cannot be verified as secure. This is why certificate lifecycle monitoring and timely renewal are critical operational tasks.",
+    fail: "❌ The correct answer is B — the certificate expired on October 14, 2025. November 1, 2025 is past that date. RSA-2048 is still considered adequate for current use, and DigiCert is a widely trusted public CA. Expiry is the most common cause of unexpected TLS warnings in practice."
+  },
+  cq4: {
+    pass: "✅ Correct! Revocation is the correct response to a compromised private key. The certificate's serial number is added to the CA's Certificate Revocation List (CRL), and an OCSP responder is updated to return a 'revoked' status for that certificate. Simply deleting the cert from the server does nothing — it still exists and could be presented by an attacker who has the private key.",
+    fail: "❌ The correct answer is B — revocation via CRL or OCSP. Deleting the certificate from the server does not prevent an attacker who has the private key from using the certificate elsewhere. The CA must formally revoke it so that all relying parties are notified through the CRL or OCSP that the certificate can no longer be trusted."
+  }
+};
+
+function checkCertQ(qId, correctAnswer) {
+  const qDiv = document.getElementById(qId);
+  const selected = qDiv.querySelector(`input[name="${qId}"]:checked`);
+  const feedback = document.getElementById(qId + '-fb');
+  const options = qDiv.querySelectorAll('.cert-option');
+
+  qDiv.querySelectorAll('input').forEach(r => r.disabled = true);
+  qDiv.querySelector('button').disabled = true;
+
+  if (!selected) {
+    feedback.className = 'cert-feedback show fail';
+    feedback.textContent = '⚠️ Please select an answer before submitting.';
+    return;
+  }
+  const isCorrect = selected.value === correctAnswer;
+  options.forEach(opt => {
+    const v = opt.querySelector('input').value;
+    if (v === correctAnswer) opt.classList.add('correct');
+    else if (v === selected.value && !isCorrect) opt.classList.add('wrong');
+  });
+  feedback.className = 'cert-feedback show ' + (isCorrect ? 'pass' : 'fail');
+  feedback.innerHTML = certFeedback[qId][isCorrect ? 'pass' : 'fail'];
+}
+
+/* =============================================
+   QUIZ
+   ============================================= */
+const quizAnswers = { q1:'B', q2:'C', q3:'C', q4:'C', q5:'B' };
+const quizFeedback = {
+  q1: {
+    correct: "✅ Correct! AES-256 is the gold standard for bulk data encryption. Symmetric encryption is the right choice here because: (1) speed matters for large volumes of backup data, (2) the organization manages the keys internally so key distribution isn't the problem, and (3) AES-256 provides a 256-bit key space considered computationally unbreakable. Asymmetric encryption (RSA) is far too slow for bulk data — it is only used for key exchange or small data like signing operations.",
+    wrong: "❌ The correct answer is B — AES-256 (symmetric). For bulk data encryption, symmetric is always preferred because of its speed. RSA (asymmetric) would be orders of magnitude slower. Hashing is one-way — you cannot recover the data. Base64 is encoding, not encryption — it provides zero confidentiality."
+  },
+  q2: {
+    correct: "✅ Correct! Digital signatures provide Integrity (the package hasn't been modified since signing) and Non-Repudiation (the developer cannot deny having signed it — only their private key could produce that signature). Signing does NOT encrypt the package — it remains readable by anyone. Confidentiality requires separate encryption. This is a critical distinction on the Security+ exam.",
+    wrong: "❌ The correct answer is C — Integrity and Non-Repudiation. A digital signature does not encrypt data — it does not provide confidentiality. It proves: (1) the data came from the holder of the private key (authentication), (2) the data was not altered after signing (integrity), and (3) the signer cannot deny having signed it (non-repudiation). Think of it as a tamper-evident seal, not a locked box."
+  },
+  q3: {
+    correct: "✅ Correct! SHA-1 was mathematically broken in 2017 when Google's Project Zero demonstrated a practical collision attack — two different PDF files produced the same SHA-1 hash. In a certificate context, a collision vulnerability means an attacker could create a malicious certificate that hashes to the same value as a legitimate one, potentially forging a trusted certificate. Major browsers stopped trusting SHA-1 certificates in 2017. SHA-256 or higher is required for all publicly trusted certificates.",
+    wrong: "❌ The correct answer is C — SHA-1 has known collision vulnerabilities. SHA-1 produces a 160-bit digest (not the shortest possible, but no longer secure). It is a hash function, not a symmetric algorithm — it is used with RSA just fine technically, but its collision weakness makes it dangerous for certificate signing. Browsers have rejected SHA-1 certificates since 2017."
+  },
+  q4: {
+    correct: "✅ Correct! The CSR contains the applicant's public key along with identity information (CN, organization, etc.) and is signed by the applicant's private key to prove possession. However, the private key itself is never included in the CSR — it remains secret on the applicant's system. The CA uses the public key from the CSR to build the signed certificate. If the private key ever appeared in a CSR, it would be a catastrophic security failure — that key would have to be considered compromised.",
+    wrong: "❌ The correct answer is C — the public key is included in the CSR; the private key is never shared. The CSR is signed with the applicant's private key (to prove they possess it), but the private key is not embedded in the CSR. The CA uses the public key from the CSR to issue the certificate. The private key stays securely on the applicant's system — ideally in an HSM."
+  },
+  q5: {
+    correct: "✅ Correct! Base64 is encoding, not encryption. It is designed for data transport, not data security. Anyone with access to the encoded string can decode it instantly using any Base64 decoder — no key is required. This is the definition of obfuscation: it makes data look unfamiliar, but provides no real confidentiality. The penetration tester has found a significant vulnerability: sensitive data should be protected with AES encryption, not Base64 encoding.",
+    wrong: "❌ The correct answer is B — Base64 is obfuscation, not encryption. It requires no key to decode — any online tool can reverse it in milliseconds. Encryption requires a cryptographic key and algorithm (like AES). Adding SHA-256 hashing to Base64 doesn't help — hashing is one-way and would make the data unrecoverable. 'Internal only' is never a justification for skipping proper encryption of sensitive data."
+  }
+};
+
+function submitQuiz() {
+  let score = 0;
+  Object.keys(quizAnswers).forEach(qid => {
+    const selected = document.querySelector(`input[name="${qid}"]:checked`);
+    const qDiv = document.getElementById(qid);
+    const feedback = document.getElementById(qid + '-feedback');
+    qDiv.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+
+    if (!selected) {
+      feedback.className = 'q-feedback show fail';
+      feedback.innerHTML = '⚠️ No answer selected. ' + quizFeedback[qid].wrong;
+      qDiv.className = 'quiz-q answered-wrong';
+      return;
+    }
+    const isCorrect = selected.value === quizAnswers[qid];
+    if (isCorrect) score++;
+    qDiv.className = 'quiz-q ' + (isCorrect ? 'answered-correct' : 'answered-wrong');
+    feedback.className = 'q-feedback show ' + (isCorrect ? 'pass' : 'fail');
+    feedback.innerHTML = quizFeedback[qid][isCorrect ? 'correct' : 'wrong'];
+
+    qDiv.querySelectorAll('.q-option').forEach(opt => {
+      const v = opt.querySelector('input').value;
+      if (v === quizAnswers[qid]) opt.classList.add('correct');
+      else if (selected && v === selected.value && !isCorrect) opt.classList.add('wrong');
+    });
+  });
+
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'block';
+  const pct = Math.round((score/5)*100);
+  if (score >= 4) {
+    result.className = 'quiz-pass';
+    result.innerHTML = `🎉 <strong>Excellent! ${score}/5 (${pct}%)</strong> — Strong command of cryptographic concepts and PKI. Ready to move to Lesson 3: Threat Actors &amp; Attack Surface. <a href="lesson03.html" style="color:var(--green-dark);font-weight:700;margin-left:8px;">Next Lesson →</a>`;
+  } else {
+    result.className = 'quiz-fail';
+    result.innerHTML = `📚 <strong>${score}/5 (${pct}%)</strong> — Review the explanations above, particularly the symmetric vs. asymmetric comparison and the role of digital signatures. The TLS Certificate Analyzer activity and the comparison table in Topic 1 are good places to start.`;
+  }
+  result.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function resetQuiz() {
+  document.querySelectorAll('.quiz-q').forEach(q => q.className = 'quiz-q');
+  document.querySelectorAll('input[type="radio"]').forEach(r => { r.checked = false; r.disabled = false; });
+  document.querySelectorAll('.q-option').forEach(o => o.classList.remove('correct','wrong'));
+  document.querySelectorAll('.q-feedback').forEach(f => { f.className = 'q-feedback'; f.innerHTML = ''; });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'none'; result.className = '';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMMC Asset Inventory & Categorization Report - Interactive Training Tool</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .training-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #fbbf24;
+            color: #1f2937;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .section h2 {
+            color: #1e3a8a;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 10px;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section h3 {
+            color: #2563eb;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .edit-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+        
+        .edit-btn:hover {
+            background: #059669;
+        }
+        
+        .add-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin: 10px 0;
+            transition: background 0.3s;
+        }
+        
+        .add-btn:hover {
+            background: #2563eb;
+        }
+        
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background 0.3s;
+        }
+        
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .info-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .info-card h4 {
+            margin: 0 0 10px 0;
+            color: #1e40af;
+            font-size: 1.1em;
+        }
+        
+        .asset-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .asset-table th {
+            background: #1e40af;
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .asset-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .asset-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        .asset-table tr:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .category-cui { background-color: #fef2f2; border-left: 4px solid #dc2626; }
+        .category-spa { background-color: #fff7ed; border-left: 4px solid #ea580c; }
+        .category-crma { background-color: #fefce8; border-left: 4px solid #ca8a04; }
+        .category-sa { background-color: #f0f9ff; border-left: 4px solid #0284c7; }
+        .category-oos { background-color: #f6f7f9; border-left: 4px solid #6b7280; }
+        
+        .status-compliant { color: #059669; font-weight: 600; }
+        .status-pending { color: #d97706; font-weight: 600; }
+        .status-non-compliant { color: #dc2626; font-weight: 600; }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #d1d5db;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #1e40af;
+            margin: 0;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin: 5px 0 0 0;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .footer {
+            background: #f8fafc;
+            padding: 25px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            color: #6b7280;
+        }
+        
+        .print-date {
+            margin-top: 15px;
+            font-style: italic;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .editable-field {
+            background: #fef3c7;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background 0.3s;
+        }
+        
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; }
+            .edit-btn, .add-btn, .delete-btn, .training-badge { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="training-badge">TRAINING TOOL</div>
+            <h1 id="company-name">CMMC Asset Inventory & Categorization Report</h1>
+            <p id="company-subtitle">ACME Technology Services Corporation</p>
+            <p>Cybersecurity Maturity Model Certification (CMMC) 2.0 Level 2 Compliance</p>
+        </div>
+        
+        <div class="content">
+            <!-- Executive Summary -->
+            <div class="section">
+                <h2>Executive Summary</h2>
+                <p>This Asset Inventory & Categorization Report provides a comprehensive assessment of <span id="org-name-summary" class="editable-field">ACME Technology Services Corporation</span>'s IT assets in accordance with CMMC 2.0 Level 2 requirements and NIST SP 800-171 standards. The report categorizes all organizational assets into the five CMMC-defined categories: CUI Assets, Security Protection Assets, Contractor Risk Managed Assets, Specialized Assets, and Out-of-Scope Assets.</p>
+                
+                <div class="summary-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-assets">52</div>
+                        <div class="stat-label">Total Assets Inventoried</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="in-scope-assets">23</div>
+                        <div class="stat-label">In-Scope Assets</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="out-scope-assets">29</div>
+                        <div class="stat-label">Out-of-Scope Assets</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">Level 2</div>
+                        <div class="stat-label">CMMC Target Level</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Organization Information -->
+            <div class="section">
+                <h2>
+                    Organization Information
+                    <button class="edit-btn" onclick="editOrganization()">Edit Organization</button>
+                </h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Company Details</h4>
+                        <p><strong>Name:</strong> <span id="org-name">ACME Technology Services Corporation</span></p>
+                        <p><strong>Location:</strong> <span id="org-location">El Paso, Texas</span></p>
+                        <p><strong>Employees:</strong> <span id="org-employees">64</span></p>
+                        <p><strong>Primary Business:</strong> <span id="org-business">US Army uniform and textile services</span></p>
+                    </div>
+                    <div class="info-card">
+                        <h4>CMMC Scope</h4>
+                        <p><strong>Assessment Level:</strong> <span id="cmmc-level">CMMC 2.0 Level 2</span></p>
+                        <p><strong>Information Types:</strong> <span id="info-types">Federal Contract Information (FCI) and Controlled Unclassified Information (CUI)</span></p>
+                        <p><strong>Contract Authority:</strong> <span id="contract-authority">US Army DoD Contracts</span></p>
+                    </div>
+                    <div class="info-card">
+                        <h4>IT Infrastructure</h4>
+                        <p><strong>Main Facility:</strong> <span id="main-facility">Office complex and warehouse</span></p>
+                        <p><strong>Network:</strong> <span id="network-type">Wireless and Ethernet connectivity</span></p>
+                        <p><strong>Cloud Services:</strong> <span id="cloud-services">Amazon cloud backup services</span></p>
+                        <p><strong>Remote Access:</strong> <span id="remote-access">VPN with access controls</span></p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Key Personnel
+                            <button class="edit-btn" onclick="editPersonnel()" style="float: right; font-size: 0.8em; padding: 4px 8px;">Edit</button>
+                        </h4>
+                        <p><strong>Contract Coordinators:</strong> <span id="contract-coordinators">3</span></p>
+                        <p><strong>Chief Information Security Officer:</strong> <span id="ciso-count">1</span></p>
+                        <p><strong>IT Staff:</strong> <span id="it-staff">4</span></p>
+                        <p><strong>Office/Management Personnel:</strong> <span id="mgmt-personnel">Variable access</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Asset Category Legend -->
+            <div class="section">
+                <h2>Asset Category Legend</h2>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color category-cui"></div>
+                        <span><strong>CUI Assets:</strong> Process, store, or transmit Controlled Unclassified Information</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color category-spa"></div>
+                        <span><strong>Security Protection Assets:</strong> Provide security functions for CUI assets</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color category-crma"></div>
+                        <span><strong>Contractor Risk Managed Assets:</strong> Can but not intended to handle CUI</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color category-sa"></div>
+                        <span><strong>Specialized Assets:</strong> Unique security requirements or limitations</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color category-oos"></div>
+                        <span><strong>Out-of-Scope Assets:</strong> Cannot process, store, or transmit CUI</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CUI Assets -->
+            <div class="section">
+                <h2>
+                    CUI Assets
+                    <button class="add-btn" onclick="addAsset('cui')">Add CUI Asset</button>
+                </h2>
+                <p>Assets that process, store, or transmit Controlled Unclassified Information related to US Army contracts.</p>
+                <table class="asset-table">
+                    <thead>
+                        <tr>
+                            <th>Asset ID</th>
+                            <th>Asset Name</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>CUI Data Types</th>
+                            <th>Primary Users</th>
+                            <th>Compliance Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cui-assets-table">
+                        <!-- CUI assets will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Security Protection Assets -->
+            <div class="section">
+                <h2>
+                    Security Protection Assets
+                    <button class="add-btn" onclick="addAsset('spa')">Add Security Protection Asset</button>
+                </h2>
+                <p>Assets that provide security functions and capabilities to protect CUI assets and the CMMC assessment scope.</p>
+                <table class="asset-table">
+                    <thead>
+                        <tr>
+                            <th>Asset ID</th>
+                            <th>Asset Name</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Security Function</th>
+                            <th>Protected Assets</th>
+                            <th>Compliance Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spa-assets-table">
+                        <!-- SPA assets will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Contractor Risk Managed Assets -->
+            <div class="section">
+                <h2>
+                    Contractor Risk Managed Assets
+                    <button class="add-btn" onclick="addAsset('crma')">Add CRMA Asset</button>
+                </h2>
+                <p>Assets that can, but are not intended to, process, store, or transmit CUI due to security policies and procedures.</p>
+                <table class="asset-table">
+                    <thead>
+                        <tr>
+                            <th>Asset ID</th>
+                            <th>Asset Name</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Risk Management Measures</th>
+                            <th>Policy Controls</th>
+                            <th>Compliance Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crma-assets-table">
+                        <!-- CRMA assets will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Specialized Assets -->
+            <div class="section">
+                <h2>
+                    Specialized Assets
+                    <button class="add-btn" onclick="addAsset('sa')">Add Specialized Asset</button>
+                </h2>
+                <p>Assets with unique security requirements or limitations that may process CUI but cannot be fully secured.</p>
+                <table class="asset-table">
+                    <thead>
+                        <tr>
+                            <th>Asset ID</th>
+                            <th>Asset Name</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Specialization Reason</th>
+                            <th>Risk Mitigation</th>
+                            <th>Compliance Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sa-assets-table">
+                        <!-- SA assets will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Out-of-Scope Assets -->
+            <div class="section">
+                <h2>
+                    Out-of-Scope Assets
+                    <button class="add-btn" onclick="addAsset('oos')">Add Out-of-Scope Asset</button>
+                </h2>
+                <p>Assets that cannot process, store, or transmit CUI and do not provide security protections for CUI assets.</p>
+                <table class="asset-table">
+                    <thead>
+                        <tr>
+                            <th>Asset ID</th>
+                            <th>Asset Name</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Usage</th>
+                            <th>Separation Method</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="oos-assets-table">
+                        <!-- OOS assets will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Data Flow and Network Architecture -->
+            <div class="section">
+                <h2>Data Flow and Network Architecture</h2>
+                <h3>CUI Data Flow</h3>
+                <p>Controlled Unclassified Information flows through the following path:</p>
+                <ol>
+                    <li><strong>Ingress:</strong> CUI enters via secure email, VPN file transfers from US Army contracting offices</li>
+                    <li><strong>Processing:</strong> Contract coordinators access and modify CUI on designated workstations</li>
+                    <li><strong>Storage:</strong> CUI is stored on the primary data server with encrypted backups to Azure cloud</li>
+                    <li><strong>Transmission:</strong> CUI is transmitted via encrypted channels through VPN or secure email</li>
+                    <li><strong>Access Control:</strong> All CUI access is logged and controlled through Active Directory authentication</li>
+                </ol>
+                
+                <h3>Network Segmentation</h3>
+                <p>The network is segmented into the following security zones:</p>
+                <ul>
+                    <li><strong>CUI Zone:</strong> Houses all CUI assets with restricted access</li>
+                    <li><strong>Management Zone:</strong> Administrative systems with controlled CUI access</li>
+                    <li><strong>DMZ:</strong> Firewall, VPN gateway, and external-facing services</li>
+                    <li><strong>Guest Network:</strong> Isolated network for personal devices and visitors</li>
+                    <li><strong>OT Network:</strong> Isolated operational technology for building systems</li>
+                </ul>
+            </div>
+            
+            <!-- Compliance Assessment -->
+            <div class="section">
+                <h2>Compliance Assessment Summary</h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Assessment Status</h4>
+                        <p><strong>Overall Status:</strong> <span class="status-compliant">Ready for Assessment</span></p>
+                        <p><strong>Documentation Complete:</strong> Yes</p>
+                        <p><strong>Asset Inventory:</strong> 100% Complete</p>
+                        <p><strong>Network Diagrams:</strong> Current and accurate</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Risk Assessment</h4>
+                        <p><strong>High Risk Assets:</strong> 0</p>
+                        <p><strong>Medium Risk Assets:</strong> 1</p>
+                        <p><strong>Low Risk Assets:</strong> <span id="low-risk-count">22</span></p>
+                        <p><strong>Mitigated Risks:</strong> All identified risks have mitigation plans</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Security Controls</h4>
+                        <p><strong>Access Controls:</strong> Implemented</p>
+                        <p><strong>Encryption:</strong> FIPS 140-2 validated</p>
+                        <p><strong>Logging & Monitoring:</strong> Centralized</p>
+                        <p><strong>Physical Security:</strong> Badge access implemented</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Recommendations</h4>
+                        <p><strong>Priority 1:</strong> Complete warehouse system security assessment</p>
+                        <p><strong>Priority 2:</strong> Update specialized asset documentation</p>
+                        <p><strong>Priority 3:</strong> Quarterly asset inventory reviews</p>
+                        <p><strong>Next Review:</strong> Quarterly</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Document Classification:</strong> Controlled Unclassified Information (CUI)<br>
+            <strong>Prepared by:</strong> Chief Information Security Officer, <span id="footer-org-name">ACME Technology Services Corporation</span><br>
+            <strong>Document Version:</strong> 1.0 | <strong>Review Date:</strong> <span id="current-date">June 15, 2025</span></p>
+            <p class="print-date">This document contains sensitive information and should be handled in accordance with CMMC and NIST SP 800-171 requirements.</p>
+        </div>
+    </div>
+
+    <!-- Modal for Organization Edit -->
+    <div id="organizationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('organizationModal')">&times;</span>
+            <h2>Edit Organization Information</h2>
+            <form id="organizationForm">
+                <div class="form-group">
+                    <label for="orgName">Organization Name:</label>
+                    <input type="text" id="orgName" name="orgName" required>
+                </div>
+                <div class="form-group">
+                    <label for="orgLocation">Location:</label>
+                    <input type="text" id="orgLocation" name="orgLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="orgEmployees">Number of Employees:</label>
+                    <input type="number" id="orgEmployees" name="orgEmployees" required>
+                </div>
+                <div class="form-group">
+                    <label for="orgBusiness">Primary Business:</label>
+                    <input type="text" id="orgBusiness" name="orgBusiness" required>
+                </div>
+                <div class="form-group">
+                    <label for="cmmcLevel">CMMC Level:</label>
+                    <input type="text" id="cmmcLevel" name="cmmcLevel" required>
+                </div>
+                <div class="form-group">
+                    <label for="infoTypes">Information Types:</label>
+                    <input type="text" id="infoTypes" name="infoTypes" required>
+                </div>
+                <div class="form-group">
+                    <label for="contractAuthority">Contract Authority:</label>
+                    <input type="text" id="contractAuthority" name="contractAuthority" required>
+                </div>
+                <div class="form-group">
+                    <label for="mainFacility">Main Facility:</label>
+                    <input type="text" id="mainFacility" name="mainFacility" required>
+                </div>
+                <div class="form-group">
+                    <label for="networkType">Network Type:</label>
+                    <input type="text" id="networkType" name="networkType" required>
+                </div>
+                <div class="form-group">
+                    <label for="cloudServices">Cloud Services:</label>
+                    <input type="text" id="cloudServices" name="cloudServices" required>
+                </div>
+                <div class="form-group">
+                    <label for="remoteAccess">Remote Access:</label>
+                    <input type="text" id="remoteAccess" name="remoteAccess" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('organizationModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Personnel Edit -->
+    <div id="personnelModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('personnelModal')">&times;</span>
+            <h2>Edit Key Personnel</h2>
+            <form id="personnelForm">
+                <div class="form-group">
+                    <label for="contractCoordinators">Contract Coordinators:</label>
+                    <input type="number" id="contractCoordinators" name="contractCoordinators" required>
+                </div>
+                <div class="form-group">
+                    <label for="cisoCount">Chief Information Security Officers:</label>
+                    <input type="number" id="cisoCount" name="cisoCount" required>
+                </div>
+                <div class="form-group">
+                    <label for="itStaff">IT Staff:</label>
+                    <input type="number" id="itStaff" name="itStaff" required>
+                </div>
+                <div class="form-group">
+                    <label for="mgmtPersonnel">Office/Management Personnel Access:</label>
+                    <input type="text" id="mgmtPersonnel" name="mgmtPersonnel" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('personnelModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Asset Add/Edit -->
+    <div id="assetModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('assetModal')">&times;</span>
+            <h2 id="assetModalTitle">Add Asset</h2>
+            <form id="assetForm">
+                <input type="hidden" id="assetCategory" name="assetCategory">
+                <input type="hidden" id="assetIndex" name="assetIndex" value="-1">
+                
+                <div class="form-group">
+                    <label for="assetId">Asset ID:</label>
+                    <input type="text" id="assetId" name="assetId" required>
+                </div>
+                <div class="form-group">
+                    <label for="assetName">Asset Name:</label>
+                    <input type="text" id="assetName" name="assetName" required>
+                </div>
+                <div class="form-group">
+                    <label for="assetType">Type:</label>
+                    <input type="text" id="assetType" name="assetType" required>
+                </div>
+                <div class="form-group">
+                    <label for="assetLocation">Location:</label>
+                    <input type="text" id="assetLocation" name="assetLocation" required>
+                </div>
+                
+                <!-- Dynamic fields based on asset category -->
+                <div id="dynamicFields"></div>
+                
+                <div class="form-group">
+                    <label for="complianceStatus">Compliance Status:</label>
+                    <select id="complianceStatus" name="complianceStatus" required>
+                        <option value="Compliant">Compliant</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Non-Compliant">Non-Compliant</option>
+                        <option value="Risk Assessed">Risk Assessed</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('assetModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Asset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let organizationData = {
+            name: "ACME Technology Services Corporation",
+            location: "El Paso, Texas",
+            employees: 64,
+            business: "US Army uniform and textile services",
+            cmmcLevel: "CMMC 2.0 Level 2",
+            infoTypes: "Federal Contract Information (FCI) and Controlled Unclassified Information (CUI)",
+            contractAuthority: "US Army DoD Contracts",
+            mainFacility: "Office complex and warehouse",
+            networkType: "Wireless and Ethernet connectivity",
+            cloudServices: "Amazon cloud backup services",
+            remoteAccess: "VPN with access controls"
+        };
+
+        let personnelData = {
+            contractCoordinators: 3,
+            cisoCount: 1,
+            itStaff: 4,
+            mgmtPersonnel: "Variable access"
+        };
+
+        // Asset data structures
+        let assets = {
+            cui: [
+                {id: "CUI-001", name: "Primary Data Server", type: "Physical Server", location: "El Paso HQ - Server Room", cuiDataTypes: "Contract specifications, logistics data", primaryUsers: "Contract coordinators, IT staff", complianceStatus: "Compliant"},
+                {id: "CUI-002", name: "Azure Cloud Backup", type: "Microsoft Azure Server", location: "Microsoft Azure Cloud", cuiDataTypes: "Backup of contract data", primaryUsers: "IT staff, CISO", complianceStatus: "Compliant"},
+                {id: "CUI-003", name: "Contract Coordinator Workstation 1", type: "Desktop Computer", location: "El Paso HQ - Office", cuiDataTypes: "Active contract management", primaryUsers: "Contract Coordinator #1", complianceStatus: "Compliant"},
+                {id: "CUI-004", name: "Contract Coordinator Workstation 2", type: "Desktop Computer", location: "El Paso HQ - Office", cuiDataTypes: "Active contract management", primaryUsers: "Contract Coordinator #2", complianceStatus: "Compliant"},
+                {id: "CUI-005", name: "Contract Coordinator Workstation 3", type: "Desktop Computer", location: "El Paso HQ - Office", cuiDataTypes: "Active contract management", primaryUsers: "Contract Coordinator #3", complianceStatus: "Compliant"},
+                {id: "CUI-006", name: "CISO Management Workstation", type: "Desktop Computer", location: "El Paso HQ - CISO Office", cuiDataTypes: "Security policies, compliance documentation", primaryUsers: "Chief Information Security Officer", complianceStatus: "Compliant"},
+                {id: "CUI-007", name: "Secure File Server", type: "Network Attached Storage", location: "El Paso HQ - Server Room", cuiDataTypes: "Document repository for contracts", primaryUsers: "Management, Contract coordinators", complianceStatus: "Compliant"}
+            ],
+            spa: [
+                {id: "SPA-001", name: "Enterprise Firewall", type: "Network Security Appliance", location: "El Paso HQ - Network Closet", securityFunction: "Network perimeter protection", protectedAssets: "All CUI assets", complianceStatus: "Compliant"},
+                {id: "SPA-002", name: "VPN Gateway", type: "Remote Access Appliance", location: "El Paso HQ - Network Closet", securityFunction: "Secure remote access", protectedAssets: "Remote access to CUI systems", complianceStatus: "Compliant"},
+                {id: "SPA-003", name: "Active Directory Server", type: "Domain Controller", location: "El Paso HQ - Server Room", securityFunction: "Identity and access management", protectedAssets: "All domain-joined systems", complianceStatus: "Compliant"},
+                {id: "SPA-004", name: "Endpoint Protection Server", type: "Security Management Server", location: "El Paso HQ - Server Room", securityFunction: "Antivirus and endpoint security", protectedAssets: "All workstations and servers", complianceStatus: "Compliant"},
+                {id: "SPA-005", name: "Log Management System", type: "SIEM Appliance", location: "El Paso HQ - Server Room", securityFunction: "Security event logging and monitoring", protectedAssets: "All in-scope systems", complianceStatus: "Compliant"},
+                {id: "SPA-006", name: "Badge Access Control System", type: "Physical Access Control", location: "El Paso HQ - Multiple locations", securityFunction: "Physical access control", protectedAssets: "Controlled spaces with CUI access", complianceStatus: "Compliant"}
+            ],
+            crma: [
+                {id: "CRMA-001", name: "IT Support Workstation 1", type: "Desktop Computer", location: "El Paso HQ - IT Department", riskManagement: "Limited admin access, no CUI storage policy", policyControls: "Administrative access only policy", complianceStatus: "Compliant"},
+                {id: "CRMA-002", name: "IT Support Workstation 2", type: "Desktop Computer", location: "El Paso HQ - IT Department", riskManagement: "Limited admin access, no CUI storage policy", policyControls: "Administrative access only policy", complianceStatus: "Compliant"},
+                {id: "CRMA-003", name: "Management Laptops (10)", type: "Laptop Computers", location: "El Paso HQ - Various offices", riskManagement: "Read-only access to certain CUI, encryption", policyControls: "Data handling restrictions policy", complianceStatus: "Compliant"},
+                {id: "CRMA-004", name: "Shared Network Printers (3)", type: "Network Printers", location: "El Paso HQ - Office areas", riskManagement: "User authentication required, secure print", policyControls: "Secure printing policy", complianceStatus: "Compliant"}
+            ],
+            sa: [
+                {id: "SA-001", name: "Warehouse Inventory System", type: "Industrial Control System", location: "El Paso - Warehouse", specializationReason: "Legacy system, limited security capabilities", riskMitigation: "Network segmentation, limited access", complianceStatus: "Risk Assessed"},
+                {id: "SA-002", name: "Security Camera System", type: "IP Camera Network", location: "El Paso HQ - Perimeter/Interior", specializationReason: "IoT devices with limited security features", riskMitigation: "Isolated VLAN, access controls", complianceStatus: "Compliant"},
+                {id: "SA-003", name: "HVAC Control System", type: "Building Management System", location: "El Paso HQ - Mechanical room", specializationReason: "Operational technology, minimal security", riskMitigation: "Air-gapped network, physical controls", complianceStatus: "Compliant"}
+            ],
+            oos: [
+                {id: "OOS-001", name: "Employee Personal Laptops (25)", type: "Personal Devices", location: "Various - Employee homes", usage: "Personal use only", separationMethod: "Policy prohibition, no network access"},
+                {id: "OOS-002", name: "HR Workstations (3)", type: "Desktop Computers", location: "El Paso HQ - HR Department", usage: "HR operations, payroll", separationMethod: "Network segmentation"},
+                {id: "OOS-003", name: "Marketing/Public Website Server", type: "Web Server", location: "External hosting provider", usage: "Public website hosting", separationMethod: "Separate hosting environment"},
+                {id: "OOS-004", name: "Break Room WiFi Network", type: "Wireless Network", location: "El Paso HQ - Break room", usage: "Employee personal device internet", separationMethod: "Separate VLAN, no internal access"},
+                {id: "OOS-005", name: "Facility Management Laptops (3)", type: "Laptop Computers", location: "El Paso HQ - Facilities", usage: "Building maintenance, utilities", separationMethod: "Separate network, no CUI access"}
+            ]
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            updateOrganizationDisplay();
+            updatePersonnelDisplay();
+            updateAssetTables();
+            updateStatistics();
+            updateCurrentDate();
+        });
+
+        // Organization editing functions
+        function editOrganization() {
+            const form = document.getElementById('organizationForm');
+            form.orgName.value = organizationData.name;
+            form.orgLocation.value = organizationData.location;
+            form.orgEmployees.value = organizationData.employees;
+            form.orgBusiness.value = organizationData.business;
+            form.cmmcLevel.value = organizationData.cmmcLevel;
+            form.infoTypes.value = organizationData.infoTypes;
+            form.contractAuthority.value = organizationData.contractAuthority;
+            form.mainFacility.value = organizationData.mainFacility;
+            form.networkType.value = organizationData.networkType;
+            form.cloudServices.value = organizationData.cloudServices;
+            form.remoteAccess.value = organizationData.remoteAccess;
+            
+            document.getElementById('organizationModal').style.display = 'block';
+        }
+
+        function editPersonnel() {
+            const form = document.getElementById('personnelForm');
+            form.contractCoordinators.value = personnelData.contractCoordinators;
+            form.cisoCount.value = personnelData.cisoCount;
+            form.itStaff.value = personnelData.itStaff;
+            form.mgmtPersonnel.value = personnelData.mgmtPersonnel;
+            
+            document.getElementById('personnelModal').style.display = 'block';
+        }
+
+        // Form submission handlers
+        document.getElementById('organizationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            organizationData.name = formData.get('orgName');
+            organizationData.location = formData.get('orgLocation');
+            organizationData.employees = parseInt(formData.get('orgEmployees'));
+            organizationData.business = formData.get('orgBusiness');
+            organizationData.cmmcLevel = formData.get('cmmcLevel');
+            organizationData.infoTypes = formData.get('infoTypes');
+            organizationData.contractAuthority = formData.get('contractAuthority');
+            organizationData.mainFacility = formData.get('mainFacility');
+            organizationData.networkType = formData.get('networkType');
+            organizationData.cloudServices = formData.get('cloudServices');
+            organizationData.remoteAccess = formData.get('remoteAccess');
+            
+            updateOrganizationDisplay();
+            closeModal('organizationModal');
+        });
+
+        document.getElementById('personnelForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            personnelData.contractCoordinators = parseInt(formData.get('contractCoordinators'));
+            personnelData.cisoCount = parseInt(formData.get('cisoCount'));
+            personnelData.itStaff = parseInt(formData.get('itStaff'));
+            personnelData.mgmtPersonnel = formData.get('mgmtPersonnel');
+            
+            updatePersonnelDisplay();
+            closeModal('personnelModal');
+        });
+
+        document.getElementById('assetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const category = formData.get('assetCategory');
+            const index = parseInt(formData.get('assetIndex'));
+            
+            const asset = {
+                id: formData.get('assetId'),
+                name: formData.get('assetName'),
+                type: formData.get('assetType'),
+                location: formData.get('assetLocation'),
+                complianceStatus: formData.get('complianceStatus')
+            };
+
+            // Add category-specific fields
+            if (category === 'cui') {
+                asset.cuiDataTypes = formData.get('cuiDataTypes');
+                asset.primaryUsers = formData.get('primaryUsers');
+            } else if (category === 'spa') {
+                asset.securityFunction = formData.get('securityFunction');
+                asset.protectedAssets = formData.get('protectedAssets');
+            } else if (category === 'crma') {
+                asset.riskManagement = formData.get('riskManagement');
+                asset.policyControls = formData.get('policyControls');
+            } else if (category === 'sa') {
+                asset.specializationReason = formData.get('specializationReason');
+                asset.riskMitigation = formData.get('riskMitigation');
+            } else if (category === 'oos') {
+                asset.usage = formData.get('usage');
+                asset.separationMethod = formData.get('separationMethod');
+            }
+
+            if (index === -1) {
+                // Add new asset
+                assets[category].push(asset);
+            } else {
+                // Edit existing asset
+                assets[category][index] = asset;
+            }
+
+            updateAssetTables();
+            updateStatistics();
+            closeModal('assetModal');
+        });
+
+        // Asset management functions
+        function addAsset(category) {
+            document.getElementById('assetModalTitle').textContent = 'Add ' + getCategoryDisplayName(category);
+            document.getElementById('assetCategory').value = category;
+            document.getElementById('assetIndex').value = -1;
+            document.getElementById('assetForm').reset();
+            document.getElementById('assetCategory').value = category; // Reset clears this, so set it again
+            
+            setupDynamicFields(category);
+            document.getElementById('assetModal').style.display = 'block';
+        }
+
+        function editAsset(category, index) {
+            const asset = assets[category][index];
+            document.getElementById('assetModalTitle').textContent = 'Edit ' + getCategoryDisplayName(category);
+            document.getElementById('assetCategory').value = category;
+            document.getElementById('assetIndex').value = index;
+            
+            // Populate form fields
+            document.getElementById('assetId').value = asset.id;
+            document.getElementById('assetName').value = asset.name;
+            document.getElementById('assetType').value = asset.type;
+            document.getElementById('assetLocation').value = asset.location;
+            document.getElementById('complianceStatus').value = asset.complianceStatus || 'Compliant';
+            
+            setupDynamicFields(category, asset);
+            document.getElementById('assetModal').style.display = 'block';
+        }
+
+        function deleteAsset(category, index) {
+            if (confirm('Are you sure you want to delete this asset?')) {
+                assets[category].splice(index, 1);
+                updateAssetTables();
+                updateStatistics();
+            }
+        }
+
+        function setupDynamicFields(category, asset = null) {
+            const dynamicFields = document.getElementById('dynamicFields');
+            dynamicFields.innerHTML = '';
+
+            if (category === 'cui') {
+                dynamicFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="cuiDataTypes">CUI Data Types:</label>
+                        <input type="text" id="cuiDataTypes" name="cuiDataTypes" value="${asset?.cuiDataTypes || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="primaryUsers">Primary Users:</label>
+                        <input type="text" id="primaryUsers" name="primaryUsers" value="${asset?.primaryUsers || ''}" required>
+                    </div>
+                `;
+            } else if (category === 'spa') {
+                dynamicFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="securityFunction">Security Function:</label>
+                        <input type="text" id="securityFunction" name="securityFunction" value="${asset?.securityFunction || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="protectedAssets">Protected Assets:</label>
+                        <input type="text" id="protectedAssets" name="protectedAssets" value="${asset?.protectedAssets || ''}" required>
+                    </div>
+                `;
+            } else if (category === 'crma') {
+                dynamicFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="riskManagement">Risk Management Measures:</label>
+                        <textarea id="riskManagement" name="riskManagement" required>${asset?.riskManagement || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="policyControls">Policy Controls:</label>
+                        <input type="text" id="policyControls" name="policyControls" value="${asset?.policyControls || ''}" required>
+                    </div>
+                `;
+            } else if (category === 'sa') {
+                dynamicFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="specializationReason">Specialization Reason:</label>
+                        <textarea id="specializationReason" name="specializationReason" required>${asset?.specializationReason || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="riskMitigation">Risk Mitigation:</label>
+                        <input type="text" id="riskMitigation" name="riskMitigation" value="${asset?.riskMitigation || ''}" required>
+                    </div>
+                `;
+            } else if (category === 'oos') {
+                dynamicFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="usage">Usage:</label>
+                        <input type="text" id="usage" name="usage" value="${asset?.usage || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="separationMethod">Separation Method:</label>
+                        <input type="text" id="separationMethod" name="separationMethod" value="${asset?.separationMethod || ''}" required>
+                    </div>
+                `;
+            }
+        }
+
+        function getCategoryDisplayName(category) {
+            const names = {
+                'cui': 'CUI Asset',
+                'spa': 'Security Protection Asset',
+                'crma': 'Contractor Risk Managed Asset',
+                'sa': 'Specialized Asset',
+                'oos': 'Out-of-Scope Asset'
+            };
+            return names[category];
+        }
+
+        function getStatusClass(status) {
+            if (status === 'Compliant') return 'status-compliant';
+            if (status === 'Pending' || status === 'Risk Assessed') return 'status-pending';
+            return 'status-non-compliant';
+        }
+
+        // Update display functions
+        function updateOrganizationDisplay() {
+            document.getElementById('org-name').textContent = organizationData.name;
+            document.getElementById('org-name-summary').textContent = organizationData.name;
+            document.getElementById('company-subtitle').textContent = organizationData.name;
+            document.getElementById('footer-org-name').textContent = organizationData.name;
+            document.getElementById('org-location').textContent = organizationData.location;
+            document.getElementById('org-employees').textContent = organizationData.employees;
+            document.getElementById('org-business').textContent = organizationData.business;
+            document.getElementById('cmmc-level').textContent = organizationData.cmmcLevel;
+            document.getElementById('info-types').textContent = organizationData.infoTypes;
+            document.getElementById('contract-authority').textContent = organizationData.contractAuthority;
+            document.getElementById('main-facility').textContent = organizationData.mainFacility;
+            document.getElementById('network-type').textContent = organizationData.networkType;
+            document.getElementById('cloud-services').textContent = organizationData.cloudServices;
+            document.getElementById('remote-access').textContent = organizationData.remoteAccess;
+        }
+
+        function updatePersonnelDisplay() {
+            document.getElementById('contract-coordinators').textContent = personnelData.contractCoordinators;
+            document.getElementById('ciso-count').textContent = personnelData.cisoCount;
+            document.getElementById('it-staff').textContent = personnelData.itStaff;
+            document.getElementById('mgmt-personnel').textContent = personnelData.mgmtPersonnel;
+        }
+
+        function updateAssetTables() {
+            // Update CUI Assets table
+            const cuiTable = document.getElementById('cui-assets-table');
+            cuiTable.innerHTML = '';
+            assets.cui.forEach((asset, index) => {
+                const row = cuiTable.insertRow();
+                row.className = 'category-cui';
+                row.innerHTML = `
+                    <td>${asset.id}</td>
+                    <td>${asset.name}</td>
+                    <td>${asset.type}</td>
+                    <td>${asset.location}</td>
+                    <td>${asset.cuiDataTypes}</td>
+                    <td>${asset.primaryUsers}</td>
+                    <td class="${getStatusClass(asset.complianceStatus)}">${asset.complianceStatus}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editAsset('cui', ${index})" style="margin-right: 5px; padding: 4px 8px; font-size: 0.8em;">Edit</button>
+                        <button class="delete-btn" onclick="deleteAsset('cui', ${index})">Delete</button>
+                    </td>
+                `;
+            });
+
+            // Update SPA Assets table
+            const spaTable = document.getElementById('spa-assets-table');
+            spaTable.innerHTML = '';
+            assets.spa.forEach((asset, index) => {
+                const row = spaTable.insertRow();
+                row.className = 'category-spa';
+                row.innerHTML = `
+                    <td>${asset.id}</td>
+                    <td>${asset.name}</td>
+                    <td>${asset.type}</td>
+                    <td>${asset.location}</td>
+                    <td>${asset.securityFunction}</td>
+                    <td>${asset.protectedAssets}</td>
+                    <td class="${getStatusClass(asset.complianceStatus)}">${asset.complianceStatus}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editAsset('spa', ${index})" style="margin-right: 5px; padding: 4px 8px; font-size: 0.8em;">Edit</button>
+                        <button class="delete-btn" onclick="deleteAsset('spa', ${index})">Delete</button>
+                    </td>
+                `;
+            });
+
+            // Update CRMA Assets table
+            const crmaTable = document.getElementById('crma-assets-table');
+            crmaTable.innerHTML = '';
+            assets.crma.forEach((asset, index) => {
+                const row = crmaTable.insertRow();
+                row.className = 'category-crma';
+                row.innerHTML = `
+                    <td>${asset.id}</td>
+                    <td>${asset.name}</td>
+                    <td>${asset.type}</td>
+                    <td>${asset.location}</td>
+                    <td>${asset.riskManagement}</td>
+                    <td>${asset.policyControls}</td>
+                    <td class="${getStatusClass(asset.complianceStatus)}">${asset.complianceStatus}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editAsset('crma', ${index})" style="margin-right: 5px; padding: 4px 8px; font-size: 0.8em;">Edit</button>
+                        <button class="delete-btn" onclick="deleteAsset('crma', ${index})">Delete</button>
+                    </td>
+                `;
+            });
+
+            // Update SA Assets table
+            const saTable = document.getElementById('sa-assets-table');
+            saTable.innerHTML = '';
+            assets.sa.forEach((asset, index) => {
+                const row = saTable.insertRow();
+                row.className = 'category-sa';
+                row.innerHTML = `
+                    <td>${asset.id}</td>
+                    <td>${asset.name}</td>
+                    <td>${asset.type}</td>
+                    <td>${asset.location}</td>
+                    <td>${asset.specializationReason}</td>
+                    <td>${asset.riskMitigation}</td>
+                    <td class="${getStatusClass(asset.complianceStatus)}">${asset.complianceStatus}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editAsset('sa', ${index})" style="margin-right: 5px; padding: 4px 8px; font-size: 0.8em;">Edit</button>
+                        <button class="delete-btn" onclick="deleteAsset('sa', ${index})">Delete</button>
+                    </td>
+                `;
+            });
+
+            // Update OOS Assets table
+            const oosTable = document.getElementById('oos-assets-table');
+            oosTable.innerHTML = '';
+            assets.oos.forEach((asset, index) => {
+                const row = oosTable.insertRow();
+                row.className = 'category-oos';
+                row.innerHTML = `
+                    <td>${asset.id}</td>
+                    <td>${asset.name}</td>
+                    <td>${asset.type}</td>
+                    <td>${asset.location}</td>
+                    <td>${asset.usage}</td>
+                    <td>${asset.separationMethod}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editAsset('oos', ${index})" style="margin-right: 5px; padding: 4px 8px; font-size: 0.8em;">Edit</button>
+                        <button class="delete-btn" onclick="deleteAsset('oos', ${index})">Delete</button>
+                    </td>
+                `;
+            });
+        }
+
+        function updateStatistics() {
+            const totalAssets = assets.cui.length + assets.spa.length + assets.crma.length + assets.sa.length + assets.oos.length;
+            const inScopeAssets = assets.cui.length + assets.spa.length + assets.crma.length + assets.sa.length;
+            const outScopeAssets = assets.oos.length;
+
+            document.getElementById('total-assets').textContent = totalAssets;
+            document.getElementById('in-scope-assets').textContent = inScopeAssets;
+            document.getElementById('out-scope-assets').textContent = outScopeAssets;
+            document.getElementById('low-risk-count').textContent = inScopeAssets - 1; // Assuming 1 medium risk asset
+        }
+
+        function updateCurrentDate() {
+            const today = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = today.toLocaleDateString('en-US', options);
+        }
+
+        // Modal functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

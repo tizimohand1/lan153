@@ -1,0 +1,1101 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security+ Lesson: Security Control Functional Types</title>
+    <style>
+        /* --- BRANDING & DESIGN SYSTEM --- */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --text-muted: #4a4a4a;
+            
+            /* Classy Academic Green Palette */
+            --primary-green: #1b5e20;   /* Deep Forest Green */
+            --accent-green: #2e7d32;    /* Vibrant Instructional Green */
+            --light-green: #f1f8e9;     /* Ultra-light green tint */
+            --border-color: #cccccc;
+            --card-bg: #ffffff;
+            
+            /* Status Colors */
+            --success: #2e7d32;
+            --error: #c62828;
+            --warning: #f57f17;
+            
+            /* Theme Toggle Buttons & Header colors */
+            --header-bg: #111111;
+            --header-text: #ffffff;
+            --toggle-bg: #2e7d32;
+            --toggle-text: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #f5f5f5;
+            --text-muted: #b0b0b0;
+            
+            --primary-green: #4caf50;
+            --accent-green: #81c784;
+            --light-green: #1b2e1c;
+            --border-color: #333333;
+            --card-bg: #1e1e1e;
+            
+            --header-bg: #000000;
+            --header-text: #ffffff;
+            --toggle-bg: #ffffff;
+            --toggle-text: #111111;
+        }
+
+        /* --- BASE RESET & LAYOUT --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-bottom: 5rem;
+        }
+
+        /* --- ACCESSIBLE FOCUS STATES --- */
+        a:focus, button:focus, [tabindex="0"]:focus {
+            outline: 3px solid var(--accent-green);
+            outline-offset: 2px;
+        }
+
+        /* --- LECTURE HEADER --- */
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary-green);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .header-content p {
+            font-size: 0.9rem;
+            color: var(--accent-green);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.2rem;
+        }
+
+        #theme-toggle {
+            background-color: var(--toggle-bg);
+            color: var(--toggle-text);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        #theme-toggle:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        /* --- MAIN CONTENT CONTAINER --- */
+        main {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        section {
+            margin-bottom: 3.5rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--primary-green);
+            border-bottom: 2px solid var(--primary-green);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- OBJECTIVES & KEY TERMS BLOCKS --- */
+        .objectives-card {
+            background-color: var(--light-green);
+            border-left: 6px solid var(--primary-green);
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+        }
+
+        .objectives-card h3 {
+            color: var(--primary-green);
+            margin-bottom: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .objectives-card ul {
+            list-style-type: square;
+            padding-left: 1.5rem;
+        }
+
+        .key-terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .term-badge {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .term-badge strong {
+            color: var(--primary-green);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        /* --- FLIP CARDS GRID (LESSON NAVIGATION) --- */
+        .flip-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 250px;
+            perspective: 1000px; /* Essential for 3D flip effect */
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: var(--shadow-md);
+            border-radius: 8px;
+        }
+
+        /* Trigger flip class (applied via hover/focus/tap via JS) */
+        .flip-card.flipped .flip-card-inner,
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari support */
+            backface-visibility: hidden;
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .flip-card-front {
+            background-color: var(--card-bg);
+            border-top: 5px solid var(--primary-green);
+            color: var(--text-color);
+        }
+
+        .flip-card-front h3 {
+            color: var(--primary-green);
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .flip-card-front span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .flip-card-back {
+            background-color: var(--light-green);
+            color: var(--text-color);
+            transform: rotateY(180deg);
+            border: 1px solid var(--primary-green);
+        }
+
+        .flip-card-back p {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .flip-card-back strong {
+            font-size: 0.85rem;
+            color: var(--primary-green);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* --- INTERACTIVE CONTAINER SYSTEM --- */
+        .interactive-section {
+            border: 2px solid var(--primary-green);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--card-bg);
+            margin-bottom: 3.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .interactive-header {
+            background-color: var(--primary-green);
+            color: #ffffff;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .interactive-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .interactive-header p {
+            margin-top: 0.25rem;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .interactive-body {
+            padding: 1.5rem;
+        }
+
+        /* --- ACTIVITY 1: MATCHING CHALLENGE --- */
+        .scenarios-box {
+            background-color: var(--light-green);
+            border: 2px dashed var(--primary-green);
+            border-radius: 6px;
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .matching-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .matching-btn {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .matching-btn:hover {
+            border-color: var(--primary-green);
+            background-color: var(--light-green);
+            transform: translateY(-2px);
+        }
+
+        /* Active feedback classes */
+        .btn-correct {
+            background-color: var(--success) !important;
+            color: #ffffff !important;
+            border-color: var(--success) !important;
+        }
+
+        .btn-incorrect {
+            background-color: var(--error) !important;
+            color: #ffffff !important;
+            border-color: var(--error) !important;
+            animation: shake 0.4s ease;
+        }
+
+        #matching-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        /* --- ACTIVITY 2: DEFENSE BUILDER --- */
+        .defense-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .defense-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .threat-display {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+        }
+
+        .threat-display h4 {
+            color: var(--error);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .builder-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .slot-container {
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            background-color: var(--bg-color);
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slot-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary-green);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .control-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .control-chip {
+            background-color: var(--light-green);
+            border: 1px solid var(--primary-green);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .control-chip:hover {
+            background-color: var(--primary-green);
+            color: #ffffff;
+        }
+
+        .control-chip.placed {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* --- THE 5-QUESTION ASSESSMENT --- */
+        .quiz-question {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quiz-question p.q-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-green);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quiz-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .quiz-label:hover {
+            background-color: var(--light-green);
+            border-color: var(--primary-green);
+        }
+
+        .quiz-label input[type="radio"] {
+            accent-color: var(--primary-green);
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Quiz Action Areas */
+        .quiz-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-green);
+            color: #ffffff;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        .quiz-rationale {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .rationale-correct {
+            background-color: var(--light-green);
+            border-left: 5px solid var(--success);
+            color: var(--text-color);
+        }
+
+        .rationale-incorrect {
+            background-color: #ffebee;
+            border-left: 5px solid var(--error);
+            color: #111111;
+        }
+
+        /* --- UTILITIES & ANIMATIONS --- */
+        .hidden { display: none !important; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        /* --- SVG Inline Icons Support --- */
+        .icon {
+            width: 32px;
+            height: 32px;
+            fill: currentColor;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <h1>CompTIA Security+ (SY0-701)</h1>
+        <p>Lesson 1.4: Security Control Functional Types</p>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle Dark/Light Mode">Dark Mode</button>
+</header>
+
+<main>
+    <!-- Objectives & Scope Card -->
+    <div class="objectives-card">
+        <h3>Learning Objectives</h3>
+        <p>By the end of this digital training module, you will be able to:</p>
+        <ul>
+            <li>Examine the unique operational roles played by the six functional control types.</li>
+            <li>Analyze enterprise threat vectors and match proper mitigative countermeasures.</li>
+            <li>Design defense-in-depth frameworks by aligning sequential functional security barriers.</li>
+        </ul>
+    </div>
+
+    <!-- Introduction Section -->
+    <section>
+        <h2 class="section-title">Introduction</h2>
+        <p>
+            In cybersecurity, knowing *who* enforces a control is only half the battle. To build resilient networks, we must categorize controls based on **their job during a security incident**. 
+        </p>
+        <p>
+            These roles are classified into six **Functional Types**. Organizing controls by function allows systems engineers to structure multiple defense boundaries, ensuring that if a threat breaches our prevention barrier, detection and corrective triggers are already waiting.
+        </p>
+        
+        <!-- Key Terms -->
+        <div class="key-terms-grid">
+            <div class="term-badge">
+                <strong>Defense in Depth</strong>
+                The architectural practice of nesting multiple layers of different functional safeguards to protect assets.
+            </div>
+            <div class="term-badge">
+                <strong>Functional Type</strong>
+                Classification of a security control based on *when* and *how* it acts during an adverse event threat cycle.
+            </div>
+        </div>
+    </section>
+
+    <!-- Flip Cards Layout (Exploring the Six Functional Types) -->
+    <section>
+        <h2 class="section-title">The Six Functional Types</h2>
+        <p style="margin-bottom: 1.5rem;">Hover, click, or tap each card below to flip it and explore its operational objective, core focus, and real-world implementations.</p>
+        
+        <div class="flip-grid">
+            <!-- Preventive -->
+            <div class="flip-card" tabindex="0" aria-label="Preventive Control Card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <!-- SVG Shield Icon -->
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6V12H17V13.5H10.5V6H12Z"/></svg>
+                        <h3>Preventive</h3>
+                        <span>Proactive Defense</span>
+                    </div>
+                    <div class="flip-card-back">
+                        <p>Designed to actively block, deter, or stop a security incident before it can materialize or damage systems.</p>
+                        <strong>Examples:</strong>
+                        <p>Firewall Rules, Mantraps, Biometric Locks, System Hardening</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detective -->
+            <div class="flip-card" tabindex="0" aria-label="Detective Control Card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <!-- SVG Eye/Search Icon -->
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg>
+                        <h3>Detective</h3>
+                        <span>Incident Visibility</span>
+                    </div>
+                    <div class="flip-card-back">
+                        <p>Designed to identify, trace, register, and alert security operations of an intrusion attempt or operational anomaly.</p>
+                        <strong>Examples:</strong>
+                        <p>Intrusion Detection Systems (IDS), CCTV, Security Audit Log Audits</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corrective -->
+            <div class="flip-card" tabindex="0" aria-label="Corrective Control Card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <!-- SVG Wrench/Fix Icon -->
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M19.43 12.98C19.47 12.66 19.5 12.34 19.5 12C19.5 11.66 19.47 11.34 19.43 11.02L21.54 9.37C21.73 9.22 21.78 8.95 21.66 8.73L19.66 5.27C19.54 5.05 19.27 4.97 19.05 5.05L16.56 6.05C16.04 5.65 15.48 5.32 14.87 5.07L14.49 2.42C14.46 2.18 14.25 2 14 2H10C9.75 2 9.54 2.18 9.51 2.42L9.13 5.07C8.52 5.32 7.96 5.66 7.44 6.05L4.95 5.05C4.73 4.97 4.46 5.05 4.34 5.27L2.34 8.73C2.21 8.95 2.27 9.22 2.46 9.37L4.57 11.02C4.53 11.34 4.5 11.67 4.5 12C4.5 12.33 4.53 12.66 4.57 12.98L2.46 14.63C2.27 14.78 2.21 15.05 2.34 15.27L4.34 18.73C4.46 18.95 4.73 19.03 4.95 18.95L7.44 17.95C7.96 18.35 8.52 18.68 9.13 18.93L9.51 21.58C9.54 21.82 9.75 22 10 22H14C14.25 22 14.46 21.82 14.49 21.58L14.87 18.93C15.48 18.68 16.04 18.34 16.56 17.95L19.05 18.95C19.27 19.03 19.54 18.95 19.66 18.73L21.66 15.27C21.78 15.05 21.73 14.78 21.54 14.63L19.43 12.98Z"/></svg>
+                        <h3>Corrective</h3>
+                        <span>Response & Recovery</span>
+                    </div>
+                    <div class="flip-card-back">
+                        <p>Designed to actively minimize impact, rebuild system configurations, and restore stability after an exploit.</p>
+                        <strong>Examples:</strong>
+                        <p>Disaster Recovery Backups, IPS Block Rules, Active Incident Remediation</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deterrent -->
+            <div class="flip-card" tabindex="0" aria-label="Deterrent Control Card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <!-- SVG Warning Icon -->
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12,2L1,21H23L12,2M12,6L19.53,19H4.47L12,6M11,10V14H13V10H11M11,16V18H13V16H11Z"/></svg>
+                        <h3>Deterrent</h3>
+                        <span>Psychological Decoy</span>
+                    </div>
+                    <div class="flip-card-back">
+                        <p>Designed to discourage adversaries, increase perceived efforts, and visually signal defensive strength.</p>
+                        <strong>Examples:</strong>
+                        <p>High-Visibility Guard Towers, "Under CCTV Monitoring" Signs, Decoy Targets</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Directive -->
+            <div class="flip-card" tabindex="0" aria-label="Directive Control Card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <!-- SVG Rule Book Icon -->
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M19,2H5A2,2 0 0,0 3,4V20A2,2 0 0,0 5,22H19A2,2 0 0,0 21,20V4A2,2 0 0,0 19,2M19,20H5V4H19V20M7,6H17V8H7V6M7,10H17V12H7V10M7,14H13V16H7V14Z"/></svg>
+                        <h3>Directive</h3>
+                        <span>Policy Mandate</span>
+                    </div>
+                    <div class="flip-card-back">
+                        <p>Designed to govern organizational behavior, establish rules of conduct, and ensure standards compliance.</p>
+                        <strong>Examples:</strong>
+                        <p>Acceptable Use Policy (AUP), GDPR regulatory frameworks, NDAs</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compensating -->
+            <div class="flip-card" tabindex="0" aria-label="Compensating Control Card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <!-- SVG Alternative Path Icon -->
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M17,14H15V17H9V12H11V10H9V7H15V10H17V5H7V21H17V14Z"/></svg>
+                        <h3>Compensating</h3>
+                        <span>Fallback Measure</span>
+                    </div>
+                    <div class="flip-card-back">
+                        <p>Designed as temporary or alternative protections when standard controls are unavailable, impossible, or too costly.</p>
+                        <strong>Examples:</strong>
+                        <p>Hot sites, manual paper ledgers during terminal power outages, temporary security guards</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Activity 1: Matching Challenge -->
+    <section class="interactive-section">
+        <div class="interactive-header">
+            <h3>Interactive Activity 1: The Tactical Functional Matching Challenge</h3>
+            <p>Determine the correct functional control type for each enterprise scenario. Achieve a perfect match!</p>
+        </div>
+        <div class="interactive-body">
+            <div class="scenarios-box" id="scenario-1-display">
+                Loading Scenario...
+            </div>
+            
+            <div class="matching-grid" id="options-grid-1">
+                <button class="matching-btn" onclick="evaluateMatch('Preventive', this)">Preventive</button>
+                <button class="matching-btn" onclick="evaluateMatch('Detective', this)">Detective</button>
+                <button class="matching-btn" onclick="evaluateMatch('Corrective', this)">Corrective</button>
+                <button class="matching-btn" onclick="evaluateMatch('Deterrent', this)">Deterrent</button>
+                <button class="matching-btn" onclick="evaluateMatch('Directive', this)">Directive</button>
+                <button class="matching-btn" onclick="evaluateMatch('Compensating', this)">Compensating</button>
+            </div>
+            
+            <div id="matching-feedback"></div>
+        </div>
+    </section>
+
+    <!-- Interactive Activity 2: Defense-in-Depth Architect -->
+    <section class="interactive-section">
+        <div class="interactive-header">
+            <h3>Interactive Activity 2: Defense-In-Depth Architect</h3>
+            <p>Deploy a multi-layered security plan. Assign the correct controls to mitigate the incoming threat.</p>
+        </div>
+        <div class="interactive-body">
+            <div class="defense-layout">
+                <div class="threat-display">
+                    <h4>Incoming Threat Scenario</h4>
+                    <p style="font-weight:700; font-size:1.1rem; margin-bottom:0.5rem;" id="threat-title">Ransomware Lateral Movement</p>
+                    <p id="threat-description">An attacker has breached an entry workstation and is attempting to deploy encryption payloads across your central servers.</p>
+                </div>
+                
+                <div class="builder-workspace">
+                    <div class="slot-container" id="slot-preventive">
+                        <span class="slot-title">Layer 1: Preventive Control</span>
+                        <div class="slot-dropzone" id="zone-Preventive" style="font-style:italic; color:var(--text-muted);">Empty slot</div>
+                    </div>
+                    <div class="slot-container" id="slot-detective">
+                        <span class="slot-title">Layer 2: Detective Control</span>
+                        <div class="slot-dropzone" id="zone-Detective" style="font-style:italic; color:var(--text-muted);">Empty slot</div>
+                    </div>
+                    <div class="slot-container" id="slot-corrective">
+                        <span class="slot-title">Layer 3: Corrective Control</span>
+                        <div class="slot-dropzone" id="zone-Corrective" style="font-style:italic; color:var(--text-muted);">Empty slot</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-chips" id="chips-area">
+                <!-- Dynamically populated chips -->
+            </div>
+            
+            <div style="margin-top: 1.5rem; text-align: right;">
+                <button class="submit-btn" id="verify-defense-btn" onclick="verifyDefenseArchitecture()">Verify Defensive Architecture</button>
+            </div>
+            <div id="builder-feedback" style="margin-top:1rem; padding:1rem; border-radius:6px; display:none; font-weight:500;"></div>
+        </div>
+    </section>
+
+    <!-- Comprehensive 5-Question Quiz Lesson -->
+    <section>
+        <h2 class="section-title">Assessment: Verify Your Knowledge</h2>
+        <p style="margin-bottom:1.5rem;">Complete the 5 multiple-choice questions below to test your operational knowledge of control categories and functions.</p>
+        
+        <form id="quiz-form">
+            <!-- Question 1 -->
+            <div class="quiz-question" id="q1-block">
+                <p class="q-text">1. A system administrator sets up a temporary firewall rule to block all inbound traffic from a specific subnet while the team investigates a breach. What functional type of control does this rule represent?</p>
+                <div class="quiz-options">
+                    <label class="quiz-label"><input type="radio" name="q1" value="A"> A) Compensating</label>
+                    <label class="quiz-label"><input type="radio" name="q1" value="B"> B) Directive</label>
+                    <label class="quiz-label"><input type="radio" name="q1" value="C"> C) Detective</label>
+                    <label class="quiz-label"><input type="radio" name="q1" value="D"> D) Preventive</label>
+                </div>
+                <div class="quiz-rationale" id="q1-rationale"></div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="quiz-question" id="q2-block">
+                <p class="q-text">2. Which of the following best describes the core purpose of a "Directive" security control?</p>
+                <div class="quiz-options">
+                    <label class="quiz-label"><input type="radio" name="q2" value="A"> A) Reconstituting assets after database corruption</label>
+                    <label class="quiz-label"><input type="radio" name="q2" value="B"> B) Forcing administrative behaviors and stating standard workflows via policies or rules</label>
+                    <label class="quiz-label"><input type="radio" name="q2" value="C"> C) Deploying alternative protections when primary systems are disabled</label>
+                    <label class="quiz-label"><input type="radio" name="q2" value="D"> D) Minimizing the impact of active cyber attacks</label>
+                </div>
+                <div class="quiz-rationale" id="q2-rationale"></div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="quiz-question" id="q3-block">
+                <p class="q-text">3. An enterprise security team configures a Host Intrusion Detection System (HIDS) to alert system engineers via SMS if critical registry values are modified. Which control type has been implemented?</p>
+                <div class="quiz-options">
+                    <label class="quiz-label"><input type="radio" name="q3" value="A"> A) Preventive</label>
+                    <label class="quiz-label"><input type="radio" name="q3" value="B"> B) Detective</label>
+                    <label class="quiz-label"><input type="radio" name="q3" value="C"> C) Deterrent</label>
+                    <label class="quiz-label"><input type="radio" name="q3" value="D"> D) Corrective</label>
+                </div>
+                <div class="quiz-rationale" id="q3-rationale"></div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="quiz-question" id="q4-block">
+                <p class="q-text">4. During a massive blackout, an automatic badge reader entry system fails to unlock doors, and security guards are posted at the entrance to manually inspect employee IDs. The guards serve as which functional type?</p>
+                <div class="quiz-options">
+                    <label class="quiz-label"><input type="radio" name="q4" value="A"> A) Directive</label>
+                    <label class="quiz-label"><input type="radio" name="q4" value="B"> B) Compensating</label>
+                    <label class="quiz-label"><input type="radio" name="q4" value="C"> C) Detective</label>
+                    <label class="quiz-label"><input type="radio" name="q4" value="D"> D) Corrective</label>
+                </div>
+                <div class="quiz-rationale" id="q4-rationale"></div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="quiz-question" id="q5-block">
+                <p class="q-text">5. Which of the following controls is categorized as CORRECTIVE?</p>
+                <div class="quiz-options">
+                    <label class="quiz-label"><input type="radio" name="q5" value="A"> A) Hardening an operating system by closing unused ports</label>
+                    <label class="quiz-label"><input type="radio" name="q5" value="B"> B) Putting a prominent sticker on a server door warning that unauthorized entry triggers local police dispatch</label>
+                    <label class="quiz-label"><input type="radio" name="q5" value="C"> C) Recovering deleted user folders from an air-gapped weekly backup system</label>
+                    <label class="quiz-label"><input type="radio" name="q5" value="D"> D) An employee handbook detailing acceptable network configurations</label>
+                </div>
+                <div class="quiz-rationale" id="q5-rationale"></div>
+            </div>
+
+            <!-- Submit Operations -->
+            <div class="quiz-footer">
+                <span id="quiz-score-display" style="font-weight:700; font-size:1.15rem;"></span>
+                <button type="button" class="submit-btn" onclick="gradeAssessment()">Submit Quiz Answers</button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<script>
+    // --- ACCESSIBILITY AND INTERACTION COMPLIANCE ---
+    // Make sure touch/tap users can flip the cards easily
+    const cards = document.querySelectorAll('.flip-card');
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            card.classList.toggle('flipped');
+        });
+        card.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                card.classList.toggle('flipped');
+            }
+        });
+    });
+
+    // --- SYSTEM THEME CONTROLLER ---
+    const themeBtn = document.getElementById('theme-toggle');
+    const doc = document.documentElement;
+
+    themeBtn.addEventListener('click', () => {
+        const activeTheme = doc.getAttribute('data-theme');
+        if (activeTheme === 'dark') {
+            doc.removeAttribute('data-theme');
+            themeBtn.textContent = 'Dark Mode';
+        } else {
+            doc.setAttribute('data-theme', 'dark');
+            themeBtn.textContent = 'Light Mode';
+        }
+    });
+
+    // --- ACTIVITY 1: MATCHING CHALLENGE LOGIC ---
+    const matchingScenarios = [
+        {
+            text: "Scenario: Corporate guidelines mandate all security operators sign an NDA during onboard processing.",
+            correct: "Directive",
+            hint: "Policies and guidelines directing organizational requirements are directive measures."
+        },
+        {
+            text: "Scenario: An engineer deploys security warnings around an isolated perimeter fence to warn intruders of prosecution risk.",
+            correct: "Deterrent",
+            hint: "Warning messages or items designed to discourage a hacker represent deterrent tactics."
+        },
+        {
+            text: "Scenario: Administrators restore domain configurations using cloud snapshots after a SQL injection attack.",
+            correct: "Corrective",
+            hint: "Remedial procedures that restore functional operational status are corrective actions."
+        },
+        {
+            text: "Scenario: A perimeter firewall analyzes data streams to filter out spoofed incoming requests.",
+            correct: "Preventive",
+            hint: "Safeguards designed to stop or block unauthorized entry dynamically are preventive."
+        },
+        {
+            text: "Scenario: High-definition motion-sensing cameras record structural doors to detect physical intrusions.",
+            correct: "Detective",
+            hint: "Automated recording configurations that offer alerts on events are detective tools."
+        }
+    ];
+
+    let currentMatchIndex = 0;
+    const matchScenarioText = document.getElementById('scenario-1-display');
+    const matchFeedback = document.getElementById('matching-feedback');
+
+    function loadMatchingScenario() {
+        if (currentMatchIndex < matchingScenarios.length) {
+            matchScenarioText.textContent = matchingScenarios[currentMatchIndex].text;
+            matchFeedback.style.display = "none";
+            const btns = document.querySelectorAll('#options-grid-1 .matching-btn');
+            btns.forEach(btn => btn.className = 'matching-btn');
+        } else {
+            matchScenarioText.textContent = "🏆 Congratulations! You have successfully completed all Matching Challenges!";
+            document.getElementById('options-grid-1').style.display = 'none';
+        }
+    }
+
+    function evaluateMatch(selectedType, element) {
+        const scenario = matchingScenarios[currentMatchIndex];
+        const buttons = document.querySelectorAll('#options-grid-1 .matching-btn');
+
+        if (selectedType === scenario.correct) {
+            element.classList.add('btn-correct');
+            matchFeedback.style.display = "block";
+            matchFeedback.style.backgroundColor = "var(--light-green)";
+            matchFeedback.style.borderLeft = "5px solid var(--success)";
+            matchFeedback.style.color = "var(--text-color)";
+            matchFeedback.innerHTML = `<strong>Excellent Work!</strong> ${scenario.hint}`;
+
+            currentMatchIndex++;
+            setTimeout(loadMatchingScenario, 2500);
+        } else {
+            element.classList.add('btn-incorrect');
+            matchFeedback.style.display = "block";
+            matchFeedback.style.backgroundColor = "#ffebee";
+            matchFeedback.style.borderLeft = "5px solid var(--error)";
+            matchFeedback.style.color = "#111111";
+            matchFeedback.textContent = "Incorrect type match. Carefully review the scenario context and try again.";
+            
+            setTimeout(() => {
+                element.classList.remove('btn-incorrect');
+            }, 600);
+        }
+    }
+
+    // --- ACTIVITY 2: DEFENSE-IN-DEPTH BUILDER LOGIC ---
+    const allChips = [
+        { id: "c1", label: "Router Firewall Rules", type: "Preventive" },
+        { id: "c2", label: "Host IPS Blocking Engine", type: "Corrective" },
+        { id: "c3", label: "Network Tap / IDS Alerts", type: "Detective" },
+        { id: "c4", label: "System Backup Restoration", type: "Corrective" },
+        { id: "c5", label: "File Integrity Monitoring", type: "Detective" },
+        { id: "c6", label: "Administrative AUP Mandate", type: "Directive" },
+        { id: "c7", label: "Locked Server Enclosure", type: "Preventive" }
+    ];
+
+    let selectedDefenseLayout = {
+        Preventive: null,
+        Detective: null,
+        Corrective: null
+    };
+
+    function renderChips() {
+        const chipsArea = document.getElementById('chips-area');
+        chipsArea.innerHTML = '';
+        allChips.forEach(chip => {
+            const el = document.createElement('div');
+            el.className = 'control-chip';
+            el.id = chip.id;
+            el.textContent = chip.label;
+            
+            // Handle clicking the chip to place it in its corresponding structural slot
+            el.addEventListener('click', () => {
+                placeChip(chip);
+            });
+            chipsArea.appendChild(el);
+        });
+    }
+
+    function placeChip(chip) {
+        const targetType = chip.type;
+        // Currently, our slot types are Preventive, Detective, and Corrective
+        if (targetType === "Directive") {
+            showBuilderFeedback("Policy guidelines (Directive) are useful, but we need technical mitigative controls to block active payload spread in this specific threat layout.", false);
+            return;
+        }
+
+        const slot = document.getElementById(`zone-${targetType}`);
+        if (slot) {
+            // Un-mark any previously placed chip of this type
+            if (selectedDefenseLayout[targetType]) {
+                const prevChipEl = document.getElementById(selectedDefenseLayout[targetType].id);
+                if (prevChipEl) prevChipEl.classList.remove('placed');
+            }
+
+            // Mark new chip as placed
+            const chipEl = document.getElementById(chip.id);
+            chipEl.classList.add('placed');
+
+            // Save layout design state
+            selectedDefenseLayout[targetType] = chip;
+            slot.textContent = chip.label;
+            slot.style.fontStyle = 'normal';
+            slot.style.fontWeight = '700';
+            slot.style.color = 'var(--primary-green)';
+        }
+    }
+
+    function verifyDefenseArchitecture() {
+        const p = selectedDefenseLayout.Preventive;
+        const d = selectedDefenseLayout.Detective;
+        const c = selectedDefenseLayout.Corrective;
+
+        const fb = document.getElementById('builder-feedback');
+        fb.style.display = "block";
+
+        if (!p || !d || !c) {
+            fb.style.backgroundColor = "#fff9c4";
+            fb.style.borderLeft = "5px solid var(--warning)";
+            fb.style.color = "#111111";
+            fb.textContent = "Defensive architecture incomplete. Ensure all three slots (Preventive, Detective, and Corrective) are configured with active defenses.";
+            return;
+        }
+
+        // Successfully built defense-in-depth architecture
+        fb.style.backgroundColor = "var(--light-green)";
+        fb.style.borderLeft = "5px solid var(--success)";
+        fb.style.color = "var(--text-color)";
+        fb.innerHTML = `<strong>Architecture Confirmed!</strong> Your multi-layered defense successfully controls the threat:<br>
+        1. <strong>${p.label}</strong> (Preventive) intercepts the initial connection attempt.<br>
+        2. <strong>${d.label}</strong> (Detective) monitors modifications and flags intrusion alerts.<br>
+        3. <strong>${c.label}</strong> (Corrective) mitigates payload impacts immediately, isolating compromised endpoints. Great system design!`;
+    }
+
+    function showBuilderFeedback(message, isSuccess) {
+        const fb = document.getElementById('builder-feedback');
+        fb.style.display = "block";
+        if (isSuccess) {
+            fb.style.backgroundColor = "var(--light-green)";
+            fb.style.borderLeft = "5px solid var(--success)";
+            fb.style.color = "var(--text-color)";
+        } else {
+            fb.style.backgroundColor = "#ffebee";
+            fb.style.borderLeft = "5px solid var(--error)";
+            fb.style.color = "#111111";
+        }
+        fb.textContent = message;
+    }
+
+    // --- QUIZ ASSESSMENT ENGINE ---
+    const quizSolutions = {
+        q1: { ans: "D", rationale: "Correct! The temporary block rule physically prevents unauthorized network traffic from transmitting across systems, making it a Preventive control." },
+        q2: { ans: "B", rationale: "Correct! Directive controls manage administrative behaviors and specify mandatory standards and regulations (e.g., policy manuals)." },
+        q3: { ans: "B", rationale: "Correct! Monitoring registry modifications and generating alerting protocols is the textbook definition of Detective control." },
+        q4: { ans: "B", rationale: "Correct! Posting guards at the entrance as a secondary manual safety measure when the automated door lock fails acts as a Compensating control." },
+        q5: { ans: "C", rationale: "Correct! Executing backup restoration scripts to repair data corruption from ransom payloads is a Corrective operation." }
+    };
+
+    function gradeAssessment() {
+        let correctCount = 0;
+        const form = document.getElementById('quiz-form');
+
+        for (let qKey in quizSolutions) {
+            const selected = form.querySelector(`input[name="${qKey}"]:checked`);
+            const rationaleBox = document.getElementById(`${qKey}-rationale`);
+            rationaleBox.style.display = "block";
+
+            if (selected) {
+                const userChoice = selected.value;
+                const solution = quizSolutions[qKey];
+
+                if (userChoice === solution.ans) {
+                    correctCount++;
+                    rationaleBox.className = "quiz-rationale rationale-correct";
+                    rationaleBox.innerHTML = `<strong>Correct Option (${solution.ans}):</strong> ${solution.rationale}`;
+                } else {
+                    rationaleBox.className = "quiz-rationale rationale-incorrect";
+                    rationaleBox.innerHTML = `<strong>Incorrect.</strong> The correct choice was ${solution.ans}. <br>${solution.rationale}`;
+                }
+            } else {
+                rationaleBox.className = "quiz-rationale rationale-incorrect";
+                rationaleBox.innerHTML = `<strong>Unanswered.</strong> The correct choice was ${quizSolutions[qKey].ans}. <br>${quizSolutions[qKey].rationale}`;
+            }
+        }
+
+        // Display general results
+        const scoreBox = document.getElementById('quiz-score-display');
+        scoreBox.textContent = `Overall Score: ${correctCount} / 5 (${(correctCount / 5) * 100}%)`;
+        if (correctCount >= 4) {
+            scoreBox.style.color = "var(--success)";
+        } else {
+            scoreBox.style.color = "var(--error)";
+        }
+    }
+
+    // --- INITIALIZE APPLICATION ---
+    window.onload = () => {
+        loadMatchingScenario();
+        renderChips();
+    };
+</script>
+</body>
+</html>

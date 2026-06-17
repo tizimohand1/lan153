@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Firewall Configuration Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #2d5016 0%, #4a7c59 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .config-panel {
+            background: #f8f9fa;
+            border: 2px solid #2d5016;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .config-panel h2 {
+            color: #2d5016;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #4a7c59;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2d5016;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #4a7c59;
+            border-radius: 5px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2d5016;
+            box-shadow: 0 0 5px rgba(45, 80, 22, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(90deg, #2d5016 0%, #4a7c59 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(45, 80, 22, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .rules-display {
+            background: #1a1a1a;
+            border: 2px solid #2d5016;
+            border-radius: 8px;
+            padding: 20px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .rules-display h2 {
+            color: #00ff00;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #4a7c59;
+            padding-bottom: 10px;
+        }
+
+        .rule-entry {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #4a7c59;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .rule-number {
+            color: #ffff00;
+            font-weight: bold;
+        }
+
+        .rule-action {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .rule-allow {
+            color: #4ecdc4;
+            font-weight: bold;
+        }
+
+        .progress-section {
+            background: #f8f9fa;
+            border: 2px solid #2d5016;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            grid-column: span 2;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2d5016 0%, #4a7c59 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 12px;
+        }
+
+        .scenario-info {
+            background: rgba(74, 124, 89, 0.1);
+            border-left: 4px solid #4a7c59;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #4ecdc4;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .hint-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-style: italic;
+        }
+
+        .completed-rule {
+            opacity: 0.7;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .progress-section {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥🛡️ Firewall Configuration Simulator</h1>
+            <p>Learn network security by configuring firewall rules step by step</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="config-panel">
+                <h2>Rule Configuration</h2>
+                
+                <div id="currentScenario" class="scenario-info">
+                    <strong>Scenario 1:</strong> Block all FTP traffic from external networks to protect against unauthorized file transfers.
+                </div>
+                
+                <div id="errorMessage" class="error-message"></div>
+                <div id="successMessage" class="success-message"></div>
+                
+                <div class="form-group">
+                    <label for="ruleAction">Action:</label>
+                    <select id="ruleAction">
+                        <option value="">Select Action</option>
+                        <option value="ALLOW">ALLOW - Permit traffic</option>
+                        <option value="DENY">DENY - Block traffic</option>
+                        <option value="LOG">LOG - Monitor traffic</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="protocol">Protocol:</label>
+                    <select id="protocol">
+                        <option value="">Select Protocol</option>
+                        <option value="TCP">TCP - Transmission Control Protocol</option>
+                        <option value="UDP">UDP - User Datagram Protocol</option>
+                        <option value="ICMP">ICMP - Internet Control Message Protocol</option>
+                        <option value="ANY">ANY - All protocols</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sourceIP">Source IP Address:</label>
+                    <input type="text" id="sourceIP" placeholder="e.g., 192.168.1.0/24 or ANY">
+                </div>
+                
+                <div class="form-group">
+                    <label for="destIP">Destination IP Address:</label>
+                    <input type="text" id="destIP" placeholder="e.g., 10.0.0.100 or ANY">
+                </div>
+                
+                <div class="form-group">
+                    <label for="port">Port Number:</label>
+                    <input type="text" id="port" placeholder="e.g., 80, 443, 21, or ANY">
+                </div>
+                
+                <div class="form-group">
+                    <label for="direction">Direction:</label>
+                    <select id="direction">
+                        <option value="">Select Direction</option>
+                        <option value="INBOUND">INBOUND - Traffic coming into network</option>
+                        <option value="OUTBOUND">OUTBOUND - Traffic leaving network</option>
+                        <option value="BOTH">BOTH - Bidirectional traffic</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Rule Description:</label>
+                    <input type="text" id="description" placeholder="Brief description of this rule">
+                </div>
+                
+                <div class="hint-box" id="hintBox">
+                    💡 <strong>Hint:</strong> FTP uses port 21 for control connections. Consider blocking TCP traffic on this port from external sources.
+                </div>
+                
+                <button class="btn" onclick="addRule()">Add Firewall Rule</button>
+                <button class="btn" onclick="clearForm()">Clear Form</button>
+                <button class="btn" onclick="nextScenario()">Skip Scenario</button>
+            </div>
+            
+            <div class="rules-display">
+                <h2>Active Firewall Rules</h2>
+                <div id="rulesContainer">
+                    <div style="color: #888; font-style: italic;">No rules configured yet. Add your first rule to get started!</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="progress-section">
+            <h2>Learning Progress</h2>
+            <p>Complete all 10 firewall configuration scenarios to master the fundamentals!</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p id="progressText">Scenario 1 of 10 - Rules completed: 0/10</p>
+        </div>
+    </div>
+
+    <script>
+        let rules = [];
+        let currentScenarioIndex = 0;
+        let completedRules = 0;
+        
+        const scenarios = [
+            {
+                title: "Block FTP Traffic",
+                description: "Block all FTP traffic from external networks to protect against unauthorized file transfers.",
+                hint: "FTP uses port 21 for control connections. Consider blocking TCP traffic on this port from external sources.",
+                expectedRule: {
+                    action: "DENY",
+                    protocol: "TCP",
+                    port: "21",
+                    direction: "INBOUND"
+                }
+            },
+            {
+                title: "Allow HTTP Web Traffic",
+                description: "Allow incoming HTTP web traffic on the standard port to enable web server access.",
+                hint: "HTTP uses port 80. Web servers need to accept incoming TCP connections on this port.",
+                expectedRule: {
+                    action: "ALLOW",
+                    protocol: "TCP",
+                    port: "80",
+                    direction: "INBOUND"
+                }
+            },
+            {
+                title: "Block Telnet Access",
+                description: "Block all Telnet access as it transmits data in plain text, creating security risks.",
+                hint: "Telnet uses port 23 and transmits unencrypted data. This should be blocked for security.",
+                expectedRule: {
+                    action: "DENY",
+                    protocol: "TCP",
+                    port: "23",
+                    direction: "BOTH"
+                }
+            },
+            {
+                title: "Allow HTTPS Secure Web Traffic",
+                description: "Allow secure HTTPS connections to enable encrypted web communications.",
+                hint: "HTTPS uses port 443 for encrypted web traffic. This is essential for secure web services.",
+                expectedRule: {
+                    action: "ALLOW",
+                    protocol: "TCP",
+                    port: "443",
+                    direction: "INBOUND"
+                }
+            },
+            {
+                title: "Block SSH from Public Internet",
+                description: "Block SSH access from public internet while allowing internal network access.",
+                hint: "SSH uses port 22. Block external access but consider internal network requirements.",
+                expectedRule: {
+                    action: "DENY",
+                    protocol: "TCP",
+                    port: "22",
+                    direction: "INBOUND"
+                }
+            },
+            {
+                title: "Allow DNS Queries",
+                description: "Allow outbound DNS queries to enable domain name resolution for users.",
+                hint: "DNS typically uses UDP port 53 for queries. Users need this for web browsing.",
+                expectedRule: {
+                    action: "ALLOW",
+                    protocol: "UDP",
+                    port: "53",
+                    direction: "OUTBOUND"
+                }
+            },
+            {
+                title: "Block P2P File Sharing",
+                description: "Block common peer-to-peer file sharing ports to prevent unauthorized downloads.",
+                hint: "BitTorrent often uses ports in the range 6881-6889. Consider blocking TCP traffic on these ports.",
+                expectedRule: {
+                    action: "DENY",
+                    protocol: "TCP",
+                    port: "6881",
+                    direction: "BOTH"
+                }
+            },
+            {
+                title: "Allow Email (SMTP)",
+                description: "Allow outbound SMTP traffic for sending emails from the internal network.",
+                hint: "SMTP uses port 25 for email transmission. Users need outbound access to send emails.",
+                expectedRule: {
+                    action: "ALLOW",
+                    protocol: "TCP",
+                    port: "25",
+                    direction: "OUTBOUND"
+                }
+            },
+            {
+                title: "Log Database Access",
+                description: "Monitor and log all access attempts to database servers for audit purposes.",
+                hint: "MySQL uses port 3306. Use LOG action to monitor without blocking legitimate access.",
+                expectedRule: {
+                    action: "LOG",
+                    protocol: "TCP",
+                    port: "3306",
+                    direction: "INBOUND"
+                }
+            },
+            {
+                title: "Deny All Default Rule",
+                description: "Create a default deny rule to block all traffic not explicitly allowed by previous rules.",
+                hint: "This should deny ALL protocols, from ANY source to ANY destination. It's the final catch-all rule.",
+                expectedRule: {
+                    action: "DENY",
+                    protocol: "ANY",
+                    sourceIP: "ANY",
+                    destIP: "ANY",
+                    port: "ANY",
+                    direction: "BOTH"
+                }
+            }
+        ];
+        
+        function updateScenario() {
+            const scenario = scenarios[currentScenarioIndex];
+            document.getElementById('currentScenario').innerHTML = 
+                `<strong>Scenario ${currentScenarioIndex + 1}:</strong> ${scenario.description}`;
+            document.getElementById('hintBox').innerHTML = 
+                `💡 <strong>Hint:</strong> ${scenario.hint}`;
+        }
+        
+        function addRule() {
+            const action = document.getElementById('ruleAction').value;
+            const protocol = document.getElementById('protocol').value;
+            const sourceIP = document.getElementById('sourceIP').value || 'ANY';
+            const destIP = document.getElementById('destIP').value || 'ANY';
+            const port = document.getElementById('port').value || 'ANY';
+            const direction = document.getElementById('direction').value;
+            const description = document.getElementById('description').value;
+            
+            // Validation
+            if (!action || !protocol || !direction) {
+                showError('Please fill in all required fields: Action, Protocol, and Direction.');
+                return;
+            }
+            
+            // Validate IP addresses (basic validation)
+            if (sourceIP !== 'ANY' && !isValidIP(sourceIP)) {
+                showError('Please enter a valid source IP address or use "ANY".');
+                return;
+            }
+            
+            if (destIP !== 'ANY' && !isValidIP(destIP)) {
+                showError('Please enter a valid destination IP address or use "ANY".');
+                return;
+            }
+            
+            const rule = {
+                id: rules.length + 1,
+                action,
+                protocol,
+                sourceIP,
+                destIP,
+                port,
+                direction,
+                description: description || `Rule ${rules.length + 1}`,
+                timestamp: new Date().toLocaleTimeString()
+            };
+            
+            rules.push(rule);
+            displayRules();
+            clearForm();
+            
+            // Check if rule matches scenario
+            const scenario = scenarios[currentScenarioIndex];
+            let isCorrect = true;
+            
+            // Check expected rule properties
+            if (scenario.expectedRule.action && action !== scenario.expectedRule.action) isCorrect = false;
+            if (scenario.expectedRule.protocol && protocol !== scenario.expectedRule.protocol) isCorrect = false;
+            if (scenario.expectedRule.port && port !== scenario.expectedRule.port) isCorrect = false;
+            if (scenario.expectedRule.direction && direction !== scenario.expectedRule.direction) isCorrect = false;
+            
+            if (isCorrect) {
+                completedRules++;
+                showSuccess(`Excellent! You've correctly configured the ${scenario.title} rule.`);
+                setTimeout(() => {
+                    nextScenario();
+                }, 2000);
+            } else {
+                showError('Rule added, but it may not fully address the current scenario. Check the hint and try again.');
+            }
+            
+            updateProgress();
+        }
+        
+        function isValidIP(ip) {
+            // Basic IP validation (including CIDR notation)
+            const ipPattern = /^(\d{1,3}\.){3}\d{1,3}(\/\d{1,2})?$/;
+            if (!ipPattern.test(ip)) return false;
+            
+            const parts = ip.split('/')[0].split('.');
+            return parts.every(part => parseInt(part) >= 0 && parseInt(part) <= 255);
+        }
+        
+        function displayRules() {
+            const container = document.getElementById('rulesContainer');
+            
+            if (rules.length === 0) {
+                container.innerHTML = '<div style="color: #888; font-style: italic;">No rules configured yet. Add your first rule to get started!</div>';
+                return;
+            }
+            
+            container.innerHTML = rules.map(rule => `
+                <div class="rule-entry ${rule.completed ? 'completed-rule' : ''}">
+                    <span class="rule-number">Rule ${rule.id}:</span>
+                    <span class="${rule.action === 'ALLOW' ? 'rule-allow' : 'rule-action'}">${rule.action}</span>
+                    ${rule.protocol} traffic from ${rule.sourceIP} to ${rule.destIP}
+                    ${rule.port !== 'ANY' ? `on port ${rule.port}` : ''} 
+                    (${rule.direction}) - ${rule.description}
+                    <br><small style="color: #888;">Added at: ${rule.timestamp}</small>
+                </div>
+            `).join('');
+        }
+        
+        function clearForm() {
+            document.getElementById('ruleAction').value = '';
+            document.getElementById('protocol').value = '';
+            document.getElementById('sourceIP').value = '';
+            document.getElementById('destIP').value = '';
+            document.getElementById('port').value = '';
+            document.getElementById('direction').value = '';
+            document.getElementById('description').value = '';
+            hideMessages();
+        }
+        
+        function nextScenario() {
+            if (currentScenarioIndex < scenarios.length - 1) {
+                currentScenarioIndex++;
+                updateScenario();
+                clearForm();
+                hideMessages();
+            } else {
+                showSuccess('Congratulations! You have completed all firewall configuration scenarios!');
+                document.getElementById('currentScenario').innerHTML = 
+                    '<strong>🎉 Completed!</strong> You have successfully learned the fundamentals of firewall configuration!';
+            }
+        }
+        
+        function updateProgress() {
+            const progressPercent = (completedRules / 10) * 100;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            document.getElementById('progressText').textContent = 
+                `Scenario ${currentScenarioIndex + 1} of 10 - Rules completed: ${completedRules}/10`;
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => errorDiv.style.display = 'none', 5000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => successDiv.style.display = 'none', 5000);
+        }
+        
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+        
+        // Initialize the simulator
+        updateScenario();
+        updateProgress();
+    </script>
+</body>
+</html>

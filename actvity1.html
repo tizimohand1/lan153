@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lab1b – Cryptography Concepts</title>
+<style>
+    :root{
+        --bg:#ffffff;
+        --accent1:#006400;
+        --accent2:#000000;
+    }
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--accent2);display:flex;}
+    nav{width:220px;background:var(--accent1);color:#fff;padding:20px 10px;box-sizing:border-box;height:100vh;position:sticky;top:0;overflow-y:auto;}
+    nav ul{list-style:none;padding:0;} nav li{margin:12px 0;} nav a{color:#fff;text-decoration:none;font-weight:bold;}
+    main{flex:1;padding:25px;}
+    h1,h2{color:var(--accent1);}
+    code{background:#f4f4f4;padding:2px 4px;border-radius:3px;}
+    .step{border:1px solid var(--accent2);margin-bottom:25px;padding:15px;border-radius:6px;}
+    .step h3{margin-top:0;color:var(--accent1);}
+    .correct{background:#d4edda;}
+    .wrong{background:#f8d7da;}
+    button{background:var(--accent1);color:#fff;border:none;padding:8px 14px;border-radius:4px;cursor:pointer;}
+    #progress{position:fixed;bottom:10px;right:10px;background:var(--accent2);color:#fff;padding:8px 14px;border-radius:4px;}
+</style>
+</head>
+<body>
+<nav>
+    <h2>Lab1b</h2>
+    <ul>
+        <li><a href="#intro">Intro</a></li>
+        <li><a href="#step1">Step 1 – XOR Basics</a></li>
+        <li><a href="#step2">Step 2 – XOR Chain</a></li>
+        <li><a href="#step3">Step 3 – Key Length</a></li>
+        <li><a href="#step4">Step 4 – Symmetric I</a></li>
+        <li><a href="#step5">Step 5 – Symmetric II</a></li>
+        <li><a href="#step6">Step 6 – Asymmetric I</a></li>
+        <li><a href="#step7">Step 7 – Asymmetric II</a></li>
+        <li><a href="#step8">Step 8 – Caesar Cipher</a></li>
+        <li><a href="#step9">Step 9 – ASCII/XOR Decode</a></li>
+        <li><a href="#step10">Step 10 – Final Challenge</a></li>
+    </ul>
+</nav>
+
+<main>
+<section id="intro">
+    <h1>Lab1b – Cryptography Concepts</h1>
+    <p>Practice 10 basic cryptographic ideas: XOR, keys, symmetric vs. asymmetric, Caesar, ASCII/XOR, and more.</p>
+</section>
+
+<!-- Steps 1-7 unchanged -->
+<section id="step1" class="step"><h3>Step 1 – XOR Basics</h3><p>Compute: <code>1011 ⊕ 1101 = ?</code></p><input id="ans1" maxlength="4" size="4"><button onclick="check(1)">Check</button><span id="msg1"></span></section>
+<section id="step2" class="step"><h3>Step 2 – XOR Chain</h3><p>P=0110, K=1010, ciphertext C=P⊕K. Compute C:</p><input id="ans2" maxlength="4" size="4"><button onclick="check(2)">Check</button><span id="msg2"></span></section>
+<section id="step3" class="step"><h3>Step 3 – Key Length</h3><p>How many bits long should a one-time-pad key be relative to the plaintext?</p><select id="ans3"><option value="">--choose--</option><option value="Same">Same length</option><option value="Half">Half the length</option><option value="Double">Double the length</option></select><button onclick="check(3)">Check</button><span id="msg3"></span></section>
+<section id="step4" class="step"><h3>Step 4 – Symmetric I</h3><p>In symmetric encryption, how many keys are needed between two parties for secure two-way communication?</p><input id="ans4" type="number" min="0"><button onclick="check(4)">Check</button><span id="msg4"></span></section>
+<section id="step5" class="step"><h3>Step 5 – Symmetric II</h3><p>Which of these is a symmetric block-cipher algorithm?</p><select id="ans5"><option value="">--choose--</option><option value="RSA">RSA</option><option value="AES">AES</option><option value="ECC">ECC</option></select><button onclick="check(5)">Check</button><span id="msg5"></span></section>
+<section id="step6" class="step"><h3>Step 6 – Asymmetric I</h3><p>In asymmetric encryption each user has a <u>public</u> key and a <u>____</u> key.</p><input id="ans6"><button onclick="check(6)">Check</button><span id="msg6"></span></section>
+<section id="step7" class="step"><h3>Step 7 – Asymmetric II</h3><p>If Alice encrypts a message with Bob’s <strong>public</strong> key, who can decrypt it?</p><input id="ans7"><button onclick="check(7)">Check</button><span id="msg7"></span></section>
+
+<!-- NEW Step 8 -->
+<section id="step8" class="step">
+    <h3>Step 8 – Caesar Cipher</h3>
+    <p>Decrypt the ciphertext<br><code>L-U-X-D-Z-N-U-A-M-N-D-O-D-J-U-D-T-U-Z-D-G-Y-Q-D-L-U-X-D-G-O-J-D-C-K-D-T-K-K-J-D-O-Z</code><br>
+    which was encrypted with a Caesar cipher. Enter the original <strong>plaintext</strong> and the <strong>shift key</strong> used.</p>
+    <label>Plaintext: <input id="ans8plain" size="45"></label><br>
+    <label>Shift key: <input id="ans8key" type="number" min="0" max="25"></label>
+    <button onclick="checkCaesar()">Check</button>
+    <span id="msg8"></span>
+</section>
+
+<!-- NEW Step 9 -->
+<section id="step9" class="step">
+    <h3>Step 9 – ASCII/XOR Decode</h3>
+    <p>Decode the ASCII message (hex) by XORing each byte with the repeating key (hex):</p>
+    <p>ASCII Message: <code>00-41-15-54-00-41-15-54-00-41-15-54-00-41</code><br>
+    Key: <code>A5-A5-A5-A5-A5-A5-A5-A5-A5-A5-A5-A5-A5-A5</code></p>
+    <label>Decoded ASCII string: <input id="ans9" size="30"></label>
+    <button onclick="check(9)">Check</button>
+    <span id="msg9"></span>
+</section>
+
+<section id="step10" class="step">
+    <h3>Step 10 – Final Challenge</h3>
+    <p>Compute the XOR of the two hex bytes: <code>0xAF ⊕ 0xC3</code> and enter the result in <strong>hex</strong>.</p>
+    <input id="ans10" maxlength="2" placeholder="hex"><button onclick="check(10)">Check</button><span id="msg10"></span>
+</section>
+
+<div id="progress">Completed: 0 / 10</div>
+</main>
+
+<script>
+const answers = {
+    1:'0110',
+    2:'1100',
+    3:'Same',
+    4:'1',
+    5:'AES',
+    6:'private',
+    7:'Bob',
+    10:'6C'
+};
+const caesarPlain = 'KEEPLEARNINGCRYPTOISFUN'; // uppercase, no spaces
+const caesarShift = 10;
+const asciiXorPlain = 'EUREKA!EUREKA!E'; // result of step 9
+
+let done = new Set();
+
+function check(step){
+    const el = document.getElementById('ans'+step);
+    let val = el.value.trim();
+    if(step===10) val = val.toUpperCase();
+    const correct = answers[step];
+    const msg = document.getElementById('msg'+step);
+    if(val === correct){
+        msg.textContent = "✅ Correct!";
+        el.parentElement.classList.add('correct');
+        el.parentElement.classList.remove('wrong');
+        done.add(step);
+    }else{
+        msg.textContent = "❌ Try again.";
+        el.parentElement.classList.add('wrong');
+        el.parentElement.classList.remove('correct');
+        done.delete(step);
+    }
+    updateProgress();
+}
+
+function checkCaesar(){
+    const plain = document.getElementById('ans8plain').value.trim().toUpperCase();
+    const key   = parseInt(document.getElementById('ans8key').value,10);
+    const msg   = document.getElementById('msg8');
+    if(plain === caesarPlain && key === caesarShift){
+        msg.textContent = "✅ Correct!";
+        document.getElementById('step8').classList.add('correct');
+        document.getElementById('step8').classList.remove('wrong');
+        done.add(8);
+    }else{
+        msg.textContent = "❌ Plaintext or shift key is wrong.";
+        document.getElementById('step8').classList.add('wrong');
+        document.getElementById('step8').classList.remove('correct');
+        done.delete(8);
+    }
+    updateProgress();
+}
+
+function check(step){
+    /* Overload for Step 9 */
+    if(step===9){
+        const val = document.getElementById('ans9').value.trim();
+        const msg = document.getElementById('msg9');
+        if(val === asciiXorPlain){
+            msg.textContent = "✅ Correct!";
+            document.getElementById('step9').classList.add('correct');
+            document.getElementById('step9').classList.remove('wrong');
+            done.add(9);
+        }else{
+            msg.textContent = "❌ Wrong decoded string.";
+            document.getElementById('step9').classList.add('wrong');
+            document.getElementById('step9').classList.remove('correct');
+            done.delete(9);
+        }
+    }else if(step===10){
+        const val = document.getElementById('ans10').value.trim().toUpperCase();
+        const msg = document.getElementById('msg10');
+        if(val === answers[10]){
+            msg.textContent = "✅ Correct!";
+            document.getElementById('step10').classList.add('correct');
+            document.getElementById('step10').classList.remove('wrong');
+            done.add(10);
+        }else{
+            msg.textContent = "❌ Try again.";
+            document.getElementById('step10').classList.add('wrong');
+            document.getElementById('step10').classList.remove('correct');
+            done.delete(10);
+        }
+    }else{ // steps 1-7
+        const el = document.getElementById('ans'+step);
+        let val = el.value.trim();
+        if(step===10) val = val.toUpperCase();
+        const correct = answers[step];
+        const msg = document.getElementById('msg'+step);
+        if(val === correct){
+            msg.textContent = "✅ Correct!";
+            el.parentElement.classList.add('correct');
+            el.parentElement.classList.remove('wrong');
+            done.add(step);
+        }else{
+            msg.textContent = "❌ Try again.";
+            el.parentElement.classList.add('wrong');
+            el.parentElement.classList.remove('correct');
+            done.delete(step);
+        }
+    }
+    updateProgress();
+}
+
+function updateProgress(){
+    document.getElementById('progress').textContent = `Completed: ${done.size} / 10`;
+    if(done.size===10){
+        alert("🎉 Lab complete! All 10 steps finished.");
+    }
+}
+</script>
+</body>
+</html>
+```

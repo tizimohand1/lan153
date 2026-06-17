@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 5: Secure Architecture | CompTIA Security+ SY0-701</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS — consistent with lessons 1–4
+   ============================================================ */
+:root {
+  --bg:          #ffffff;
+  --bg-soft:     #f7f9f7;
+  --bg-card:     #ffffff;
+  --border:      #d8e4d8;
+  --border-dark: #b2ccb2;
+  --text:        #111111;
+  --text-mid:    #3a4a3a;
+  --text-muted:  #5c6e5c;
+  --green-dark:  #1b5e20;
+  --green:       #2e7d32;
+  --green-mid:   #388e3c;
+  --green-light: #4caf50;
+  --green-pale:  #e8f5e9;
+  --green-pale2: #c8e6c9;
+  --red:         #b71c1c;
+  --red-pale:    #ffebee;
+  --blue:        #1565c0;
+  --blue-pale:   #e3f2fd;
+  --blue-dark:   #0d47a1;
+  --purple:      #6a1b9a;
+  --purple-pale: #f3e5f5;
+  --amber:       #e65100;
+  --amber-pale:  #fff3e0;
+  --teal:        #00695c;
+  --teal-pale:   #e0f2f1;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.13);
+  --radius:      10px;
+  --radius-lg:   16px;
+}
+[data-theme="dark"] {
+  --bg:          #0e120e;
+  --bg-soft:     #141a14;
+  --bg-card:     #1a221a;
+  --border:      #2a3a2a;
+  --border-dark: #3a4e3a;
+  --text:        #e8f0e8;
+  --text-mid:    #b8ccb8;
+  --text-muted:  #7a9a7a;
+  --green-dark:  #81c784;
+  --green:       #4caf50;
+  --green-mid:   #66bb6a;
+  --green-light: #a5d6a7;
+  --green-pale:  #1a2e1a;
+  --green-pale2: #1e3a1e;
+  --red:         #ef9a9a;
+  --red-pale:    #2a1010;
+  --blue:        #90caf9;
+  --blue-pale:   #0d1f35;
+  --blue-dark:   #1565c0;
+  --purple:      #ce93d8;
+  --purple-pale: #1f0d2a;
+  --amber:       #ffcc80;
+  --amber-pale:  #2a1a00;
+  --teal:        #80cbc4;
+  --teal-pale:   #0d2520;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.30);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.40);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.50);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.65; font-size: 16px;
+  transition: background 0.3s, color 0.3s;
+}
+h1,h2,h3,h4 { line-height: 1.25; font-weight: 700; }
+a { color: var(--green); text-decoration: none; }
+a:hover { text-decoration: underline; }
+ul { padding-left: 1.4em; }
+li { margin-bottom: 0.35em; }
+code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.87em;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header {
+  background: var(--green-dark); color: #fff;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+.header-inner {
+  max-width: 1180px; margin: 0 auto;
+  padding: 14px 24px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.brand-icon {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px; letter-spacing: -0.5px; color: #fff; flex-shrink: 0;
+}
+.brand-info h1 { font-size: 1rem; font-weight: 700; }
+.brand-info p  { font-size: 0.74rem; opacity: 0.7; margin-top: 1px; }
+.header-right  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lesson-badge {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+  color: #fff; font-size: 0.7rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.07em;
+}
+.nav-link {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px;
+  transition: background 0.2s; text-decoration: none; display: inline-block;
+}
+.nav-link:hover { background: rgba(255,255,255,0.25); text-decoration: none; }
+.theme-btn {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: background 0.2s;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* ============================================================
+   HERO — blue-tinted for "architecture" domain
+   ============================================================ */
+.hero {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 40%, #1565c033 100%);
+  color: #fff; padding: 48px 24px 40px;
+  position: relative; overflow: hidden;
+}
+.hero::after {
+  content: '05';
+  position: absolute; right: 40px; bottom: -10px;
+  font-size: 120px; font-weight: 900;
+  opacity: 0.07; line-height: 1; pointer-events: none;
+}
+.hero-inner { max-width: 860px; margin: 0 auto; }
+.hero-eyebrow {
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; opacity: 0.8; margin-bottom: 10px;
+}
+.hero h2 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+.hero-sub { font-size: 1rem; opacity: 0.85; max-width: 640px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.hero-tag {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+  font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page-body { max-width: 1180px; margin: 0 auto; padding: 36px 24px 64px; }
+.section-gap { margin-bottom: 48px; }
+.section-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--green);
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--green-pale2);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: block; width: 4px; height: 16px;
+  background: var(--green); border-radius: 2px;
+}
+
+/* ============================================================
+   OBJECTIVES
+   ============================================================ */
+.objectives-box {
+  background: var(--green-pale); border: 1px solid var(--green-pale2);
+  border-left: 5px solid var(--green);
+  border-radius: var(--radius); padding: 24px 28px;
+}
+.objectives-box h3 { color: var(--green-dark); margin-bottom: 12px; font-size: 1rem; }
+.objectives-box li { margin-bottom: 8px; color: var(--text-mid); font-size: 0.93rem; }
+.objectives-box li::marker { color: var(--green); }
+
+/* ============================================================
+   KEY TERMS
+   ============================================================ */
+.terms-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;
+}
+.term-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+}
+.term-name { font-weight: 700; font-size: 0.88rem; color: var(--green-dark); margin-bottom: 4px; }
+.term-def  { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; }
+
+/* ============================================================
+   INTRO CARD
+   ============================================================ */
+.intro-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 5px solid var(--green-light);
+  border-radius: var(--radius-lg); padding: 28px 32px; box-shadow: var(--shadow-sm);
+}
+.intro-card p { color: var(--text-mid); font-size: 0.97rem; line-height: 1.75; }
+.intro-card p + p { margin-top: 12px; }
+
+/* ============================================================
+   FLIP CARDS
+   ============================================================ */
+.flip-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;
+}
+.flip-wrapper { perspective: 1000px; height: 260px; cursor: pointer; }
+.flip-inner {
+  position: relative; width: 100%; height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4,0.2,0.2,1);
+  transform-style: preserve-3d;
+}
+.flip-wrapper.flipped .flip-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back {
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-lg); padding: 24px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border: 1px solid var(--border); box-shadow: var(--shadow-md);
+}
+.flip-front { background: var(--bg-card); }
+.flip-back  { background: var(--green-dark); color: #fff; transform: rotateY(180deg); }
+.flip-num   { font-size: 2.5rem; font-weight: 900; color: var(--green-pale2); line-height: 1; }
+.flip-front h3 { font-size: 1.05rem; color: var(--green-dark); margin-bottom: 6px; }
+.flip-front p  { font-size: 0.82rem; color: var(--text-muted); }
+.flip-hint { font-size: 0.7rem; color: var(--text-muted); }
+.flip-back h3  { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; opacity: 0.9; }
+.flip-back p   { font-size: 0.82rem; opacity: 0.85; line-height: 1.55; flex: 1; }
+
+/* ── Flip-back link row: View + Download ── */
+.flip-back-links {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+}
+.flip-back a.dive-link {
+  display: inline-block; background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 0.78rem; font-weight: 700;
+  padding: 6px 14px; border-radius: 20px; text-decoration: none;
+  transition: background 0.2s; align-self: flex-start;
+}
+.flip-back a.dive-link:hover { background: rgba(255,255,255,0.28); text-decoration: none; }
+.flip-back a.dive-download {
+  display: inline-block; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.75rem; font-weight: 600;
+  padding: 6px 12px; border-radius: 20px; text-decoration: none;
+  transition: background 0.2s; align-self: flex-start;
+}
+.flip-back a.dive-download:hover { background: rgba(255,255,255,0.22); text-decoration: none; }
+
+/* ============================================================
+   TOPIC SECTIONS
+   ============================================================ */
+.topic-section {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  margin-bottom: 28px; box-shadow: var(--shadow-sm);
+}
+.topic-header {
+  background: var(--green); color: #fff;
+  padding: 18px 28px; display: flex; align-items: center; gap: 14px;
+}
+.topic-header-num {
+  width: 36px; height: 36px; background: rgba(0,0,0,0.2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 900; flex-shrink: 0;
+}
+.topic-header h3 { font-size: 1.1rem; }
+.topic-header p  { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+.topic-body { padding: 28px; }
+.topic-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 18px; }
+.topic-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 18px; }
+
+.concept-block {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.concept-block h4 {
+  font-size: 0.92rem; color: var(--green-dark);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.concept-icon {
+  width: 24px; height: 24px; background: var(--green-pale2);
+  border-radius: 6px; display: inline-flex; align-items: center;
+  justify-content: center; font-size: 13px;
+}
+.concept-block p,
+.concept-block ul { font-size: 0.87rem; color: var(--text-mid); line-height: 1.6; }
+
+/* arch-card: left border color variants */
+.arch-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-left: 4px solid var(--blue);
+  border-radius: var(--radius); padding: 16px;
+}
+.arch-card h4 { font-size: 0.9rem; margin-bottom: 8px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.arch-card p, .arch-card ul { font-size: 0.84rem; color: var(--text-mid); line-height: 1.55; }
+.arch-card ul { margin-top: 6px; }
+.arch-card.green  { border-left-color: var(--green); }
+.arch-card.amber  { border-left-color: var(--amber); }
+.arch-card.purple { border-left-color: var(--purple); }
+.arch-card.teal   { border-left-color: var(--teal); }
+.arch-card.red    { border-left-color: var(--red); }
+
+/* callouts */
+.callout {
+  background: var(--green-pale); border-left: 4px solid var(--green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout strong { color: var(--green-dark); }
+.callout-blue {
+  background: var(--blue-pale); border-left: 4px solid var(--blue);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-blue strong { color: var(--blue); }
+.callout-amber {
+  background: var(--amber-pale); border-left: 4px solid var(--amber);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-amber strong { color: var(--amber); }
+.callout-red {
+  background: var(--red-pale); border-left: 4px solid var(--red);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-red strong { color: var(--red); }
+
+/* HA/Resilience meter */
+.ha-meter-wrap { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.ha-row { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; }
+.ha-label { width: 140px; flex-shrink: 0; color: var(--text-mid); font-weight: 600; }
+.ha-bar-bg { flex: 1; height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+.ha-bar-fill { height: 100%; border-radius: 5px; background: var(--green); transition: width 1s ease; }
+.ha-val { width: 55px; text-align: right; color: var(--text-muted); font-size: 0.78rem; flex-shrink: 0; }
+
+/* data classification tier visual */
+.data-tiers { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.data-tier {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px; border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.tier-badge {
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.07em; padding: 4px 10px; border-radius: 20px;
+  flex-shrink: 0; min-width: 100px; text-align: center;
+}
+.tier-top-secret { background: #b71c1c22; color: var(--red); border: 1px solid var(--red); }
+.tier-secret     { background: var(--amber-pale); color: var(--amber); border: 1px solid var(--amber); }
+.tier-confidential{ background: var(--blue-pale); color: var(--blue); border: 1px solid var(--blue); }
+.tier-public     { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green); }
+.tier-info h5    { font-size: 0.86rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.tier-info p     { font-size: 0.8rem; color: var(--text-mid); line-height: 1.45; }
+
+/* IaC code display */
+.code-block {
+  background: #0d1117; border-radius: var(--radius);
+  padding: 18px 20px; font-family: 'Courier New', monospace;
+  font-size: 0.79rem; color: #c9d1d9; margin-top: 12px;
+  overflow-x: auto; line-height: 1.7;
+  border: 1px solid #30363d;
+}
+.c-kw  { color: #ff7b72; }
+.c-str { color: #a5d6a7; }
+.c-key { color: #79c0ff; }
+.c-cmt { color: #8b949e; font-style: italic; }
+.c-val { color: #ffa657; }
+
+/* comparison table */
+.comp-table {
+  width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.84rem;
+}
+.comp-table th {
+  background: var(--green-dark); color: #fff;
+  padding: 10px 14px; text-align: left; font-size: 0.79rem; letter-spacing: 0.04em;
+}
+.comp-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-mid); vertical-align: top;
+}
+.comp-table tr:nth-child(even) td { background: var(--bg-soft); }
+.comp-table tr:hover td { background: var(--green-pale); }
+
+/* ============================================================
+   ACTIVITIES — common
+   ============================================================ */
+.activity-box {
+  background: var(--bg-card); border: 2px solid var(--green-pale2);
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md);
+}
+.activity-header {
+  background: var(--green-dark); color: #fff;
+  padding: 16px 24px; display: flex; align-items: center; gap: 12px;
+}
+.activity-badge {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+  font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.activity-header h3 { font-size: 1rem; }
+.activity-header p  { font-size: 0.8rem; opacity: 0.8; margin-top: 2px; }
+.activity-body { padding: 24px; }
+.activity-instructions {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 16px;
+  font-size: 0.85rem; color: var(--text-mid); margin-bottom: 20px;
+}
+.activity-result {
+  margin-top: 14px; padding: 12px 16px; border-radius: var(--radius);
+  font-size: 0.88rem; font-weight: 600; display: none;
+}
+.result-pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.result-fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.activity-actions { margin-top: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--green-dark); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--green); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--bg-soft); color: var(--text);
+  border: 1px solid var(--border-dark); padding: 10px 22px;
+  border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: var(--border); }
+
+/* ============================================================
+   ACTIVITY 1 — ARCHITECTURE SORT (drag & drop)
+   ============================================================ */
+.drag-pool {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 20px; min-height: 56px;
+  background: var(--bg-soft); border: 1px dashed var(--border-dark);
+  border-radius: var(--radius); padding: 12px;
+}
+.drag-item {
+  background: var(--green-dark); color: #fff;
+  padding: 7px 13px; border-radius: 20px;
+  font-size: 0.79rem; font-weight: 600;
+  cursor: grab; user-select: none;
+  transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.drag-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.drag-item.dragging { opacity: 0.35; }
+.drop-zones-4 {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+}
+.drop-zone {
+  border: 2px dashed var(--border-dark); border-radius: var(--radius);
+  padding: 12px; min-height: 110px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.drop-zone.drag-over { border-color: var(--green); background: var(--green-pale); }
+.drop-zone-label {
+  font-size: 0.74rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-muted);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.dz-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dropped-item {
+  display: inline-block; padding: 4px 11px; border-radius: 20px;
+  font-size: 0.75rem; font-weight: 600; margin: 3px;
+}
+.dropped-item.correct   { background: var(--green-pale2); color: var(--green-dark); border: 1px solid var(--green); }
+.dropped-item.incorrect { background: var(--red-pale); color: var(--red); border: 1px solid var(--red); animation: shake 0.35s; }
+.dropped-item .rm { margin-left: 5px; cursor: pointer; opacity: 0.6; }
+.dropped-item .rm:hover { opacity: 1; }
+@keyframes shake {
+  0%,100%{ transform:translateX(0); }
+  20%{ transform:translateX(-5px); }
+  40%{ transform:translateX(5px); }
+  60%{ transform:translateX(-3px); }
+  80%{ transform:translateX(3px); }
+}
+
+/* ============================================================
+   ACTIVITY 2 — RESILIENCE SCENARIO BUILDER
+   ============================================================ */
+.scenario-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.scenario-tab {
+  background: var(--bg-soft); border: 1px solid var(--border-dark);
+  color: var(--text-mid); padding: 8px 16px; border-radius: 20px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.scenario-tab.active, .scenario-tab:hover {
+  background: var(--green-dark); color: #fff; border-color: var(--green-dark);
+}
+.scenario-panel { display: none; }
+.scenario-panel.active { display: block; }
+.scenario-desc-box {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px; margin-bottom: 16px;
+}
+.scenario-title { font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 6px; }
+.scenario-body  { font-size: 0.88rem; color: var(--text-mid); line-height: 1.6; }
+.res-questions { display: flex; flex-direction: column; gap: 12px; }
+.res-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.res-q-text { font-size: 0.9rem; font-weight: 600; margin-bottom: 10px; color: var(--text); }
+.res-opts { display: flex; flex-direction: column; gap: 7px; }
+.res-opt {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 12px; background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: 8px;
+  cursor: pointer; font-size: 0.86rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.res-opt:hover { background: var(--green-pale); border-color: var(--green-light); }
+.res-opt input { flex-shrink: 0; margin-top: 2px; accent-color: var(--green); }
+.res-opt.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.res-opt.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.res-fb {
+  margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+  font-size: 0.84rem; display: none;
+}
+.res-fb.show { display: block; }
+.res-fb.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.res-fb.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+.quiz-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 16px; transition: border-color 0.3s;
+}
+.quiz-q.answered-correct { border-color: var(--green); background: var(--green-pale); }
+.quiz-q.answered-wrong   { border-color: var(--red);   background: var(--red-pale); }
+.q-num  { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+.q-text { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.45; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-option {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px; background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  cursor: pointer; font-size: 0.88rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.q-option:hover { background: var(--green-pale); border-color: var(--green-light); }
+.q-option input[type="radio"] { margin-top: 1px; flex-shrink: 0; accent-color: var(--green); }
+.q-option.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.q-option.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.q-feedback { margin-top: 12px; padding: 12px 16px; border-radius: var(--radius); font-size: 0.85rem; line-height: 1.55; display: none; }
+.q-feedback.show { display: block; }
+.q-feedback.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.q-feedback.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.quiz-submit-row { margin-top: 20px; display: flex; align-items: center; gap: 14px; }
+#quiz-result {
+  padding: 18px 24px; border-radius: var(--radius-lg);
+  font-size: 1rem; font-weight: 700; display: none; margin-top: 20px;
+}
+.quiz-pass { background: var(--green-pale); color: var(--green-dark); border: 2px solid var(--green-pale2); }
+.quiz-fail { background: var(--red-pale); color: var(--red); border: 2px solid #ffcdd2; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.page-footer {
+  background: var(--bg-soft); border-top: 1px solid var(--border);
+  padding: 24px; text-align: center; font-size: 0.78rem; color: var(--text-muted);
+}
+.footer-nav { display: flex; justify-content: center; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
+.footer-nav a { color: var(--green); font-weight: 600; font-size: 0.85rem; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .hero h2 { font-size: 1.4rem; }
+  .topic-grid, .topic-grid-3, .drop-zones-4 { grid-template-columns: 1fr; }
+  .flip-grid { grid-template-columns: 1fr; }
+  .detail-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="brand-icon">S+</div>
+      <div class="brand-info">
+        <h1>CompTIA Security+ SY0-701</h1>
+        <p>Lesson 5 of 12 &mdash; Secure Architecture</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="lesson-badge">Day 5</span>
+      <a href="index.html" class="nav-link">&#8592; Course Home</a>
+      <a href="lesson04.html" class="nav-link">&#8592; Lesson 4</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Lesson 5 &mdash; Security Architecture (18% of exam)</div>
+    <h2>Secure Architecture</h2>
+    <p class="hero-sub">On-premises and cloud design, virtualization, IoT, ICS, Infrastructure as Code, data classification, redundancy, and high availability — how security is built into systems from the ground up, not bolted on afterward.</p>
+    <div class="hero-meta">
+      <span class="hero-tag">📖 3 Topics</span>
+      <span class="hero-tag">🎯 2 Activities</span>
+      <span class="hero-tag">📝 5-Question Quiz</span>
+      <span class="hero-tag">⏱ ~60 min</span>
+      <span class="hero-tag">Domain: Security Architecture</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE BODY
+     ============================================================ -->
+<div class="page-body">
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="section-gap">
+    <div class="section-label">Learning Objectives</div>
+    <div class="objectives-box">
+      <h3>By the end of this lesson, you will be able to:</h3>
+      <ul>
+        <li>Compare secure architecture design principles across on-premises, cloud, hybrid, and edge computing environments.</li>
+        <li>Explain the security implications of virtualization, including hypervisor types, VM escape risks, and container isolation challenges.</li>
+        <li>Describe the unique security challenges of IoT devices and recommend controls that address their constrained, always-on nature.</li>
+        <li>Distinguish ICS/SCADA environments from traditional IT networks and justify why standard IT security practices must be adapted for operational technology.</li>
+        <li>Explain how Infrastructure as Code (IaC) enables consistent, auditable, and version-controlled security configuration at scale.</li>
+        <li>Apply a data classification scheme to categorize organizational data assets and recommend appropriate protection controls for each tier.</li>
+        <li>Define redundancy, high availability, and fault tolerance, and design a resilience solution for a described business continuity scenario.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- KEY TERMS -->
+  <div class="section-gap">
+    <div class="section-label">Key Terms</div>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">IoT (Internet of Things)</div>
+        <div class="term-def">The network of physical devices — sensors, cameras, HVAC systems, medical equipment, industrial controllers — embedded with software that enables them to connect to the internet and exchange data. IoT devices typically have limited computing resources and minimal built-in security.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">ICS (Industrial Control System)</div>
+        <div class="term-def">Systems used to monitor and control physical industrial processes — power generation, water treatment, manufacturing, pipelines. ICS includes SCADA (Supervisory Control and Data Acquisition) systems. Availability is the paramount security concern; downtime can have physical safety consequences.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">IaC (Infrastructure as Code)</div>
+        <div class="term-def">The practice of managing and provisioning computing infrastructure through machine-readable configuration files rather than manual processes. Enables version control, automated testing, consistent deployment, and audit trails for all infrastructure changes.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Redundancy</div>
+        <div class="term-def">The duplication of critical components or systems so that if one fails, the duplicate can take over without service interruption. Redundancy directly supports the Availability pillar of the CIA triad and is a foundational resilience concept.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">High Availability (HA)</div>
+        <div class="term-def">A system design characteristic that ensures a high level of operational uptime — typically 99.9% (three nines) or above. HA is achieved through redundant components, failover clustering, load balancing, and geographic distribution. Measured and expressed as a percentage of annual uptime.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Defense in Depth</div>
+        <div class="term-def">A security architecture strategy that layers multiple independent security controls so that the failure of any single control does not lead to a complete system compromise. Also called layered security — each layer slows or stops an attacker who has defeated the previous layer.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Data Classification</div>
+        <div class="term-def">The process of categorizing organizational data by its sensitivity, value, and the potential impact of unauthorized disclosure. Classification tiers (e.g., Public, Internal, Confidential, Top Secret) drive appropriate protection requirements, handling procedures, and access controls.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Zero Trust Architecture</div>
+        <div class="term-def">A security model that eliminates the concept of implicit trust within a network perimeter. Every user, device, and workload must continuously authenticate and be authorized for every resource access — regardless of network location. "Never trust, always verify."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="section-gap">
+    <div class="section-label">Topic Introduction</div>
+    <div class="intro-card">
+      <p>In the previous lessons, you identified threats (Lesson 3) and vulnerabilities (Lesson 4). This lesson addresses the foundational question those lessons implied: <em>how do you design systems so they are inherently harder to attack?</em> Secure architecture is the discipline of building security into systems from the beginning — not as an afterthought. A well-architected environment contains an attacker, limits the blast radius of any breach, and recovers automatically from failures before users are impacted.</p>
+      <p>The Security Architecture domain carries 18% of the Security+ exam and spans an unusually broad range — from the specific security controls of a cloud VPC to the existential safety risks of a compromised water treatment ICS. The thread connecting all of it is a set of principles: separation, segmentation, least privilege, redundancy, and verification at every layer. By the end of this lesson, you will be able to look at an architectural scenario and identify both the risks and the design decisions that mitigate them.</p>
+    </div>
+  </div>
+
+  <!-- FLIP CARDS -->
+  <div class="section-gap">
+    <div class="section-label">Topic Navigation — Click a Card to Explore</div>
+    <div class="flip-grid">
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">01</div>
+              <h3>On-Premises, Cloud &amp; Virtualization</h3>
+              <p>Secure design principles across physical data centers, cloud environments, and virtualized infrastructure — including hypervisor security and container isolation.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>On-Premises, Cloud &amp; Virtualization</h3>
+              <p>On-premises relies on physical perimeter controls + network segmentation. Cloud requires the Shared Responsibility Model: customer owns configuration. Virtualization introduces hypervisor attack surface and VM escape risk. Containers share the host kernel — isolation is lighter than VMs.</p>
+            </div>
+            <div class="flip-back-links">
+              <a class="dive-link" href="lesson05-part01.png" target="_blank" rel="noopener">View Graphic &#8594;</a>
+              <a class="dive-download" href="lesson05-part01.png" download="lesson05-part01.png">&#8675; Download PNG</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">02</div>
+              <h3>IoT, ICS &amp; Infrastructure as Code</h3>
+              <p>The unique security challenges of always-on embedded devices, safety-critical industrial systems, and the transformative role of IaC in automating secure configuration.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>IoT, ICS &amp; IaC</h3>
+              <p>IoT devices have weak security, long lifecycles, and no patch cadence — segment and monitor. ICS prioritizes Availability over CIA; Stuxnet proved physical damage is achievable through cyber means. IaC enforces consistent, version-controlled, auditable infrastructure configuration — eliminating "snowflake" servers.</p>
+            </div>
+            <div class="flip-back-links">
+              <a class="dive-link" href="lesson05-part02.png" target="_blank" rel="noopener">View Graphic &#8594;</a>
+              <a class="dive-download" href="lesson05-part02.png" download="lesson05-part02.png">&#8675; Download PNG</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">03</div>
+              <h3>Data Classification &amp; Resilience</h3>
+              <p>Classifying data to drive appropriate protection levels — plus redundancy, high availability, fault tolerance, and recovery concepts that keep businesses running through failures.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Data Classification &amp; Resilience</h3>
+              <p>Data classification determines what protection an asset needs. HA and resilience ensure it stays accessible — achieved through redundant power, failover clustering, geo-distributed backups, load balancing, and documented RTO/RPO targets. The architecture must survive component failures without human intervention.</p>
+            </div>
+            <div class="flip-back-links">
+              <a class="dive-link" href="lesson05-part03.png" target="_blank" rel="noopener">View Graphic &#8594;</a>
+              <a class="dive-download" href="lesson05-part03.png" download="lesson05-part03.png">&#8675; Download PNG</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 1 — ON-PREMISES, CLOUD & VIRTUALIZATION
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 1 Content</div>
+    <div class="topic-section">
+      <div class="topic-header">
+        <div class="topic-header-num">1</div>
+        <div>
+          <h3>On-Premises, Cloud &amp; Virtualization Security</h3>
+          <p>Secure design principles across physical and virtual infrastructure — and where responsibility lies</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">The first architectural decision — where does this infrastructure live? — determines the entire security model. On-premises environments put you in full control; cloud environments shift some responsibility to the provider. Both models demand deliberate security design, but the attack surface, controls, and ownership differ significantly.</p>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">On-Premises Architecture Security</h4>
+        <div class="topic-grid">
+          <div class="arch-card green">
+            <h4>🏢 Physical Perimeter &amp; Layered Zones</h4>
+            <p>On-premises security begins at the building perimeter and works inward. Defense in depth layers physical controls (badge readers, mantraps, CCTV) with network controls (firewalls, VLANs, IDS/IPS) and logical controls (ACLs, encryption, MFA).</p>
+            <ul>
+              <li><strong>DMZ:</strong> Internet-facing servers (web, email, DNS) placed between two firewalls — separate from the internal network</li>
+              <li><strong>Screened subnet:</strong> A variation of the DMZ where a single firewall creates a three-interface topology (internet / DMZ / internal)</li>
+              <li><strong>Air-gapped networks:</strong> Physically isolated from all other networks — used for classified, ICS, or extremely sensitive environments</li>
+            </ul>
+          </div>
+          <div class="arch-card blue">
+            <h4>🌐 Network Segmentation Architecture</h4>
+            <p>Flat networks are a security anti-pattern — a single compromised endpoint can reach every other system. Segmented architectures contain lateral movement and enforce access control between zones.</p>
+            <ul>
+              <li><strong>VLANs:</strong> Logical separation at Layer 2 — user, server, management, guest, IoT each in dedicated VLANs</li>
+              <li><strong>Micro-segmentation:</strong> Zero-trust network where every workload is isolated; east-west traffic requires explicit authorization</li>
+              <li><strong>Jump server / bastion host:</strong> Single, hardened access point for admin access to sensitive network segments — all admin sessions route through it and are logged</li>
+              <li><strong>Proxy servers:</strong> Inspect and filter outbound traffic — web proxies, forward proxies, CASB for cloud app control</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top:20px;">
+          <strong>Analogy — The Hospital Floor Plan:</strong> Think of on-premises network architecture like a hospital. The lobby is publicly accessible (DMZ / internet-facing services). The wards require a badge (internal network). The operating theater requires surgical credentials and a sterile gown (privileged management network). The pharmacy has its own key system even within the building (PAM / privileged access segment). Each zone enforces the minimum access needed for each role — and moving between zones requires explicit authorization at each boundary.
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Cloud Architecture Security — Shared Responsibility Model</h4>
+        <div class="topic-grid">
+          <div class="arch-card purple">
+            <h4>☁️ The Shared Responsibility Model</h4>
+            <p>Cloud security is a partnership. The provider (AWS, Azure, GCP) is responsible for securing <em>the cloud</em> — physical hardware, hypervisors, global network infrastructure. The customer is responsible for securing <em>what is in the cloud</em> — OS configuration, application code, IAM policies, data encryption, and network controls.</p>
+            <ul>
+              <li><strong>IaaS:</strong> Provider owns physical + hypervisor. Customer owns OS upward — all software patching, configuration, and security controls</li>
+              <li><strong>PaaS:</strong> Provider owns OS + runtime. Customer owns application code and data</li>
+              <li><strong>SaaS:</strong> Provider owns everything except data classification and user access management</li>
+              <li><strong>Exam tip:</strong> Most cloud breaches are the customer's fault — misconfiguration, not provider failure</li>
+            </ul>
+          </div>
+          <div class="arch-card teal">
+            <h4>🏗️ Secure Cloud Design Patterns</h4>
+            <p>Cloud-native architectures require security controls that match their dynamic, ephemeral nature:</p>
+            <ul>
+              <li><strong>Private subnets:</strong> Database and application tiers in private subnets with no direct internet route</li>
+              <li><strong>Security groups / NACLs:</strong> Stateful (SG) and stateless (NACL) firewall controls at the resource and subnet level</li>
+              <li><strong>VPC peering &amp; endpoints:</strong> Private connectivity between VPCs and to AWS services without traversing the public internet</li>
+              <li><strong>Encryption everywhere:</strong> Server-side encryption for S3, RDS, EBS; TLS in transit; KMS for key management</li>
+              <li><strong>Immutable infrastructure:</strong> Servers are never patched in-place — they are replaced with new, patched instances from a golden AMI</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Virtualization Security</h4>
+        <div class="topic-grid-3">
+          <div class="arch-card">
+            <h4>🖥️ Hypervisor Types &amp; Risk</h4>
+            <p><strong>Type 1 (Bare-metal):</strong> Runs directly on hardware (VMware ESXi, Hyper-V, Xen). More secure — no host OS attack surface. Used in production data centers and cloud providers.<br><br>
+            <strong>Type 2 (Hosted):</strong> Runs as an application on a host OS (VirtualBox, VMware Workstation). Less secure — host OS vulnerabilities affect all VMs. Used for development and testing.</p>
+            <ul>
+              <li><strong>Hypervisor patching is critical</strong> — a hypervisor vulnerability affects every VM on that host simultaneously</li>
+            </ul>
+          </div>
+          <div class="arch-card amber">
+            <h4>⚠️ VM Escape &amp; Sprawl</h4>
+            <p><strong>VM Escape:</strong> An attacker who has compromised a guest VM exploits a hypervisor vulnerability to break out and access the host or other VMs. Extremely serious — escaping the VM boundary compromises the entire host's workload.<br><br>
+            <strong>VM Sprawl:</strong> Uncontrolled proliferation of VMs — including forgotten, unpatched VMs that become persistent attack surfaces. Requires inventory management and lifecycle policies.</p>
+          </div>
+          <div class="arch-card teal">
+            <h4>📦 Container Security</h4>
+            <p>Containers (Docker, Kubernetes) share the host OS kernel — lighter than VMs but with a smaller isolation boundary. A container escape is less dramatic than a VM escape but still gives access to the host filesystem.</p>
+            <ul>
+              <li>Never run containers as root</li>
+              <li>Use read-only filesystems where possible</li>
+              <li>Scan container images for CVEs before deployment (Trivy, Snyk)</li>
+              <li>Use namespaces and seccomp profiles to restrict syscalls</li>
+              <li>Kubernetes RBAC controls who can deploy and modify workloads</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout-blue">
+          <strong>Zero Trust Architecture (ZTA) — The Modern Standard:</strong> Traditional perimeter security assumes that anything inside the network can be trusted. Zero Trust rejects this assumption: "Never trust, always verify." Every user, device, and workload must authenticate and be authorized for every resource request, regardless of whether they are inside or outside the traditional network perimeter. This model was mandated for U.S. federal agencies by Executive Order 14028 (2021) and is the direction of all modern enterprise security architecture. Key ZTA tenets: verify explicitly, use least-privilege access, assume breach.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 2 — IoT, ICS & IaC
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 2 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-dark);">
+        <div class="topic-header-num">2</div>
+        <div>
+          <h3>IoT, ICS &amp; Infrastructure as Code</h3>
+          <p>Securing embedded devices, industrial systems, and configuration at machine speed</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">These three topics represent the expanding frontiers of what "infrastructure" means. IoT brought the internet to every light bulb and thermostat. ICS connects digital controls to physical processes. IaC turned infrastructure configuration into software — with all of software's security implications. Security+ tests all three.</p>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">IoT Security Challenges</h4>
+        <div class="topic-grid">
+          <div class="concept-block">
+            <h4><span class="concept-icon">📡</span> Why IoT Is a Security Problem</h4>
+            <p>IoT devices are designed for functionality and cost, not security. They are shipped with minimal security features, rarely updated, and typically deployed in large numbers across environments that were not designed to accommodate them.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Default credentials:</strong> Most IoT devices ship with default admin/password — Mirai botnet compromised 600,000 devices this way in 2016</li>
+              <li><strong>No patch mechanism:</strong> Many IoT devices have no update capability; firmware vulnerabilities persist for the device's entire lifecycle (often 10–20 years)</li>
+              <li><strong>Limited compute:</strong> Insufficient processing power for standard encryption or security agents</li>
+              <li><strong>Always-on connectivity:</strong> IoT devices maintain persistent connections — a compromised device is a persistent foothold</li>
+              <li><strong>Physical access:</strong> Devices deployed in physically accessible locations (parking lots, lobbies) can be tampered with directly</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">🛡️</span> IoT Security Controls</h4>
+            <p>Standard IT security controls cannot always be applied to IoT devices — you cannot install an EDR agent on a smart thermostat. Security must be implemented at the network and architectural level instead.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Network segmentation:</strong> IoT devices belong in a dedicated, isolated VLAN. They should never be on the same network segment as corporate workstations or servers</li>
+              <li><strong>Change default credentials:</strong> The first step before any IoT device goes online — change every default username and password</li>
+              <li><strong>Firmware updates:</strong> Enable automatic updates where available; track firmware versions in an asset inventory</li>
+              <li><strong>NAC (Network Access Control):</strong> Only allow authorized, inventoried devices to connect to the IoT VLAN</li>
+              <li><strong>Monitoring:</strong> Baseline normal IoT device traffic; alert on anomalies (a thermostat scanning ports is a red flag)</li>
+              <li><strong>Decommissioning:</strong> Physically destroy IoT devices at end-of-life — storage chips may contain sensitive data</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">ICS / SCADA Security</h4>
+        <div class="topic-grid">
+          <div class="arch-card red">
+            <h4>⚙️ What Makes ICS Different</h4>
+            <p>Industrial Control Systems manage physical processes — power generation, water treatment, oil pipelines, manufacturing lines, building management. In ICS, a security failure is not just a data breach — it can cause <strong>physical harm, environmental damage, or loss of life</strong>.</p>
+            <ul>
+              <li><strong>Availability first:</strong> The CIA triad is inverted for ICS — Availability > Integrity > Confidentiality. A water treatment plant that goes offline causes a public health emergency</li>
+              <li><strong>Legacy systems:</strong> ICS components often run for 20–30 years on proprietary, unpatched operating systems. Many use Windows XP or earlier</li>
+              <li><strong>Proprietary protocols:</strong> Modbus, DNP3, OPC — designed for reliability, not security. Most have no authentication or encryption</li>
+              <li><strong>Real-time constraints:</strong> Latency introduced by security controls (scanning, encryption) can disrupt time-critical physical processes</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">🏭</span> ICS Security Controls</h4>
+            <p>Security in OT/ICS environments must be adapted to the operational constraints — controls that would be standard in IT can cause outages in ICS.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>IT/OT network separation:</strong> The ICS network must be isolated from the corporate IT network — either air-gapped or connected through a unidirectional security gateway (data diode)</li>
+              <li><strong>Data diode:</strong> Hardware that allows data to flow in only one direction — OT data can be sent to IT for monitoring, but no traffic can flow back</li>
+              <li><strong>Purdue Model / ICS-62443:</strong> Reference architecture that defines security zones from the enterprise network down to the physical process level</li>
+              <li><strong>Patch management:</strong> Patches must be tested on identical lab systems before production — unplanned downtime in ICS can have safety consequences</li>
+              <li><strong>Vendor remote access:</strong> Third-party ICS vendors often need remote access for maintenance — must be controlled, time-limited, and monitored</li>
+            </ul>
+            <div style="margin-top:10px;padding:10px 12px;background:var(--red-pale);border-radius:8px;font-size:0.82rem;color:var(--text-mid);">
+              <strong style="color:var(--red);">Stuxnet (2010):</strong> The first nation-state cyberweapon to cause physical damage. It targeted Siemens PLCs at Iranian uranium enrichment facilities, causing centrifuges to spin out of tolerance while reporting normal operation. It demonstrated that ICS systems could be weaponized through cyber means.
+            </div>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Infrastructure as Code (IaC)</h4>
+        <div class="topic-grid">
+          <div class="concept-block">
+            <h4><span class="concept-icon">📄</span> What IaC Solves</h4>
+            <p>Before IaC, infrastructure was configured manually — leading to "snowflake servers" (unique configurations that no one fully understood), configuration drift (servers that slowly diverge from their intended state), and undocumented changes that created vulnerabilities.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Consistency:</strong> Every server deployed from the same IaC template is identically configured — no manual variation</li>
+              <li><strong>Version control:</strong> Infrastructure configuration is stored in Git — every change is tracked, attributable, and reversible</li>
+              <li><strong>Security scanning:</strong> IaC templates can be scanned for misconfigurations before deployment (tfsec for Terraform, cfn-lint for CloudFormation)</li>
+              <li><strong>Immutable infrastructure:</strong> Instead of patching a running server, deploy a new instance from a patched, validated template and retire the old one</li>
+              <li><strong>Audit trail:</strong> Git commit history provides a complete audit trail of all infrastructure changes — who changed what, when, and why</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">💻</span> IaC Tools &amp; Security Patterns</h4>
+            <p>Common IaC platforms tested on Security+:</p>
+            <ul style="margin-top:6px;">
+              <li><strong>Terraform (HashiCorp):</strong> Cloud-agnostic — provisions infrastructure across AWS, Azure, GCP from declarative configuration files (.tf)</li>
+              <li><strong>AWS CloudFormation:</strong> AWS-native IaC — defines entire stacks (VPC, EC2, RDS, IAM) as JSON/YAML templates</li>
+              <li><strong>Ansible:</strong> Configuration management — applies and enforces desired system state across servers</li>
+              <li><strong>Kubernetes manifests:</strong> Declarative YAML defines container workloads, network policies, and RBAC</li>
+            </ul>
+            <p style="margin-top:10px;font-size:0.85rem;color:var(--text-mid);">Example IaC security pattern — S3 bucket with encryption enforced:</p>
+            <div class="code-block">
+<span class="c-cmt"># Terraform — S3 bucket with encryption &amp; no public access</span>
+<span class="c-kw">resource</span> <span class="c-str">"aws_s3_bucket"</span> <span class="c-str">"secure_bucket"</span> {
+  <span class="c-key">bucket</span> = <span class="c-str">"corp-data-archive"</span>
+}
+
+<span class="c-kw">resource</span> <span class="c-str">"aws_s3_bucket_public_access_block"</span> <span class="c-str">"block"</span> {
+  <span class="c-key">bucket</span>                  = aws_s3_bucket.secure_bucket.id
+  <span class="c-key">block_public_acls</span>       = <span class="c-val">true</span>
+  <span class="c-key">block_public_policy</span>     = <span class="c-val">true</span>
+  <span class="c-key">restrict_public_buckets</span> = <span class="c-val">true</span>
+}
+
+<span class="c-kw">resource</span> <span class="c-str">"aws_s3_bucket_server_side_encryption_configuration"</span> <span class="c-str">"enc"</span> {
+  <span class="c-key">bucket</span> = aws_s3_bucket.secure_bucket.id
+  <span class="c-key">rule</span> {
+    <span class="c-key">apply_server_side_encryption_by_default</span> {
+      <span class="c-key">sse_algorithm</span> = <span class="c-str">"aws:kms"</span>
+    }
+  }
+}
+<span class="c-cmt"># Security scan (tfsec) runs on this file in CI/CD pipeline
+# before ANY infrastructure change reaches production</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout-amber">
+          <strong>IaC Security Risk — Secrets in Code:</strong> The most common IaC security mistake is embedding secrets (API keys, database passwords, access tokens) directly in IaC configuration files that are committed to version control. Even private repositories are not safe if they become public accidentally. Secrets belong in dedicated secrets management systems (AWS Secrets Manager, HashiCorp Vault, Azure Key Vault) — IaC references the secret by name, never by value.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 3 — DATA CLASSIFICATION & RESILIENCE
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 3 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-mid);">
+        <div class="topic-header-num">3</div>
+        <div>
+          <h3>Data Classification &amp; Resilience</h3>
+          <p>Protecting the right data the right way — and building systems that stay up when components fail</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Not all data deserves the same protection. Applying top-secret-level controls to a public press release wastes resources; applying public-level controls to financial records invites breach. Data classification aligns protection cost with data value. Resilience architecture ensures classified data remains <em>available</em> to authorized users even when individual components fail.</p>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">Data Classification Frameworks</h4>
+        <div class="topic-grid">
+          <div>
+            <p style="font-size:0.87rem;color:var(--text-mid);margin-bottom:12px;"><strong>Government/Military Classification</strong> — used by federal agencies and defense contractors (DoD 5200.01):</p>
+            <div class="data-tiers">
+              <div class="data-tier">
+                <span class="tier-badge tier-top-secret">Top Secret</span>
+                <div class="tier-info"><h5>Top Secret</h5><p>Unauthorized disclosure could cause <em>exceptionally grave damage</em> to national security. Access requires TS clearance + Special Access Program (SAP) authorization. Examples: nuclear weapon designs, intelligence collection methods.</p></div>
+              </div>
+              <div class="data-tier">
+                <span class="tier-badge tier-secret">Secret</span>
+                <div class="tier-info"><h5>Secret</h5><p>Unauthorized disclosure could cause <em>serious damage</em> to national security. Requires Secret clearance. Examples: military operational plans, diplomatic cables, foreign intelligence reports.</p></div>
+              </div>
+              <div class="data-tier">
+                <span class="tier-badge tier-confidential">Confidential</span>
+                <div class="tier-info"><h5>Confidential</h5><p>Unauthorized disclosure could cause <em>damage</em> to national security. Requires Confidential clearance. Examples: personnel records, unclassified intelligence with sensitive source information.</p></div>
+              </div>
+              <div class="data-tier">
+                <span class="tier-badge tier-public">Unclassified</span>
+                <div class="tier-info"><h5>Unclassified / Public</h5><p>No classification required. Safe for public release. Examples: press releases, published research, public-facing websites.</p></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p style="font-size:0.87rem;color:var(--text-mid);margin-bottom:12px;"><strong>Commercial/Corporate Classification</strong> — used in private sector organizations:</p>
+            <div class="data-tiers">
+              <div class="data-tier">
+                <span class="tier-badge tier-top-secret">Restricted</span>
+                <div class="tier-info"><h5>Restricted / Confidential</h5><p>Highest sensitivity. Disclosure would cause severe competitive or legal harm. Examples: trade secrets, M&amp;A plans, source code, cryptographic keys, cardholder data (PCI), PHI (HIPAA), SSNs.</p></div>
+              </div>
+              <div class="data-tier">
+                <span class="tier-badge tier-secret">Internal / Private</span>
+                <div class="tier-info"><h5>Internal / Private</h5><p>For use by employees only. Disclosure would be inappropriate but not catastrophic. Examples: internal policies, project plans, salary data, employee performance reviews, internal IP addresses.</p></div>
+              </div>
+              <div class="data-tier">
+                <span class="tier-badge tier-confidential">Sensitive</span>
+                <div class="tier-info"><h5>Sensitive</h5><p>Requires protection but is shared with partners, contractors, or approved third parties. Examples: contracts, financial statements shared with auditors, partner integration credentials.</p></div>
+              </div>
+              <div class="data-tier">
+                <span class="tier-badge tier-public">Public</span>
+                <div class="tier-info"><h5>Public</h5><p>Safe for unrestricted distribution. No access control required. Examples: marketing materials, job postings, published documentation, public APIs.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top:16px;">
+          <strong>Classification Drives Controls:</strong> Data classification is not just a labeling exercise — it directly determines which encryption standards apply, who can access the data, how it must be stored and transmitted, how long it is retained, and how it must be destroyed. A healthcare organization that classifies patient records as PHI must apply HIPAA-required controls to that specific classification tier and can apply lighter controls to de-identified research data.
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Resilience, Redundancy &amp; High Availability</h4>
+
+        <div class="concept-block" style="margin-bottom:16px;">
+          <h4><span class="concept-icon">⏱</span> Measuring Availability — The Nines</h4>
+          <p style="margin-bottom:12px;">High availability is measured and contractually specified as a percentage of annual uptime. Understanding the nines is essential for architecture decisions:</p>
+          <div class="ha-meter-wrap">
+            <div class="ha-row"><span class="ha-label">99% (Two nines)</span><div class="ha-bar-bg"><div class="ha-bar-fill" style="width:55%;background:var(--red);"></div></div><span class="ha-val">~87 hrs/yr down</span></div>
+            <div class="ha-row"><span class="ha-label">99.9% (Three nines)</span><div class="ha-bar-bg"><div class="ha-bar-fill" style="width:70%;background:var(--amber);"></div></div><span class="ha-val">~8.7 hrs/yr down</span></div>
+            <div class="ha-row"><span class="ha-label">99.99% (Four nines)</span><div class="ha-bar-bg"><div class="ha-bar-fill" style="width:85%;background:var(--green-light);"></div></div><span class="ha-val">~52 min/yr down</span></div>
+            <div class="ha-row"><span class="ha-label">99.999% (Five nines)</span><div class="ha-bar-bg"><div class="ha-bar-fill" style="width:98%;background:var(--green-dark);"></div></div><span class="ha-val">~5 min/yr down</span></div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:10px;">Five nines (99.999%) is the gold standard for telecom and critical infrastructure — it allows only ~5 minutes of downtime per year. Each additional nine requires exponentially more redundancy and typically costs an order of magnitude more to achieve.</p>
+        </div>
+
+        <div class="topic-grid">
+          <div class="arch-card green">
+            <h4>🔁 Redundancy Patterns</h4>
+            <p>Redundancy eliminates single points of failure by duplicating critical components:</p>
+            <ul>
+              <li><strong>Active-Active clustering:</strong> Both nodes handle traffic simultaneously. Capacity doubles; failover is instant (no takeover time needed)</li>
+              <li><strong>Active-Passive clustering:</strong> Primary handles all traffic; secondary is on standby. Failover requires a brief switchover but provides a clean separation of roles</li>
+              <li><strong>RAID (storage):</strong> RAID 1 (mirror), RAID 5 (parity), RAID 10 (mirror + stripe) — different tradeoffs between redundancy, performance, and cost</li>
+              <li><strong>Redundant power:</strong> Dual PSUs in servers, UPS (minutes to hours), generator (days); redundant utility feeds from separate substations</li>
+              <li><strong>Geographic redundancy:</strong> Multi-region deployments protect against entire data center failures (natural disasters, regional outages)</li>
+            </ul>
+          </div>
+          <div class="arch-card blue">
+            <h4>⚖️ Load Balancing &amp; Failover</h4>
+            <p>Load balancers distribute traffic across multiple backend servers — providing both performance and resilience:</p>
+            <ul>
+              <li><strong>L4 load balancing:</strong> Routes based on TCP/UDP port — fast, no application awareness</li>
+              <li><strong>L7 load balancing:</strong> Routes based on HTTP content (URL, headers, cookies) — enables sophisticated routing and SSL termination</li>
+              <li><strong>Health checks:</strong> Load balancer periodically tests backend health; removes unhealthy servers from rotation automatically</li>
+              <li><strong>Geographic load balancing:</strong> Routes users to the nearest data center (CDN-style); DNS-based failover redirects traffic if a region fails</li>
+              <li><strong>Anycast:</strong> Multiple servers share the same IP address; routing infrastructure sends packets to the nearest one</li>
+            </ul>
+          </div>
+          <div class="arch-card amber">
+            <h4>🎯 RTO &amp; RPO — Recovery Targets</h4>
+            <p>Two critical metrics define what an organization can tolerate in a disaster:</p>
+            <ul>
+              <li><strong>RTO (Recovery Time Objective):</strong> The maximum acceptable time from failure to full service restoration. RTO of 4 hours means the business can tolerate no more than 4 hours of downtime before significant impact</li>
+              <li><strong>RPO (Recovery Point Objective):</strong> The maximum acceptable data loss measured in time. RPO of 1 hour means the most recent backup must be no more than 1 hour old</li>
+              <li><strong>Backup site types:</strong> Hot site (fully operational, immediate failover), Warm site (partial infrastructure, hours to activate), Cold site (physical space only, days to activate)</li>
+              <li><strong>Architecture implication:</strong> Lower RTO/RPO = more expensive architecture (more redundancy, synchronous replication)</li>
+            </ul>
+          </div>
+          <div class="arch-card purple">
+            <h4>💾 Backup Strategy — 3-2-1 Rule</h4>
+            <p>The industry-standard backup rule that ensures recoverability even in worst-case scenarios:</p>
+            <ul>
+              <li><strong>3</strong> copies of the data</li>
+              <li><strong>2</strong> different storage media types (e.g., SAN + tape, or disk + cloud)</li>
+              <li><strong>1</strong> copy offsite (physically or geographically separated)</li>
+            </ul>
+            <p style="margin-top:8px;font-size:0.84rem;color:var(--text-mid);">Modern extension: <strong>3-2-1-1-0</strong> — adds 1 immutable/offline copy (air-gapped, ransomware-proof) and 0 errors verified through regular restore testing. Backups that have not been tested are not backups — they are assumptions.</p>
+          </div>
+        </div>
+
+        <div class="callout-blue">
+          <strong>Analogy — Availability Like a Bridge:</strong> Think of availability like a bridge. A single-lane bridge (no redundancy) creates a bottleneck — if it closes for maintenance, all traffic stops. A two-lane bridge (active-passive) keeps traffic moving even if one lane is closed. A highway with multiple bridges between cities (geographic redundancy + load balancing) means that even if an entire bridge collapses, traffic automatically reroutes through alternatives — with barely a slowdown. The level of redundancy you build should match the consequence of the bridge being closed.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 1 — ARCHITECTURE DOMAIN SORT (DRAG & DROP)
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 1</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 1</span>
+        <div>
+          <h3>Architecture Domain Sort — Drag &amp; Drop</h3>
+          <p>Classify each security concept or control into its correct architecture environment</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Each chip describes a security control, concern, or design element. Drag it to the environment it PRIMARILY applies to. Some may seem applicable to multiple environments — choose the most specific or primary fit. Submit to receive instant feedback.
+        </div>
+
+        <div class="drag-pool" id="dp5">
+          <div class="drag-item" draggable="true" data-answer="Cloud" id="d5-1">Shared Responsibility Model</div>
+          <div class="drag-item" draggable="true" data-answer="IoT" id="d5-2">Dedicated VLAN for smart thermostats</div>
+          <div class="drag-item" draggable="true" data-answer="ICS" id="d5-3">Data diode between OT and IT networks</div>
+          <div class="drag-item" draggable="true" data-answer="OnPrem" id="d5-4">Mantrap at server room entrance</div>
+          <div class="drag-item" draggable="true" data-answer="Cloud" id="d5-5">IMDSv2 enforcement on EC2 instances</div>
+          <div class="drag-item" draggable="true" data-answer="ICS" id="d5-6">Availability prioritized over Confidentiality</div>
+          <div class="drag-item" draggable="true" data-answer="IoT" id="d5-7">Firmware with no patch mechanism</div>
+          <div class="drag-item" draggable="true" data-answer="OnPrem" id="d5-8">DMZ with dual-firewall topology</div>
+          <div class="drag-item" draggable="true" data-answer="IaC" id="d5-9">Terraform tfsec scan in CI/CD pipeline</div>
+          <div class="drag-item" draggable="true" data-answer="IaC" id="d5-10">Git-tracked infrastructure config files</div>
+        </div>
+
+        <div class="drop-zones-4" style="grid-template-columns: repeat(3,1fr);">
+          <div class="drop-zone" id="zone5-OnPrem" data-zone="OnPrem">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--green);"></span> On-Premises</div>
+          </div>
+          <div class="drop-zone" id="zone5-Cloud" data-zone="Cloud">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--blue);"></span> Cloud</div>
+          </div>
+          <div class="drop-zone" id="zone5-IoT" data-zone="IoT">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--amber);"></span> IoT</div>
+          </div>
+          <div class="drop-zone" id="zone5-ICS" data-zone="ICS">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--red);"></span> ICS / OT</div>
+          </div>
+          <div class="drop-zone" id="zone5-IaC" data-zone="IaC">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--purple);"></span> Infrastructure as Code</div>
+          </div>
+        </div>
+
+        <div class="activity-actions">
+          <button class="btn-primary" onclick="checkAct5()">Check Answers</button>
+          <button class="btn-secondary" onclick="resetAct5()">Reset</button>
+        </div>
+        <div class="activity-result" id="act5-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 2 — RESILIENCE SCENARIO BUILDER
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 2</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 2</span>
+        <div>
+          <h3>Resilience Architecture Scenario Builder</h3>
+          <p>Select a business scenario and answer architecture questions to build the right resilience solution</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Select a business scenario below. Read the operational requirements and constraints, then answer each architecture question. Submit each question individually for immediate feedback explaining the reasoning.
+        </div>
+
+        <div class="scenario-tabs">
+          <button class="scenario-tab active" onclick="showRes(0,this)">Scenario A: Regional Bank</button>
+          <button class="scenario-tab" onclick="showRes(1,this)">Scenario B: Hospital EHR</button>
+          <button class="scenario-tab" onclick="showRes(2,this)">Scenario C: E-Commerce Platform</button>
+        </div>
+
+        <!-- Scenario A -->
+        <div class="scenario-panel active" id="res-0">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🏦 Scenario A: First National Regional Bank</div>
+            <div class="scenario-body">First National operates a core banking platform that processes real-time ACH transfers and customer account access 24/7. Federal regulations require the platform to have an RTO of no more than 2 hours and an RPO of no more than 15 minutes. The bank has two data centers 40 miles apart. Any unplanned outage during business hours triggers regulatory reporting requirements and customer notification obligations. The primary concern is maintaining transaction processing availability, not data confidentiality.</div>
+          </div>
+          <div class="res-questions">
+
+            <div class="res-q" id="rq-a1">
+              <div class="res-q-text">Q1: Given the 15-minute RPO, which backup/replication strategy is REQUIRED?</div>
+              <div class="res-opts">
+                <label class="res-opt"><input type="radio" name="rqa1" value="A"> Daily full backup to tape shipped offsite — data loss of up to 24 hours is acceptable for recovery</label>
+                <label class="res-opt"><input type="radio" name="rqa1" value="B"> Synchronous real-time data replication between the two data centers — guarantees near-zero data loss</label>
+                <label class="res-opt"><input type="radio" name="rqa1" value="C"> Weekly full backup plus daily incrementals — maximum data loss of one business day</label>
+                <label class="res-opt"><input type="radio" name="rqa1" value="D"> Asynchronous daily replication to a cold site — data is replicated once per day during off-hours</label>
+              </div>
+              <div class="res-fb" id="rq-a1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkRes('rq-a1','B','rqa1','✅ Correct! A 15-minute RPO means the bank can tolerate losing at most 15 minutes of transaction data. Daily tape backups allow up to 24 hours of data loss — catastrophically violating the RPO. Synchronous replication writes data to both data centers simultaneously before confirming a transaction as committed. This guarantees near-zero data loss. The 40-mile separation is ideal for synchronous replication — close enough that replication latency is minimal, far enough to survive local disasters.','❌ Correct answer: B — Synchronous real-time replication. A 15-minute RPO is incompatible with daily backups (24-hour potential loss) or even daily asynchronous replication. Synchronous replication writes to the secondary site before confirming every transaction, ensuring the secondary is always current. Any backup cadence longer than 15 minutes violates the stated RPO requirement.')">Submit</button></div>
+            </div>
+
+            <div class="res-q" id="rq-a2">
+              <div class="res-q-text">Q2: To meet the 2-hour RTO, what cluster architecture should the bank deploy?</div>
+              <div class="res-opts">
+                <label class="res-opt"><input type="radio" name="rqa2" value="A"> Cold site — a physical space with no pre-installed infrastructure; staff would configure servers from scratch</label>
+                <label class="res-opt"><input type="radio" name="rqa2" value="B"> Warm site — partially configured infrastructure that requires 4–8 hours of preparation before going live</label>
+                <label class="res-opt"><input type="radio" name="rqa2" value="C"> Active-active clustering across both data centers — both sites process transactions; failover is instantaneous</label>
+                <label class="res-opt"><input type="radio" name="rqa2" value="D"> Manual failover to a tape backup — restore most recent tape and bring systems online manually</label>
+              </div>
+              <div class="res-fb" id="rq-a2-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkRes('rq-a2','C','rqa2','✅ Correct! An active-active cluster has both data centers processing transactions simultaneously. When one fails, the load balancer immediately redirects all traffic to the surviving site — failover is effectively instantaneous, well within the 2-hour RTO. Warm sites take 4–8 hours (exceeds RTO). Cold sites take days (catastrophically exceeds RTO). Manual tape restoration takes hours even under ideal conditions. Active-active is the only option that reliably meets a 2-hour RTO for a real-time banking system.','❌ Correct answer: C — Active-active clustering. Cold sites (days) and warm sites (4–8 hours) both exceed the 2-hour RTO. Manual tape restoration is too slow and error-prone for a regulated financial system. Active-active clustering across both data centers means failover is instantaneous — no manual intervention required, no data center activation process needed.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Scenario B -->
+        <div class="scenario-panel" id="res-1">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🏥 Scenario B: Midwest Regional Medical Center — EHR System</div>
+            <div class="scenario-body">The hospital's Electronic Health Record (EHR) system is used for patient care decisions in real time. Physicians cannot safely treat patients without access to medication lists, allergy records, lab results, and imaging. HIPAA requires all patient data (PHI) to be encrypted at rest and in transit. The hospital experienced a ransomware attack two years ago that took EHR offline for 17 hours, forcing the hospital to divert ambulances. The board has mandated that the new architecture tolerate ransomware without requiring a ransom payment or more than 4 hours of downtime.</div>
+          </div>
+          <div class="res-questions">
+
+            <div class="res-q" id="rq-b1">
+              <div class="res-q-text">Q1: Which backup design is MOST critical for ensuring the hospital can recover from ransomware without paying a ransom?</div>
+              <div class="res-opts">
+                <label class="res-opt"><input type="radio" name="rqb1" value="A"> Daily backups stored on network-attached storage accessible from the EHR servers</label>
+                <label class="res-opt"><input type="radio" name="rqb1" value="B"> Immutable, air-gapped backups — stored in a location that cannot be reached or encrypted by ransomware on the production network</label>
+                <label class="res-opt"><input type="radio" name="rqb1" value="C"> Cloud backups synchronized in real time from the production EHR — same credentials as production</label>
+                <label class="res-opt"><input type="radio" name="rqb1" value="D"> RAID 5 storage on the primary EHR servers — redundant storage protects against data loss</label>
+              </div>
+              <div class="res-fb" id="rq-b1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkRes('rq-b1','B','rqb1','✅ Correct! Ransomware specifically targets and encrypts backup systems that are reachable from the production network. Network-attached backups with the same credentials will be encrypted. Real-time cloud sync with the same credentials will be encrypted before you notice. RAID is not a backup — it protects against hardware failure, not ransomware (it faithfully replicates the encryption). Immutable, air-gapped backups (offline tape, immutable cloud storage with separate credentials and write-once enforcement) are the only backups ransomware cannot reach. This is the 1 in 3-2-1-1-0: one offline, immutable copy.','❌ Correct answer: B — Immutable, air-gapped backups. The hospital\'s previous attack demonstrated that accessible backups were encrypted. Any backup reachable from the production network via the same compromised credentials will be encrypted. Only backups that are physically or logically isolated (air-gapped, immutable storage, offline tape) are ransomware-proof. RAID protects against disk failure, not against logical corruption like ransomware.')">Submit</button></div>
+            </div>
+
+            <div class="res-q" id="rq-b2">
+              <div class="res-q-text">Q2: HIPAA requires PHI to be encrypted at rest. Which architectural component BEST enforces this requirement for the EHR database in a cloud deployment?</div>
+              <div class="res-opts">
+                <label class="res-opt"><input type="radio" name="rqb2" value="A"> Placing the database server behind a firewall — network access controls prevent unauthorized users from reading data</label>
+                <label class="res-opt"><input type="radio" name="rqb2" value="B"> Requiring TLS 1.3 for all connections to the database — encrypts data in transit</label>
+                <label class="res-opt"><input type="radio" name="rqb2" value="C"> Enabling server-side encryption (SSE) on the database with KMS-managed keys, combined with encrypted EBS volumes — encrypts data at rest</label>
+                <label class="res-opt"><input type="radio" name="rqb2" value="D"> Enabling multi-factor authentication for all database administrators</label>
+              </div>
+              <div class="res-fb" id="rq-b2-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkRes('rq-b2','C','rqb2','✅ Correct! HIPAA requires encryption of PHI at rest — this means the data stored on disk must be encrypted so that physical or logical access to the storage medium does not expose readable PHI. Server-side encryption (SSE) with KMS-managed keys on the database, combined with encrypted EBS volumes, directly satisfies this requirement. Firewalls control access but do not encrypt stored data. TLS encrypts data in transit, not at rest. MFA is an access control, not an encryption control. The HIPAA requirement specifically addresses data at rest — the storage layer.','❌ Correct answer: C — Server-side encryption of the database and underlying volumes. HIPAA specifies encryption of PHI at rest — the data on disk must be encrypted. Firewalls and TLS address access control and transit security, respectively. MFA is an authentication control. Only server-side encryption with KMS-managed keys directly satisfies the at-rest encryption requirement. If someone walked out with the hard drive, encrypted at-rest data would be unreadable without the KMS key.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Scenario C -->
+        <div class="scenario-panel" id="res-2">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🛒 Scenario C: National E-Commerce Platform (Peak Load)</div>
+            <div class="scenario-body">An e-commerce company processes 400 orders per second during normal operation and 8,000 orders per second during peak holiday sales periods. The platform runs on AWS across two regions (us-east-1 and us-west-2). A complete outage during the peak 6-hour holiday window costs approximately $2.4M per hour. The engineering team wants to ensure the platform automatically scales to handle peak load and automatically fails over to the secondary region if the primary region has a major outage. Response time for customers must not exceed 200ms regardless of geographic location.</div>
+          </div>
+          <div class="res-questions">
+
+            <div class="res-q" id="rq-c1">
+              <div class="res-q-text">Q1: Which combination of AWS services BEST addresses both the auto-scaling and geographic load distribution requirements?</div>
+              <div class="res-opts">
+                <label class="res-opt"><input type="radio" name="rqc1" value="A"> A single large EC2 instance with maximum CPU/memory — larger hardware handles more load without complexity</label>
+                <label class="res-opt"><input type="radio" name="rqc1" value="B"> Auto Scaling Groups with Application Load Balancers in each region, plus AWS CloudFront (CDN) for global edge distribution and Route 53 with latency-based routing for regional failover</label>
+                <label class="res-opt"><input type="radio" name="rqc1" value="C"> Manual capacity provisioning at 8,000 orders/second year-round — ensures capacity is always available without dynamic scaling</label>
+                <label class="res-opt"><input type="radio" name="rqc1" value="D"> Replicating the entire database to all 30+ AWS regions — ensures no data is more than one region away from any user</label>
+              </div>
+              <div class="res-fb" id="rq-c1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkRes('rq-c1','B','rqc1','✅ Correct! This scenario requires three distinct capabilities: (1) Auto Scaling Groups automatically add/remove EC2 instances based on demand — handling the 20x traffic spike from 400 to 8,000 orders/sec. (2) Application Load Balancers distribute traffic across the scaled fleet within each region. (3) CloudFront CDN serves static assets from edge locations globally, reducing the 200ms latency requirement. (4) Route 53 latency-based routing sends users to the nearest region and can perform DNS failover if a region goes down. A single large instance cannot scale dynamically. Manual over-provisioning wastes 95% of annual compute cost. Replicating to 30 regions is architecturally unnecessary and astronomically expensive.','❌ Correct answer: B — Auto Scaling Groups + ALB + CloudFront + Route 53. The platform requires elastic scaling (Auto Scaling), intra-region distribution (ALB), global edge performance (CloudFront CDN), and cross-region failover (Route 53). A single large instance cannot scale 20x dynamically. Manual year-round over-provisioning at peak capacity wastes enormous cost. CloudFront with edge caching is the standard solution for global <200ms response time requirements.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       QUIZ — 5 QUESTIONS
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Lesson 5 Quiz — 5 Questions</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Assessment</span>
+        <div>
+          <h3>Knowledge Check: Secure Architecture</h3>
+          <p>Select the best answer for each question, then submit for graded feedback</p>
+        </div>
+      </div>
+      <div class="activity-body">
+
+        <!-- Q1 -->
+        <div class="quiz-q" id="q1">
+          <div class="q-num">Question 1 of 5</div>
+          <div class="q-text">A manufacturing company operates a network of PLCs that control assembly line robots. The security team wants to prevent a cyberattack on the corporate IT network from affecting production operations, but the operations team still needs to monitor sensor data from the PLCs on the corporate dashboard. Which architectural control BEST satisfies both requirements?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q1" value="A"> Install antivirus software on all PLCs to prevent malware from spreading between networks</label>
+            <label class="q-option"><input type="radio" name="q1" value="B"> Place the PLCs on the same network as corporate workstations but in a separate VLAN to allow monitoring</label>
+            <label class="q-option"><input type="radio" name="q1" value="C"> Implement a data diode — sensor data flows from the OT network to the IT network; no traffic can flow back from IT to OT</label>
+            <label class="q-option"><input type="radio" name="q1" value="D"> Enable TLS encryption on all PLC communications to prevent eavesdropping by corporate users</label>
+          </div>
+          <div class="q-feedback" id="q1-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-q" id="q2">
+          <div class="q-num">Question 2 of 5</div>
+          <div class="q-text">A DevOps team uses Terraform to provision all cloud infrastructure. A security scan of the Terraform repository reveals that an AWS access key and secret access key are hardcoded in a <code>variables.tf</code> file and committed to the public GitHub repository. What is the MOST immediate security action required?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q2" value="A"> Delete the <code>variables.tf</code> file from the repository — removing the file eliminates the exposure</label>
+            <label class="q-option"><input type="radio" name="q2" value="B"> Make the GitHub repository private — this prevents public access to the credentials</label>
+            <label class="q-option"><input type="radio" name="q2" value="C"> Immediately revoke and rotate the exposed credentials, then migrate secrets to a secrets manager (AWS Secrets Manager or HashiCorp Vault) and purge the secret from all commit history</label>
+            <label class="q-option"><input type="radio" name="q2" value="D"> Encrypt the <code>variables.tf</code> file using AES-256 before committing future changes</label>
+          </div>
+          <div class="q-feedback" id="q2-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-q" id="q3">
+          <div class="q-num">Question 3 of 5</div>
+          <div class="q-text">A financial services firm classifies customer account numbers, SSNs, and transaction histories as "Restricted" data. An analyst proposes emailing a dataset containing this information to an external auditor without encryption. Why is this a policy violation, and what is the correct approach?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q3" value="A"> It is not a violation — the auditor has a legitimate business need for the data, which justifies the transmission method</label>
+            <label class="q-option"><input type="radio" name="q3" value="B"> It violates data classification policy because Restricted data requires encryption in transit; the correct approach is encrypted email (S/MIME), a secure file transfer portal, or an encrypted container</label>
+            <label class="q-option"><input type="radio" name="q3" value="C"> It is a minor violation because email is a secure protocol; adding a password to the ZIP file containing the data is sufficient</label>
+            <label class="q-option"><input type="radio" name="q3" value="D"> The data should be sent via postal mail instead — physical delivery is more secure than digital transmission for Restricted data</label>
+          </div>
+          <div class="q-feedback" id="q3-feedback"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-q" id="q4">
+          <div class="q-num">Question 4 of 5</div>
+          <div class="q-text">A company's business continuity plan specifies an RPO of 4 hours for its customer relationship management (CRM) system. The current backup solution performs a full backup every 24 hours at midnight. On a Tuesday at 3:00 PM, a database corruption event occurs. How much data will be lost when the system is restored from backup, and does this meet the RPO?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q4" value="A"> 3 hours of data lost (since midnight); this meets the 4-hour RPO</label>
+            <label class="q-option"><input type="radio" name="q4" value="B"> 15 hours of data lost (since Monday midnight); this does NOT meet the 4-hour RPO</label>
+            <label class="q-option"><input type="radio" name="q4" value="C"> Zero data loss because the backup is current as of midnight; the RPO is met</label>
+            <label class="q-option"><input type="radio" name="q4" value="D"> 24 hours of data lost; this violates the RPO by 20 hours</label>
+          </div>
+          <div class="q-feedback" id="q4-feedback"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-q" id="q5">
+          <div class="q-num">Question 5 of 5</div>
+          <div class="q-text">A company operates a Type 1 hypervisor hosting 40 virtual machines across its on-premises data center. A penetration tester reports a critical vulnerability in the hypervisor software (CVSS 9.6) that could allow a guest VM to access the hypervisor host's memory. Why is this vulnerability significantly more dangerous than a typical application-level vulnerability, and what is the MOST important immediate mitigation?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q5" value="A"> It is not significantly more dangerous — a CVSS 9.6 on any system requires patching within 30 days per standard patch policy</label>
+            <label class="q-option"><input type="radio" name="q5" value="B"> A hypervisor vulnerability is more dangerous because it could allow VM escape — compromising not just one VM but all 40 VMs and the host simultaneously; emergency patching of the hypervisor within hours is required</label>
+            <label class="q-option"><input type="radio" name="q5" value="C"> The vulnerability is dangerous because it will cause the hypervisor to crash — migrate all VMs to physical servers immediately to restore availability</label>
+            <label class="q-option"><input type="radio" name="q5" value="D"> The guest VMs are already isolated from each other — the vulnerability only affects the hypervisor host's operating system, not the VMs themselves</label>
+          </div>
+          <div class="q-feedback" id="q5-feedback"></div>
+        </div>
+
+        <div class="quiz-submit-row">
+          <button class="btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          <button class="btn-secondary" onclick="resetQuiz()">Reset</button>
+        </div>
+        <div id="quiz-result"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-body -->
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<div class="page-footer">
+  <div class="footer-nav">
+    <a href="index.html">← Course Home</a>
+    <a href="lesson04.html">← Lesson 4: Vulnerabilities &amp; Mitigation</a>
+    <a href="lesson05-part01.png" target="_blank" rel="noopener">Topic 1 Graphic</a>
+    <a href="lesson05-part02.png" target="_blank" rel="noopener">Topic 2 Graphic</a>
+    <a href="lesson05-part03.png" target="_blank" rel="noopener">Topic 3 Graphic</a>
+    <a href="lesson06.html">Next: Network &amp; Infrastructure Security &rarr;</a>
+  </div>
+  CompTIA Security+ SY0-701 &nbsp;|&nbsp; Lesson 5: Secure Architecture &nbsp;|&nbsp; Moraine Valley Community College
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ---- THEME ---- */
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+  localStorage.setItem('secplus-theme', next);
+}
+(function () {
+  const saved = localStorage.getItem('secplus-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Light';
+  }
+})();
+
+/* ============================================================
+   ACTIVITY 1 — DRAG & DROP
+   ============================================================ */
+let drag5 = null;
+
+document.querySelectorAll('#dp5 .drag-item').forEach(item => {
+  item.addEventListener('dragstart', e => {
+    drag5 = item.id;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  item.addEventListener('dragend', () => item.classList.remove('dragging'));
+});
+
+document.querySelectorAll('[id^="zone5-"]').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const item = document.getElementById(drag5);
+    if (!item) return;
+    const isCorrect = item.dataset.answer === zone.dataset.zone;
+    const chip = document.createElement('span');
+    chip.className = 'dropped-item ' + (isCorrect ? 'correct' : 'incorrect');
+    chip.dataset.itemId = drag5;
+    const lbl = item.textContent.length > 36 ? item.textContent.substring(0, 36) + '…' : item.textContent;
+    chip.innerHTML = lbl + ' <span class="rm">×</span>';
+    chip.querySelector('.rm').addEventListener('click', () => returnItem5(drag5, chip));
+    zone.appendChild(chip);
+    item.style.display = 'none';
+    document.getElementById('act5-result').style.display = 'none';
+  });
+});
+
+function returnItem5(id, chip) {
+  const item = document.getElementById(id);
+  if (item) item.style.display = '';
+  chip.remove();
+}
+
+function checkAct5() {
+  let correct = 0, total = 0;
+  document.querySelectorAll('[id^="zone5-"]').forEach(zone => {
+    zone.querySelectorAll('.dropped-item').forEach(chip => {
+      total++;
+      const item = document.getElementById(chip.dataset.itemId);
+      if (item && item.dataset.answer === zone.dataset.zone) {
+        chip.className = 'dropped-item correct'; correct++;
+      } else {
+        chip.className = 'dropped-item incorrect';
+        chip.style.animation = 'none'; void chip.offsetWidth; chip.style.animation = '';
+      }
+    });
+  });
+  const res = document.getElementById('act5-result');
+  res.style.display = 'block';
+  if (total === 0) { res.className = 'activity-result result-fail'; res.textContent = 'Sort at least one item first.'; return; }
+  if (correct === total && total === 10) {
+    res.className = 'activity-result result-pass';
+    res.textContent = '✅ Perfect! All 10 architecture concepts correctly classified. You understand the security domain of each environment type.';
+  } else {
+    res.className = 'activity-result result-fail';
+    res.textContent = `${correct}/${total} correct. Red chips are misclassified. Ask: Is this concept unique to cloud billing models (Cloud), embedded devices with limited security (IoT), safety-critical physical systems (ICS), physical facility access (On-Premises), or automated config files (IaC)?`;
+  }
+}
+
+function resetAct5() {
+  document.querySelectorAll('[id^="zone5-"] .dropped-item').forEach(chip => returnItem5(chip.dataset.itemId, chip));
+  document.getElementById('act5-result').style.display = 'none';
+}
+
+/* ============================================================
+   ACTIVITY 2 — RESILIENCE SCENARIOS
+   ============================================================ */
+let currentRes = 0;
+
+function showRes(idx, btn) {
+  document.querySelectorAll('.scenario-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  currentRes = idx;
+}
+
+function checkRes(qId, correct, radioName, passMsg, failMsg) {
+  const qDiv = document.getElementById(qId);
+  const selected = qDiv.querySelector(`input[name="${radioName}"]:checked`);
+  const fb = document.getElementById(qId + '-fb');
+  qDiv.querySelectorAll('input').forEach(r => r.disabled = true);
+  qDiv.querySelector('button').disabled = true;
+
+  if (!selected) { fb.className = 'res-fb show fail'; fb.textContent = '⚠️ Please select an answer first.'; return; }
+  const isCorrect = selected.value === correct;
+  qDiv.querySelectorAll('.res-opt').forEach(opt => {
+    if (opt.querySelector('input').value === correct) opt.classList.add('correct');
+    else if (opt.querySelector('input').value === selected.value && !isCorrect) opt.classList.add('wrong');
+  });
+  fb.className = 'res-fb show ' + (isCorrect ? 'pass' : 'fail');
+  fb.textContent = isCorrect ? passMsg : failMsg;
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+const qA = { q1: 'C', q2: 'C', q3: 'B', q4: 'B', q5: 'B' };
+const qFB = {
+  q1: {
+    correct: "✅ Correct! A data diode is a hardware device that enforces one-way data flow at the physical layer — it is literally impossible for data to flow in the blocked direction. This perfectly satisfies both requirements: sensor data flows from OT to IT for dashboard monitoring, but no traffic from the corporate IT network can reach the PLCs, even if the IT network is fully compromised. Installing antivirus on PLCs is often impossible (constrained systems, proprietary OS). A VLAN still allows bidirectional traffic if routing is misconfigured. TLS encrypts but does not restrict traffic flow direction.",
+    wrong:   "❌ Correct answer: C — Data diode. A data diode is a hardware-enforced unidirectional gateway — it is physically impossible for data to flow from IT to OT. PLCs typically cannot run standard software (no antivirus). VLANs provide soft separation but bidirectional traffic can still flow if routing permits. TLS encrypts data in transit but does not prevent the IT network from sending commands to the OT network. Only a data diode or physical air-gap provides the hard separation ICS requires."
+  },
+  q2: {
+    correct: "✅ Correct! Deleting the file or making the repo private does NOT remove the exposure — the credentials have already been committed to Git history, which is potentially cached by bots that continuously monitor GitHub for secrets (tools like truffleHog scan public repositories in near-real-time). The credentials must be assumed compromised immediately. The required actions are: (1) Revoke the exposed credentials in AWS IAM immediately — this invalidates them even if already copied. (2) Generate new credentials. (3) Move all secrets to a secrets manager. (4) Use git-filter-repo or BFG Repo Cleaner to purge the secret from commit history. (5) Enable git pre-commit hooks to prevent future secret commits.",
+    wrong:   "❌ Correct answer: C — Revoke and rotate immediately, then migrate to a secrets manager. Deleting the file and making the repo private are insufficient — the credentials have been committed to Git history, which may have already been scraped. Encryption cannot be retroactively applied to committed content. GitHub secret scanning bots can index public repos within seconds of a push. The only safe action when credentials are exposed in version control is to assume they are compromised and revoke them instantly."
+  },
+  q3: {
+    correct: "✅ Correct! Data classification policies define not just who can access data but how it must be protected during transmission. Restricted data (containing SSNs, account numbers, transaction histories) is subject to regulatory requirements (GLBA, PCI DSS, SOX) that mandate encryption in transit. Unencrypted email transmits data in plaintext across multiple internet mail servers — it is easily intercepted. The correct approach is encrypted email (S/MIME creates a digitally signed, encrypted email), a secure file transfer portal (SFTP, HTTPS-based portal), or an encrypted ZIP container with a separately communicated passphrase. A password-protected ZIP using standard ZIP encryption is weak and inadequate for Restricted data.",
+    wrong:   "❌ Correct answer: B — This violates data classification policy; Restricted data requires encryption in transit. Unencrypted email is plaintext across the internet. A legitimate business need justifies who receives the data, not how it is transmitted — the transmission method must still meet the protection requirements of the classification tier. ZIP password protection (legacy encryption) is inadequate for Restricted data. Physical mail introduces its own risks. Only encrypted transmission methods (S/MIME, TLS-secured portal, encrypted container) satisfy the Restricted data handling requirement."
+  },
+  q4: {
+    correct: "✅ Correct! The most recent backup was taken at midnight on Tuesday. The corruption event occurred at 3:00 PM Tuesday — 15 hours after the backup. All data created or modified between midnight and 3:00 PM (15 hours of work) will be lost on restore. The RPO is 4 hours, meaning the business can tolerate losing at most 4 hours of data. Losing 15 hours of data catastrophically violates the 4-hour RPO — the current backup solution is not fit for purpose. The solution requires more frequent backups (every 4 hours), continuous transaction log backups, or a combination of full + incremental backups to meet the RPO.",
+    wrong:   "❌ Correct answer: B — 15 hours of data lost; does NOT meet the 4-hour RPO. The last backup was at midnight (15 hours before the 3 PM event). Restoring from that backup loses everything since midnight. The RPO is 4 hours — meaning the backup cadence must ensure no more than 4 hours of data can be lost. A daily backup at midnight can result in up to 23 hours and 59 minutes of data loss, far exceeding the 4-hour requirement. The backup strategy must be redesigned."
+  },
+  q5: {
+    correct: "✅ Correct! A Type 1 hypervisor sits at the foundation of the entire virtualized infrastructure. All 40 VMs run on top of it. A hypervisor vulnerability that allows VM escape means an attacker who compromises any single guest VM can potentially escape to the hypervisor level — giving them access to the memory, storage, and network of ALL 40 VMs simultaneously. This is exponentially more dangerous than compromising a single application. Emergency hypervisor patching (or live migration of VMs to unaffected hosts while patching occurs) is required immediately. Standard 30-day patch SLAs are inappropriate for a CVSS 9.6 hypervisor escape vulnerability.",
+    wrong:   "❌ Correct answer: B — Hypervisor vulnerabilities enabling VM escape affect ALL VMs simultaneously. A standard 30-day patch timeline is not appropriate for a CVSS 9.6 hypervisor escape. VM isolation relies entirely on the hypervisor boundary remaining intact — if that boundary is broken, all 40 VMs are potentially compromised in one exploit. Migrating to physical servers is impractical and misses the point. Emergency patching of the hypervisor is the critical action — or live migration of VMs to patched hypervisor hosts."
+  }
+};
+
+function submitQuiz() {
+  let score = 0;
+  Object.keys(qA).forEach(qid => {
+    const selected = document.querySelector(`input[name="${qid}"]:checked`);
+    const qDiv = document.getElementById(qid);
+    const fb = document.getElementById(qid + '-feedback');
+    qDiv.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+    if (!selected) {
+      fb.className = 'q-feedback show fail';
+      fb.innerHTML = '⚠️ No answer selected. ' + qFB[qid].wrong;
+      qDiv.className = 'quiz-q answered-wrong';
+      return;
+    }
+    const isCorrect = selected.value === qA[qid];
+    if (isCorrect) score++;
+    qDiv.className = 'quiz-q ' + (isCorrect ? 'answered-correct' : 'answered-wrong');
+    fb.className = 'q-feedback show ' + (isCorrect ? 'pass' : 'fail');
+    fb.innerHTML = qFB[qid][isCorrect ? 'correct' : 'wrong'];
+    qDiv.querySelectorAll('.q-option').forEach(opt => {
+      const v = opt.querySelector('input').value;
+      if (v === qA[qid]) opt.classList.add('correct');
+      else if (selected && v === selected.value && !isCorrect) opt.classList.add('wrong');
+    });
+  });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'block';
+  const pct = Math.round((score / 5) * 100);
+  if (score >= 4) {
+    result.className = 'quiz-pass';
+    result.innerHTML = `🎉 <strong>Excellent! ${score}/5 (${pct}%)</strong> — Strong command of secure architecture concepts, resilience design, and ICS/IoT considerations. Ready for Lesson 6: Network &amp; Infrastructure Security. <a href="lesson06.html" style="color:var(--green-dark);font-weight:700;margin-left:8px;">Next Lesson →</a>`;
+  } else {
+    result.className = 'quiz-fail';
+    result.innerHTML = `📚 <strong>${score}/5 (${pct}%)</strong> — Review the feedback above. Focus on: the ICS data diode concept (Q1), IaC secrets management (Q2), data classification protection requirements (Q3), RPO/RTO calculations (Q4), and hypervisor VM escape risk (Q5). The resilience scenario builder in Activity 2 is a good review resource.`;
+  }
+  result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetQuiz() {
+  document.querySelectorAll('.quiz-q').forEach(q => q.className = 'quiz-q');
+  document.querySelectorAll('input[type="radio"]').forEach(r => { r.checked = false; r.disabled = false; });
+  document.querySelectorAll('.q-option').forEach(o => o.classList.remove('correct', 'wrong'));
+  document.querySelectorAll('.q-feedback').forEach(f => { f.className = 'q-feedback'; f.innerHTML = ''; });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'none'; result.className = '';
+}
+</script>
+</body>
+</html>

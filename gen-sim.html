@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Simulator Prompt Studio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter & JetBrains Mono for Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Cyber Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        cyber: {
+                            bg: '#0a0f1d',
+                            accent: '#10b981', // emerald-500
+                            darkAccent: '#047857', // emerald-700
+                            lightAccent: '#34d399', // emerald-400
+                            card: '#111827', // slate-900
+                            panel: '#1f2937', // slate-800
+                            border: '#374151' // slate-700
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+        .cyber-glow:hover {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+            transition: all 0.3s ease;
+        }
+        .glow-accent {
+            text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-[#050811] text-slate-200 font-sans min-h-screen selection:bg-cyber-accent selection:text-black">
+
+    <header class="border-b border-cyber-border bg-cyber-bg/90 backdrop-blur sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-cyber-accent/10 p-2.5 rounded-lg border border-cyber-accent/30 flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-cyber-accent text-xl animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        CYBER<span class="text-cyber-accent glow-accent">PROMPT</span> STUDIO
+                    </h1>
+                    <p class="text-xs text-slate-400">Interactive Cybersecurity Simulator Prompt Generator</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="bg-cyber-accent/10 text-cyber-accent border border-cyber-accent/20 text-xs px-2.5 py-1 rounded-full font-mono">
+                    <i class="fa-solid fa-microchip mr-1.5"></i>META-PROMPT v2.1
+                </span>
+                <span class="bg-slate-800 text-slate-300 border border-slate-700 text-xs px-2.5 py-1 rounded-full font-mono">
+                    <i class="fa-solid fa-code mr-1.5"></i>Vanilla JS / CSS
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 md:py-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Panel: Interactive Configurator (Col-5) -->
+            <section class="lg:col-span-5 space-y-6">
+                
+                <!-- Section Header -->
+                <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 shadow-lg">
+                    <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-cyber-accent"></i> 1. Simulator Parameters
+                    </h2>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Select and tune parameters below. The meta-prompt engine dynamically integrates these into a rigorous system instructions package on the right.
+                    </p>
+                </div>
+
+                <!-- Simulator Core Profile Card -->
+                <div class="bg-cyber-card border border-cyber-border rounded-xl p-6 space-y-5">
+                    
+                    <!-- Sim Type Selector -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                            Simulator Class
+                        </label>
+                        <div class="grid grid-cols-2 gap-2" id="simTypeGrid">
+                            <button onclick="selectSimType('firewall')" id="btn-firewall" class="flex flex-col items-center justify-center p-3 rounded-lg border transition-all text-center gap-1.5 bg-slate-800/50 border-cyber-border text-slate-300 hover:border-slate-500 hover:text-white">
+                                <i class="fa-solid fa-fire-burner text-base"></i>
+                                <span class="text-xs font-medium">Firewall Ops</span>
+                            </button>
+                            <button onclick="selectSimType('ids')" id="btn-ids" class="flex flex-col items-center justify-center p-3 rounded-lg border transition-all text-center gap-1.5 bg-slate-800/50 border-cyber-border text-slate-300 hover:border-slate-500 hover:text-white">
+                                <i class="fa-solid fa-circle-exclamation text-base"></i>
+                                <span class="text-xs font-medium">IDS/IPS Alerting</span>
+                            </button>
+                            <button onclick="selectSimType('sniffer')" id="btn-sniffer" class="flex flex-col items-center justify-center p-3 rounded-lg border transition-all text-center gap-1.5 bg-slate-800/50 border-cyber-border text-slate-300 hover:border-slate-500 hover:text-white">
+                                <i class="fa-solid fa-binoculars text-base"></i>
+                                <span class="text-xs font-medium">Packet Sniffer</span>
+                            </button>
+                            <button onclick="selectSimType('vuln')" id="btn-vuln" class="flex flex-col items-center justify-center p-3 rounded-lg border transition-all text-center gap-1.5 bg-slate-800/50 border-cyber-border text-slate-300 hover:border-slate-500 hover:text-white">
+                                <i class="fa-solid fa-bug-slash text-base"></i>
+                                <span class="text-xs font-medium">Vuln Scanner</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Scenario Selector (Fills dynamically on JS update) -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                            Scenario Directive / Mission
+                        </label>
+                        <select id="scenarioSelector" onchange="updateCustomScenario()" class="w-full bg-[#0d1321] border border-cyber-border text-slate-200 rounded-lg p-3 text-sm focus:outline-none focus:border-cyber-accent">
+                            <!-- Populated Dynamically -->
+                        </select>
+                    </div>
+
+                    <!-- Custom Scenario Field (Always Editable) -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                            Scenario Customization & Details
+                        </label>
+                        <textarea id="customScenarioDetails" rows="3" oninput="compilePrompt()" placeholder="Write custom scenario parameters..." class="w-full bg-[#0d1321] border border-cyber-border text-slate-200 rounded-lg p-3 text-sm focus:outline-none focus:border-cyber-accent font-sans leading-relaxed"></textarea>
+                    </div>
+
+                    <!-- Difficulty and Layout Metrics -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                                Skill Tier
+                            </label>
+                            <select id="difficultyLevel" onchange="compilePrompt()" class="w-full bg-[#0d1321] border border-cyber-border text-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-cyber-accent">
+                                <option value="Beginner (Basic commands, step-by-step UI helper overlays)">Beginner (Guided)</option>
+                                <option value="Intermediate (Slightly vague hints, dynamic threat scaling)" selected>Intermediate</option>
+                                <option value="Advanced (Barebones tools, heavy terminal syntax, penalty timers)">Advanced (Hardcore)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                                Layout Scheme
+                            </label>
+                            <select id="layoutScheme" onchange="compilePrompt()" class="w-full bg-[#0d1321] border border-cyber-border text-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-cyber-accent">
+                                <option value="Standard Split (Interactive controls on left, live canvas center, logs footer)" selected>Standard Split</option>
+                                <option value="Terminal Console Heavy (Monospace terminal left, diagram layout right)">Terminal Heavy</option>
+                                <option value="Visual Subnet Hub (Interactive SVG Topology map with live popup configs)">SVG Topology Map</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Core Mechanism Control Checklist -->
+                <div class="bg-cyber-card border border-cyber-border rounded-xl p-6 space-y-4">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-circle-nodes text-cyber-accent"></i> Active Simulator Components
+                    </h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" id="featureInteractiveRules" checked onchange="compilePrompt()" class="w-4 h-4 rounded text-cyber-accent focus:ring-cyber-accent bg-[#0d1321] border-cyber-border">
+                            <span class="text-xs text-slate-300 group-hover:text-white transition-colors">Interactive Command Rules / Rule Builder Engine</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" id="featureLiveLogger" checked onchange="compilePrompt()" class="w-4 h-4 rounded text-cyber-accent focus:ring-cyber-accent bg-[#0d1321] border-cyber-border">
+                            <span class="text-xs text-slate-300 group-hover:text-white transition-colors">Real-time Logging & Diagnostics Console</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" id="featurePayloadInspector" checked onchange="compilePrompt()" class="w-4 h-4 rounded text-cyber-accent focus:ring-cyber-accent bg-[#0d1321] border-cyber-border">
+                            <span class="text-xs text-slate-300 group-hover:text-white transition-colors">Deep Packet / Vulnerability Payload Dissect Tool</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" id="featureVisualGrading" checked onchange="compilePrompt()" class="w-4 h-4 rounded text-cyber-accent focus:ring-cyber-accent bg-[#0d1321] border-cyber-border">
+                            <span class="text-xs text-slate-300 group-hover:text-white transition-colors">Dynamic Feedback Loop (Score & Grading Engine)</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" id="featureSoundSynthesis" onchange="compilePrompt()" class="w-4 h-4 rounded text-cyber-accent focus:ring-cyber-accent bg-[#0d1321] border-cyber-border">
+                            <span class="text-xs text-slate-300 group-hover:text-white transition-colors">Tone.js Synthetic Auditory Feedback (Alarms, success synth)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Custom Simulator Name -->
+                <div class="bg-cyber-card border border-cyber-border rounded-xl p-6 space-y-3">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                        Target Simulator Name
+                    </label>
+                    <input type="text" id="simTitleInput" oninput="compilePrompt()" value="Cyber Threat Shield" placeholder="e.g., Tactical Firewall Trainer" class="w-full bg-[#0d1321] border border-cyber-border text-slate-200 rounded-lg p-3 text-sm focus:outline-none focus:border-cyber-accent font-mono">
+                </div>
+
+            </section>
+            
+            <!-- Right Panel: Live Prompt Compiler Output (Col-7) -->
+            <section class="lg:col-span-7 flex flex-col space-y-4">
+                
+                <!-- Action Controls Bar -->
+                <div class="bg-cyber-card border border-cyber-border rounded-xl p-4 flex flex-wrap gap-3 items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyber-accent animate-ping"></span>
+                        <span class="text-xs font-bold text-slate-300 uppercase tracking-wide">Output Generator Terminal</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <!-- Copy Button -->
+                        <button onclick="copyToClipboard()" class="bg-cyber-accent hover:bg-cyber-darkAccent text-black font-semibold text-xs px-4 py-2 rounded-lg flex items-center gap-1.5 transition-all shadow-md cyber-glow">
+                            <i id="copyIcon" class="fa-solid fa-copy"></i>
+                            <span id="copyText">Copy Prompt</span>
+                        </button>
+                        <!-- Export Button -->
+                        <button onclick="downloadAsMarkdown()" class="bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs px-4 py-2 rounded-lg flex items-center gap-1.5 transition-all border border-slate-700">
+                            <i class="fa-solid fa-file-arrow-down"></i>
+                            <span>Export (.md)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Markdown Workspace Terminal -->
+                <div class="bg-cyber-card border border-cyber-border rounded-xl flex-1 flex flex-col min-h-[550px] overflow-hidden shadow-2xl">
+                    <div class="bg-slate-900 border-b border-cyber-border px-5 py-3.5 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-terminal text-cyber-accent text-sm"></i>
+                            <span class="text-xs font-mono text-slate-300">SYSTEM_PROMPT.md</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="w-3 h-3 rounded-full bg-red-500/30"></span>
+                            <span class="w-3 h-3 rounded-full bg-yellow-500/30"></span>
+                            <span class="w-3 h-3 rounded-full bg-cyber-accent/30"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Textarea Container for prompt markdown output -->
+                    <textarea id="promptCompilerOutput" readonly class="flex-1 w-full bg-[#050811] text-slate-300 p-6 text-xs sm:text-sm font-mono leading-relaxed focus:outline-none resize-none overflow-y-auto block whitespace-pre-wrap select-text"></textarea>
+                </div>
+
+                <!-- Informational footer warning regarding usage limits -->
+                <div class="bg-cyber-accent/5 border border-cyber-accent/20 rounded-lg p-4 flex items-start gap-3">
+                    <i class="fa-solid fa-circle-info text-cyber-accent text-lg mt-0.5"></i>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        <strong class="text-white">How to use:</strong> Copy the output code from this console using the green button. Paste it directly into any cutting-edge Large Language Model (e.g., Gemini, Claude, GPT-4) to trigger the generator framework which will output the complete single-file interactive simulator application ready to run!
+                    </p>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // Set configuration options matching structural templates
+        const simulatorClasses = {
+            firewall: {
+                title: "Tactical Firewall Rule Governor",
+                scenarios: [
+                    {
+                        name: "Syn-Flood DDoS Defense Scenario",
+                        details: "Simulate a severe TCP Syn-Flood attack targeting an HTTP backend (Port 80) in the web server sub-segment. The user must configure structural rate-limiting parameters, ingress validation rules, and drop metrics for anomalous source IPs."
+                    },
+                    {
+                        name: "Exposed DB Port Ingress Protocol",
+                        details: "Prevent unauthorized administrative traversal into a production database cluster (Port 5432). The student must build rule lists dropping all traffic directed to the database subnet except from targeted bastion host routing endpoints."
+                    },
+                    {
+                        name: "Outbound Exfiltration Restriction",
+                        details: "Detect a compromised client inside the corporate LAN exfiltrating sensitive telemetry data outwards over port 4444. The user must draft strict egress controls targeting traffic traversing suspicious TCP tunnels."
+                    }
+                ],
+                coreLogic: "Array-based packet pipeline matching parameters (Protocol, Source IP/Subnet, Destination IP/Subnet, Port, Flags) in JavaScript. Incoming packet queues stream dynamically down the center pane, with immediate visual evaluation against active user rules.",
+                interactiveComponents: "Interactive 'Add/Modify Firewall Rule' modal matrix with drop-downs, packet generator panel to test malicious/legit flow states, visual IP blocklists, and dynamic latency chart."
+            },
+            ids: {
+                title: "Guardian IDS Signature Monitor",
+                scenarios: [
+                    {
+                        name: "Brute-Force Detection Sequence",
+                        details: "A malicious actor is executing massive administrative credential attacks against SSH portals (Port 22). The student must configure automated threat rules looking for high-frequency SSH connection events (5+ hits within 5 seconds)."
+                    },
+                    {
+                        name: "SQL Injection Payload Alarm",
+                        details: "Detect sophisticated payload injections against public APIs. The student must write strict regex intrusion profiles to target 'SELECT', 'UNION SELECT', 'OR 1=1', and inline comments inside target parameter queries."
+                    },
+                    {
+                        name: "Ransomware Encrypted Exfil Flag",
+                        details: "Spot anomalous SSL sessions attempting massive volume egress protocols over port 443 with anomalous packet sizes. Student creates automated flags highlighting rogue outbound payload tunnels."
+                    }
+                ],
+                coreLogic: "Real-time payload regex assessment parser inside an active packet thread. If any packet payload string matches user-configured PCRE regex signatures or automated threshold rates, trigger visual alerts, write telemetry warnings, and log block event lists.",
+                interactiveComponents: "Regular Expression Sandbox editor with inline live feedback (matching/no-match), interactive event lists highlighting CVE definitions, custom payload injector terminal, and active alarm sound effects.",
+            },
+            sniffer: {
+                title: "Specter Frame Analyzer",
+                scenarios: [
+                    {
+                        name: "Plain-text Password Leak Audit",
+                        details: "Analyze unsecured TCP frame parameters capturing telemetry packets containing plain-text administrative login patterns over unsecured HTTP/FTP sessions. Student isolates exact credential hashes."
+                    },
+                    {
+                        name: "Rogue Wi-Fi AP Beacon Survey",
+                        details: "Examine a packet dump stream looking for anomalous beacon parameters that do not conform to active infrastructure standards. Isolate unauthorized hardware vendors."
+                    },
+                    {
+                        name: "DNS Exfiltration Tunnel Hunt",
+                        details: "Isolate unusual TXT record queries of anomalous length sending base64 payloads to rogue external domain registrars. The student filters by frame parameters to spot the leaking nodes."
+                    }
+                ],
+                coreLogic: "Real-time packet ring buffer matching filters (BPF expressions like 'tcp and port 80' or 'udp'). Deep frame-dissection parser translating hex offsets, packet headers (Ethernet, IPv4, TCP, Application Layer) into human-readable telemetry panels.",
+                interactiveComponents: "Visual BPF parsing filter input bar, packet list display window with interactive toggle drop-downs, packet inspection hexadecimal panel with side-by-side UTF decoders, and data flow stats.",
+            },
+            vuln: {
+                title: "Valkyrie Host Vulnerability Auditor",
+                scenarios: [
+                    {
+                        name: "Web Server Shellshock Audit",
+                        details: "Evaluate multiple cloud host assets for critical unpatched bash shell vulnerabilities. The student must structure diagnostic requests looking for anomalous header sequences and parsing response alerts."
+                    },
+                    {
+                        name: "Outdated SSH Library Recon",
+                        details: "Audit an internal server range for outdated daemon variants vulnerable to remote code executions. The user parses service banners, identifies target version matches, and categorizes vulnerability severity."
+                    },
+                    {
+                        name: "Log4j Payload Verification",
+                        details: "Configure test probes to safely check internal target systems for JNDI LDAP lookup exploit triggers. Identify exactly which log assets are susceptible to remote exploitation."
+                    }
+                ],
+                coreLogic: "Subnet node simulation mapping device. Each node lists specific active service layers, banner strings, operating systems, and a CVE dictionary matching specific versions. Script maps scanning probes to node responses based on chosen techniques.",
+                interactiveComponents: "Visual interactive target map showing ping state, scanning engine profile builder with toggle configurations, dynamic service banner grid, vulnerabilities database dashboard, and auto-generated exploit report template.",
+            }
+        };
+
+        let currentSimType = "firewall";
+
+        // Initialize App UI
+        window.onload = function() {
+            selectSimType('firewall');
+        };
+
+        // Select the simulator class & update scenarios UI
+        function selectSimType(type) {
+            currentSimType = type;
+            
+            // Highlight selector buttons
+            const types = ['firewall', 'ids', 'sniffer', 'vuln'];
+            types.forEach(t => {
+                const btn = document.getElementById(`btn-${t}`);
+                if (t === type) {
+                    btn.className = "flex flex-col items-center justify-center p-3 rounded-lg border transition-all text-center gap-1.5 bg-cyber-accent/10 border-cyber-accent text-cyber-accent hover:bg-cyber-accent/20 font-semibold shadow-[0_0_10px_rgba(16,185,129,0.15)]";
+                } else {
+                    btn.className = "flex flex-col items-center justify-center p-3 rounded-lg border transition-all text-center gap-1.5 bg-slate-800/50 border-cyber-border text-slate-300 hover:border-slate-500 hover:text-white";
+                }
+            });
+
+            // Update scenario selector drop-downs
+            const selector = document.getElementById("scenarioSelector");
+            selector.innerHTML = "";
+            
+            const selectedConfig = simulatorClasses[type];
+            selectedConfig.scenarios.forEach((sc, idx) => {
+                const opt = document.createElement("option");
+                opt.value = idx;
+                opt.textContent = sc.name;
+                selector.appendChild(opt);
+            });
+
+            // Add Custom Option
+            const customOpt = document.createElement("option");
+            customOpt.value = "custom";
+            customOpt.textContent = "Write Custom Scenario...";
+            selector.appendChild(customOpt);
+
+            // Populate current title
+            document.getElementById("simTitleInput").value = selectedConfig.title;
+
+            updateCustomScenario();
+        }
+
+        // Handle dropdown changed
+        function updateCustomScenario() {
+            const selector = document.getElementById("scenarioSelector");
+            const selectedVal = selector.value;
+            const detailsTextarea = document.getElementById("customScenarioDetails");
+
+            if (selectedVal === "custom") {
+                detailsTextarea.value = "";
+                detailsTextarea.placeholder = "Describe the scenario mission, starting environment, objectives, and vulnerable assets the student must tackle...";
+                detailsTextarea.focus();
+            } else {
+                const scenario = simulatorClasses[currentSimType].scenarios[parseInt(selectedVal)];
+                detailsTextarea.value = scenario.details;
+            }
+
+            compilePrompt();
+        }
+
+        function compilePrompt() {
+            const simName = document.getElementById("simTitleInput").value || "Cyber Training Simulator";
+            const scenarioText = document.getElementById("customScenarioDetails").value || "Interactive exploration sandbox.";
+            const difficulty = document.getElementById("difficultyLevel").value;
+            const layout = document.getElementById("layoutScheme").value;
+            
+            // Features
+            const rulesBldr = document.getElementById("featureInteractiveRules").checked ? "Enabled - Include custom interactive configuration elements, inputs, rule metrics tables, or CLI controls." : "Disabled - Focus strictly on pre-defined diagnostic steps.";
+            const loggingConsole = document.getElementById("featureLiveLogger").checked ? "Enabled - Provide a real-time scrolling technical debug log terminal showing active system processing, ingress/egress drops, threat detections, or scan diagnostics." : "Disabled - Exclude granular debug output.";
+            const payloadInspector = document.getElementById("featurePayloadInspector").checked ? "Enabled - Embed detailed dissection tool enabling deep inspections of raw payloads, HEX frames, CVE references, or protocol headers." : "Disabled - Exclude granular dissection utilities.";
+            const gradingEngine = document.getElementById("featureVisualGrading").checked ? "Enabled - Build dynamic objective checklist that ticks off automatically in real-time as criteria are met, showing success scoring and mitigation telemetry." : "Disabled - Standard freeplay environment.";
+            const audioFeedback = document.getElementById("featureSoundSynthesis").checked ? "Enabled - Inject dynamic synthetic synth audio cues using Tone.js (alarm sirens, success sweeps, key presses). Ensure Tone.js loads safely asynchronously." : "Disabled - Standard quiet visual application.";
+
+            const activeClass = simulatorClasses[currentSimType];
+
+            // Generating system output prompt
+            const generatedPrompt = `# Role and Objective
+You are an expert Instructional Designer, Cybersecurity Subject Matter Expert, and Lead Front-End Developer. Your task is to generate a comprehensive, production-ready system prompt for an AI that will build interactive, single-file cybersecurity simulators. 
+
+The simulator you generate will be named: "${simName}"
+Simulator Category: ${currentSimType.toUpperCase()}
+Target Difficulty Rank: ${difficulty}
+
+---
+
+# Core Principles for the Target Prompt
+
+The prompt you generate must instruct the AI to build a simulator that strictly adheres to the following architectural, instructional, and aesthetic pillars:
+
+## 1. UI/UX & Visual Theme
+* **Palette:** Pure white background with professional cyber emerald-green and dark slate accents. Highly professional technical aesthetic with strong visual hierarchies. High-contrast elements complying with WCAG 2.1 Level AA parameters.
+* **Layout Structure:** ${layout}
+* **Aesthetics:** Minimalist, dashboard design. Clean borders (1px solid slate), bold metrics boxes, with distinct card areas grouping actions. Zero visual clutter. No massive walls of blocky documentation.
+
+## 2. Technical Stack & Delivery
+* **Architecture:** Single, self-contained, fully complete HTML5 file.
+* **Dependencies:** Embedded, pure CSS classes and modular vanilla JavaScript (ES6+). No external CSS dependencies or third-party frameworks like Tailwind or Bootstrap are permitted to ensure perfect local-sandbox performance.
+* **Libraries Allowed:** Only ${document.getElementById("featureSoundSynthesis").checked ? "Tone.js CDN (https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js) for safe audio synthesis" : "none"}. All structures must render locally.
+* **Interactivity:** Dynamic state machines written in native JavaScript. Packet parsing, traffic simulations, scan lists, log engines, and status charts must load and update on the fly in real-time.
+
+## 3. Educational Design
+* **Scenario-Based Learning Directive:** The user is dropped directly into the following mission:
+  "${scenarioText}"
+* **Feedback Loops & Diagnostics:** Instant dynamic scoring. If the student enters a wrong rule, filter, or configuration, highlight the attack packets passing through security layers directly into terminal telemetry outputs.
+* **Scannability:** Clear headers, visual separation tags, colored badges (e.g., Red for Blocked, Green for Cleared), and clear instructional directives.
+
+---
+
+# Required Output Structure for the Generated Prompt
+
+Your output must be a highly detailed, copy-pasteable system prompt that forces the AI to output simulators conforming to the requirements below. Format your generated prompt using these exact sections:
+
+### 1. Persona Activation
+Instruct the AI to stack three distinct personas: a Tier 3 Security Operations Center (SOC) Analyst, an Instructional Designer specializing in cybersecurity workforce training, and an Expert UI Engineer.
+
+### 2. Simulator Blueprinting Engine
+Direct the AI to construct the simulator using these customized configuration elements:
+* **Core Simulator Logic:** ${activeClass.coreLogic}
+* **Interactive Toolset & UI Controls:** ${activeClass.interactiveComponents}
+* **Key Visual Features:**
+  - Interactive Rules Module: ${rulesBldr}
+  - Real-time Diagnostics Terminal: ${loggingConsole}
+  - Deep Packet Inspection Details: ${payloadInspector}
+  - Objective Assessment Checklist: ${gradingEngine}
+  - Audio Alerts Synthesis: ${audioFeedback}
+
+### 3. Strict Coding Guardrails
+Force the AI to output **fully functional, complete code applications** without placeholders, \`// TODO\` comments, or omitted elements. CSS and JS must reside natively inside \`<style>\` and \`<script>\` elements inside the single-file HTML structure. Never use \`alert()\` or block modal prompts. Use an embedded HTML warning panel instead.
+
+### 4. Step-by-Step Simulation Flow
+Outline how the simulator must run for the student:
+1. **Scenario Briefing Panel:** Displays the specific mission, vulnerabilities, starting configurations, and clear checklist of success criteria.
+2. **Configuration Mode Sandbox:** Where the student enters custom operational rules, maps scans, modifies filters, or launches diagnostic probes.
+3. **Execution Phase Engine:** Displays a visual simulation showing traffic moving between hosts, scan bars filling, or packet flows evaluated in real-time.
+4. **Post-Incident Analysis Panel:** Evaluates the efficacy of the configurations, maps objective completion states, calculates telemetry scores, and issues instructional summaries.
+
+---
+
+## 5. Implementation Standard Reference
+Include the following visual template reference inside your output prompt to ensure clean CSS output:
+\`\`\`css
+/* Clean White Cyber Theme Reference Code */
+body {
+    background-color: #ffffff;
+    color: #1e293b;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+.sidebar-panel {
+    background-color: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+}
+.terminal-console {
+    background-color: #0f172a;
+    color: #34d399;
+    font-family: 'Courier New', Courier, monospace;
+}
+.badge-alert {
+    background-color: #fee2e2;
+    color: #ef4444;
+    border: 1px solid #fca5a5;
+}
+.badge-secure {
+    background-color: #d1fae5;
+    color: #10b981;
+    border: 1px solid #6ee7b7;
+}
+\`\`\`
+
+Now, act as the meta-prompt compiler and output the complete system prompt based on this request. Do not summarize or provide empty templates; output the complete markdown text block.`;
+
+            document.getElementById("promptCompilerOutput").value = generatedPrompt;
+        }
+
+        function copyToClipboard() {
+            const promptOutput = document.getElementById("promptCompilerOutput");
+            promptOutput.select();
+            promptOutput.setSelectionRange(0, 99999); // For mobile devices
+
+            try {
+                // Using standard clipboard command for high-isolation environments
+                const success = document.execCommand('copy');
+                if (success) {
+                    const copyIcon = document.getElementById("copyIcon");
+                    const copyText = document.getElementById("copyText");
+                    
+                    // Visual confirmation state
+                    copyIcon.className = "fa-solid fa-check text-black";
+                    copyText.textContent = "Copied!";
+                    
+                    setTimeout(() => {
+                        copyIcon.className = "fa-solid fa-copy";
+                        copyText.textContent = "Copy Prompt";
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error("Failed copying to clipboard:", err);
+            }
+        }
+
+        function downloadAsMarkdown() {
+            const content = document.getElementById("promptCompilerOutput").value;
+            const simName = document.getElementById("simTitleInput").value.toLowerCase().replace(/[^a-z0-9]+/g, '_') || "cyber_simulator";
+            const filename = `generator_prompt_${simName}.md`;
+
+            const blob = new Blob([content], { type: 'text/markdown;charset=utf-8;' });
+            const link = document.createElement("a");
+            
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    </script>
+</body>
+</html>

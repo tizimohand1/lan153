@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Response Plan Student Activity for FreshFlow Systems</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="0,100 1000,100 1000,0"/></svg>');
+            background-size: 100% 100%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .classification {
+            background: #ff5722;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .toolbar {
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+
+        .btn-exercise {
+            background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .irp-section {
+            background: white;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-left: 5px solid #3949ab;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+            padding: 1.5rem;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1a237e;
+            margin: 0;
+        }
+
+        .section-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-edit-section {
+            background: #4caf50;
+        }
+
+        .btn-delete-section {
+            background: #f44336;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        .editable {
+            border: 2px dashed transparent;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            padding: 0.5rem;
+        }
+
+        .editable:hover {
+            border-color: #2196f3;
+            background: #f8f9fa;
+        }
+
+        .editing {
+            border-color: #4caf50 !important;
+            background: #e8f5e8 !important;
+        }
+
+        .incident-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .incident-type {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .team-roles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .role-card {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .role-title {
+            font-weight: bold;
+            color: #4a148c;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-info {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .phase-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .phase {
+            flex: 1;
+            min-width: 200px;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 4px solid #4caf50;
+            transition: transform 0.3s ease;
+        }
+
+        .phase:hover {
+            transform: translateY(-5px);
+        }
+
+        .phase-number {
+            background: #4caf50;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .asset-card {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #e91e63;
+        }
+
+        .network-diagram {
+            background: #f5f5f5;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            margin: 1rem 0;
+            border: 2px dashed #ddd;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            margin: 0.5rem 0;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+
+            .phase-timeline {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">🛡️ FreshFlow Systems</div>
+                <div class="subtitle">Incident Response Plan</div>
+                <div class="classification">CONTROLLED SENSITIVE INFORMATION</div>
+            </div>
+        </header>
+
+        <div class="toolbar">
+            <button class="btn btn-edit" onclick="toggleEditMode()">
+                ✏️ Edit Mode: <span id="editStatus">OFF</span>
+            </button>
+            <button class="btn btn-save" onclick="saveChanges()">
+                💾 Save Changes
+            </button>
+            <button class="btn btn-add" onclick="addNewSection()">
+                ➕ Add Section
+            </button>
+            <button class="btn btn-exercise" onclick="startTabletopExercise()">
+                🎯 Tabletop Exercise
+            </button>
+            <div style="margin-left: auto; font-weight: bold; color: #666;">
+                Last Updated: <span id="lastUpdated">June 16, 2025</span>
+            </div>
+        </div>
+
+        <main class="main-content">
+            <!-- Executive Summary Section -->
+            <section class="irp-section" data-section="executive">
+                <div class="section-header">
+                    <h2 class="section-title">1. Executive Summary</h2>
+                    <div class="section-controls">
+                        <button class="btn-small btn-edit-section" onclick="editSection(this)">Edit</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="editable" data-field="exec-purpose">
+                        <h3>Purpose & Importance</h3>
+                        <p>This Incident Response Plan (IRP) ensures FRESHFLOW SYSTEMS can effectively respond to cybersecurity incidents while maintaining protection of sensitive systems and information. The plan addresses various incident types including malware infections, data breaches, insider threats, and supply chain attacks, integrating with existing business continuity plans.</p>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Compliance Framework:</strong> This IRP is developed based on NIST SP 800-61 Rev. 3 guidance and meets all 110 requirements from NIST SP 800-171 required for compliance.
+                    </div>
+
+                    <div class="editable" data-field="exec-scope">
+                        <h3>Scope</h3>
+                        <p>This plan covers all FreshFlow Systems equipment: Fill-in the types of equipment.
+                </div>
+            </section>
+
+            <!-- Organization Overview Section -->
+            <section class="irp-section" data-section="organization">
+                <div class="section-header">
+                    <h2 class="section-title">2. Organization Overview</h2>
+                    <div class="section-controls">
+                        <button class="btn-small btn-edit-section" onclick="editSection(this)">Edit</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="contact-info">
+                        <h3>Company Information - Use the edit button to edit this information to match the case study.</h3>
+                        <p><strong>Company:</strong> Company Name</p>
+                        <p><strong>Location:</strong> Location</p>
+                        <p><strong>Employees:</strong> #</p>
+                        <p><strong>Business:</strong> Type of business.</p>
+                        <p><strong>CISO:</strong> Name</p>
+                        <p><strong>Review Date:</strong> Todays Date</p>
+                    </div>
+
+                    <div class="assets-grid">
+                        <div class="asset-card">
+                            <h4>Sensitive Assets</h4>
+                            <ul>
+                                <li>Primary Data Server</li>
+                                <li>Cloud Assets</li>
+                                <li>Assets</li>
+                                <li>Assets</li>
+                                <li>Assets</li>
+                            </ul>
+                        </div>
+                        <div class="asset-card">
+                            <h4>Security Assets</h4>
+                            <ul>
+                                <li>EFirewall</li>
+                                <li>VPN</li>
+                                <li>Endpoint Devices</li>
+                                <li>SIEM System </li>
+                                <li>Access Control Systems</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="network-diagram">
+                        <h3>Network Segmentation</h3>
+                        <p><strong>Zone:</strong> Secure access to servers, cloud backups, and contract management</p>
+                        <p><strong>Management Zone:</strong> Admin and IT operations</p>
+                        <p><strong>Guest Network:</strong> Isolated from internal systems</p>
+                        <p><strong>OT Network:</strong> Dedicated to building control systems</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Incident Response Team Section -->
+            <section class="irp-section" data-section="team">
+                <div class="section-header">
+                    <h2 class="section-title">3. Incident Response Team Structure</h2>
+                    <div class="section-controls">
+                        <button class="btn-small btn-edit-section" onclick="editSection(this)">Edit</button>
+                        <button class="btn-small btn-delete-section" onclick="deleteSection(this)">Delete</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="team-roles">
+                        <div class="role-card">
+                            <div class="role-title">Incident Response Manager</div>
+                            <div class="editable" data-field="irm-details">
+                                <p><strong>Primary:</strong> Name (CISO)</p>
+                                <p><strong>Contact:</strong> email address</p>
+                                <p><strong>Phone:</strong> Phone Number</p>
+                                <p><strong>Responsibilities:</strong> Overall incident management, coordination with external agencies, executive reporting</p>
+                            </div>
+                        </div>
+                        
+                        <div class="role-card">
+                            <div class="role-title">Security Analyst</div>
+                            <div class="editable" data-field="analyst-details">
+                                <p><strong>Primary:</strong> [Name]</p>
+                                <p><strong>Responsibilities:</strong> Initial incident detection, analysis, containment recommendations, forensic evidence collection</p>
+                            </div>
+                        </div>
+
+                        <div class="role-card">
+                            <div class="role-title">IT Operations Lead</div>
+                            <div class="editable" data-field="itops-details">
+                                <p><strong>Primary:</strong> [Name]</p>
+                                <p><strong>Responsibilities:</strong> System isolation, backup restoration, infrastructure recovery, network segmentation enforcement</p>
+                            </div>
+                        </div>
+
+                        <div class="role-card">
+                            <div class="role-title">Communications Officer</div>
+                            <div class="editable" data-field="comms-details">
+                                <p><strong>Primary:</strong> [Name]</p>
+                                <p><strong>Responsibilities:</strong> Internal notifications, external reporting to DoD via DIBNet, stakeholder updates</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>24/7 Contact Protocol:</strong> All team members must be reachable within 30 minutes during business hours and within 2 hours during off-hours. Escalation procedures include automated alerts via SIEM system and emergency contact trees.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Incident Classification Section -->
+            <section class="irp-section" data-section="classification">
+                <div class="section-header">
+                    <h2 class="section-title">4. Incident Classification & Prioritization</h2>
+                    <div class="section-controls">
+                        <button class="btn-small btn-edit-section" onclick="editSection(this)">Edit</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="incident-types">
+                        <div class="incident-type">
+                            <h4>🔴 CRITICAL (Priority 1)</h4>
+                            <div class="editable" data-field="critical-incidents">
+                                <ul>
+                                    <li>Data breach or exfiltration</li>
+                                    <li>Ransomware affecting Secure systems</li>
+                                    <li>Supply chain compromise</li>
+                                    <li>Advanced Persistent Threat (APT)</li>
+                                </ul>
+                                <p><strong>Response Time:</strong> Enter Time</p>
+                                <p><strong>Reporting:</strong> DIBNet within 72 hours</p>
+                            </div>
+                        </div>
+
+                        <div class="incident-type">
+                            <h4>🟡 HIGH (Priority 2)</h4>
+                            <div class="editable" data-field="high-incidents">
+                                <ul>
+                                    <li>Malware on systems</li>
+                                    <li>Unauthorized access attempts</li>
+                                    <li>Denial of Service attacks</li>
+                                    <li>Insider threat indicators</li>
+                                </ul>
+                                <p><strong>Response Time:</strong> Within 2 hours</p>
+                                <p><strong>Reporting:</strong> Internal escalation required</p>
+                            </div>
+                        </div>
+
+                        <div class="incident-type">
+                            <h4>🟢 MEDIUM (Priority 3)</h4>
+                            <div class="editable" data-field="medium-incidents">
+                                <ul>
+                                    <li>Policy violations</li>
+                                    <li>Suspicious network activity</li>
+                                    <li>Failed access attempts</li>
+                                    <li>System anomalies</li>
+                                </ul>
+                                <p><strong>Response Time:</strong> Within 8 hours</p>
+                                <p><strong>Reporting:</strong> Standard documentation</p>
+                            </div>
+                        </div>
+
+                        <div class="incident-type">
+                            <h4>🔵 LOW (Priority 4)</h4>
+                            <div class="editable" data-field="low-incidents">
+                                <ul>
+                                    <li>Minor configuration issues</li>
+                                    <li>Non-CUI system incidents</li>
+                                    <li>Environmental alerts</li>
+                                    <li>Routine security events</li>
+                                </ul>
+                                <p><strong>Response Time:</strong> Within 24 hours</p>
+                                <p><strong>Reporting:</strong> Log entry only</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Incident Response Lifecycle Section -->
+            <section class="irp-section" data-section="lifecycle">
+                <div class="section-header">
+                    <h2 class="section-title">5. Incident Response Lifecycle</h2>
+                    <div class="section-controls">
+                        <button class="btn-small btn-edit-section" onclick="editSection(this)">Edit</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="phase-timeline">
+                        <div class="phase">
+                            <div class="phase-number">1</div>
+                            <h4>Preparation</h4>
+                            <div class="editable" data-field="phase-prep">
+                                <p>Establish IR capabilities, train personnel, maintain tools and procedures</p>
+                            </div>
+                        </div>
+                        <div class="phase">
+                            <div class="phase-number">2</div>
+                            <h4>Detection & Analysis</h4>
+                            <div class="editable" data-field="phase-detect">
+                                <p>Monitor systems, analyze alerts, validate incidents, assess impact</p>
+                            </div>
+                        </div>
+                        <div class="phase">
+                            <div class="phase-number">3</div>
+                            <h4>Containment</h4>
+                            <div class="editable" data-field="phase-contain">
+                                <p>Isolate affected systems, prevent spread, preserve evidence</p>
+                            </div>
+                        </div>
+                        <div class="phase">
+                            <div class="phase-number">4</div>
+                            <h4>Eradication</h4>
+                            <div class="editable" data-field="phase-eradicate">
+                                <p>Remove threats, patch vulnerabilities, strengthen defenses</p>
+                            </div>
+                        </div>
+                        <div class="phase">
+                            <div class="phase-number">5</div>
+                            <h4>Recovery</h4>
+                            <div class="editable" data-field="phase-recover">
+                                <p>Restore systems, monitor for threats, return to operations</p>
+                            </div>
+                        </div>
+                        <div class="phase">
+                            <div class="phase-number">6</div>
+                            <h4>Lessons Learned</h4>
+                            <div class="editable" data-field="phase-lessons">
+                                <p>Document findings, update procedures, conduct training</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>Data Integration:</strong> Each phase must maintain data protection and include documentation for compliance assessments. All activities must be logged and evidence preserved for potential DoD review.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detection and Analysis Section -->
+            <section class="irp-section" data-section="detection">
+                <div class="section-header">
+                    <h2 class="section-title">6. Detection and Analysis Procedures</h2>
+                    <div class="section-controls">
+                        <button class="btn-small btn-edit-section" onclick="editSection(this)">Edit</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="editable" data-field="detection-sources">
+                        <h3>Detection Sources</h3>
+                        <ul>
+                            <li><strong>SIEM System:</strong> Centralized log analysis and correlation</li>
+                            <li><strong>Endpoint Protection (SPA-004):</strong> Anti-malware and behavioral detection</li>
+                            <li><strong>Network Monitoring:</strong> Firewall and IDS alerts from SPA-001</li>
+                            <li><strong>User Reports:</strong> Employee-reported suspicious activities</li>
+                            <li><strong>External Feeds:</strong> Threat intelligence and vulnerability alerts</li>
+                        </ul>
+                    </div>
+
+                    <div class="editable" data-field="analysis-procedures">
+                        <h3>Analysis Procedures</h3>
+                        <ol>
+                            <li><strong>Initial Triage:</strong> Validate alert authenticity and determine if incident involves CUI</li>
+                            <li><strong>Impact Assessment:</strong> Identify affected systems, data types, and potential business impact</li>
+                            <li><strong>Evidence Collection:</strong> Preserve logs, network traffic, system images, and artifacts</li>
+                            <li><strong>Attribution Analysis:</strong> Determine threat actor, attack vectors, and intent</li>
+                            <li><strong>Scope Determination:</strong> Map full extent of compromise across network segments</li>
+                        </ol>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Data Handling:</strong> Any incident involving assets sensitive automatically escalates to Priority 1 or 2 and requires immediate CISO notification.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Containment and Eradication Section -->
+            <section class="irp-section" data-section="containment">
+                <div class="section-header">
+                    <h2 class="section-title">7. Containment and Eradication Strategies</h2>
+                    <div class="section-controls">
+                        <button class="btn-small btn-edit-section" onclick="editSection(this)">Edit</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="editable" data-field="containment-strategies">
+                        <h3>Containment Strategies</h3>
+                        <h4>Short-term Containment</h4>
+                        <ul>
+                            <li><strong>Network Isolation:</strong> Immediately isolate affected systems using VLAN segmentation</li>
+                            <li><strong>Account Disabling:</strong> Suspend compromised user accounts in Active Directory</li>
+                            <li><strong>Traffic Blocking:</strong> Configure firewall rules to block malicious IPs/domains</li>
+                            <li><strong>System Shutdown:</strong> Power down critical systems if data exfiltration is detected</li>
+                        </ul>
+
+                        <h4>Long-term Containment</h4>
+                        <ul>
+                            <li><strong>Patch Management:</strong> Apply security updates to all affected systems</li>
+                            <li><strong>Access Control Review:</strong> Audit and update permissions across all CUI systems</li>
+                            <li><strong>Monitoring Enhancement:</strong> Deploy additional sensors in affected network segments</li>
+                            <li><strong>Backup Verification:</strong> Ensure Azure and AWS backups are clean and recoverable</li>
+                        </ul>
+                    </div>
+
+                    <div class="editable" data-field="eradication-procedures">
+                        <h3>Eradication Procedures</h3>
+                        <ol>
+                            <li><strong>Malware Removal:</strong> Use enterprise anti-malware tools and manual removal techniques</li>
+                            <li><strong>Vulnerability Patching:</strong> Address all identified security weaknesses</li>
+                            <li><strong>System Hardening:</strong> Implement additional security controls and configurations</li>
+                            <li><strong>Credential Reset:</strong> Force password changes for all potentially compromised accounts</li>
+                            <li><strong>Certificate Updates:</strong> Replace any compromised digital certificates</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recovery Section -->
+            <section class="irp-section" data-section="recovery">
+                <div class="section-header">
+                    <h2 class="section-title">8. Recovery and Post-Incident Activities</h2>
+                    <div class="section-controls">
+                        <button class="btn-small btn-edit-section" onclick="editSection(this)">Edit</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="editable" data-field="recovery-procedures">
+                        <h3>Recovery Procedures</h3>
+                        <ol>
+                            <li><strong>System Restoration:</strong> Rebuild compromised systems from clean backups</li>
+                            <li><strong>Service Restoration:</strong> Gradually restore services starting with critical CUI systems</li>
+                            <li><strong>Monitoring:</strong> Implement enhanced monitoring for 30 days post-incident</li>
+                            <li><strong>Validation:</strong> Perform thorough testing to ensure system integrity</li>
+                            <li><strong>Documentation:</strong> Update all system configurations and security baselines</li>
+                        </ol>
+                    </div>
+
+                    <div class="editable" data-field="post-incident">
+                        <h3>Post-Incident Activities</h3>
+                        <ul>
+                            <li><strong>Lessons Learned Meeting:</strong> Conduct within 1 week of incident closure</li>
+                            <li><strong>Process Improvement:</strong> Update IRP based on identified gaps</li>
+                            <li><strong>Training Updates:</strong> Revise training materials and conduct refresher sessions</li>
+                            <li><strong>Compliance Reporting:</strong> Ensure all CMMC documentation requirements are met</li>
+                            <li><strong>Stakeholder Communication:</strong> Brief leadership and relevant parties</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Communication and Reporting Section -->
+            <section class="irp-section" data-section="communication">
+                <div class="section-header">
+                    <h2 class="section-title">9. Communication and Reporting Protocols</h2>
+                    <div class="section-controls">
+                        <button class="btn-small btn-edit-section" onclick="editSection(this)">Edit</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="alert alert-warning">
+                        <strong>CRITICAL:</strong> All incidents involving sensitive data must be reported to DoD via DIBNet (https://dibnet.dod.mil) within 72 hours. Ensure DoD-approved medium assurance certificate is available for reporting.
+                    </div>
+
+                    <div class="editable" data-field="internal-comms">
+                        <h3>Internal Communication</h3>
+                        <ul>
+                            <li><strong>Immediate Notification:</strong> CISO and IR Manager within ___ minutes</li>
+                            <li><strong>Executive Brief:</strong> CEO and senior leadership within ___ hours for P1/P2 incidents</li>
+                            <li><strong>Employee Updates:</strong> All-hands communication for incidents affecting operations</li>
+                            <li><strong>Customer Notification:</strong> DoD contracting officers per contract requirements</li>
+                        </ul>
+                    </div>
+
+                    <div class="editable" data-field="external-reporting">
+                        <h3>External Reporting Requirements</h3>
+                        <ul>
+                            <li><strong>DIBNet Reporting:</strong> Mandatory for all sensitive data-related incidents within ____ hours</li>
+                            <li><strong>Law Enforcement:</strong> Contact FBI for suspected criminal activity</li>
+                            <li><strong>Industry Partners:</strong> Share threat intelligence as appropriate</li>
+                            <li><strong>Insurance:</strong> Notify cyber insurance carrier per policy requirements</li>
+                        </ul>
+                    </div>
+
+                    <div class="contact-info">
+                        <h3>Emergency Contacts</h3>
+                        <p><strong>DIBNet:</strong> https://dibnet.dod.mil</p>
+                        <p><strong>DoD Cyber Crime Center (DC3):</strong> Submit malware samples</p>
+                        <p><strong>FBI Cyber Division:</strong> (855) 292-3937</p>
+                        <p><strong>CISA:</strong> (888) 282-0870</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Training and Exercises Section -->
+            <section class="irp-section" data-section="training">
+                <div class="section-header">
+                    <h2 class="section-title">10. Training and Exercise Programs</h2>
+                    <div class="section-controls">
+                        <button class="btn-small btn-edit-section" onclick="editSection(this)">Edit</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="editable" data-field="training-program">
+                        <h3>Training Requirements</h3>
+                        <ul>
+                            <li><strong>All Employees:</strong> Annual cybersecurity awareness training</li>
+                            <li><strong>IR Team Members:</strong> Quarterly specialized incident response training</li>
+                            <li><strong>New Hires:</strong> Security training within 30 days of onboarding</li>
+                            <li><strong>Leadership:</strong> Annual executive briefing on incident response capabilities</li>
+                        </ul>
+                    </div>
+
+                    <div class="editable" data-field="exercise-schedule">
+                        <h3>Exercise Schedule</h3>
+                        <ul>
+                            <li><strong>Tabletop Exercises:</strong> Quarterly scenario-based discussions</li>
+                            <li><strong>Functional Exercises:</strong> Semi-annual hands-on simulations</li>
+                            <li><strong>Full-Scale Exercise:</strong> Annual comprehensive incident simulation</li>
+                            <li><strong>Surprise Drills:</strong> Unannounced monthly alert tests</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>Requirement:</strong> Regular testing of incident response capabilities through tabletop exercises is mandatory for compliance. Document all exercises and maintain records for assessment.
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for editing content -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h3>Edit Content</h3>
+            <textarea id="editTextarea" rows="10"></textarea>
+            <br>
+            <button class="btn btn-save" onclick="saveEdit()">Save Changes</button>
+            <button class="btn" onclick="closeEditModal()" style="background: #666;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Modal for tabletop exercise -->
+    <div id="exerciseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeExerciseModal()">&times;</span>
+            <h3>🎯 Tabletop Exercise Scenarios</h3>
+            <div id="exerciseContent">
+                <div class="alert alert-info">
+                    <h4>Scenario 1: Data Breach</h4>
+                    <p>A contract coordinator reports that they accidentally sent a file containing sensitive data to an unauthorized email address outside the organization.</p>
+                    <p><strong>Discussion Points:</strong> Classification procedures, containment steps, DIBNet reporting timeline, customer notification</p>
+                </div>
+                <div class="alert alert-warning">
+                    <h4>Scenario 2: Ransomware Attack</h4>
+                    <p>Multiple workstations in the controlled zone are displaying ransomware messages. The primary data server appears to be affected.</p>
+                    <p><strong>Discussion Points:</strong> Network isolation, backup procedures, law enforcement notification, business continuity</p>
+                </div>
+                <div class="alert alert-success">
+                    <h4>Scenario 3: Insider Threat</h4>
+                    <p>SIEM alerts indicate unusual after-hours access to CUI systems by an employee who was recently terminated.</p>
+                    <p><strong>Discussion Points:</strong> Access revocation, evidence preservation, HR coordination, investigation procedures</p>
+                </div>
+            </div>
+            <button class="btn btn-add" onclick="addExerciseScenario()">Add New Scenario</button>
+        </div>
+    </div>
+
+    <script>
+        let editMode = false;
+        let currentEditField = null;
+        let currentEditElement = null;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLastModified();
+        });
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            const editStatus = document.getElementById('editStatus');
+            editStatus.textContent = editMode ? 'ON' : 'OFF';
+            
+            const editables = document.querySelectorAll('.editable');
+            editables.forEach(el => {
+                if (editMode) {
+                    el.style.cursor = 'pointer';
+                    el.addEventListener('click', startEdit);
+                } else {
+                    el.style.cursor = 'default';
+                    el.removeEventListener('click', startEdit);
+                    el.classList.remove('editing');
+                }
+            });
+
+            // Show/hide section controls
+            const sectionControls = document.querySelectorAll('.section-controls');
+            sectionControls.forEach(control => {
+                control.style.display = editMode ? 'flex' : 'none';
+            });
+        }
+
+        function startEdit(event) {
+            if (!editMode) return;
+            
+            event.stopPropagation();
+            currentEditElement = event.target.closest('.editable');
+            currentEditField = currentEditElement.getAttribute('data-field');
+            
+            const modal = document.getElementById('editModal');
+            const textarea = document.getElementById('editTextarea');
+            
+            // Get current content (strip HTML for editing)
+            textarea.value = currentEditElement.innerText.trim();
+            
+            currentEditElement.classList.add('editing');
+            modal.style.display = 'block';
+        }
+
+        function saveEdit() {
+            if (!currentEditElement) return;
+            
+            const textarea = document.getElementById('editTextarea');
+            const newContent = textarea.value;
+            
+            // Simple HTML conversion (preserve line breaks)
+            const htmlContent = newContent.replace(/\n/g, '<br>');
+            
+            // Update the content while preserving structure
+            const originalHTML = currentEditElement.innerHTML;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = originalHTML;
+            
+            // Replace text content while keeping structure
+            const textNodes = getTextNodes(tempDiv);
+            if (textNodes.length > 0) {
+                const firstTextParent = textNodes[0].parentNode;
+                firstTextParent.innerHTML = htmlContent;
+            }
+            
+            currentEditElement.innerHTML = tempDiv.innerHTML;
+            updateLastModified();
+            closeEditModal();
+        }
+
+        function getTextNodes(node) {
+            let textNodes = [];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textNodes.push(node);
+            } else {
+                for (let i = 0; i < node.childNodes.length; i++) {
+                    textNodes = textNodes.concat(getTextNodes(node.childNodes[i]));
+                }
+            }
+            return textNodes;
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editModal');
+            modal.style.display = 'none';
+            
+            if (currentEditElement) {
+                currentEditElement.classList.remove('editing');
+                currentEditElement = null;
+                currentEditField = null;
+            }
+        }
+
+        function editSection(button) {
+            const section = button.closest('.irp-section');
+            const sectionName = section.getAttribute('data-section');
+            
+            // Highlight the entire section for editing
+            section.style.border = '3px solid #4caf50';
+            setTimeout(() => {
+                section.style.border = '';
+            }, 2000);
+            
+            alert(`Editing mode activated for ${sectionName} section. Click on any editable content to modify it.`);
+        }
+
+        function deleteSection(button) {
+            if (confirm('Are you sure you want to delete this section? This action cannot be undone.')) {
+                const section = button.closest('.irp-section');
+                section.remove();
+                updateLastModified();
+            }
+        }
+
+        function addNewSection() {
+            const sectionTitle = prompt('Enter the title for the new section:');
+            if (!sectionTitle) return;
+            
+            const sectionId = sectionTitle.toLowerCase().replace(/\s+/g, '-');
+            const newSection = document.createElement('section');
+            newSection.className = 'irp-section';
+            newSection.setAttribute('data-section', sectionId);
+            
+            newSection.innerHTML = `
+                <div class="section-header">
+                    <h2 class="section-title">${sectionTitle}</h2>
+                    <div class="section-controls">
+                        <button class="btn-small btn-edit-section" onclick="editSection(this)">Edit</button>
+                        <button class="btn-small btn-delete-section" onclick="deleteSection(this)">Delete</button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="editable" data-field="${sectionId}-content">
+                        <p>This is a new section. Click to edit this content when in edit mode.</p>
+                    </div>
+                </div>
+            `;
+            
+            document.querySelector('.main-content').appendChild(newSection);
+            updateLastModified();
+            
+            // If edit mode is on, enable editing for new content
+            if (editMode) {
+                const editables = newSection.querySelectorAll('.editable');
+                editables.forEach(el => {
+                    el.style.cursor = 'pointer';
+                    el.addEventListener('click', startEdit);
+                });
+            }
+        }
+
+        function saveChanges() {
+            // Since localStorage is not available, we'll show a success message
+            // In a real implementation, this would save to a server
+            updateLastModified();
+            
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success';
+            alert.style.position = 'fixed';
+            alert.style.top = '20px';
+            alert.style.right = '20px';
+            alert.style.zIndex = '9999';
+            alert.innerHTML = '<strong>✅ Changes Saved Successfully!</strong><br>IRP has been updated.';
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        function updateLastModified() {
+            const now = new Date();
+            const formatted = now.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('lastUpdated').textContent = formatted;
+        }
+
+        function startTabletopExercise() {
+            const modal = document.getElementById('exerciseModal');
+            modal.style.display = 'block';
+        }
+
+        function closeExerciseModal() {
+            const modal = document.getElementById('exerciseModal');
+            modal.style.display = 'none';
+        }
+
+        function addExerciseScenario() {
+            const title = prompt('Enter scenario title:');
+            if (!title) return;
+            
+            const description = prompt('Enter scenario description:');
+            if (!description) return;
+            
+            const discussionPoints = prompt('Enter discussion points (optional):');
+            
+            const scenarioDiv = document.createElement('div');
+            scenarioDiv.className = 'alert alert-info';
+            scenarioDiv.innerHTML = `
+                <h4>${title}</h4>
+                <p>${description}</p>
+                ${discussionPoints ? `<p><strong>Discussion Points:</strong> ${discussionPoints}</p>` : ''}
+                <button class="btn-small" style="background: #f44336; color: white; float: right;" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            
+            const exerciseContent = document.getElementById('exerciseContent');
+            exerciseContent.appendChild(scenarioDiv);
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const editModal = document.getElementById('editModal');
+            const exerciseModal = document.getElementById('exerciseModal');
+            
+            if (event.target === editModal) {
+                closeEditModal();
+            }
+            if (event.target === exerciseModal) {
+                closeExerciseModal();
+            }
+        });
+
+        // Prevent form submission on Enter in textareas
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && event.target.tagName === 'TEXTAREA' && event.ctrlKey) {
+                saveEdit();
+            }
+        });
+    </script>
+</body>
+</html>

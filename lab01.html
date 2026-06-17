@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetSecLab — Network Security Controls Simulator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700&display=swap');
+
+  :root {
+    --bg-deep:      #0a0e1a;
+    --bg-panel:     #0f1528;
+    --bg-card:      #131d35;
+    --bg-input:     #0c1020;
+    --border:       #1e2d50;
+    --border-bright:#2a4080;
+    --accent-cyan:  #00d4ff;
+    --accent-green: #00ff88;
+    --accent-amber: #ffb800;
+    --accent-red:   #ff3b5c;
+    --accent-purple:#a855f7;
+    --text-primary: #e2eaf8;
+    --text-muted:   #5a7098;
+    --text-dim:     #2e4060;
+    --mono:         'Share Tech Mono', monospace;
+    --sans:         'Inter', sans-serif;
+    --display:      'Orbitron', sans-serif;
+
+    --cat-mgmt:     #a855f7;
+    --cat-ops:      #00d4ff;
+    --cat-tech:     #00ff88;
+    --cat-phys:     #ffb800;
+    --fn-prev:      #00d4ff;
+    --fn-det:       #00ff88;
+    --fn-cor:       #ff8c00;
+    --fn-det2:      #ffb800;
+    --fn-dir:       #a855f7;
+    --fn-comp:      #ff3b5c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--display);
+    font-size: 15px;
+    color: var(--accent-cyan);
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .header-meta {
+    display: flex; align-items: center; gap: 20px;
+    font-size: 12px; color: var(--text-muted);
+  }
+  .badge {
+    padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+    letter-spacing: .5px; text-transform: uppercase;
+  }
+  .badge-level { background: rgba(0,212,255,.15); color: var(--accent-cyan); border: 1px solid rgba(0,212,255,.3); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-rail {
+    height: 3px; background: var(--bg-card);
+    position: sticky; top: 56px; z-index: 99;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+    transition: width .6s ease;
+    box-shadow: 0 0 12px var(--accent-cyan);
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .workspace {
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    flex: 1;
+    overflow: hidden;
+    height: calc(100vh - 59px);
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .sidebar-section { display: flex; flex-direction: column; gap: 8px; }
+  .sidebar-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text-muted);
+    padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
+
+  /* Network topology minimap */
+  .topology-map {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.8;
+    color: var(--text-muted);
+  }
+  .topo-node { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .topo-node:hover { color: var(--text-primary); }
+  .topo-icon { font-size: 12px; }
+  .topo-status { margin-left: auto; width: 6px; height: 6px; border-radius: 50%; }
+  .status-ok { background: var(--accent-green); }
+  .status-warn { background: var(--accent-amber); }
+  .status-err { background: var(--accent-red); }
+  .status-off { background: var(--text-dim); }
+
+  /* Step tracker */
+  .step-list { display: flex; flex-direction: column; gap: 4px; }
+  .step-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border-radius: 5px;
+    font-size: 12px; cursor: pointer;
+    border: 1px solid transparent;
+    transition: all .2s;
+  }
+  .step-item.active {
+    background: rgba(0,212,255,.08);
+    border-color: rgba(0,212,255,.3);
+    color: var(--accent-cyan);
+  }
+  .step-item.done {
+    color: var(--accent-green);
+    opacity: .7;
+  }
+  .step-item.locked { color: var(--text-dim); cursor: not-allowed; }
+  .step-num {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+    border: 1px solid currentColor;
+  }
+  .step-item.done .step-num { background: var(--accent-green); color: var(--bg-deep); border-color: var(--accent-green); }
+
+  /* Score panel */
+  .score-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+  }
+  .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12px; }
+  .score-val { font-family: var(--mono); font-weight: 700; color: var(--accent-green); }
+  .score-bar-wrap { height: 4px; background: var(--border); border-radius: 2px; margin-top: 4px; }
+  .score-bar-fill { height: 100%; border-radius: 2px; background: var(--accent-green); transition: width .5s; }
+
+  /* ── CENTER PANEL ── */
+  .center-panel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Scenario header */
+  .scenario-header {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+  }
+  .scenario-title {
+    font-family: var(--display);
+    font-size: 13px;
+    color: var(--accent-cyan);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .scenario-subtitle { color: var(--text-muted); font-size: 12px; }
+
+  /* Terminal / log area */
+  .terminal-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--bg-deep);
+  }
+
+  .log-entry {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    padding: 12px 14px;
+    border-radius: 5px;
+    border-left: 3px solid var(--border);
+    background: var(--bg-panel);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .log-entry.system { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+  .log-entry.alert  { border-color: var(--accent-red); color: var(--accent-red); }
+  .log-entry.warn   { border-color: var(--accent-amber); color: var(--accent-amber); }
+  .log-entry.success{ border-color: var(--accent-green); color: var(--accent-green); }
+  .log-entry.user   { border-color: var(--accent-purple); color: var(--text-primary); }
+  .log-entry.info   { border-color: var(--border); color: var(--text-primary); }
+  .log-entry.neutral{ border-color: var(--border); color: var(--text-muted); }
+  .log-timestamp { color: var(--text-dim); font-size: 10px; margin-bottom: 4px; }
+
+  /* Config block inside terminal */
+  .config-block {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-green);
+    margin-top: 6px;
+    overflow-x: auto;
+  }
+
+  /* ── INPUT ZONE ── */
+  .input-zone {
+    border-top: 1px solid var(--border);
+    background: var(--bg-panel);
+    padding: 14px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .config-task {
+    background: rgba(0,212,255,.06);
+    border: 1px solid rgba(0,212,255,.2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-primary);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .config-task-icon { color: var(--accent-cyan); font-size: 16px; flex-shrink: 0; }
+  .config-task-label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 2px; }
+
+  /* Dynamic control panel */
+  .control-panel { display: flex; flex-direction: column; gap: 8px; }
+
+  .ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .ctrl-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    width: 130px;
+    flex-shrink: 0;
+  }
+
+  select, input[type="text"], input[type="number"] {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  select:focus, input:focus { border-color: var(--accent-cyan); }
+  select { cursor: pointer; }
+
+  .btn {
+    padding: 7px 18px;
+    border-radius: 4px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    letter-spacing: .3px;
+    transition: all .2s;
+  }
+  .btn-primary {
+    background: var(--accent-cyan);
+    color: var(--bg-deep);
+  }
+  .btn-primary:hover { background: #00b8e0; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--text-muted); color: var(--text-primary); }
+  .btn-danger {
+    background: rgba(255,59,92,.15);
+    color: var(--accent-red);
+    border: 1px solid rgba(255,59,92,.3);
+  }
+  .btn-danger:hover { background: rgba(255,59,92,.25); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+
+  /* hint toggle */
+  .hint-toggle {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; color: var(--text-muted); cursor: pointer;
+    padding: 4px 0;
+  }
+  .hint-toggle:hover { color: var(--accent-amber); }
+  .hint-box {
+    background: rgba(255,184,0,.07);
+    border: 1px solid rgba(255,184,0,.25);
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--accent-amber);
+    display: none;
+  }
+  .hint-box.visible { display: block; }
+
+  /* ── RIGHT PANEL — THEORY SIDEBAR ── */
+  .right-panel {
+    background: var(--bg-panel);
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .theory-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .theory-card-head {
+    padding: 8px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .theory-card-head.cyan  { background: rgba(0,212,255,.12); color: var(--accent-cyan); }
+  .theory-card-head.green { background: rgba(0,255,136,.10); color: var(--accent-green); }
+  .theory-card-head.amber { background: rgba(255,184,0,.10); color: var(--accent-amber); }
+  .theory-card-head.purple{ background: rgba(168,85,247,.12); color: var(--accent-purple); }
+  .theory-card-body { padding: 10px 12px; font-size: 11px; line-height: 1.7; color: var(--text-muted); }
+
+  .tag-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .tag {
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 10px; font-weight: 600;
+    border: 1px solid currentColor;
+  }
+  .tag-mgmt   { color: var(--cat-mgmt); }
+  .tag-ops    { color: var(--cat-ops); }
+  .tag-tech   { color: var(--cat-tech); }
+  .tag-phys   { color: var(--cat-phys); }
+  .tag-prev   { color: var(--fn-prev); }
+  .tag-det    { color: var(--fn-det); }
+  .tag-cor    { color: var(--fn-cor); }
+  .tag-deter  { color: var(--fn-det2); }
+  .tag-dir    { color: var(--fn-dir); }
+  .tag-comp   { color: var(--fn-comp); }
+
+  .eval-row {
+    display: flex; justify-content: space-between;
+    align-items: center; padding: 5px 0;
+    border-bottom: 1px solid var(--border); font-size: 11px;
+  }
+  .eval-row:last-child { border: none; }
+  .eval-key { color: var(--text-muted); }
+  .eval-val { font-family: var(--mono); font-weight: 600; }
+  .eval-pass { color: var(--accent-green); }
+  .eval-fail { color: var(--accent-red); }
+  .eval-pending { color: var(--text-dim); }
+
+  /* Modal overlay */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.75);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999;
+    backdrop-filter: blur(4px);
+  }
+  .modal {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-bright);
+    border-radius: 10px;
+    padding: 28px 32px;
+    max-width: 560px;
+    width: 90%;
+    box-shadow: 0 0 60px rgba(0,212,255,.15);
+  }
+  .modal-title {
+    font-family: var(--display);
+    font-size: 16px;
+    color: var(--accent-cyan);
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .modal-body { font-size: 13px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
+  .modal-score {
+    font-family: var(--display);
+    font-size: 40px;
+    color: var(--accent-green);
+    text-align: center;
+    margin: 14px 0;
+  }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Responsive collapse */
+  @media (max-width: 1100px) {
+    .workspace { grid-template-columns: 220px 1fr; }
+    .right-panel { display: none; }
+  }
+  @media (max-width: 700px) {
+    .workspace { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+
+  /* classification quiz inline */
+  .quiz-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 6px 0; border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .quiz-row:last-child { border: none; }
+  .quiz-control-name { flex: 1; min-width: 160px; color: var(--text-primary); }
+  .quiz-select { flex: 0 0 120px; }
+
+  .ticker {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: .5px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    NETSECLAB
+  </div>
+  <div class="header-meta">
+    <span class="ticker" id="clock">00:00:00</span>
+    <span>NSP-2 · VLAN/VPN Security Controls</span>
+    <span class="badge badge-level">Guided Mode</span>
+  </div>
+</header>
+
+<div class="progress-rail">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<div class="workspace">
+
+  <!-- ── LEFT SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Network Topology</div>
+      <div class="topology-map" id="topoMap">
+        <div class="topo-node" title="Internet/WAN uplink">
+          <span class="topo-icon">🌐</span> WAN Uplink
+          <div class="topo-status status-ok" id="s-wan"></div>
+        </div>
+        <div style="padding-left:12px;color:var(--text-dim)">│</div>
+        <div class="topo-node">
+          <span class="topo-icon">🔥</span> Perimeter FW
+          <div class="topo-status status-ok" id="s-fw"></div>
+        </div>
+        <div style="padding-left:12px;color:var(--text-dim)">│</div>
+        <div class="topo-node">
+          <span class="topo-icon">🔀</span> Core Switch L3
+          <div class="topo-status status-warn" id="s-sw"></div>
+        </div>
+        <div style="padding-left:12px;color:var(--text-dim)">├── </div>
+        <div class="topo-node" style="padding-left:8px">
+          <span class="topo-icon">🏢</span> VLAN 10 — Corp
+          <div class="topo-status status-off" id="s-v10"></div>
+        </div>
+        <div style="padding-left:12px;color:var(--text-dim)">├── </div>
+        <div class="topo-node" style="padding-left:8px">
+          <span class="topo-icon">💻</span> VLAN 20 — Mgmt
+          <div class="topo-status status-off" id="s-v20"></div>
+        </div>
+        <div style="padding-left:12px;color:var(--text-dim)">├── </div>
+        <div class="topo-node" style="padding-left:8px">
+          <span class="topo-icon">📡</span> VLAN 30 — Guest
+          <div class="topo-status status-off" id="s-v30"></div>
+        </div>
+        <div style="padding-left:12px;color:var(--text-dim)">└── </div>
+        <div class="topo-node" style="padding-left:8px">
+          <span class="topo-icon">🛡️</span> VPN Gateway
+          <div class="topo-status status-err" id="s-vpn"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Configuration Steps</div>
+      <div class="step-list" id="stepList"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Session Score</div>
+      <div class="score-panel">
+        <div class="score-row">
+          <span style="color:var(--text-muted)">Completed</span>
+          <span class="score-val" id="scoreComplete">0/10</span>
+        </div>
+        <div class="score-row">
+          <span style="color:var(--text-muted)">Accuracy</span>
+          <span class="score-val" id="scoreAccuracy">—</span>
+        </div>
+        <div class="score-row">
+          <span style="color:var(--text-muted)">Hints Used</span>
+          <span class="score-val" id="scoreHints">0</span>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-fill" id="scoreBar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── CENTER PANEL ── -->
+  <main class="center-panel">
+    <div class="scenario-header">
+      <div class="scenario-title">⚠ INCIDENT BRIEF — ACME FINANCIAL SERVICES INC.</div>
+      <div class="scenario-subtitle">You are the Network Security Specialist. A recent audit uncovered uncontrolled lateral movement across network segments. Configure 10 security controls to remediate.</div>
+    </div>
+
+    <div class="terminal-area" id="terminalArea"></div>
+
+    <div class="input-zone" id="inputZone">
+      <!-- Dynamic content injected here by JS -->
+    </div>
+  </main>
+
+  <!-- ── RIGHT PANEL ── -->
+  <aside class="right-panel">
+    <div class="sidebar-label">Reference — Control Framework</div>
+
+    <div class="theory-card">
+      <div class="theory-card-head cyan">📂 Control Categories</div>
+      <div class="theory-card-body">
+        Controls are organized by <em>who/what</em> manages them:
+        <div class="tag-grid" style="margin-top:8px">
+          <span class="tag tag-mgmt">Managerial</span>
+          <span class="tag tag-ops">Operational</span>
+          <span class="tag tag-tech">Technical</span>
+          <span class="tag tag-phys">Physical</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;line-height:1.8">
+          <b style="color:var(--cat-mgmt)">Managerial:</b> Policies, risk assessments, governance<br>
+          <b style="color:var(--cat-ops)">Operational:</b> People/process — training, procedures<br>
+          <b style="color:var(--cat-tech)">Technical:</b> Software/hardware — firewalls, encryption<br>
+          <b style="color:var(--cat-phys)">Physical:</b> Locks, guards, badge access
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-card">
+      <div class="theory-card-head green">⚙ Functional Types</div>
+      <div class="theory-card-body">
+        Controls are also classified by <em>what they do</em>:
+        <div class="tag-grid" style="margin-top:8px">
+          <span class="tag tag-prev">Preventive</span>
+          <span class="tag tag-det">Detective</span>
+          <span class="tag tag-cor">Corrective</span>
+          <span class="tag tag-deter">Deterrent</span>
+          <span class="tag tag-dir">Directive</span>
+          <span class="tag tag-comp">Compensating</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;line-height:1.8">
+          <b style="color:var(--fn-prev)">Preventive:</b> Stops an attack before it happens<br>
+          <b style="color:var(--fn-det)">Detective:</b> Identifies/alerts when attack occurs<br>
+          <b style="color:var(--fn-cor)">Corrective:</b> Reduces impact after the fact<br>
+          <b style="color:var(--fn-det2)">Deterrent:</b> Discourages attackers<br>
+          <b style="color:var(--fn-dir)">Directive:</b> Specifies required behavior<br>
+          <b style="color:var(--fn-comp)">Compensating:</b> Alternative when primary unavailable
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-card">
+      <div class="theory-card-head amber">🏗 VLAN Quick Ref</div>
+      <div class="theory-card-body" style="font-size:10px;line-height:1.9">
+        <b style="color:var(--text-primary)">VLAN 10</b> — Corporate LAN (192.168.10.0/24)<br>
+        <b style="color:var(--text-primary)">VLAN 20</b> — Management (10.0.20.0/24)<br>
+        <b style="color:var(--text-primary)">VLAN 30</b> — Guest/DMZ (172.16.30.0/24)<br>
+        <br>
+        Trunk ports carry multiple VLANs using 802.1Q tagging. Access ports carry a single VLAN. The native VLAN must be explicitly set to prevent VLAN hopping.
+      </div>
+    </div>
+
+    <div class="theory-card">
+      <div class="theory-card-head purple">🔐 VPN Quick Ref</div>
+      <div class="theory-card-body" style="font-size:10px;line-height:1.9">
+        <b style="color:var(--text-primary)">IKEv2/IPSec</b> — Site-to-Site or Remote Access<br>
+        <b style="color:var(--text-primary)">AES-256-GCM</b> — Recommended cipher suite<br>
+        <b style="color:var(--text-primary)">SHA-256</b> — Integrity hashing<br>
+        <b style="color:var(--text-primary)">DH Group 14+</b> — Key exchange<br>
+        <b style="color:var(--text-primary)">Split Tunneling</b> — Route only corp traffic through VPN; disable for high-security environments<br>
+        <b style="color:var(--text-primary)">Perfect Forward Secrecy</b> — New session keys each tunnel
+      </div>
+    </div>
+
+    <div class="theory-card">
+      <div class="theory-card-head cyan">📊 Step Evaluations</div>
+      <div class="theory-card-body" id="evalPanel">
+        <div class="eval-row"><span class="eval-key">VLAN Segmentation</span><span class="eval-val eval-pending" id="ev-1">–</span></div>
+        <div class="eval-row"><span class="eval-key">Native VLAN Hardening</span><span class="eval-val eval-pending" id="ev-2">–</span></div>
+        <div class="eval-row"><span class="eval-key">ACL Policy</span><span class="eval-val eval-pending" id="ev-3">–</span></div>
+        <div class="eval-row"><span class="eval-key">VPN Protocol</span><span class="eval-val eval-pending" id="ev-4">–</span></div>
+        <div class="eval-row"><span class="eval-key">Cipher Suite</span><span class="eval-val eval-pending" id="ev-5">–</span></div>
+        <div class="eval-row"><span class="eval-key">Auth Method</span><span class="eval-val eval-pending" id="ev-6">–</span></div>
+        <div class="eval-row"><span class="eval-key">IDS/IPS Placement</span><span class="eval-val eval-pending" id="ev-7">–</span></div>
+        <div class="eval-row"><span class="eval-key">Log Destination</span><span class="eval-val eval-pending" id="ev-8">–</span></div>
+        <div class="eval-row"><span class="eval-key">Ctrl Category</span><span class="eval-val eval-pending" id="ev-9">–</span></div>
+        <div class="eval-row"><span class="eval-key">Ctrl Function</span><span class="eval-val eval-pending" id="ev-10">–</span></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- COMPLETION MODAL -->
+<div class="modal-overlay" id="completionModal" style="display:none">
+  <div class="modal">
+    <div class="modal-title">🎉 SIMULATION COMPLETE</div>
+    <div class="modal-score" id="finalScore">0%</div>
+    <div class="modal-body" id="finalSummary"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="document.getElementById('completionModal').style.display='none'">Review</button>
+      <button class="btn btn-primary" onclick="resetSim()">Restart</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+const state = {
+  currentStep: 0,
+  answers: {},
+  attempts: {},
+  hints: 0,
+  startTime: Date.now(),
+  done: false,
+  totalPoints: 0,
+  maxPoints: 100
+};
+
+// ═══════════════════════════════════════════════════
+//  STEPS DEFINITION
+// ═══════════════════════════════════════════════════
+const STEPS = [
+  {
+    id: 1,
+    title: "VLAN Segmentation",
+    shortTitle: "VLAN Setup",
+    category: "Technical → Preventive",
+    brief: "The L3 core switch has all hosts on a flat network (VLAN 1). Configure the three VLANs and assign the correct subnet to each.",
+    hint: "VLAN 10 = Corporate (192.168.10.0/24), VLAN 20 = Management (10.0.20.0/24), VLAN 30 = Guest/DMZ (172.16.30.0/24). Think about which is most sensitive.",
+    type: "vlan_assign",
+    correctAnswer: { v10: "192.168.10.0/24", v20: "10.0.20.0/24", v30: "172.16.30.0/24" },
+    points: 10,
+    successMsg: `[CONFIG APPLIED]
+interface Vlan10
+ ip address 192.168.10.1 255.255.255.0
+ description CORPORATE-LAN
+ no shutdown
+
+interface Vlan20
+ ip address 10.0.20.1 255.255.255.0
+ description MANAGEMENT
+ no shutdown
+
+interface Vlan30
+ ip address 172.16.30.1 255.255.255.0
+ description GUEST-DMZ
+ no shutdown`,
+    failMsg: "Subnet mismatch detected. Review VLAN-to-subnet mapping and re-apply.",
+    feedbackCorrect: "✅ VLAN segmentation complete. Network traffic is now logically separated. This is a TECHNICAL control — it enforces isolation through software-defined boundaries at OSI Layer 2/3. Functionally it is PREVENTIVE: it stops lateral movement before it can occur.",
+    feedbackIncorrect: "❌ Incorrect subnet assignment. VLAN segmentation requires matching each VLAN ID to its designated subnet. Mixing subnets defeats the purpose of isolation."
+  },
+  {
+    id: 2,
+    title: "Native VLAN Hardening",
+    shortTitle: "Native VLAN",
+    category: "Technical → Preventive",
+    brief: "The trunk port is currently using VLAN 1 as the native VLAN — a known VLAN hopping attack vector. Reassign the native VLAN to an unused, dedicated ID and disable DTP.",
+    hint: "Best practice is to assign native VLAN to a VLAN ID that carries NO user traffic (e.g., VLAN 999). Also disable Dynamic Trunking Protocol (DTP) to prevent auto-negotiation attacks.",
+    type: "native_vlan",
+    correctAnswer: { nativeVlan: "999", dtp: "disable" },
+    points: 10,
+    successMsg: `[CONFIG APPLIED]
+interface GigabitEthernet0/1
+ switchport trunk native vlan 999
+ switchport nonegotiate
+ switchport mode trunk
+ description UPLINK-TRUNK`,
+    feedbackCorrect: "✅ Native VLAN hardened. VLAN 999 is unused and carries no traffic, eliminating the double-tagging VLAN hopping vector. Disabling DTP (nonegotiate) prevents rogue trunk negotiation. Category: TECHNICAL. Function: PREVENTIVE.",
+    feedbackIncorrect: "❌ Native VLAN must be an unused VLAN (not 1 or any production VLAN). Using an active VLAN creates double-tagging risk. DTP must also be explicitly disabled."
+  },
+  {
+    id: 3,
+    title: "Inter-VLAN ACL Policy",
+    shortTitle: "ACL Policy",
+    category: "Technical → Preventive",
+    brief: "Configure an ACL to enforce these inter-VLAN rules: ① Guest (VLAN 30) cannot reach Corporate (VLAN 10) or Management (VLAN 20). ② Corporate (VLAN 10) cannot reach Management (VLAN 20) directly. ③ Management (VLAN 20) can reach all VLANs.",
+    hint: "Apply a deny ACE first for the restricted traffic, then permit the rest. Remember ACL processing is top-down, first-match. Management VLAN needs to remain unrestricted.",
+    type: "acl_policy",
+    correctAnswer: { guest_to_corp: "deny", guest_to_mgmt: "deny", corp_to_mgmt: "deny", mgmt_reach: "permit" },
+    points: 10,
+    successMsg: `[ACL CONFIG APPLIED]
+ip access-list extended VLAN30-OUTBOUND
+ deny ip 172.16.30.0 0.0.0.255 192.168.10.0 0.0.0.255
+ deny ip 172.16.30.0 0.0.0.255 10.0.20.0 0.0.0.255
+ permit ip 172.16.30.0 0.0.0.255 any
+
+ip access-list extended VLAN10-OUTBOUND
+ deny ip 192.168.10.0 0.0.0.255 10.0.20.0 0.0.0.255
+ permit ip 192.168.10.0 0.0.0.255 any`,
+    feedbackCorrect: "✅ ACLs applied. Least-privilege traffic flow is enforced. Guest and corporate traffic is restricted from Management. Category: TECHNICAL. Function: PREVENTIVE — traffic is blocked before reaching restricted segments.",
+    feedbackIncorrect: "❌ ACL policy misconfigured. Review the traffic rules carefully. Guest VLAN must be denied access to both Corporate and Management. Corporate must be denied access to Management."
+  },
+  {
+    id: 4,
+    title: "VPN Protocol Selection",
+    shortTitle: "VPN Protocol",
+    category: "Technical → Preventive",
+    brief: "The remote workforce VPN is currently using L2TP without IPSec — an unencrypted configuration. Select the appropriate modern VPN protocol for remote access.",
+    hint: "IKEv2/IPSec is the current recommended standard for remote-access VPN. It provides fast reconnection (MOBIKE), strong authentication, and native encryption. OpenVPN is also acceptable but IKEv2 is preferred for enterprise.",
+    type: "vpn_protocol",
+    correctAnswer: { protocol: "IKEv2/IPSec" },
+    points: 10,
+    successMsg: `[VPN POLICY UPDATED]
+crypto ikev2 proposal ACME-PROPOSAL
+ encryption aes-cbc-256
+ integrity sha256
+ group 14
+
+crypto ikev2 policy ACME-POLICY
+ proposal ACME-PROPOSAL`,
+    feedbackCorrect: "✅ IKEv2/IPSec selected. This protocol provides mutual authentication, PFS, and fast reconnection. Category: TECHNICAL. Function: PREVENTIVE — encrypts remote access traffic before transmission.",
+    feedbackIncorrect: "❌ Incorrect protocol selection. L2TP alone or PPTP are deprecated and insecure. IKEv2/IPSec is the current enterprise standard."
+  },
+  {
+    id: 5,
+    title: "VPN Cipher Suite",
+    shortTitle: "Cipher Suite",
+    category: "Technical → Preventive",
+    brief: "Configure the IPSec transform set with a NIST-approved cipher suite. The current setting uses 3DES with MD5 — both are deprecated.",
+    hint: "AES-256-GCM provides both encryption and authentication (AEAD) and is NIST-approved. For integrity use SHA-256 minimum. DH Group 14 (2048-bit) is the minimum acceptable key exchange.",
+    type: "cipher_suite",
+    correctAnswer: { encryption: "AES-256-GCM", integrity: "SHA-256", dh: "Group 14" },
+    points: 10,
+    successMsg: `[TRANSFORM SET UPDATED]
+crypto ipsec transform-set ACME-TS esp-aes 256 esp-sha256-hmac
+ mode tunnel
+
+crypto ipsec profile ACME-PROFILE
+ set transform-set ACME-TS
+ set pfs group14`,
+    feedbackCorrect: "✅ Cipher suite hardened. AES-256-GCM + SHA-256 + DH Group 14 meets NIST SP 800-131A requirements. PFS ensures each session uses unique keys. Category: TECHNICAL. Function: PREVENTIVE.",
+    feedbackIncorrect: "❌ Weak cipher suite detected. 3DES is deprecated (NIST SP 800-67). MD5 collision vulnerabilities are well documented. Use AES-256 and SHA-256 minimum."
+  },
+  {
+    id: 6,
+    title: "VPN Authentication Method",
+    shortTitle: "VPN Auth",
+    category: "Technical → Preventive",
+    brief: "Configure multi-factor authentication for VPN remote access. The current setup uses username/password only (single factor). Select the appropriate MFA method for enterprise VPN.",
+    hint: "Certificate-based authentication (PKI) combined with a TOTP soft token satisfies MFA for enterprise VPN. This ties something-you-have (cert) with something-you-know/have (TOTP).",
+    type: "vpn_auth",
+    correctAnswer: { primary: "Certificate (PKI)", secondary: "TOTP" },
+    points: 10,
+    successMsg: `[AUTH POLICY UPDATED]
+aaa authentication login VPN-USERS group radius local
+aaa authorization network VPN-GROUP local
+
+crypto ikev2 profile ACME-IKE
+ match identity remote address 0.0.0.0
+ authentication remote rsa-sig
+ authentication local rsa-sig
+ pki trustpoint ACME-CA`,
+    feedbackCorrect: "✅ MFA configured. PKI certificates + TOTP provides two independent factors. This eliminates credential-stuffing attacks against VPN. Category: TECHNICAL. Function: PREVENTIVE — stops unauthorized access before it occurs.",
+    feedbackIncorrect: "❌ MFA configuration incomplete. Single-factor authentication (password only) is insufficient for enterprise VPN. Implement certificate + TOTP or certificate + hardware token."
+  },
+  {
+    id: 7,
+    title: "IDS/IPS Placement",
+    shortTitle: "IDS/IPS",
+    category: "Technical → Detective/Corrective",
+    brief: "Deploy an IDS/IPS sensor on the network. Choose the optimal placement and mode to maximize detection coverage while minimizing false-positive disruption to production traffic.",
+    hint: "For maximum visibility into inter-VLAN traffic, deploy the sensor inline (IPS mode) on the trunk port uplink to the core switch. This inspects all cross-VLAN traffic. Passive tap (IDS mode) is detective only — it cannot block.",
+    type: "ids_placement",
+    correctAnswer: { placement: "Trunk Uplink (Inline)", mode: "IPS" },
+    points: 10,
+    successMsg: `[IPS SENSOR DEPLOYED]
+interface GigabitEthernet0/0
+ description IPS-INLINE-IN
+ ip address 10.0.20.50 255.255.255.0
+
+interface GigabitEthernet0/1
+ description IPS-INLINE-OUT
+ ip address 10.0.20.51 255.255.255.0
+
+-- Inline IPS enabled on VLAN trunk uplink --
+-- Signatures: Lateral Movement, Port Scan, Brute Force --`,
+    feedbackCorrect: "✅ IPS sensor deployed inline on trunk uplink. All inter-VLAN traffic is now inspected and can be actively blocked. Category: TECHNICAL. Inline IPS is both DETECTIVE (identifies threats) and CORRECTIVE (actively blocks in-progress attacks).",
+    feedbackIncorrect: "❌ Incorrect placement or mode. Deploying on a single access port limits visibility to one VLAN. Passive IDS mode can only alert, not block. Inline on trunk uplink provides full coverage."
+  },
+  {
+    id: 8,
+    title: "Centralized Log Destination",
+    shortTitle: "Syslog/SIEM",
+    category: "Technical → Detective",
+    brief: "Configure all network devices (firewall, switch, VPN gateway, IPS) to forward logs to a centralized SIEM. Select the correct protocol, port, and log severity level for security monitoring.",
+    hint: "Syslog over TLS (RFC 5425) on port 6514 provides encrypted log transport. Severity level 6 (Informational) and above captures security-relevant events. The SIEM IP in this environment is 10.0.20.100.",
+    type: "siem_config",
+    correctAnswer: { protocol: "Syslog/TLS", port: "6514", severity: "Informational (6)", destination: "10.0.20.100" },
+    points: 10,
+    successMsg: `[LOGGING CONFIG APPLIED]
+logging host 10.0.20.100 transport tcp port 6514
+logging trap informational
+logging source-interface Vlan20
+logging on
+service timestamps log datetime msec
+
+-- All devices reporting to SIEM: 10.0.20.100 --
+-- Encrypted syslog over TLS port 6514 --`,
+    feedbackCorrect: "✅ Centralized logging active. All security events flow encrypted to the SIEM. Category: TECHNICAL. Function: DETECTIVE — logs do not prevent attacks but enable identification, investigation, and forensic analysis.",
+    feedbackIncorrect: "❌ Logging configuration error. Unencrypted syslog (UDP 514) is vulnerable to interception and log tampering. Use TLS transport. Severity too restrictive misses security events."
+  },
+  {
+    id: 9,
+    title: "Classify by Control Category",
+    shortTitle: "Category Classify",
+    category: "Assessment",
+    brief: "For each of the 4 controls listed below, identify whether it is a Managerial, Operational, Technical, or Physical control.",
+    hint: "Ask yourself: Who or what implements this? Policies/governance = Managerial. People/procedures = Operational. Technology/software/hardware = Technical. Physical barriers = Physical.",
+    type: "classify_category",
+    classifyItems: [
+      { name: "Network Segmentation Policy (written document)", correct: "Managerial" },
+      { name: "Security Awareness Training Program", correct: "Operational" },
+      { name: "Firewall Rule Set", correct: "Technical" },
+      { name: "Server Room Keycard Lock", correct: "Physical" }
+    ],
+    points: 10,
+    feedbackCorrect: "✅ All 4 controls classified correctly by category. Remember the mnemonic MOTP: Managerial → Operational → Technical → Physical. Each layer complements the others in a defense-in-depth strategy.",
+    feedbackIncorrect: "❌ Classification error(s) detected. Review: Policies/governance = Managerial. Procedures/training = Operational. Technology = Technical. Locks/cameras = Physical."
+  },
+  {
+    id: 10,
+    title: "Classify by Functional Type",
+    shortTitle: "Function Classify",
+    category: "Assessment",
+    brief: "For each of the 6 controls listed below, identify the correct functional type: Preventive, Detective, Corrective, Deterrent, Directive, or Compensating.",
+    hint: "Ask: What does this control DO? Stops attacks = Preventive. Finds/alerts = Detective. Fixes after = Corrective. Discourages = Deterrent. Mandates behavior = Directive. Substitute when primary unavailable = Compensating.",
+    type: "classify_function",
+    classifyItems: [
+      { name: "VLAN Segmentation (blocks lateral movement)", correct: "Preventive" },
+      { name: "SIEM/IDS Alerting", correct: "Detective" },
+      { name: "Incident Response Playbook", correct: "Corrective" },
+      { name: "Warning Banner on Login Screen", correct: "Deterrent" },
+      { name: "Acceptable Use Policy", correct: "Directive" },
+      { name: "Manual Log Review (when SIEM offline)", correct: "Compensating" }
+    ],
+    points: 10,
+    feedbackCorrect: "✅ All 6 functional classifications correct! You have demonstrated mastery of the control framework. Controls rarely fit neatly into one box — a single control can serve multiple functions (e.g., a firewall is both Preventive and Detective).",
+    feedbackIncorrect: "❌ Some functional classifications are incorrect. Consider what the control's PRIMARY action is. A SIEM alone doesn't prevent attacks, it detects them. A policy mandates behavior — that's Directive."
+  }
+];
+
+// ═══════════════════════════════════════════════════
+//  INITIALIZE
+// ═══════════════════════════════════════════════════
+function init() {
+  renderStepList();
+  startClock();
+  log("system", `╔═══════════════════════════════════════════════════════╗
+║  ACME FINANCIAL SERVICES — NETWORK SECURITY SIMULATOR  ║
+║  Network Security Specialist Program — Year 2          ║
+╚═══════════════════════════════════════════════════════╝
+
+[09:14:22] AUDIT FINDING: Critical — Uncontrolled lateral movement
+[09:14:22] SOURCE: Internal Penetration Test — Red Team Report RT-2024-09
+[09:14:22] SEVERITY: High (CVSS 8.1)
+
+FINDING SUMMARY:
+  ▸ All hosts reside on a flat network (VLAN 1, 10.0.0.0/8)
+  ▸ No inter-VLAN segmentation enforced at Layer 2/3
+  ▸ Remote VPN using L2TP without IPSec (unencrypted)
+  ▸ VPN single-factor auth (password only) 
+  ▸ No centralized logging to SIEM
+  ▸ IDS/IPS not deployed
+
+REMEDIATION REQUIRED: 10 configuration steps
+OBJECTIVE: Harden network via VLAN segregation + VPN + security controls
+
+[09:14:23] AWAITING TECHNICIAN ACTION — STEP 1 OF 10 READY`);
+
+  setTimeout(() => loadStep(0), 600);
+}
+
+// ═══════════════════════════════════════════════════
+//  STEP LOADER
+// ═══════════════════════════════════════════════════
+function loadStep(idx) {
+  state.currentStep = idx;
+  updateStepList();
+  const step = STEPS[idx];
+  renderStepInput(step);
+  updateProgress();
+
+  log("warn", `─── STEP ${step.id}/10: ${step.title.toUpperCase()} ───
+Category: ${step.category}
+
+${step.brief}`);
+}
+
+// ═══════════════════════════════════════════════════
+//  INPUT RENDERER
+// ═══════════════════════════════════════════════════
+function renderStepInput(step) {
+  const zone = document.getElementById("inputZone");
+
+  let taskHtml = `
+    <div class="config-task">
+      <span class="config-task-icon">⚙</span>
+      <div>
+        <div class="config-task-label">Step ${step.id} of 10 — ${step.title}</div>
+        <div>${step.brief}</div>
+      </div>
+    </div>
+    <div class="control-panel" id="ctrlPanel">
+  `;
+
+  if (step.type === "vlan_assign") {
+    taskHtml += `
+      <div class="ctrl-row">
+        <span class="ctrl-label">VLAN 10 — Corporate</span>
+        <select id="v10">
+          <option value="">-- select subnet --</option>
+          <option>192.168.10.0/24</option>
+          <option>10.0.20.0/24</option>
+          <option>172.16.30.0/24</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">VLAN 20 — Management</span>
+        <select id="v20">
+          <option value="">-- select subnet --</option>
+          <option>192.168.10.0/24</option>
+          <option>10.0.20.0/24</option>
+          <option>172.16.30.0/24</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">VLAN 30 — Guest/DMZ</span>
+        <select id="v30">
+          <option value="">-- select subnet --</option>
+          <option>192.168.10.0/24</option>
+          <option>10.0.20.0/24</option>
+          <option>172.16.30.0/24</option>
+        </select>
+      </div>`;
+  } else if (step.type === "native_vlan") {
+    taskHtml += `
+      <div class="ctrl-row">
+        <span class="ctrl-label">Native VLAN ID</span>
+        <select id="nativeVlan">
+          <option value="">-- select --</option>
+          <option value="1">VLAN 1 (current default)</option>
+          <option value="10">VLAN 10 (Corporate)</option>
+          <option value="999">VLAN 999 (Unused/Blackhole)</option>
+          <option value="20">VLAN 20 (Management)</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">DTP Negotiation</span>
+        <select id="dtp">
+          <option value="">-- select --</option>
+          <option value="enable">Enable (auto-negotiate)</option>
+          <option value="disable">Disable (nonegotiate)</option>
+        </select>
+      </div>`;
+  } else if (step.type === "acl_policy") {
+    taskHtml += `
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Configure traffic direction for each pair:</div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Guest → Corporate</span>
+        <select id="guest_to_corp"><option value="">--</option><option>deny</option><option>permit</option></select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Guest → Management</span>
+        <select id="guest_to_mgmt"><option value="">--</option><option>deny</option><option>permit</option></select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Corporate → Management</span>
+        <select id="corp_to_mgmt"><option value="">--</option><option>deny</option><option>permit</option></select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Management → All VLANs</span>
+        <select id="mgmt_reach"><option value="">--</option><option>deny</option><option>permit</option></select>
+      </div>`;
+  } else if (step.type === "vpn_protocol") {
+    taskHtml += `
+      <div class="ctrl-row">
+        <span class="ctrl-label">VPN Protocol</span>
+        <select id="protocol">
+          <option value="">-- select protocol --</option>
+          <option>PPTP</option>
+          <option>L2TP (no IPSec)</option>
+          <option>L2TP/IPSec</option>
+          <option>IKEv1/IPSec</option>
+          <option>IKEv2/IPSec</option>
+          <option>OpenVPN (TLS)</option>
+          <option>WireGuard</option>
+        </select>
+      </div>`;
+  } else if (step.type === "cipher_suite") {
+    taskHtml += `
+      <div class="ctrl-row">
+        <span class="ctrl-label">Encryption Algorithm</span>
+        <select id="encryption">
+          <option value="">-- select --</option>
+          <option>DES</option>
+          <option>3DES</option>
+          <option>AES-128-CBC</option>
+          <option>AES-256-GCM</option>
+          <option>RC4</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Integrity (HMAC)</span>
+        <select id="integrity">
+          <option value="">-- select --</option>
+          <option>MD5</option>
+          <option>SHA-1</option>
+          <option>SHA-256</option>
+          <option>SHA-512</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">DH Key Exchange</span>
+        <select id="dh">
+          <option value="">-- select --</option>
+          <option>Group 1 (768-bit)</option>
+          <option>Group 2 (1024-bit)</option>
+          <option>Group 5 (1536-bit)</option>
+          <option>Group 14 (2048-bit)</option>
+          <option>Group 19 (256-bit ECC)</option>
+        </select>
+      </div>`;
+  } else if (step.type === "vpn_auth") {
+    taskHtml += `
+      <div class="ctrl-row">
+        <span class="ctrl-label">Primary Auth Factor</span>
+        <select id="primary">
+          <option value="">-- select --</option>
+          <option>Username/Password</option>
+          <option>Certificate (PKI)</option>
+          <option>Pre-Shared Key (PSK)</option>
+          <option>Smart Card</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Secondary Auth Factor</span>
+        <select id="secondary">
+          <option value="">-- select --</option>
+          <option>None (single-factor)</option>
+          <option>TOTP</option>
+          <option>SMS OTP</option>
+          <option>Hardware Token (FIDO2)</option>
+        </select>
+      </div>`;
+  } else if (step.type === "ids_placement") {
+    taskHtml += `
+      <div class="ctrl-row">
+        <span class="ctrl-label">Sensor Placement</span>
+        <select id="placement">
+          <option value="">-- select placement --</option>
+          <option>VLAN 10 Access Port</option>
+          <option>VLAN 30 Access Port</option>
+          <option>Trunk Uplink (Inline)</option>
+          <option>WAN Uplink Only</option>
+          <option>Management Port Mirror</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Sensor Mode</span>
+        <select id="mode">
+          <option value="">-- select mode --</option>
+          <option>IDS (passive/tap)</option>
+          <option>IPS</option>
+          <option>Honeypot</option>
+        </select>
+      </div>`;
+  } else if (step.type === "siem_config") {
+    taskHtml += `
+      <div class="ctrl-row">
+        <span class="ctrl-label">Log Protocol</span>
+        <select id="protocol">
+          <option value="">-- select --</option>
+          <option>Syslog UDP (514)</option>
+          <option>Syslog/TLS</option>
+          <option>SNMP Trap</option>
+          <option>NetFlow</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Port</span>
+        <select id="port">
+          <option value="">-- select --</option>
+          <option>514</option>
+          <option>6514</option>
+          <option>162</option>
+          <option>443</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Min Log Severity</span>
+        <select id="severity">
+          <option value="">-- select --</option>
+          <option>Emergency (0)</option>
+          <option>Alert (1)</option>
+          <option>Critical (2)</option>
+          <option>Error (3)</option>
+          <option>Warning (4)</option>
+          <option>Notice (5)</option>
+          <option>Informational (6)</option>
+          <option>Debug (7)</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">SIEM Destination IP</span>
+        <input type="text" id="destination" placeholder="x.x.x.x" maxlength="15" style="width:130px">
+      </div>`;
+  } else if (step.type === "classify_category") {
+    taskHtml += `<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">Classify each control by its Category:</div>`;
+    step.classifyItems.forEach((item, i) => {
+      taskHtml += `
+        <div class="quiz-row">
+          <span class="quiz-control-name">${item.name}</span>
+          <select class="quiz-select" id="cat_${i}">
+            <option value="">-- category --</option>
+            <option>Managerial</option>
+            <option>Operational</option>
+            <option>Technical</option>
+            <option>Physical</option>
+          </select>
+        </div>`;
+    });
+  } else if (step.type === "classify_function") {
+    taskHtml += `<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">Classify each control by its Functional Type:</div>`;
+    step.classifyItems.forEach((item, i) => {
+      taskHtml += `
+        <div class="quiz-row">
+          <span class="quiz-control-name">${item.name}</span>
+          <select class="quiz-select" id="fn_${i}">
+            <option value="">-- function --</option>
+            <option>Preventive</option>
+            <option>Detective</option>
+            <option>Corrective</option>
+            <option>Deterrent</option>
+            <option>Directive</option>
+            <option>Compensating</option>
+          </select>
+        </div>`;
+    });
+  }
+
+  taskHtml += `</div>`;
+
+  // Hint + actions
+  taskHtml += `
+    <div>
+      <div class="hint-toggle" onclick="showHint(${step.id})">💡 Show Hint (−1 point)</div>
+      <div class="hint-box" id="hint-${step.id}">${step.hint}</div>
+    </div>
+    <div class="ctrl-row">
+      <button class="btn btn-primary" onclick="submitStep(${step.id - 1})">Apply Configuration ▶</button>
+      <button class="btn btn-secondary" onclick="skipStep(${step.id - 1})">Skip (0 pts)</button>
+    </div>
+  `;
+
+  zone.innerHTML = taskHtml;
+}
+
+// ═══════════════════════════════════════════════════
+//  SUBMIT STEP
+// ═══════════════════════════════════════════════════
+function submitStep(idx) {
+  const step = STEPS[idx];
+  if (!state.attempts[idx]) state.attempts[idx] = 0;
+  state.attempts[idx]++;
+
+  const correct = step.type === "classify_category"
+    ? checkClassify(step, "cat_")
+    : step.type === "classify_function"
+    ? checkClassify(step, "fn_")
+    : checkConfig(step);
+
+  const evEl = document.getElementById(`ev-${step.id}`);
+
+  if (correct) {
+    state.totalPoints += step.points;
+    state.answers[idx] = true;
+    if (evEl) { evEl.textContent = "✓ PASS"; evEl.className = "eval-val eval-pass"; }
+    updateTopology(step.id);
+
+    // log config block
+    if (step.successMsg) {
+      log("success", `[STEP ${step.id} COMPLETE — +${step.points} pts]\n${step.successMsg}`);
+    }
+    log("info", step.feedbackCorrect);
+
+    if (idx + 1 < STEPS.length) {
+      setTimeout(() => loadStep(idx + 1), 1200);
+    } else {
+      setTimeout(showCompletion, 1000);
+    }
+  } else {
+    if (evEl && state.attempts[idx] > 1) {
+      evEl.textContent = "✗ RETRY"; evEl.className = "eval-val eval-fail";
+    }
+    log("alert", `[ERROR] Incorrect configuration on Step ${step.id}.\n${step.feedbackIncorrect}\n\nAttempt ${state.attempts[idx]} — Please review and re-apply.`);
+  }
+
+  updateScore();
+}
+
+function checkConfig(step) {
+  const correct = step.correctAnswer;
+  for (const key of Object.keys(correct)) {
+    const el = document.getElementById(key);
+    if (!el) return false;
+    if (el.value !== correct[key]) return false;
+  }
+  return true;
+}
+
+function checkClassify(step, prefix) {
+  for (let i = 0; i < step.classifyItems.length; i++) {
+    const el = document.getElementById(`${prefix}${i}`);
+    if (!el || el.value !== step.classifyItems[i].correct) return false;
+  }
+  return true;
+}
+
+function skipStep(idx) {
+  const step = STEPS[idx];
+  state.answers[idx] = false;
+  const evEl = document.getElementById(`ev-${step.id}`);
+  if (evEl) { evEl.textContent = "SKIP"; evEl.className = "eval-val eval-fail"; }
+  log("neutral", `[STEP ${step.id} SKIPPED — 0 pts]\nCorrect answer:\n${step.hint}`);
+  updateScore();
+  if (idx + 1 < STEPS.length) loadStep(idx + 1);
+  else setTimeout(showCompletion, 800);
+}
+
+// ═══════════════════════════════════════════════════
+//  HINT
+// ═══════════════════════════════════════════════════
+function showHint(stepId) {
+  const box = document.getElementById(`hint-${stepId}`);
+  if (box && !box.classList.contains("visible")) {
+    box.classList.add("visible");
+    state.hints++;
+    // deduct 1 pt from this step (track)
+    document.getElementById("scoreHints").textContent = state.hints;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  TOPOLOGY UPDATER
+// ═══════════════════════════════════════════════════
+function updateTopology(stepId) {
+  const map = {
+    1: ["s-v10", "s-v20", "s-v30"],
+    2: ["s-sw"],
+    3: ["s-fw"],
+    4: ["s-vpn"],
+    5: ["s-vpn"],
+    6: ["s-vpn"],
+    7: [],
+    8: []
+  };
+  const statusMap = {
+    1: "status-ok",
+    2: "status-ok",
+    3: "status-ok",
+    4: "status-warn",
+    5: "status-ok",
+    6: "status-ok",
+  };
+  const targets = map[stepId] || [];
+  const cls = statusMap[stepId] || "status-ok";
+  targets.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.className = `topo-status ${cls}`;
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  SCORE + PROGRESS
+// ═══════════════════════════════════════════════════
+function updateScore() {
+  const completed = Object.keys(state.answers).length;
+  const passed = Object.values(state.answers).filter(Boolean).length;
+  const pct = Math.round((state.totalPoints / state.maxPoints) * 100);
+  document.getElementById("scoreComplete").textContent = `${completed}/10`;
+  document.getElementById("scoreAccuracy").textContent = completed ? `${Math.round(passed / completed * 100)}%` : "—";
+  document.getElementById("scoreBar").style.width = `${pct}%`;
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = ((state.currentStep) / STEPS.length) * 100;
+  document.getElementById("progressBar").style.width = `${pct}%`;
+}
+
+// ═══════════════════════════════════════════════════
+//  STEP LIST
+// ═══════════════════════════════════════════════════
+function renderStepList() {
+  const list = document.getElementById("stepList");
+  list.innerHTML = STEPS.map((s, i) => `
+    <div class="step-item locked" id="stepItem-${i}">
+      <div class="step-num">${s.id}</div>
+      <span>${s.shortTitle}</span>
+    </div>
+  `).join("");
+}
+
+function updateStepList() {
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById(`stepItem-${i}`);
+    if (!el) return;
+    if (state.answers[i] !== undefined && state.answers[i]) {
+      el.className = "step-item done";
+    } else if (i === state.currentStep) {
+      el.className = "step-item active";
+    } else if (i < state.currentStep) {
+      el.className = "step-item";
+    } else {
+      el.className = "step-item locked";
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  TERMINAL LOG
+// ═══════════════════════════════════════════════════
+function log(type, msg) {
+  const area = document.getElementById("terminalArea");
+  const ts = new Date().toLocaleTimeString("en-US", { hour12: false });
+  const entry = document.createElement("div");
+  entry.className = `log-entry ${type}`;
+  entry.innerHTML = `<div class="log-timestamp">[${ts}]</div>${escHtml(msg)}`;
+  area.appendChild(entry);
+  area.scrollTop = area.scrollHeight;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// ═══════════════════════════════════════════════════
+//  CLOCK
+// ═══════════════════════════════════════════════════
+function startClock() {
+  setInterval(() => {
+    const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    const h = String(Math.floor(elapsed / 3600)).padStart(2, "0");
+    const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, "0");
+    const ss = String(elapsed % 60).padStart(2, "0");
+    document.getElementById("clock").textContent = `${h}:${m}:${ss}`;
+  }, 1000);
+}
+
+// ═══════════════════════════════════════════════════
+//  COMPLETION
+// ═══════════════════════════════════════════════════
+function showCompletion() {
+  const passed = Object.values(state.answers).filter(Boolean).length;
+  const pct = Math.round((state.totalPoints / state.maxPoints) * 100);
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+
+  let grade = pct >= 90 ? "A — Distinguished" : pct >= 80 ? "B — Proficient" : pct >= 70 ? "C — Developing" : "D — Needs Review";
+  let feedback = pct >= 90
+    ? "Excellent work. You demonstrated mastery of VLAN segmentation, VPN hardening, and the security control classification framework. You are ready for production deployment scenarios."
+    : pct >= 80
+    ? "Good performance. You understand the core concepts. Review any missed steps — particularly the cipher suite selection and control classification taxonomy."
+    : pct >= 70
+    ? "Adequate understanding demonstrated. Focus on the differences between control categories (Managerial/Operational/Technical/Physical) and functional types (Preventive/Detective/Corrective). Practice the VLAN hopping mitigations."
+    : "Additional study needed. Revisit the VLAN segregation concepts, IPSec VPN configuration, and the security control framework from CompTIA Security+ SY0-701 Domain 3.";
+
+  document.getElementById("finalScore").textContent = `${pct}%`;
+  document.getElementById("finalSummary").innerHTML = `
+    <strong style="color:var(--accent-cyan)">${grade}</strong><br><br>
+    Steps Completed: ${passed}/10 &nbsp;|&nbsp; Points: ${state.totalPoints}/${state.maxPoints}<br>
+    Hints Used: ${state.hints} &nbsp;|&nbsp; Time: ${mins}m ${secs}s<br><br>
+    ${feedback}
+  `;
+  document.getElementById("completionModal").style.display = "flex";
+
+  log("success", `
+╔══════════════════════════════════╗
+║  SIMULATION COMPLETE             ║
+║  Score: ${pct}%  Grade: ${grade}
+║  Points: ${state.totalPoints}/100                 
+╚══════════════════════════════════╝`);
+}
+
+// ═══════════════════════════════════════════════════
+//  RESET
+// ═══════════════════════════════════════════════════
+function resetSim() {
+  state.currentStep = 0;
+  state.answers = {};
+  state.attempts = {};
+  state.hints = 0;
+  state.startTime = Date.now();
+  state.totalPoints = 0;
+  document.getElementById("completionModal").style.display = "none";
+  document.getElementById("terminalArea").innerHTML = "";
+  document.getElementById("scoreComplete").textContent = "0/10";
+  document.getElementById("scoreAccuracy").textContent = "—";
+  document.getElementById("scoreHints").textContent = "0";
+  document.getElementById("scoreBar").style.width = "0%";
+  document.getElementById("progressBar").style.width = "0%";
+  // reset eval panel
+  for (let i = 1; i <= 10; i++) {
+    const el = document.getElementById(`ev-${i}`);
+    if (el) { el.textContent = "–"; el.className = "eval-val eval-pending"; }
+  }
+  // reset topology
+  ["s-v10","s-v20","s-v30"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = "topo-status status-off";
+  });
+  document.getElementById("s-vpn").className = "topo-status status-err";
+  document.getElementById("s-sw").className = "topo-status status-warn";
+  renderStepList();
+  init();
+}
+
+// ── START ──
+init();
+</script>
+</body>
+</html>

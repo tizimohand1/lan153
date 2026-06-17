@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 3: Threat Actors & Attack Surface | CompTIA Security+ SY0-701</title>
+<style>
+/* =============================================
+   DESIGN TOKENS — matches lessons 1 & 2
+   ============================================= */
+:root {
+  --bg:          #ffffff;
+  --bg-soft:     #f7f9f7;
+  --bg-card:     #ffffff;
+  --border:      #d8e4d8;
+  --border-dark: #b2ccb2;
+  --text:        #111111;
+  --text-mid:    #3a4a3a;
+  --text-muted:  #5c6e5c;
+  --green-dark:  #1b5e20;
+  --green:       #2e7d32;
+  --green-mid:   #388e3c;
+  --green-light: #4caf50;
+  --green-pale:  #e8f5e9;
+  --green-pale2: #c8e6c9;
+  --red:         #b71c1c;
+  --red-pale:    #ffebee;
+  --red-mid:     #c62828;
+  --blue:        #1565c0;
+  --blue-pale:   #e3f2fd;
+  --purple:      #6a1b9a;
+  --purple-pale: #f3e5f5;
+  --amber:       #e65100;
+  --amber-pale:  #fff3e0;
+  --threat-red:  #c62828;
+  --threat-bg:   #ffebee;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.13);
+  --radius:      10px;
+  --radius-lg:   16px;
+}
+[data-theme="dark"] {
+  --bg:          #0e120e;
+  --bg-soft:     #141a14;
+  --bg-card:     #1a221a;
+  --border:      #2a3a2a;
+  --border-dark: #3a4e3a;
+  --text:        #e8f0e8;
+  --text-mid:    #b8ccb8;
+  --text-muted:  #7a9a7a;
+  --green-dark:  #81c784;
+  --green:       #4caf50;
+  --green-mid:   #66bb6a;
+  --green-light: #a5d6a7;
+  --green-pale:  #1a2e1a;
+  --green-pale2: #1e3a1e;
+  --red:         #ef9a9a;
+  --red-pale:    #2a1010;
+  --red-mid:     #ef9a9a;
+  --blue:        #90caf9;
+  --blue-pale:   #0d1f35;
+  --purple:      #ce93d8;
+  --purple-pale: #1f0d2a;
+  --amber:       #ffcc80;
+  --amber-pale:  --2a1a00;
+  --threat-red:  #ef9a9a;
+  --threat-bg:   #2a1010;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.30);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.40);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.50);
+}
+
+/* =============================================
+   RESET & BASE
+   ============================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.65; font-size: 16px;
+  transition: background 0.3s, color 0.3s;
+}
+h1,h2,h3,h4 { line-height: 1.25; font-weight: 700; }
+a { color: var(--green); text-decoration: none; }
+a:hover { text-decoration: underline; }
+ul { padding-left: 1.4em; }
+li { margin-bottom: 0.35em; }
+
+/* =============================================
+   HEADER
+   ============================================= */
+header {
+  background: var(--green-dark); color: #fff;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+.header-inner {
+  max-width: 1180px; margin: 0 auto;
+  padding: 14px 24px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.brand-icon {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px; letter-spacing: -0.5px;
+  color: #fff; flex-shrink: 0;
+}
+.brand-info h1 { font-size: 1rem; font-weight: 700; }
+.brand-info p  { font-size: 0.74rem; opacity: 0.7; margin-top: 1px; }
+.header-right  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lesson-badge {
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.28);
+  color: #fff; font-size: 0.7rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.nav-link {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px;
+  transition: background 0.2s; text-decoration: none; display: inline-block;
+}
+.nav-link:hover { background: rgba(255,255,255,0.25); text-decoration: none; }
+.theme-btn {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px; cursor: pointer;
+  transition: background 0.2s;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* =============================================
+   HERO — red-tinged to signal threat domain
+   ============================================= */
+.hero {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 40%, #b71c1c33 100%);
+  color: #fff; padding: 48px 24px 40px;
+  position: relative; overflow: hidden;
+}
+.hero::after {
+  content: '03';
+  position: absolute; right: 40px; bottom: -10px;
+  font-size: 120px; font-weight: 900;
+  opacity: 0.07; line-height: 1; pointer-events: none;
+}
+.hero-inner { max-width: 860px; margin: 0 auto; }
+.hero-eyebrow {
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; opacity: 0.8; margin-bottom: 10px;
+}
+.hero h2 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+.hero-sub { font-size: 1rem; opacity: 0.85; max-width: 640px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.hero-tag {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  font-size: 0.75rem; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px;
+}
+
+/* =============================================
+   LAYOUT
+   ============================================= */
+.page-body { max-width: 1180px; margin: 0 auto; padding: 36px 24px 64px; }
+.section-gap { margin-bottom: 48px; }
+.section-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--green);
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--green-pale2);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: block;
+  width: 4px; height: 16px;
+  background: var(--green); border-radius: 2px;
+}
+
+/* =============================================
+   OBJECTIVES
+   ============================================= */
+.objectives-box {
+  background: var(--green-pale);
+  border: 1px solid var(--green-pale2);
+  border-left: 5px solid var(--green);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+}
+.objectives-box h3 { color: var(--green-dark); margin-bottom: 12px; font-size: 1rem; }
+.objectives-box li { margin-bottom: 8px; color: var(--text-mid); font-size: 0.93rem; }
+.objectives-box li::marker { color: var(--green); }
+
+/* =============================================
+   KEY TERMS
+   ============================================= */
+.terms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.term-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+}
+.term-name { font-weight: 700; font-size: 0.88rem; color: var(--green-dark); margin-bottom: 4px; }
+.term-def  { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; }
+
+/* =============================================
+   INTRO CARD
+   ============================================= */
+.intro-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 5px solid var(--green-light);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px; box-shadow: var(--shadow-sm);
+}
+.intro-card p { color: var(--text-mid); font-size: 0.97rem; line-height: 1.75; }
+.intro-card p + p { margin-top: 12px; }
+
+/* =============================================
+   FLIP CARDS
+   ============================================= */
+.flip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+.flip-wrapper {
+  perspective: 1000px; height: 240px; cursor: pointer;
+}
+.flip-inner {
+  position: relative; width: 100%; height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4,0.2,0.2,1);
+  transform-style: preserve-3d;
+}
+.flip-wrapper.flipped .flip-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back {
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-lg); padding: 24px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border: 1px solid var(--border); box-shadow: var(--shadow-md);
+}
+.flip-front { background: var(--bg-card); }
+.flip-back  { background: var(--green-dark); color: #fff; transform: rotateY(180deg); }
+.flip-num   { font-size: 2.5rem; font-weight: 900; color: var(--green-pale2); line-height: 1; }
+.flip-front h3 { font-size: 1.05rem; color: var(--green-dark); margin-bottom: 6px; }
+.flip-front p  { font-size: 0.82rem; color: var(--text-muted); }
+.flip-hint { font-size: 0.7rem; color: var(--text-muted); }
+.flip-back h3  { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; opacity: 0.9; }
+.flip-back p   { font-size: 0.82rem; opacity: 0.85; line-height: 1.55; flex: 1; }
+.flip-back a.dive-link {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 0.78rem; font-weight: 700;
+  padding: 6px 14px; border-radius: 20px; text-decoration: none;
+  transition: background 0.2s; margin-top: 10px; align-self: flex-start;
+}
+.flip-back a.dive-link:hover { background: rgba(255,255,255,0.28); }
+
+/* =============================================
+   EXTERNAL LAB CARDS
+   ============================================= */
+.external-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+.external-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+}
+.external-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--green-mid);
+}
+.external-card h4 {
+  font-size: 0.92rem;
+  color: var(--green-dark);
+  margin-bottom: 6px;
+}
+.external-card p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+.external-btn {
+  align-self: flex-start;
+  background: var(--green-pale);
+  color: var(--green-dark);
+  border: 1px solid var(--green-pale2);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.external-card:hover .external-btn {
+  background: var(--green-dark);
+  color: #fff;
+}
+
+/* =============================================
+   TOPIC SECTIONS
+   ============================================= */
+.topic-section {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  margin-bottom: 28px; box-shadow: var(--shadow-sm);
+}
+.topic-header {
+  background: var(--green); color: #fff;
+  padding: 18px 28px; display: flex; align-items: center; gap: 14px;
+}
+.topic-header-num {
+  width: 36px; height: 36px; background: rgba(0,0,0,0.2);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 900; flex-shrink: 0;
+}
+.topic-header h3 { font-size: 1.1rem; }
+.topic-header p  { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+.topic-body { padding: 28px; }
+
+.topic-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 18px; }
+.topic-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 18px; }
+
+.concept-block {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.concept-block h4 {
+  font-size: 0.92rem; color: var(--green-dark);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.concept-icon {
+  width: 24px; height: 24px; background: var(--green-pale2);
+  border-radius: 6px; display: inline-flex; align-items: center;
+  justify-content: center; font-size: 13px;
+}
+.concept-block p,
+.concept-block ul { font-size: 0.87rem; color: var(--text-mid); line-height: 1.6; }
+
+/* Threat actor card variant */
+.threat-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+  border-left: 4px solid var(--green);
+}
+.threat-card.high   { border-left-color: var(--red); }
+.threat-card.medium { border-left-color: var(--amber); }
+.threat-card.low    { border-left-color: var(--blue); }
+.threat-card h4 { font-size: 0.92rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.threat-card p  { font-size: 0.84rem; color: var(--text-mid); line-height: 1.55; }
+.threat-level {
+  font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 2px 8px; border-radius: 10px;
+}
+.level-high   { background: var(--threat-bg); color: var(--threat-red); }
+.level-medium { background: var(--amber-pale); color: var(--amber); }
+.level-low    { background: var(--blue-pale); color: var(--blue); }
+
+/* Attack vector table */
+.av-table {
+  width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.85rem;
+}
+.av-table th {
+  background: var(--green-dark); color: #fff;
+  padding: 10px 14px; text-align: left;
+  font-size: 0.8rem; letter-spacing: 0.04em;
+}
+.av-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-mid); vertical-align: top;
+}
+.av-table tr:nth-child(even) td { background: var(--bg-soft); }
+.av-table tr:hover td { background: var(--green-pale); }
+
+/* Social engineering technique tiles */
+.se-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px; margin-top: 16px;
+}
+.se-tile {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+  border-top: 3px solid var(--red);
+}
+.se-tile h4 { font-size: 0.88rem; color: var(--red-mid); margin-bottom: 6px; }
+.se-tile p  { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; }
+
+/* Malware matrix */
+.malware-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px;
+}
+.malware-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.malware-card h4 { font-size: 0.9rem; color: var(--green-dark); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.malware-card p  { font-size: 0.84rem; color: var(--text-mid); line-height: 1.55; }
+.malware-card ul { font-size: 0.83rem; color: var(--text-mid); margin-top: 6px; }
+
+/* Password attacks table */
+.pw-table {
+  width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.84rem;
+}
+.pw-table th {
+  background: var(--green-dark); color: #fff;
+  padding: 10px 14px; text-align: left; font-size: 0.8rem;
+}
+.pw-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-mid); vertical-align: top;
+}
+.pw-table tr:nth-child(even) td { background: var(--bg-soft); }
+.pw-table tr:hover td { background: var(--green-pale); }
+
+/* Callouts */
+.callout {
+  background: var(--green-pale); border-left: 4px solid var(--green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px;
+  font-size: 0.87rem; color: var(--text-mid);
+}
+.callout strong { color: var(--green-dark); }
+.callout-red {
+  background: var(--threat-bg); border-left: 4px solid var(--threat-red);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px;
+  font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-red strong { color: var(--threat-red); }
+.callout-amber {
+  background: var(--amber-pale); border-left: 4px solid var(--amber);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px;
+  font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-amber strong { color: var(--amber); }
+
+/* =============================================
+   ACTIVITY COMMON
+   ============================================= */
+.activity-box {
+  background: var(--bg-card); border: 2px solid var(--green-pale2);
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md);
+}
+.activity-header {
+  background: var(--green-dark); color: #fff;
+  padding: 16px 24px; display: flex; align-items: center; gap: 12px;
+}
+.activity-badge {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+  font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.activity-header h3 { font-size: 1rem; }
+.activity-body { padding: 24px; }
+.activity-instructions {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 16px;
+  font-size: 0.85rem; color: var(--text-mid); margin-bottom: 20px;
+}
+.btn-primary {
+  background: var(--green-dark); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--green); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--bg-soft); color: var(--text);
+  border: 1px solid var(--border-dark); padding: 10px 22px;
+  border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: var(--border); }
+.activity-result {
+  margin-top: 14px; padding: 12px 16px; border-radius: var(--radius);
+  font-size: 0.88rem; font-weight: 600; display: none;
+}
+.result-pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.result-fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+
+/* =============================================
+   ACTIVITY 1 — THREAT ACTOR MATCHER
+   drag pool + drop zones
+   ============================================= */
+.drag-pool {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 24px; min-height: 60px;
+  background: var(--bg-soft); border: 1px dashed var(--border-dark);
+  border-radius: var(--radius); padding: 14px;
+}
+.drag-item {
+  background: var(--green-dark); color: #fff;
+  padding: 8px 14px; border-radius: 20px;
+  font-size: 0.82rem; font-weight: 600;
+  cursor: grab; user-select: none;
+  transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.drag-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.drag-item.dragging { opacity: 0.4; }
+.drop-zones-4 {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+}
+.drop-zone {
+  border: 2px dashed var(--border-dark); border-radius: var(--radius);
+  padding: 12px; min-height: 120px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.drop-zone.drag-over { border-color: var(--green); background: var(--green-pale); }
+.drop-zone-label {
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-muted);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.dz-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dot-nation  { background: var(--red); }
+.dot-cyber   { background: var(--purple); }
+.dot-insider { background: var(--amber); }
+.dot-script  { background: var(--blue); }
+.dropped-item {
+  display: inline-block; padding: 5px 12px; border-radius: 20px;
+  font-size: 0.78rem; font-weight: 600; margin: 3px;
+}
+.dropped-item.correct   { background: var(--green-pale2); color: var(--green-dark); border: 1px solid var(--green); }
+.dropped-item.incorrect { background: var(--red-pale); color: var(--red); border: 1px solid var(--red); animation: shake 0.35s; }
+.dropped-item .rm { margin-left: 6px; cursor: pointer; opacity: 0.6; }
+.dropped-item .rm:hover { opacity: 1; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.activity-actions { margin-top: 18px; display: flex; gap: 10px; align-items: center; }
+
+/* =============================================
+   ACTIVITY 2 — ATTACK CHAIN SCENARIO
+   ============================================= */
+.scenario-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.scenario-tab {
+  background: var(--bg-soft); border: 1px solid var(--border-dark);
+  color: var(--text-mid); padding: 8px 16px; border-radius: 20px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.scenario-tab.active, .scenario-tab:hover {
+  background: var(--green-dark); color: #fff; border-color: var(--green-dark);
+}
+.scenario-panel { display: none; }
+.scenario-panel.active { display: block; }
+.scenario-desc-box {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px; margin-bottom: 16px;
+}
+.scenario-title { font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 8px; }
+.scenario-body  { font-size: 0.88rem; color: var(--text-mid); line-height: 1.6; }
+.chain-questions { display: flex; flex-direction: column; gap: 12px; }
+.chain-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.chain-q-text { font-size: 0.9rem; font-weight: 600; margin-bottom: 10px; color: var(--text); }
+.chain-opts { display: flex; flex-direction: column; gap: 7px; }
+.chain-opt {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 12px; background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: 8px;
+  cursor: pointer; font-size: 0.86rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.chain-opt:hover { background: var(--green-pale); border-color: var(--green-light); }
+.chain-opt input { flex-shrink: 0; margin-top: 2px; accent-color: var(--green); }
+.chain-opt.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.chain-opt.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.chain-fb {
+  margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+  font-size: 0.84rem; display: none;
+}
+.chain-fb.show { display: block; }
+.chain-fb.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.chain-fb.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+
+/* =============================================
+   QUIZ
+   ============================================= */
+.quiz-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 16px; transition: border-color 0.3s;
+}
+.quiz-q.answered-correct { border-color: var(--green); background: var(--green-pale); }
+.quiz-q.answered-wrong   { border-color: var(--red);   background: var(--red-pale); }
+.q-num  { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+.q-text { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.45; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-option {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px; background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  cursor: pointer; font-size: 0.88rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.q-option:hover { background: var(--green-pale); border-color: var(--green-light); }
+.q-option input[type="radio"] { margin-top: 1px; flex-shrink: 0; accent-color: var(--green); }
+.q-option.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.q-option.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.q-feedback {
+  margin-top: 12px; padding: 12px 16px; border-radius: var(--radius);
+  font-size: 0.85rem; line-height: 1.55; display: none;
+}
+.q-feedback.show { display: block; }
+.q-feedback.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.q-feedback.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.quiz-submit-row { margin-top: 20px; display: flex; align-items: center; gap: 14px; }
+#quiz-result {
+  padding: 18px 24px; border-radius: var(--radius-lg);
+  font-size: 1rem; font-weight: 700; display: none; margin-top: 20px;
+}
+.quiz-pass { background: var(--green-pale); color: var(--green-dark); border: 2px solid var(--green-pale2); }
+.quiz-fail { background: var(--red-pale); color: var(--red); border: 2px solid #ffcdd2; }
+
+/* =============================================
+   FOOTER
+   ============================================= */
+.page-footer {
+  background: var(--bg-soft); border-top: 1px solid var(--border);
+  padding: 24px; text-align: center;
+  font-size: 0.78rem; color: var(--text-muted);
+}
+.footer-nav {
+  display: flex; justify-content: center; gap: 20px;
+  margin-bottom: 12px; flex-wrap: wrap;
+}
+.footer-nav a { color: var(--green); font-weight: 600; font-size: 0.85rem; }
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+  .hero h2 { font-size: 1.4rem; }
+  .topic-grid, .topic-grid-3, .malware-grid, .drop-zones-4, .external-grid { grid-template-columns: 1fr; }
+  .flip-grid { grid-template-columns: 1fr; }
+  .se-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 500px) {
+  .se-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="brand-icon">S+</div>
+      <div class="brand-info">
+        <h1>CompTIA Security+ SY0-701</h1>
+        <p>Lesson 3 of 12 &mdash; Threat Actors &amp; Attack Surface</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="lesson-badge">Day 3</span>
+      <a href="index.html" class="nav-link">&#8592; Course Home</a>
+      <a href="lesson02.html" class="nav-link">&#8592; Lesson 2</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Lesson 3 &mdash; Threats, Vulnerabilities &amp; Mitigations (22% of exam)</div>
+    <h2>Threat Actors &amp; Attack Surface</h2>
+    <p class="hero-sub">Who attacks organizations, why they do it, how they get in, and what they bring with them — threat actor classification, attack vectors, social engineering, malware categories, and password attack techniques.</p>
+    <div class="hero-meta">
+      <span class="hero-tag">📖 4 Topics</span>
+      <span class="hero-tag">🎯 2 Activities</span>
+      <span class="hero-tag">📝 5-Question Quiz</span>
+      <span class="hero-tag">⏱ ~60 min</span>
+      <span class="hero-tag">Domain: Threats, Vulnerabilities &amp; Mitigations</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <div class="section-gap">
+    <div class="section-label">Learning Objectives</div>
+    <div class="objectives-box">
+      <h3>By the end of this lesson, you will be able to:</h3>
+      <ul>
+        <li>Classify threat actor types by their characteristics, capabilities, motivation, and level of sophistication.</li>
+        <li>Explain how supply chain attacks compromise targets indirectly through trusted vendors or software dependencies.</li>
+        <li>Identify common attack vectors and describe how each one is used to gain initial access to a target environment.</li>
+        <li>Distinguish among social engineering tactics — including phishing, vishing, smishing, and pretexting — and recognize indicators of each.</li>
+        <li>Categorize common malware families by their behavior, propagation method, and primary objective.</li>
+        <li>Compare password attack techniques and recommend appropriate countermeasures for each type.</li>
+        <li>Apply threat actor profiling to a real-world attack scenario and recommend appropriate mitigations aligned to the attack vector used.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Key Terms</div>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">Threat Actor</div>
+        <div class="term-def">Any individual, group, or entity that poses a risk to an organization's information assets. Characterized by intent, capability, and access. Also called a threat agent or adversary.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Attack Surface</div>
+        <div class="term-def">The total sum of all entry points and exposure points through which an unauthorized user could attempt to gain access to a system — including network interfaces, applications, APIs, users, and physical access points.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Phishing</div>
+        <div class="term-def">A social engineering attack delivered primarily via email that impersonates a trusted entity to deceive users into revealing credentials, clicking malicious links, or downloading malware. The most common initial access vector in modern breaches.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Ransomware</div>
+        <div class="term-def">Malware that encrypts the victim's files or entire system and demands payment — typically in cryptocurrency — in exchange for a decryption key. Modern ransomware actors also exfiltrate data as leverage (double extortion).</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Supply Chain Attack</div>
+        <div class="term-def">An attack that targets a less-secure vendor, supplier, or software dependency to compromise its downstream customers. The attacker inserts malicious code or components into a trusted product before it reaches the victim organization.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Insider Threat</div>
+        <div class="term-def">A threat originating from current or former employees, contractors, or business partners who have — or had — authorized access to organizational systems and exploit that access maliciously or negligently.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Zero-Day</div>
+        <div class="term-def">A previously unknown software vulnerability for which no vendor patch exists at the time of exploitation. Zero-day exploits are highly valuable to sophisticated threat actors because defenses cannot rely on signature-based detection.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Social Engineering</div>
+        <div class="term-def">A category of attacks that manipulate human psychology — rather than exploiting technical vulnerabilities — to deceive users into performing actions that compromise security, such as revealing passwords or granting access.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Course Introduction</div>
+    <div class="intro-card">
+      <p>In Lessons 1 and 2, you built the conceptual and cryptographic foundation of security. Now it's time to think like the adversary. Every security control you will study for the rest of this course exists because of a specific threat actor with a specific goal using a specific technique. Understanding who attacks organizations — their motivations, tools, and methods — is what transforms a technician who configures firewalls into a security professional who understands <em>why</em> the firewall rules are what they are.</p>
+      <p>The Threats, Vulnerabilities, and Mitigations domain carries 22% of the Security+ exam — the second-highest weight. CompTIA tests this domain almost entirely through scenario-based questions: you will read a brief incident description and be asked to identify the threat actor type, the attack vector used, or the most appropriate mitigation. The vocabulary and frameworks in this lesson are the prerequisite for answering every one of those questions correctly.</p>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Topic Navigation — Click a Card to Explore</div>
+    <div class="flip-grid">
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">01</div>
+              <h3>Threat Actors &amp; Motivations</h3>
+              <p>Nation-states, cybercriminals, hacktivists, insiders, and script kiddies — who they are and what drives them.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Threat Actors &amp; Motivations</h3>
+              <p>Threat actors range from nation-state APTs with unlimited resources to opportunistic script kiddies running downloaded tools. Their motivations include financial gain, espionage, ideology, revenge, and notoriety. Matching actor to motivation predicts behavior.</p>
+            </div>
+            <a class="dive-link" href="lesson03-part01.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">02</div>
+              <h3>Attack Vectors &amp; Social Engineering</h3>
+              <p>How attackers get in — from phishing emails and malicious USBs to supply chain compromises and social manipulation.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Attack Vectors &amp; Social Engineering</h3>
+              <p>Attack vectors are the pathways adversaries use to reach their target. Phishing remains the #1 initial access method. Social engineering exploits human psychology — urgency, authority, trust — rather than technical flaws. Supply chain vectors bypass perimeter defenses entirely.</p>
+            </div>
+            <a class="dive-link" href="lesson03-part02.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">03</div>
+              <h3>Malware &amp; Password Attacks</h3>
+              <p>Ransomware, trojans, rootkits, spyware, and more — plus brute force, credential stuffing, and rainbow table attacks.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Malware &amp; Password Attacks</h3>
+              <p>Malware is software designed to damage, disrupt, or gain unauthorized access. Each type has a distinct behavior profile. Password attacks target the weakest link in authentication — from offline dictionary attacks to spraying against cloud identity providers.</p>
+            </div>
+            <a class="dive-link" href="lesson03-part03.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Complementary External Labs</div>
+    <div class="external-grid">
+
+      <div class="external-card">
+        <div>
+          <h4>Threat Actors</h4>
+          <p>Explore an interactive analysis of profiles, operational capabilities, and geopolitical agendas defining modern adversaries.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/ThreatActors/ThreatActors.html" target="_blank" class="external-btn">Launch Module →</a>
+      </div>
+
+      <div class="external-card">
+        <div>
+          <h4>Social Engineering Tactics</h4>
+          <p>Break down human manipulation mechanics, psychological levers, and exploitation scenarios used to bypass authorization systems.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/SocialEngineeringTactics/SocialEngineeringTactics.html" target="_blank" class="external-btn">Launch Module →</a>
+      </div>
+
+      <div class="external-card">
+        <div>
+          <h4>Types of Attacks</h4>
+          <p>Investigate a master matrix of infrastructure compromises, physical boundary test approaches, and logic failure attack methodologies.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/attacks/attacks.html" target="_blank" class="external-btn">Launch Module →</a>
+      </div>
+
+      <div class="external-card">
+        <div>
+          <h4>Social Engineering</h4>
+          <p>Examine simulated frontline case studies detailing defensive recognition rules against targeted deceptive messaging vectors.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/social_engineering/social_engineering.html" target="_blank" class="external-btn">Launch Module →</a>
+      </div>
+
+      <div class="external-card">
+        <div>
+          <h4>Cross-site Scripting</h4>
+          <p>Walk through structural sandbox tests showing script payload entry points and browser execution hazards on target domains.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/crosssitescripting/crosssitescripting.html" target="_blank" class="external-btn">Launch Module →</a>
+      </div>
+
+      <div class="external-card">
+        <div>
+          <h4>Ransomware</h4>
+          <p>Trace file system payload executions, encryption handshakes, and lateral staging tactics that dominate extortion operational flows.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/ransomware/RansomwareAttack.html" target="_blank" class="external-btn">Launch Module →</a>
+      </div>
+
+      <div class="external-card">
+        <div>
+          <h4>Spoofing</h4>
+          <p>Analyze validation anomalies across networking protocols, lookup systems, and identity header templates enabling origin deception.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/spoofing1/spoofing1.html" target="_blank" class="external-btn">Launch Module →</a>
+      </div>
+
+      <div class="external-card">
+        <div>
+          <h4>Heart-Bleed</h4>
+          <p>Deconstruct the famous protocol bounds failure that allowed covert process memory exfiltration through faulty response configurations.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/heartbleed/heartbleed.html" target="_blank" class="external-btn">Launch Module →</a>
+      </div>
+
+      <div class="external-card">
+        <div>
+          <h4>Stuxnet</h4>
+          <p>Examine the highly engineered, multi-layered air-gap breakthrough design that defined automated infrastructure sabotage milestones.</p>
+        </div>
+        <a href="https://d2hie3dpn9wvbb.cloudfront.net/stuxnet/stuxnet.html" target="_blank" class="external-btn">Launch Module →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Topic 1 Content</div>
+    <div class="topic-section">
+      <div class="topic-header">
+        <div class="topic-header-num">1</div>
+        <div>
+          <h3>Threat Actors &amp; Motivations</h3>
+          <p>Who attacks organizations, what drives them, and how their capabilities differ</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:20px;">Effective defense begins with understanding your adversary. Security+ expects you to match threat actor types to their defining characteristics — particularly their <strong>motivation</strong>, <strong>sophistication</strong>, <strong>funding level</strong>, and <strong>typical target profile</strong>. These factors directly influence the tools, techniques, and procedures (TTPs) an actor employs.</p>
+
+        <div class="topic-grid">
+          <div class="threat-card high">
+            <h4>🏛 Nation-State / Advanced Persistent Threat (APT) <span class="threat-level level-high">High Threat</span></h4>
+            <p><strong>Motivation:</strong> Espionage, sabotage, intellectual property theft, geopolitical advantage.<br>
+            <strong>Funding:</strong> Government-backed — essentially unlimited resources.<br>
+            <strong>Sophistication:</strong> Highest. Develop zero-day exploits, custom malware, and conduct long-dwell-time intrusions (months to years).<br>
+            <strong>Examples:</strong> APT29 (Cozy Bear / Russia), APT41 (China), Lazarus Group (North Korea).<br>
+            <strong>Key behavior:</strong> Patient, stealthy, persistent. Goal is intelligence collection or pre-positioning for future disruption rather than immediate financial gain.</p>
+          </div>
+          <div class="threat-card high">
+            <h4>💰 Organized Cybercriminals <span class="threat-level level-high">High Threat</span></h4>
+            <p><strong>Motivation:</strong> Financial gain — ransomware, banking trojans, fraud, data theft for sale.<br>
+            <strong>Funding:</strong> Self-funding through criminal proceeds; operate like businesses.<br>
+            <strong>Sophistication:</strong> High to very high. Use Ransomware-as-a-Service (RaaS) platforms, purchase zero-days, and operate affiliate networks.<br>
+            <strong>Examples:</strong> LockBit, ALPHV/BlackCat, FIN7.<br>
+            <strong>Key behavior:</strong> Profit-driven with rapid escalation. Double extortion (encrypt + threaten to publish data) is now standard operating procedure.</p>
+          </div>
+          <div class="threat-card medium">
+            <h4>🔰 Hacktivist <span class="threat-level level-medium">Medium Threat</span></h4>
+            <p><strong>Motivation:</strong> Ideology, political causes, social activism. Want to embarrass, disrupt, or publicize a message.<br>
+            <strong>Funding:</strong> Minimal — loosely coordinated volunteers.<br>
+            <strong>Sophistication:</strong> Low to medium. Primarily DDoS attacks, website defacement, and public data dumps. Rarely pursue persistent access.<br>
+            <strong>Examples:</strong> Anonymous, KillNet.<br>
+            <strong>Key behavior:</strong> Opportunistic targeting tied to current events. Noisy — they want publicity rather than stealth.</p>
+          </div>
+          <div class="threat-card medium">
+            <h4>😤 Insider Threat <span class="threat-level level-medium">Medium–High Threat</span></h4>
+            <p><strong>Motivation:</strong> Financial gain, revenge, coercion, espionage, or simple negligence.<br>
+            <strong>Funding:</strong> Not applicable — they already have authorized access.<br>
+            <strong>Sophistication:</strong> Variable. The most dangerous aspect is <em>legitimate access</em> — they bypass perimeter controls entirely.<br>
+            <strong>Types:</strong> Malicious (intentional harm), Negligent (accidental data exposure), Compromised (account hijacked by external actor).<br>
+            <strong>Key behavior:</strong> Difficult to detect because activity blends with normal operations. Behavioral analytics (UEBA) is the primary detection tool.</p>
+          </div>
+          <div class="threat-card low">
+            <h4>🎮 Script Kiddie <span class="threat-level level-low">Lower Threat</span></h4>
+            <p><strong>Motivation:</strong> Notoriety, curiosity, thrill-seeking — no sophisticated agenda.<br>
+            <strong>Funding:</strong> None. Use freely available tools (Metasploit, Kali scripts).<br>
+            <strong>Sophistication:</strong> Low. Cannot develop their own tools; rely entirely on public exploits.<br>
+            <strong>Key behavior:</strong> Opportunistic — target organizations with known unpatched vulnerabilities. Noisy and easy to detect. Still dangerous at scale — patch management defeats most script kiddie attacks.</p>
+          </div>
+          <div class="threat-card low">
+            <h4>🕵️ Competitor / Corporate Spy <span class="threat-level level-low">Situational Threat</span></h4>
+            <p><strong>Motivation:</strong> Industrial espionage — steal trade secrets, R&amp;D data, customer lists, pricing strategies, or merger/acquisition plans.<br>
+            <strong>Funding:</strong> Variable — sometimes backed by a competing organization.<br>
+            <strong>Sophistication:</strong> Medium. May hire professional penetration testers or use social engineering (honey trapping, pretexting) rather than technical attacks.<br>
+            <strong>Key behavior:</strong> Targeted — focused on specific intellectual property rather than broad network compromise.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:22px;">
+          <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:12px;">Supply Chain Attacks — The Indirect Path</h4>
+          <div class="concept-block">
+            <p>A supply chain attack exploits the trust relationship between an organization and its vendors, suppliers, or software providers. Instead of attacking the hardened perimeter of a major enterprise directly, the adversary compromises a smaller, less-defended supplier and inserts a malicious payload that rides along with a legitimate update or product delivery.</p>
+            <ul style="margin-top:10px;">
+              <li><strong>SolarWinds (2020):</strong> Nation-state actors (APT29/Cozy Bear) inserted malicious code into an update of the Orion IT monitoring platform. The trojanized update was digitally signed by SolarWinds and distributed to ~18,000 customers — including U.S. federal agencies and Fortune 500 companies. The malware remained dormant for weeks to evade sandbox detection, then established covert C2 channels.</li>
+              <li><strong>3CX Supply Chain Attack (2023):</strong> A trojanized installer for the 3CX VoIP application was distributed through the vendor's official update mechanism, itself a supply chain attack of a supply chain attack (the upstream compromise was a financial software package).</li>
+              <li><strong>Why it's devastating:</strong> Organizations trust their vendors' signed software. Traditional defenses (perimeter firewalls, antivirus) see the malicious payload as legitimate. Software Bill of Materials (SBOM) and vendor risk management programs are the primary defenses.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout-red">
+          <strong>Exam Focus — Attribute the Actor:</strong> CompTIA scenario questions frequently describe attack characteristics and ask you to identify the threat actor type. Key signals: <em>long dwell time + stealth + government target</em> = Nation-State APT. <em>Ransomware + cryptocurrency demand</em> = Organized Cybercriminal. <em>Website defacement + political message</em> = Hacktivist. <em>Authorized access + data exfiltration</em> = Insider Threat.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Topic 2 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-dark);">
+        <div class="topic-header-num">2</div>
+        <div>
+          <h3>Attack Vectors &amp; Social Engineering</h3>
+          <p>The pathways attackers use to reach their targets — technical and human</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">An <strong>attack vector</strong> is the specific pathway or mechanism a threat actor uses to gain unauthorized access. Understanding vectors is essential because defenses are designed to close specific vectors — a firewall closes network vectors but does nothing against a phishing email that tricks a user into voluntarily handing over credentials.</p>
+
+        <table class="av-table">
+          <thead>
+            <tr>
+              <th style="width:18%">Vector</th>
+              <th style="width:22%">How It Works</th>
+              <th style="width:30%">Real-World Examples</th>
+              <th>Primary Mitigation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Email / Phishing</strong></td>
+              <td>Malicious link or attachment delivered via email, impersonating a trusted sender</td>
+              <td>Business Email Compromise (BEC), spear-phishing targeting executives, fake invoice scams</td>
+              <td>Email filtering, DMARC/DKIM/SPF, security awareness training, MFA</td>
+            </tr>
+            <tr>
+              <td><strong>Web / Watering Hole</strong></td>
+              <td>Attacker compromises a website the target is known to visit; malicious code executes on visit</td>
+              <td>Drive-by downloads, malvertising, JavaScript injections on industry news sites</td>
+              <td>Web proxies, content filtering, browser hardening, patch management</td>
+            </tr>
+            <tr>
+              <td><strong>Removable Media</strong></td>
+              <td>Malicious USB drive left in a parking lot or common area; victim plugs it in</td>
+              <td>Stuxnet propagated via USB; "USB drop" social engineering in physical penetration tests</td>
+              <td>USB port restrictions via GPO, endpoint DLP, user training</td>
+            </tr>
+            <tr>
+              <td><strong>Supply Chain</strong></td>
+              <td>Malicious code inserted into a trusted vendor's software or hardware supply before delivery</td>
+              <td>SolarWinds Orion (2020), 3CX Desktop App (2023), compromised hardware components</td>
+              <td>SBOM, vendor risk assessments, code signing verification, network segmentation</td>
+            </tr>
+            <tr>
+              <td><strong>Vulnerable Services</strong></td>
+              <td>Directly exploiting unpatched network-exposed services (RDP, VPN, web applications)</td>
+              <td>CVE exploitation of outdated Exchange servers, Log4Shell, ProxyLogon</td>
+              <td>Patch management, vulnerability scanning, attack surface reduction, WAF</td>
+            </tr>
+            <tr>
+              <td><strong>Physical Access</strong></td>
+              <td>Direct physical intrusion — tailgating, social engineering security guards, using found credentials</td>
+              <td>Attacker plugs a rogue device into a network port; dumpster diving for discarded documents</td>
+              <td>Badge access controls, visitor management, clean desk policy, security guards</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:24px;">
+          <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">Social Engineering Tactics — The Human Attack Surface</h4>
+          <p style="font-size:0.87rem;color:var(--text-mid);margin-bottom:14px;">Social engineering is the art of manipulating people into violating security policies. It is the most effective initial access technique because it bypasses all technical controls — no firewall, IDS, or encryption protects against a user who voluntarily types their password into a fake login page. Security+ tests specific technique names and their distinguishing characteristics.</p>
+          <div class="se-grid">
+            <div class="se-tile">
+              <h4>🎣 Phishing</h4>
+              <p>Mass-distributed deceptive emails impersonating trusted organizations (banks, Microsoft, HR). Goal: steal credentials, deliver malware, or harvest personal data. Uses urgency and fear ("Your account will be suspended in 24 hours").</p>
+            </div>
+            <div class="se-tile">
+              <h4>🎯 Spear Phishing</h4>
+              <p>Highly targeted phishing using personal research — the attacker knows the victim's name, role, colleagues, and projects. Far higher success rate than generic phishing. Whaling = spear phishing targeting C-suite executives.</p>
+            </div>
+            <div class="se-tile">
+              <h4>📞 Vishing</h4>
+              <p>Voice phishing — phone calls impersonating IT support, the IRS, bank fraud departments, or HR. AI voice cloning is now used to impersonate known individuals. Attacker uses urgency and authority to extract information or actions.</p>
+            </div>
+            <div class="se-tile">
+              <h4>📱 Smishing</h4>
+              <p>SMS-based phishing — malicious links delivered via text message. Exploits the higher trust users place in SMS vs. email and the fact that SMS lacks the same filtering infrastructure as corporate email gateways.</p>
+            </div>
+            <div class="se-tile">
+              <h4>🎭 Pretexting</h4>
+              <p>Creating a fabricated scenario (pretext) to justify an unusual request. Example: calling an employee claiming to be an auditor who needs their login to resolve a compliance emergency. The scenario provides psychological cover for the victim's compliance.</p>
+            </div>
+            <div class="se-tile">
+              <h4>🎁 Baiting</h4>
+              <p>Luring victims with something appealing — a free USB drive, software download, or prize. The "gift" contains malware. Physical baiting (dropping USB drives in parking lots) is surprisingly effective; studies show ~45% of dropped drives get plugged in.</p>
+            </div>
+            <div class="se-tile">
+              <h4>🚪 Tailgating / Piggybacking</h4>
+              <p>Following an authorized person through a secured door without using credentials. Exploits politeness — most people hold doors for others. Piggybacking = victim is aware and consents (still a security violation). Defeated by mantraps and security awareness.</p>
+            </div>
+            <div class="se-tile">
+              <h4>🔄 Business Email Compromise (BEC)</h4>
+              <p>Attacker impersonates a CEO or CFO (via account takeover or domain spoofing) and instructs finance staff to initiate an urgent wire transfer. FBI reports over $50B in losses globally. Authentication: verify large transfers via a known phone number — not email.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout-amber">
+          <strong>Psychological Principles Attackers Exploit:</strong> Social engineering attacks consistently leverage the same psychological triggers — <strong>Authority</strong> (I'm your IT manager), <strong>Urgency</strong> (act now before your account is locked), <strong>Scarcity</strong> (limited time offer), <strong>Social Proof</strong> (everyone else already submitted their credentials), <strong>Reciprocity</strong> (I did you a favor — now help me), and <strong>Familiarity/Liking</strong> (I'm a friend of your colleague). Recognizing these triggers is the first step in resisting them.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Topic 3 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-mid);">
+        <div class="topic-header-num">3</div>
+        <div>
+          <h3>Malware Categories</h3>
+          <p>Software designed to damage, disrupt, or gain unauthorized access — classified by behavior and objective</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Malware is not a single thing — it is a taxonomy of software tools, each designed for a specific purpose. Security+ requires you to identify malware types by their defining behavioral characteristics, not just by name. In the wild, most sophisticated attacks use multiple malware types in combination.</p>
+
+        <div class="malware-grid">
+          <div class="malware-card">
+            <h4><span class="concept-icon">🔒</span> Ransomware</h4>
+            <p>Encrypts victim files or entire systems, rendering them inaccessible. Demands cryptocurrency payment for the decryption key. Modern variants use <strong>double extortion</strong>: exfiltrate data first, then encrypt — threaten public release if ransom isn't paid. Ransomware-as-a-Service (RaaS) allows non-technical criminals to deploy sophisticated ransomware through affiliate programs.</p>
+            <ul>
+              <li><strong>Notable:</strong> WannaCry, LockBit, ALPHV/BlackCat, Cl0p</li>
+              <li><strong>Defense:</strong> Immutable backups, network segmentation, EDR, patch management</li>
+              <li><strong>Exam tip:</strong> Ransomware targets Availability and Confidentiality simultaneously</li>
+            </ul>
+          </div>
+          <div class="malware-card">
+            <h4><span class="concept-icon">🪤</span> Trojan Horse</h4>
+            <p>Malicious code disguised as or bundled with a legitimate application. The user installs what appears to be useful software; the payload executes in the background. Unlike viruses, Trojans do not self-replicate — they rely on user action for installation.</p>
+            <ul>
+              <li><strong>Notable:</strong> Emotet (banking trojan → malware dropper), Zeus, Remcos RAT</li>
+              <li><strong>Sub-type:</strong> Remote Access Trojan (RAT) gives attacker complete remote control</li>
+              <li><strong>Defense:</strong> Application whitelisting, code signing verification, user training</li>
+            </ul>
+          </div>
+          <div class="malware-card">
+            <h4><span class="concept-icon">🦠</span> Virus</h4>
+            <p>Self-replicating malware that attaches to legitimate files and spreads when the infected file is executed or shared. Requires a host file to propagate — distinguishing it from a worm. File infectors attach to executables; macro viruses target Office documents.</p>
+            <ul>
+              <li><strong>Notable:</strong> ILOVEYOU, Melissa, Conficker (worm/virus hybrid)</li>
+              <li><strong>Defense:</strong> Antivirus/EDR with behavioral analysis, email attachment scanning</li>
+              <li><strong>Key distinction:</strong> Virus needs a host file; worm is self-contained and spreads autonomously</li>
+            </ul>
+          </div>
+          <div class="malware-card">
+            <h4><span class="concept-icon">🐛</span> Worm</h4>
+            <p>Self-replicating malware that spreads across networks autonomously — no host file or user action required after initial execution. Worms exploit network vulnerabilities to propagate, consuming bandwidth and resources. Can deliver destructive payloads or install backdoors at scale.</p>
+            <ul>
+              <li><strong>Notable:</strong> WannaCry (exploited EternalBlue/SMB), Stuxnet, Morris Worm (1988)</li>
+              <li><strong>Defense:</strong> Network segmentation, firewall rules, rapid patching of network-exposed vulnerabilities</li>
+            </ul>
+          </div>
+          <div class="malware-card">
+            <h4><span class="concept-icon">🥷</span> Rootkit</h4>
+            <p>Malware designed to hide its presence and the presence of other malware from the operating system and security tools. Operates at the kernel level (most dangerous), hypervisor level, or firmware level. Because it subverts the OS itself, traditional antivirus running on the same OS may not detect it.</p>
+            <ul>
+              <li><strong>Detection:</strong> Requires offline scanning, memory forensics, or integrity checking against known-good hashes</li>
+              <li><strong>Defense:</strong> UEFI Secure Boot, TPM-based attestation, kernel integrity monitoring</li>
+              <li><strong>Exam tip:</strong> Rootkits provide persistence and stealth — they are enablers for other malware</li>
+            </ul>
+          </div>
+          <div class="malware-card">
+            <h4><span class="concept-icon">🕷</span> Spyware &amp; Keylogger</h4>
+            <p><strong>Spyware</strong> monitors user activity and exfiltrates data — browsing history, credentials, financial information — to the attacker. <strong>Keyloggers</strong> specifically record every keystroke, capturing passwords, credit card numbers, and sensitive communications. Both operate silently in the background and may be installed by a Trojan or RAT.</p>
+            <ul>
+              <li><strong>Notable:</strong> Pegasus (nation-state mobile spyware), FinFisher, AgentTesla</li>
+              <li><strong>Defense:</strong> EDR, network monitoring for unusual outbound connections, MFA (reduces value of stolen passwords)</li>
+            </ul>
+          </div>
+          <div class="malware-card">
+            <h4><span class="concept-icon">🤖</span> Botnet &amp; C2</h4>
+            <p>A botnet is a network of compromised systems (bots/zombies) controlled by an attacker through a Command-and-Control (C2) server. Bot operators rent or use their botnet for DDoS attacks, spam campaigns, credential stuffing, and cryptomining. Modern botnets use encrypted, peer-to-peer C2 communication to resist takedown.</p>
+            <ul>
+              <li><strong>Notable:</strong> Mirai (IoT botnet), Emotet botnet infrastructure, TrickBot</li>
+              <li><strong>Defense:</strong> DNS sinkholes, C2 domain blocking, network anomaly detection, IoT security</li>
+            </ul>
+          </div>
+          <div class="malware-card">
+            <h4><span class="concept-icon">⛏</span> Cryptojacker</h4>
+            <p>Malware that hijacks a victim's computing resources — CPU, GPU — to mine cryptocurrency for the attacker's benefit. Victim symptoms include degraded system performance, increased power consumption, and overheating. Often delivered via compromised websites (browser-based mining) or as a Trojan payload.</p>
+            <ul>
+              <li><strong>Defense:</strong> Browser content security policies, ad blockers, EDR with anomalous process detection</li>
+              <li><strong>Exam tip:</strong> Cryptojacking targets Availability (performance impact) but not Confidentiality or Integrity</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Logic Bomb — The Sleeper Threat:</strong> A logic bomb is malware that remains dormant until a specific condition is met — a date, a file deletion event, or the removal of a user account from Active Directory. Logic bombs are frequently planted by malicious insiders with privileged access and are designed to trigger after the attacker has left the organization. Defense requires code review processes, change management controls, and privileged access monitoring.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Topic 4 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green);">
+        <div class="topic-header-num">4</div>
+        <div>
+          <h3>Password Attack Techniques</h3>
+          <p>How attackers compromise credentials — and how to defend against each method</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Passwords remain the most common authentication mechanism and therefore the most targeted. Password attacks range from automated brute-force approaches to sophisticated offline cracking using GPU clusters. Understanding each technique is essential for recommending appropriate countermeasures — account lockout, MFA, salted hashes, and length requirements each defend against different attack types.</p>
+
+        <table class="pw-table">
+          <thead>
+            <tr>
+              <th style="width:20%">Attack Type</th>
+              <th style="width:28%">How It Works</th>
+              <th style="width:27%">Best Used Against</th>
+              <th>Primary Defense</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Brute Force</strong></td>
+              <td>Systematically tries every possible character combination until the correct password is found. Guaranteed to succeed eventually — limited only by time and computational resources.</td>
+              <td>Short or simple passwords; offline hash files where no lockout exists</td>
+              <td>Account lockout policies, long passwords (12+ chars), MFA, CAPTCHAs</td>
+            </tr>
+            <tr>
+              <td><strong>Dictionary Attack</strong></td>
+              <td>Uses a pre-compiled wordlist of common passwords, dictionary words, and known compromised passwords (RockYou list). Far faster than pure brute force because most users choose guessable passwords.</td>
+              <td>Common passwords; previously breached credential databases</td>
+              <td>Password complexity requirements, blocklisting common passwords, MFA</td>
+            </tr>
+            <tr>
+              <td><strong>Credential Stuffing</strong></td>
+              <td>Uses username/password pairs from previous data breaches to attempt login on other services, exploiting password reuse. Highly automated using bots. Targets: banking, email, streaming services.</td>
+              <td>Users who reuse passwords across multiple sites</td>
+              <td>MFA (defeats stuffing even with correct credentials), password managers, breach monitoring (HaveIBeenPwned)</td>
+            </tr>
+            <tr>
+              <td><strong>Password Spraying</strong></td>
+              <td>Attempts a small number of commonly used passwords (e.g., "Spring2024!", "Company123") across a large number of accounts. Avoids lockout thresholds because each account only receives 1–2 attempts.</td>
+              <td>Cloud/SaaS identity providers (M365, Okta); environments with lockout policies</td>
+              <td>MFA, anomaly detection (many accounts, few attempts), conditional access policies, blocklisting common passwords</td>
+            </tr>
+            <tr>
+              <td><strong>Rainbow Table Attack</strong></td>
+              <td>Uses pre-computed tables mapping plaintext passwords to their hashes. Extremely fast for hash cracking — no computation required, just lookup. Defeated by cryptographic salting.</td>
+              <td>Unsalted password hashes stolen from databases</td>
+              <td>Password salting (adds random data before hashing — unique hash per password), use of bcrypt/Argon2 (slow hashing algorithms)</td>
+            </tr>
+            <tr>
+              <td><strong>Pass-the-Hash (PtH)</strong></td>
+              <td>Attacker captures an NTLM hash from memory (using tools like Mimikatz) and uses it to authenticate to other systems without cracking the underlying password. Exploits NTLM's challenge-response design.</td>
+              <td>Windows environments using NTLM authentication; lateral movement after initial compromise</td>
+              <td>Privileged Access Workstations (PAW), disabling NTLM where possible, Kerberos enforcement, Protected Users security group</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="topic-grid" style="margin-top:20px;">
+          <div class="concept-block">
+            <h4><span class="concept-icon">🧂</span> Salting and Hashing — Why They Matter Together</h4>
+            <p>A <strong>salt</strong> is a unique random value added to each password before hashing. Even if two users have the same password, their salted hashes will be completely different. This defeats pre-computation attacks (rainbow tables) because the attacker cannot build a universal table — they would need a separate table for every possible salt value.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>MD5/SHA-1 hashes:</strong> Cryptographically broken — fast to compute and crack at scale</li>
+              <li><strong>bcrypt:</strong> Designed to be slow — intentionally computationally expensive to crack</li>
+              <li><strong>Argon2:</strong> Current best practice — memory-hard, resistant to GPU-based cracking</li>
+              <li><strong>Exam tip:</strong> Salting defeats rainbow tables. Slow hashing (bcrypt/Argon2) slows brute force and dictionary attacks</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">🛡</span> Defense-in-Depth for Authentication</h4>
+            <p>No single password control is sufficient. A layered approach combines multiple defenses to create meaningful friction at every attack stage:</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Length over complexity:</strong> A 20-character passphrase is stronger than a complex 8-character password</li>
+              <li><strong>MFA:</strong> Renders credential theft largely irrelevant — attacker needs the second factor too</li>
+              <li><strong>Password managers:</strong> Eliminate password reuse by generating and storing unique credentials per site</li>
+              <li><strong>Breach monitoring:</strong> Services like HaveIBeenPwned alert users when their credentials appear in breach datasets</li>
+              <li><strong>Passwordless:</strong> FIDO2/WebAuthn replaces passwords entirely with cryptographic authentication</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout-red">
+          <strong>Exam Alert — Spraying vs. Stuffing:</strong> These two attacks are frequently confused. <strong>Password Spraying</strong> = few passwords × many accounts (bypasses lockout). <strong>Credential Stuffing</strong> = many username+password pairs from a breach × those same accounts elsewhere (exploits reuse). Both are defeated by MFA — but for different reasons. Spraying is defeated because the correct password still requires the second factor. Stuffing is defeated because even valid stolen credentials cannot be used without the second factor.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 1</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 1</span>
+        <div>
+          <h3>Threat Actor Profiler — Drag &amp; Drop</h3>
+          <p style="font-size:0.8rem;opacity:0.8;margin-top:2px;">Match each attack scenario to the most likely threat actor type</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Read each scenario chip, then drag it to the threat actor category that best matches the described behavior and motivation. Submit your answers to receive instant feedback. Click × on a placed chip to return it to the pool.
+        </div>
+
+        <div class="drag-pool" id="dp3">
+          <div class="drag-item" draggable="true" data-answer="Nation-State" id="d3-1">Months-long covert intrusion into a power grid — no ransom demand</div>
+          <div class="drag-item" draggable="true" data-answer="Cybercriminal" id="d3-2">Encrypts hospital files and demands $4M in Bitcoin</div>
+          <div class="drag-item" draggable="true" data-answer="Hacktivist" id="d3-3">Defaces a government website with a protest message</div>
+          <div class="drag-item" draggable="true" data-answer="Insider" id="d3-4">Fired employee deletes critical customer database</div>
+          <div class="drag-item" draggable="true" data-answer="Nation-State" id="d3-5">Custom zero-day malware targets semiconductor IP in R&amp;D lab</div>
+          <div class="drag-item" draggable="true" data-answer="Cybercriminal" id="d3-6">Steals 50,000 credit card numbers and sells them on dark web</div>
+          <div class="drag-item" draggable="true" data-answer="Hacktivist" id="d3-7">DDoS attack takes down a financial firm's website during a protest</div>
+          <div class="drag-item" draggable="true" data-answer="Insider" id="d3-8">Engineer copies proprietary blueprints to personal cloud storage before resigning</div>
+        </div>
+
+        <div class="drop-zones-4">
+          <div class="drop-zone" id="zone3-Nation-State" data-zone="Nation-State">
+            <div class="drop-zone-label"><span class="dz-dot dot-nation"></span> Nation-State / APT</div>
+          </div>
+          <div class="drop-zone" id="zone3-Cybercriminal" data-zone="Cybercriminal">
+            <div class="drop-zone-label"><span class="dz-dot dot-cyber"></span> Organized Cybercriminal</div>
+          </div>
+          <div class="drop-zone" id="zone3-Hacktivist" data-zone="Hacktivist">
+            <div class="drop-zone-label"><span class="dz-dot dot-insider"></span> Hacktivist</div>
+          </div>
+          <div class="drop-zone" id="zone3-Insider" data-zone="Insider">
+            <div class="drop-zone-label"><span class="dz-dot dot-script"></span> Insider Threat</div>
+          </div>
+        </div>
+
+        <div class="activity-actions">
+          <button class="btn-primary" onclick="checkAct3()">Check Answers</button>
+          <button class="btn-secondary" onclick="resetAct3()">Reset</button>
+        </div>
+        <div class="activity-result" id="act3-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 2</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 2</span>
+        <div>
+          <h3>Attack Chain Scenario Analyzer</h3>
+          <p style="font-size:0.8rem;opacity:0.8;margin-top:2px;">Select a real-world attack scenario, identify the vector and techniques used, and recommend mitigations</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Select a scenario tab below, read the incident description, then answer each analysis question. Submit each question individually for immediate graded feedback.
+        </div>
+
+        <div class="scenario-tabs">
+          <button class="scenario-tab active" onclick="showScenario3(0,this)">Scenario A: Healthcare Ransomware</button>
+          <button class="scenario-tab" onclick="showScenario3(1,this)">Scenario B: CEO Fraud</button>
+          <button class="scenario-tab" onclick="showScenario3(2,this)">Scenario C: Software Update Attack</button>
+        </div>
+
+        <div class="scenario-panel active" id="s3-0">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🏥 Scenario A: Midwest Regional Medical Center</div>
+            <div class="scenario-body">A hospital's IT team is notified at 3:00 AM that hundreds of workstations are displaying a ransom note. Investigation reveals that two weeks earlier, a finance department employee clicked a link in an email claiming to be from the hospital's health insurance provider, entered her credentials on a fake login page, and unknowingly installed a document macro. The attacker used those credentials to log into the hospital's VPN, moved laterally across the network over ten days using the domain administrator account, and deployed ransomware just before a holiday weekend. Patient records are inaccessible. The attacker is demanding $3.2 million in Monero.</div>
+          </div>
+          <div class="chain-questions">
+
+            <div class="chain-q" id="s3a-q1">
+              <div class="chain-q-text">Q1: What was the initial attack vector used to compromise the hospital?</div>
+              <div class="chain-opts">
+                <label class="chain-opt"><input type="radio" name="s3aq1" value="A"> A zero-day exploit targeting the hospital's VPN software</label>
+                <label class="chain-opt"><input type="radio" name="s3aq1" value="B"> Spear phishing — a targeted email impersonating a trusted healthcare organization</label>
+                <label class="chain-opt"><input type="radio" name="s3aq1" value="C"> A supply chain compromise of the hospital's EHR software vendor</label>
+                <label class="chain-opt"><input type="radio" name="s3aq1" value="D"> Password spraying against the VPN portal</label>
+              </div>
+              <div class="chain-fb" id="s3a-q1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkChainQ('s3a-q1','B','s3aq1','Correct! The email impersonating a known healthcare organization is spear phishing — it was targeted at hospital finance staff and used a pretextual scenario (insurance provider) to establish trust. The credential theft via fake login page is a classic phishing payload outcome.','The initial vector was spear phishing — a targeted email impersonating the health insurance provider. The attacker did not exploit a technical vulnerability in the VPN directly; they used stolen credentials obtained through phishing. This distinction matters for mitigation: MFA on VPN would have prevented the attacker from using the stolen credentials even after obtaining them.')">Submit</button></div>
+            </div>
+
+            <div class="chain-q" id="s3a-q2">
+              <div class="chain-q-text">Q2: The attacker waited ten days before deploying ransomware. Which threat actor type BEST matches this behavior?</div>
+              <div class="chain-opts">
+                <label class="chain-opt"><input type="radio" name="s3aq2" value="A"> Script Kiddie — using an automated ransomware kit</label>
+                <label class="chain-opt"><input type="radio" name="s3aq2" value="B"> Hacktivist — protesting against healthcare data practices</label>
+                <label class="chain-opt"><input type="radio" name="s3aq2" value="C"> Organized Cybercriminal — patient, strategic, financially motivated</label>
+                <label class="chain-opt"><input type="radio" name="s3aq2" value="D"> Nation-State APT — targeting hospital critical infrastructure</label>
+              </div>
+              <div class="chain-fb" id="s3a-q2-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkChainQ('s3a-q2','C','s3aq2','Correct! Organized cybercriminals conducting ransomware attacks deliberately wait and conduct reconnaissance after initial access — mapping the network, identifying backups to destroy, escalating privileges, and timing the deployment for maximum impact (holiday weekends, overnight). The $3.2M cryptocurrency demand and Monero (privacy coin) selection are also consistent with professional ransomware operations.','The best match is Organized Cybercriminal. Script kiddies use automated tools and would trigger ransomware immediately. Hacktivists seek publicity, not money. Nation-state actors would not demand ransom — they want intelligence. The ten-day dwell time, lateral movement, privilege escalation, and timed deployment are hallmarks of professional ransomware groups like LockBit or Cl0p.')">Submit</button></div>
+            </div>
+
+            <div class="chain-q" id="s3a-q3">
+              <div class="chain-q-text">Q3: Which single security control, if implemented before the attack, would have had the GREATEST impact on preventing the attacker from accessing the VPN with stolen credentials?</div>
+              <div class="chain-opts">
+                <label class="chain-opt"><input type="radio" name="s3aq3" value="A"> Encrypting all patient records at rest</label>
+                <label class="chain-opt"><input type="radio" name="s3aq3" value="B"> Deploying an Intrusion Detection System (IDS) on the perimeter</label>
+                <label class="chain-opt"><input type="radio" name="s3aq3" value="C"> Enforcing Multi-Factor Authentication (MFA) on VPN access</label>
+                <label class="chain-opt"><input type="radio" name="s3aq3" value="D"> Implementing DNS filtering to block malicious domains</label>
+              </div>
+              <div class="chain-fb" id="s3a-q3-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkChainQ('s3a-q3','C','s3aq3','Correct! MFA on VPN access is the single highest-impact control for this specific attack path. Even with the employee\'s credentials fully compromised, MFA would have prevented the attacker from authenticating — they have the password but not the second factor (authenticator app, hardware token). Encryption protects data-at-rest but does not prevent access. IDS detects but does not prevent. DNS filtering might help against the phishing link but not the VPN login.','The highest-impact control is MFA on VPN. The entire attack depended on using stolen credentials to authenticate to the VPN. MFA breaks this dependency — knowledge of the password is not sufficient. This is why MFA is consistently ranked as the single most effective control against credential-based attacks by CISA, NSA, and NIST.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="scenario-panel" id="s3-1">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🏢 Scenario B: Regional Bank — CEO Fraud</div>
+            <div class="scenario-body">A regional bank's accounts payable manager receives an urgent email from the CEO's address asking her to immediately wire $280,000 to a new vendor for a time-sensitive acquisition. The email explains the deal must be confidential and instructs her not to verify via normal channels. The manager checks — the email address looks correct and references the CEO's upcoming travel schedule. She initiates the transfer. IT security later determines the CEO's email account was not actually compromised — the attacker registered a lookalike domain (ceo@bank-corp.co instead of ceo@bank-corp.com) and harvested the CEO's calendar from LinkedIn posts about upcoming conference appearances.</div>
+          </div>
+          <div class="chain-questions">
+
+            <div class="chain-q" id="s3b-q1">
+              <div class="chain-q-text">Q1: What specific social engineering technique was PRIMARILY used in this attack?</div>
+              <div class="chain-opts">
+                <label class="chain-opt"><input type="radio" name="s3bq1" value="A"> Baiting — the attacker offered the manager a financial reward</label>
+                <label class="chain-opt"><input type="radio" name="s3bq1" value="B"> Business Email Compromise (BEC) using a lookalike domain and pretexting</label>
+                <label class="chain-opt"><input type="radio" name="s3bq1" value="C"> Vishing — the attacker placed a phone call impersonating the CEO</label>
+                <label class="chain-opt"><input type="radio" name="s3bq1" value="D"> Tailgating — the attacker physically entered the bank's premises</label>
+              </div>
+              <div class="chain-fb" id="s3b-q1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkChainQ('s3b-q1','B','s3bq1','Correct! This is a textbook BEC attack. The attacker used a lookalike domain (typosquatting) to impersonate the CEO and constructed a pretext (urgent acquisition, confidentiality requirement) to prevent the manager from verifying the request through normal channels. The attacker also conducted OSINT (LinkedIn) to make the pretext believable by referencing real calendar information.','The attack is BEC with pretexting. The attacker did not offer a reward (baiting), did not make a phone call (vishing), and did not enter the building (tailgating). The key elements are: fake domain impersonating a real executive, fabricated urgent scenario, and explicit instruction not to verify — all designed to bypass human and technical controls.')">Submit</button></div>
+            </div>
+
+            <div class="chain-q" id="s3b-q2">
+              <div class="chain-q-text">Q2: Which email authentication control, if properly implemented, would have MOST directly helped the manager identify the lookalike domain?</div>
+              <div class="chain-opts">
+                <label class="chain-opt"><input type="radio" name="s3bq2" value="A"> TLS encryption on the email server</label>
+                <label class="chain-opt"><input type="radio" name="s3bq2" value="B"> S/MIME digital signatures on all executive email</label>
+                <label class="chain-opt"><input type="radio" name="s3bq2" value="C"> DMARC / DKIM / SPF configured on the bank's domain</label>
+                <label class="chain-opt"><input type="radio" name="s3bq2" value="D"> Full-disk encryption on the CEO's laptop</label>
+              </div>
+              <div class="chain-fb" id="s3b-q2-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkChainQ('s3b-q2','C','s3bq2','Correct! DMARC (Domain-based Message Authentication, Reporting and Conformance), combined with DKIM and SPF, would help prevent spoofed emails from reaching inboxes. However, in this case the attacker used their own legitimate lookalike domain — DMARC on the bank\'s domain would not block emails from a legitimately registered lookalike domain. The more complete answer includes S/MIME digital signatures (executives sign their emails, recipients can verify the signature), and user training to verify domain names carefully.','DMARC/DKIM/SPF is partially correct but has a nuance: it prevents spoofing of the bank\'s own domain but does not block emails sent from legitimately registered lookalike domains. S/MIME digital signatures would provide stronger assurance — a signed executive email can be cryptographically verified. The most complete defense is a combination: email authentication controls + out-of-band verification procedures for large wire transfers.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="scenario-panel" id="s3-2">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">💻 Scenario C: The Trojanized Accounting Software Update</div>
+            <div class="scenario-body">A mid-sized manufacturing company uses a popular accounting software package from a regional vendor. The vendor's update server is compromised by an external attacker who modifies the software update binary to include a remote access trojan (RAT). The update is digitally signed using the vendor's legitimate code-signing certificate (which was also stolen). When the manufacturing company's IT team applies the "legitimate" update, the RAT is silently installed on 200+ workstations. Three months later, the manufacturing company discovers an attacker has been reading all financial communications and exfiltrating CAD files of proprietary production equipment designs.</div>
+          </div>
+          <div class="chain-questions">
+
+            <div class="chain-q" id="s3c-q1">
+              <div class="chain-q-text">Q1: How should this attack BEST be classified?</div>
+              <div class="chain-opts">
+                <label class="chain-opt"><input type="radio" name="s3cq1" value="A"> A watering hole attack targeting the manufacturing sector</label>
+                <label class="chain-opt"><input type="radio" name="s3cq1" value="B"> A supply chain attack — the vendor was compromised to reach the downstream customer</label>
+                <label class="chain-opt"><input type="radio" name="s3cq1" value="C"> An insider threat — the vendor employee intentionally inserted the RAT</label>
+                <label class="chain-opt"><input type="radio" name="s3cq1" value="D"> A brute force attack against the manufacturing company's IT infrastructure</label>
+              </div>
+              <div class="chain-fb" id="s3c-q1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkChainQ('s3c-q1','B','s3cq1','Correct! This is a supply chain attack — the attacker targeted the smaller, less-defended software vendor to gain access to the vendor\'s larger customer base. The manufacturing company had no reason to distrust a digitally signed update from a known vendor. This attack pattern mirrors the SolarWinds (2020) and 3CX (2023) incidents.','This is a supply chain attack. The attacker did not directly compromise the manufacturing company — they compromised a trusted vendor first and used that trust relationship to deliver malware. The stolen code-signing certificate made the malicious update appear legitimate to all standard defenses. This is why supply chain security and vendor risk management are now critical components of enterprise security programs.')">Submit</button></div>
+            </div>
+
+            <div class="chain-q" id="s3c-q2">
+              <div class="chain-q-text">Q2: The stolen code-signing certificate made the malicious update appear legitimate. Which emerging supply chain defense practice would BEST help organizations detect this type of tampering?</div>
+              <div class="chain-opts">
+                <label class="chain-opt"><input type="radio" name="s3cq2" value="A"> Requiring all software to be developed using open-source languages</label>
+                <label class="chain-opt"><input type="radio" name="s3cq2" value="B"> Software Bill of Materials (SBOM) combined with a vendor security attestation program</label>
+                <label class="chain-opt"><input type="radio" name="s3cq2" value="C"> Installing antivirus software on all workstations before applying updates</label>
+                <label class="chain-opt"><input type="radio" name="s3cq2" value="D"> Applying software updates manually rather than automatically</label>
+              </div>
+              <div class="chain-fb" id="s3c-q2-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkChainQ('s3c-q2','B','s3cq2','Correct! A Software Bill of Materials (SBOM) is a formal record of all components, libraries, and dependencies in a software product — like a nutrition label for software. Combined with a vendor attestation program (requiring vendors to certify their security practices and the integrity of their build pipelines), it helps organizations understand what is in the software they are running and detect unauthorized modifications. This is now required for software sold to U.S. federal agencies under Executive Order 14028.','An SBOM + vendor attestation program is the best answer. Antivirus is unlikely to detect a properly signed RAT. Manual updates don\'t address the root problem (the update binary itself is compromised). Open-source languages are irrelevant to supply chain integrity. SBOMs enable organizations to track what software components are being run and verify them against known-good cryptographic hashes, making unauthorized modifications detectable.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="section-gap">
+    <div class="section-label">Lesson 3 Quiz — 5 Questions</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Assessment</span>
+        <div>
+          <h3>Knowledge Check: Threat Actors &amp; Attack Surface</h3>
+          <p style="font-size:0.8rem;opacity:0.8;margin-top:2px;">Select the best answer for each question, then submit for graded feedback</p>
+        </div>
+      </div>
+      <div class="activity-body">
+
+        <div class="quiz-q" id="q1">
+          <div class="q-num">Question 1 of 5</div>
+          <div class="q-text">A threat intelligence report describes an adversary that maintained undetected access to a defense contractor's network for eleven months, exfiltrated classified design documents, and never deployed destructive malware or demanded payment. Which threat actor type BEST describes this adversary?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q1" value="A"> Hacktivist — conducting a protest against defense spending</label>
+            <label class="q-option"><input type="radio" name="q1" value="B"> Organized Cybercriminal — planning to sell the designs on the dark web</label>
+            <label class="q-option"><input type="radio" name="q1" value="C"> Nation-State APT — conducting long-dwell-time espionage for strategic intelligence</label>
+            <label class="q-option"><input type="radio" name="q1" value="D"> Script Kiddie — using publicly available exploitation tools</label>
+          </div>
+          <div class="q-feedback" id="q1-feedback"></div>
+        </div>
+
+        <div class="quiz-q" id="q2">
+          <div class="q-num">Question 2 of 5</div>
+          <div class="q-text">An attacker sends a carefully researched email to the CFO of a publicly traded company, referencing an upcoming merger (found via SEC filings and LinkedIn) and asking her to review an "updated financial model" attachment. The attachment contains a macro that installs a RAT. What type of attack is this?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q2" value="A"> Vishing — the attacker is using voice communication</label>
+            <label class="q-option"><input type="radio" name="q2" value="B"> Baiting — the attacker offered the CFO something of value</label>
+            <label class="q-option"><input type="radio" name="q2" value="C"> Whaling — a targeted spear phishing attack against a senior executive</label>
+            <label class="q-option"><input type="radio" name="q2" value="D"> Smishing — the attack was delivered via SMS</label>
+          </div>
+          <div class="q-feedback" id="q2-feedback"></div>
+        </div>
+
+        <div class="quiz-q" id="q3">
+          <div class="q-num">Question 3 of 5</div>
+          <div class="q-text">A company installs visible security cameras at all entrance points to its data center. A guard is stationed at the main entrance 24/7. Which TWO functional control types does the security camera BEST represent? (Choose the answer that identifies both types.)</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q3" value="A"> Preventive and Corrective</label>
+            <label class="q-option"><input type="radio" name="q3" value="B"> Deterrent and Detective</label>
+            <label class="q-option"><input type="radio" name="q3" value="C"> Directive and Compensating</label>
+            <label class="q-option"><input type="radio" name="q3" value="D"> Operational and Managerial</label>
+          </div>
+          <div class="q-feedback" id="q3-feedback"></div>
+        </div>
+
+        <div class="quiz-q" id="q4">
+          <div class="q-num">Question 4 of 5</div>
+          <div class="q-text">A hospital's legacy medication dispensing system cannot support modern encryption protocols and therefore cannot have multi-factor authentication deployed. The security team implements enhanced real-time monitoring of all access to the system as an alternative measure. What type of control is this?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q4" value="A"> Preventive</label>
+            <label class="q-option"><input type="radio" name="q4" value="B"> Corrective</label>
+            <label class="q-option"><input type="radio" name="q4" value="C"> Compensating</label>
+            <label class="q-option"><input type="radio" name="q4" value="D"> Deterrent</label>
+          </div>
+          <div class="q-feedback" id="q4-feedback"></div>
+        </div>
+
+        <div class="quiz-q" id="q5">
+          <div class="q-num">Question 5 of 5</div>
+          <div class="q-text">A penetration tester is hired to test physical security. She walks behind an employee through a badge-controlled door, nods and smiles, and the employee holds the door open without asking for her badge. Then she plugs a USB drive labeled "Payroll_Q4_Bonuses.xlsx" into an unattended workstation. Which TWO social engineering techniques are demonstrated? (Choose the answer that names both.)</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q5" value="A"> Vishing and Smishing</label>
+            <label class="q-option"><input type="radio" name="q5" value="B"> Phishing and Pretexting</label>
+            <label class="q-option"><input type="radio" name="q5" value="C"> Tailgating and Baiting</label>
+            <label class="q-option"><input type="radio" name="q5" value="D"> Spear Phishing and Whaling</label>
+          </div>
+          <div class="q-feedback" id="q5-feedback"></div>
+        </div>
+
+        <div class="quiz-submit-row">
+          <button class="btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          <button class="btn-secondary" onclick="resetQuiz()">Reset</button>
+        </div>
+        <div id="quiz-result"></div>
+      </div>
+    </div>
+  </div>
+
+</div><div class="page-footer">
+  <div class="footer-nav">
+    <a href="index.html">← Course Home</a>
+    <a href="lesson02.html">← Lesson 2: Cryptography &amp; PKI</a>
+    <a href="lesson03-part01.html">Topic 1 Deep Dive</a>
+    <a href="lesson03-part02.html">Topic 2 Deep Dive</a>
+    <a href="lesson03-part03.html">Topic 3 Deep Dive</a>
+    <a href="lesson04.html">Next: Vulnerabilities &amp; Mitigation →</a>
+  </div>
+  CompTIA Security+ SY0-701 &nbsp;|&nbsp; Lesson 3: Threat Actors &amp; Attack Surface &nbsp;|&nbsp; Moraine Valley Community College
+</div>
+
+<script>
+/* ---- THEME ---- */
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+  localStorage.setItem('secplus-theme', next);
+}
+(function(){
+  const saved = localStorage.getItem('secplus-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Light';
+  }
+})();
+
+/* ---- ACTIVITY 1: DRAG & DROP ---- */
+let dragging3 = null;
+
+document.querySelectorAll('#dp3 .drag-item').forEach(item => {
+  item.addEventListener('dragstart', e => {
+    dragging3 = item.id;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  item.addEventListener('dragend', () => item.classList.remove('dragging'));
+});
+
+document.querySelectorAll('[id^="zone3-"]').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const item = document.getElementById(dragging3);
+    if (!item) return;
+    const zoneName = zone.dataset.zone;
+    const isCorrect = item.dataset.answer === zoneName;
+    const chip = document.createElement('span');
+    chip.className = 'dropped-item ' + (isCorrect ? 'correct' : 'incorrect');
+    chip.dataset.itemId = dragging3;
+    const shortLabel = item.textContent.length > 40 ? item.textContent.substring(0,40)+'…' : item.textContent;
+    chip.innerHTML = shortLabel + ' <span class="rm" title="Return">×</span>';
+    chip.querySelector('.rm').addEventListener('click', () => returnItem3(dragging3, chip));
+    zone.appendChild(chip);
+    item.style.display = 'none';
+    document.getElementById('act3-result').style.display = 'none';
+  });
+});
+
+function returnItem3(id, chip) {
+  const item = document.getElementById(id);
+  if (item) item.style.display = '';
+  chip.remove();
+}
+
+function checkAct3() {
+  let correct = 0, total = 0;
+  document.querySelectorAll('[id^="zone3-"]').forEach(zone => {
+    zone.querySelectorAll('.dropped-item').forEach(chip => {
+      total++;
+      const item = document.getElementById(chip.dataset.itemId);
+      if (item && item.dataset.answer === zone.dataset.zone) {
+        chip.className = 'dropped-item correct'; correct++;
+      } else {
+        chip.className = 'dropped-item incorrect';
+        chip.style.animation = 'none'; void chip.offsetWidth; chip.style.animation = '';
+      }
+    });
+  });
+  const res = document.getElementById('act3-result');
+  res.style.display = 'block';
+  if (total === 0) { res.className = 'activity-result result-fail'; res.textContent = 'Sort at least one scenario before checking.'; return; }
+  if (correct === total && total === 8) {
+    res.className = 'activity-result result-pass';
+    res.textContent = `✅ Perfect! All 8 scenarios correctly attributed. You can map threat behaviors to actor types — a critical Security+ skill.`;
+  } else {
+    res.className = 'activity-result result-fail';
+    res.textContent = `${correct}/${total} correct. Red chips are misattributed. Hint: focus on motivation (espionage vs. money vs. ideology vs. revenge) and behavior (stealth vs. noisy vs. destructive).`;
+  }
+}
+
+function resetAct3() {
+  document.querySelectorAll('[id^="zone3-"] .dropped-item').forEach(chip => returnItem3(chip.dataset.itemId, chip));
+  document.getElementById('act3-result').style.display = 'none';
+}
+
+/* ---- ACTIVITY 2: SCENARIO TABS ---- */
+function showScenario3(idx, btn) {
+  document.querySelectorAll('.scenario-panel').forEach((p,i) => p.classList.toggle('active', i === idx));
+  document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function checkChainQ(qId, correctAnswer, radioName, passMsg, failMsg) {
+  const qDiv = document.getElementById(qId);
+  const selected = qDiv.closest('.chain-q').querySelector(`input[name="${radioName}"]:checked`);
+  const fb = document.getElementById(qId + '-fb');
+  qDiv.closest('.chain-q').querySelectorAll('input').forEach(r => r.disabled = true);
+  qDiv.closest('.chain-q').querySelector('button').disabled = true;
+
+  if (!selected) { fb.className = 'chain-fb show fail'; fb.textContent = '⚠️ Please select an answer first.'; return; }
+  const isCorrect = selected.value === correctAnswer;
+  qDiv.closest('.chain-q').querySelectorAll('.chain-opt').forEach(opt => {
+    if (opt.querySelector('input').value === correctAnswer) opt.classList.add('correct');
+    else if (opt.querySelector('input').value === selected.value && !isCorrect) opt.classList.add('wrong');
+  });
+  fb.className = 'chain-fb show ' + (isCorrect ? 'pass' : 'fail');
+  fb.textContent = isCorrect ? passMsg : failMsg;
+}
+
+/* ---- QUIZ ---- */
+const qAnswers = { q1:'C', q2:'C', q3:'C', q4:'B', q5:'C' };
+const qFeedback = {
+  q1: {
+    correct: "✅ Correct! The defining indicators of a Nation-State APT are: (1) extremely long dwell time — 11 months undetected, (2) primary objective is intelligence collection, not financial gain, (3) stealth and patience over disruption, and (4) target is a defense contractor (high-value strategic target). APTs invest resources in remaining hidden for maximum intelligence collection before being discovered or withdrawing.",
+    wrong:   "❌ The correct answer is C — Nation-State APT. Key signals: 11-month dwell time (script kiddies and hacktivists don't persist), no ransom demand (eliminates cybercriminal), no public message (eliminates hacktivist), classified documents (strategic espionage target), and no destructive payload (intelligence gathering, not disruption). Long dwell time + stealth + government-relevant target = APT."
+  },
+  q2: {
+    correct: "✅ Correct! This is Whaling — spear phishing specifically targeting a senior executive (the CFO). The key indicators: the email is highly personalized (references the specific merger), the target is a C-suite officer, and the attacker conducted OSINT research (SEC filings, LinkedIn) to make the pretext convincing. Whaling attacks typically have much higher success rates than generic phishing because of their tailored content.",
+    wrong:   "❌ The correct answer is C — Whaling. This is not vishing (no phone call), not baiting (the financial model is a lure, not a tangible reward), and not smishing (email, not SMS). Whaling is the specific term for spear phishing targeting C-suite or high-value executives. The research into the merger, use of professional context, and targeted CFO victim are all hallmarks of a whaling campaign."
+  },
+  q3: {
+    correct: "✅ Correct! Password Spraying is the precise technique: a small number of common passwords tried across a very large number of accounts. The 'two attempts per account' detail is the critical clue — this deliberately stays below account lockout thresholds (typically 3–5 attempts before lockout). This technique is especially effective against cloud identity providers where lockout policies may be less aggressive. MFA and anomaly detection (many accounts, few attempts) are the primary defenses.",
+    wrong:   "❌ The correct answer is C — Password Spraying. Brute Force tries ALL combinations against one or few accounts. Credential Stuffing uses specific known username/password pairs from a breach database. Rainbow Tables are for offline hash cracking, not live login attempts. Spraying's signature is: few passwords × many accounts × deliberate pacing to avoid lockout. The '2 attempts per account' detail is the defining clue."
+  },
+  q4: {
+    correct: "✅ Correct! A Logic Bomb is malware that remains dormant until a specific trigger condition is met — in this case, the removal of the former employee's Active Directory account. Logic bombs are frequently planted by disgruntled insiders with privileged access and are designed to trigger after they've left, providing plausible deniability. Detecting logic bombs requires code review, privileged access monitoring, and change management controls.",
+    wrong:   "❌ The correct answer is B — Logic Bomb. The defining characteristic is the trigger condition: the malware was dormant for six months, then activated when a specific system event occurred (account removal). Ransomware encrypts files (no mention of encryption). Rootkits hide malware (the malware was hidden, but the defining behavior is the triggered payload). Worms self-propagate across networks (no mention of spread)."
+  },
+  q5: {
+    correct: "✅ Correct! The scenario demonstrates two distinct social engineering techniques: (1) <strong>Tailgating</strong> — following an authorized person through a badge-controlled door by exploiting politeness (the employee held the door). (2) <strong>Baiting</strong> — the USB drive labeled with an enticing name ('Payroll_Q4_Bonuses.xlsx') is designed to trigger curiosity and the desire to see the contents, causing the target to plug in the malicious device. Both exploit human psychology without any technical hacking.",
+    wrong:   "❌ The correct answer is C — Tailgating and Baiting. Vishing/Smishing involve voice/SMS communication (not demonstrated). Phishing involves email (not demonstrated). Pretexting is constructing a false scenario verbally or in writing (not explicitly the technique here — the USB label is bait, not a pretext). Tailgating = following through a secure door. Baiting = the enticing USB drive. Both are present in this scenario."
+  }
+};
+
+function submitQuiz() {
+  let score = 0;
+  Object.keys(qAnswers).forEach(qid => {
+    const selected = document.querySelector(`input[name="${qid}"]:checked`);
+    const qDiv = document.getElementById(qid);
+    const fb = document.getElementById(qid + '-feedback');
+    qDiv.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+    if (!selected) {
+      fb.className = 'q-feedback show fail';
+      fb.innerHTML = '⚠️ No answer selected. ' + qFeedback[qid].wrong;
+      qDiv.className = 'quiz-q answered-wrong';
+      return;
+    }
+    const isCorrect = selected.value === qAnswers[qid];
+    if (isCorrect) score++;
+    qDiv.className = 'quiz-q ' + (isCorrect ? 'answered-correct' : 'answered-wrong');
+    fb.className = 'q-feedback show ' + (isCorrect ? 'pass' : 'fail');
+    fb.innerHTML = qFeedback[qid][isCorrect ? 'correct' : 'wrong'];
+    qDiv.querySelectorAll('.q-option').forEach(opt => {
+      const v = opt.querySelector('input').value;
+      if (v === qAnswers[qid]) opt.classList.add('correct');
+      else if (selected && v === selected.value && !isCorrect) opt.classList.add('wrong');
+    });
+  });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'block';
+  const pct = Math.round((score/5)*100);
+  if (score >= 4) {
+    result.className = 'quiz-pass';
+    result.innerHTML = `🎉 <strong>Excellent! ${score}/5 (${pct}%)</strong> — Strong command of threat actor classification and attack techniques. Ready for Lesson 4: Vulnerabilities &amp; Mitigation. <a href="lesson04.html" style="color:var(--green-dark);font-weight:700;margin-left:8px;">Next Lesson →</a>`;
+  } else {
+    result.className = 'quiz-fail';
+    result.innerHTML = `📚 <strong>${score}/5 (${pct}%)</strong> — Review the incorrect items above. Focus on the distinctions between threat actor types (motivation and behavior) and between similar-sounding attack techniques (spraying vs. stuffing, tailgating vs. baiting). The Attack Chain Scenario Analyzer is a good review tool.`;
+  }
+  result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetQuiz() {
+  document.querySelectorAll('.quiz-q').forEach(q => q.className = 'quiz-q');
+  document.querySelectorAll('input[type="radio"]').forEach(r => { r.checked = false; r.disabled = false; });
+  document.querySelectorAll('.q-option').forEach(o => o.classList.remove('correct','wrong'));
+  document.querySelectorAll('.q-feedback').forEach(f => { f.className = 'q-feedback'; f.innerHTML = ''; });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'none'; result.className = '';
+}
+</script>
+</body>
+</html>

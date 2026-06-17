@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security+ Lesson: CIA Triad & Non-Repudiation</title>
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --header-bg: #2c3e50;
+            --header-text: #ffffff;
+            --card-bg: #f9f9f9;
+            --card-border: #e0e0e0;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #c0392b;
+            --toggle-btn-bg: #444;
+            --toggle-btn-text: #fff;
+        }
+
+        /* --- DARK MODE VARIABLES --- */
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #f0f0f0;
+            --header-bg: #000000;
+            --header-text: #ffffff;
+            --card-bg: #2d2d2d;
+            --card-border: #444444;
+            --accent-color: #5dade2;
+            --toggle-btn-bg: #fff;
+            --toggle-btn-text: #000;
+        }
+
+        /* --- BASIC LAYOUT --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        header h1 { margin: 0; font-size: 1.5rem; }
+        header p { margin: 0; opacity: 0.8; }
+
+        #theme-toggle {
+            background-color: var(--toggle-btn-bg);
+            color: var(--toggle-btn-text);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.1s;
+        }
+        #theme-toggle:active { transform: scale(0.95); }
+
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* --- INSTRUCTIONAL COMPONENTS --- */
+        section { margin-bottom: 3rem; }
+
+        h2 {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .analogy-box {
+            background-color: var(--card-bg);
+            border-left: 5px solid var(--accent-color);
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        .triad-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .concept-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .concept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .concept-card h3 {
+            margin-top: 0;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .example-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .example-list li {
+            padding: 5px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        .example-list li::before {
+            content: "➡️";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+        }
+
+        /* --- INTERACTIVE ACTIVITY --- */
+        #activity-zone {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+        }
+
+        .scenario {
+            background-color: var(--bg-color);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--card-border);
+        }
+
+        .options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid var(--card-border);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover { background-color: var(--card-border); }
+
+        .option-btn.correct {
+            background-color: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--error-color);
+            color: white;
+            border-color: var(--error-color);
+        }
+
+        #feedback {
+            margin-top: 1rem;
+            font-weight: bold;
+            min-height: 1.6em;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>CompTIA Security+ (SY0-701)</h1>
+        <p>Lesson 1.2: Foundational Security Concepts</p>
+    </div>
+    <button id="theme-toggle">Dark Mode</button>
+</header>
+
+<main>
+    <section id="introduction">
+        <h2>Introduction</h2>
+        <p>Hello, future Cybersecurity Analysts! Welcome to the start of your journey. Before we learn how to hack or defend, we must understand <em>what</em> we are defending.</p>
+        <p>In the world of information security, everything revolves around one core model: The <strong>CIA Triad</strong>. It provides three foundational goals for any security program. Recently, a fourth supporting concept, <strong>Non-Repudiation</strong>, has become equally critical for modern digital transactions.</p>
+    </section>
+
+    <section id="analogy">
+        <div class="analogy-box">
+            <h3>The Analogy: A Secure Bank Vault</h3>
+            <p>Imagine a high-security bank vault holding your life savings.</p>
+            <ul>
+                <li><strong>Confidentiality:</strong> Only authorized customers with the correct key and biometric scan can open their specific deposit box. Random people cannot peek inside.</li>
+                <li><strong>Integrity:</strong> When you open your box, the gold bars you stored haven't been swapped for painted rocks. The contents are exactly as you left them.</li>
+                <li><strong>Availability:</strong> The bank is open during business hours. When you need your money, the vault door actually opens; it's not jammed shut due to a malfunction.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="triad-concepts">
+        <h2>The CIA Triad</h2>
+        <div class="triad-container">
+            <!-- Confidentiality -->
+            <div class="concept-card">
+                <h3><span>🔒</span> Confidentiality</h3>
+                <p>Ensuring that data is acts only to authorized individuals, systems, or processes. It means keeping secrets secret.</p>
+                <strong>Technological Examples:</strong>
+                <ul class="example-list">
+                    <li>Encryption (At rest and in transit)</li>
+                    <li>Access Control Lists (ACLs)</li>
+                    <li>Multi-Factor Authentication (MFA)</li>
+                </ul>
+            </div>
+
+            <!-- Integrity -->
+            <div class="concept-card">
+                <h3><span>✅</span> Integrity</h3>
+                <p>Ensuring the accuracy, consistency, and trustworthiness of data throughout its entire lifecycle. Data must not be altered in an unauthorized manner.</p>
+                <strong>Technological Examples:</strong>
+                <ul class="example-list">
+                    <li>Hashing (e.g., SHA-256)</li>
+                    <li>Digital Signatures</li>
+                    <li>File Integrity Monitoring</li>
+                </ul>
+            </div>
+
+            <!-- Availability -->
+            <div class="concept-card">
+                <h3><span>📶</span> Availability</h3>
+                <p>Ensuring that information and critical occur are accessible and usable by authorized users when needed.</p>
+                <strong>Technological Examples:</strong>
+                <ul class="example-list">
+                    <li>Data Backups and Redundancy</li>
+                    <li>Load Balancing</li>
+                    <li>DDoS Mitigation</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="non-repudiation">
+        <h2>Supporting Concept: Non-Repudiation</h2>
+        <p>Non-repudiation ensures that a party to a contract or a communication cannot deny having received a transaction nor can they deny having sent a transaction.</p>
+        <p>It combines <strong>Authentication</strong> (proving identity) with <strong>Integrity</strong> (proving the message hasn't changed). In practical terms, it means having undeniable legal proof of who did what.</p>
+        <p><strong>Common Example:</strong> A legally binding digital contract signed via DocuSign or a bank transfer authorized by a certificate-based digital signature.</p>
+    </section>
+
+    <section id="activity">
+        <h2>Student Activity: Triad Challenge</h2>
+        <p>Read the scenario below. Determine which component of the CIA Triad (or Non-Repudiation) is primarily being attacked or defended. Click the correct button.</p>
+
+        <div id="activity-zone">
+            <div id="scenario-text" class="scenario">Loading scenario...</div>
+            <div class="options">
+                <button class="option-btn" onclick="checkAnswer('Confidentiality')">Confidentiality</button>
+                <button class="option-btn" onclick="checkAnswer('Integrity')">Integrity</button>
+                <button class="option-btn" onclick="checkAnswer('Availability')">Availability</button>
+                <button class="option-btn" onclick="checkAnswer('Non-Repudiation')">Non-Repudiation</button>
+            </div>
+            <div id="feedback"></div>
+        </div>
+    </section>
+</main>
+
+<script>
+    // --- DARK MODE LOGIC ---
+    const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    toggleBtn.addEventListener('click', () => {
+        if (body.hasAttribute('data-theme')) {
+            body.removeAttribute('data-theme');
+            toggleBtn.textContent = 'Dark Mode';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            toggleBtn.textContent = 'Light Mode';
+        }
+    });
+
+    // --- ACTIVITY LOGIC ---
+    const scenarios = [
+        {
+            text: "Scenario: An attacker launches a Distributed Denial of Service (DDoS) attack against a hospital's patient portal, rendering it inaccessible to doctors during surgery.",
+            correct: "Availability"
+        },
+        {
+            text: "Scenario: A disgruntled employee modifies the financial spreadsheets to make themselves look more profitable, swapping numbers in the 'bonus' column.",
+            correct: "Integrity"
+        },
+        {
+            text: "Scenario: An eavesdropper intercepts an unencrypted email containing a celebrity's private home address and sells it to the paparazzi.",
+            correct: "Confidentiality"
+        },
+        {
+            text: "Scenario: A stock trader uses their specific private key to sign a high-value buy order. When the stock drops, they claim they never placed the order, but the digital audit trail proves otherwise.",
+            correct: "Non-Repudiation"
+        }
+    ];
+
+    let currentScenarioIndex = 0;
+    const scenarioElement = document.getElementById('scenario-text');
+    const feedbackElement = document.getElementById('feedback');
+
+    function loadScenario() {
+        const scenario = scenarios[currentScenarioIndex];
+        scenarioElement.textContent = scenario.text;
+        feedbackElement.textContent = "";
+        
+        // Reset button states
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.classList.remove('correct', 'incorrect'));
+    }
+
+    function checkAnswer(selectedAnswer) {
+        const scenario = scenarios[currentScenarioIndex];
+        const buttons = document.querySelectorAll('.option-btn');
+        
+        // Find the button that was clicked to style it
+        let clickedButton;
+        buttons.forEach(btn => {
+            if (btn.textContent === selectedAnswer) clickedButton = btn;
+        });
+
+        if (selectedAnswer === scenario.correct) {
+            clickedButton.classList.add('correct');
+            feedbackElement.textContent = "Correct! " + getExplanation(scenario.correct);
+            feedbackElement.style.color = "var(--success-color)";
+            
+            // Move to next scenario after a delay
+            currentScenarioIndex++;
+            if (currentScenarioIndex < scenarios.length) {
+                setTimeout(loadScenario, 2500);
+            } else {
+                setTimeout(() => {
+                    scenarioElement.textContent = "Congratulations! You completed the Triad Challenge.";
+                    feedbackElement.textContent = "You are ready for the next lesson!";
+                    document.querySelector('.options').style.display = 'none';
+                }, 2500);
+            }
+        } else {
+            clickedButton.classList.add('incorrect');
+            feedbackElement.textContent = "Incorrect. Try again!";
+            feedbackElement.style.color = "var(--error-color)";
+            // Optionally remove the class after a shake animation
+            setTimeout(() => clickedButton.classList.remove('incorrect'), 500);
+        }
+    }
+
+    function getExplanation(concept) {
+        switch(concept) {
+            case "Confidentiality": return "This was an unauthorized disclosure of information.";
+            case "Integrity": return "This was an unauthorized alteration of data.";
+            case "Availability": return "Authorized users were blocked from accessing the system.";
+            case "Non-Repudiation": return "A digital signature provided undeniable proof of the action.";
+            default: return "";
+        }
+    }
+
+    // Initial load
+    loadScenario();
+
+</script>
+
+</body>
+</html>

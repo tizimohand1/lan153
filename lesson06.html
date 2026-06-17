@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 6: Network & Infrastructure Security | CompTIA Security+ SY0-701</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS — consistent with lessons 1–5
+   ============================================================ */
+:root {
+  --bg:          #ffffff;
+  --bg-soft:     #f7f9f7;
+  --bg-card:     #ffffff;
+  --border:      #d8e4d8;
+  --border-dark: #b2ccb2;
+  --text:        #111111;
+  --text-mid:    #3a4a3a;
+  --text-muted:  #5c6e5c;
+  --green-dark:  #1b5e20;
+  --green:       #2e7d32;
+  --green-mid:   #388e3c;
+  --green-light: #4caf50;
+  --green-pale:  #e8f5e9;
+  --green-pale2: #c8e6c9;
+  --red:         #b71c1c;
+  --red-pale:    #ffebee;
+  --red-mid:     #c62828;
+  --blue:        #1565c0;
+  --blue-pale:   #e3f2fd;
+  --purple:      #6a1b9a;
+  --purple-pale: #f3e5f5;
+  --amber:       #e65100;
+  --amber-pale:  #fff3e0;
+  --teal:        #00695c;
+  --teal-pale:   #e0f2f1;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.13);
+  --radius:      10px;
+  --radius-lg:   16px;
+}
+[data-theme="dark"] {
+  --bg:          #0e120e;
+  --bg-soft:     #141a14;
+  --bg-card:     #1a221a;
+  --border:      #2a3a2a;
+  --border-dark: #3a4e3a;
+  --text:        #e8f0e8;
+  --text-mid:    #b8ccb8;
+  --text-muted:  #7a9a7a;
+  --green-dark:  #81c784;
+  --green:       #4caf50;
+  --green-mid:   #66bb6a;
+  --green-light: #a5d6a7;
+  --green-pale:  #1a2e1a;
+  --green-pale2: #1e3a1e;
+  --red:         #ef9a9a;
+  --red-pale:    #2a1010;
+  --red-mid:     #ef9a9a;
+  --blue:        #90caf9;
+  --blue-pale:   #0d1f35;
+  --purple:      #ce93d8;
+  --purple-pale: #1f0d2a;
+  --amber:       #ffcc80;
+  --amber-pale:  #2a1a00;
+  --teal:        #80cbc4;
+  --teal-pale:   #0d2520;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.30);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.40);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.50);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.65; font-size: 16px;
+  transition: background 0.3s, color 0.3s;
+}
+h1,h2,h3,h4 { line-height: 1.25; font-weight: 700; }
+a { color: var(--green); text-decoration: none; }
+a:hover { text-decoration: underline; }
+ul { padding-left: 1.4em; }
+li { margin-bottom: 0.35em; }
+code {
+  font-family: 'Courier New', monospace; font-size: 0.87em;
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 5px;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header {
+  background: var(--green-dark); color: #fff;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+.header-inner {
+  max-width: 1180px; margin: 0 auto;
+  padding: 14px 24px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.brand-icon {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px; letter-spacing: -0.5px; color: #fff; flex-shrink: 0;
+}
+.brand-info h1 { font-size: 1rem; font-weight: 700; }
+.brand-info p  { font-size: 0.74rem; opacity: 0.7; margin-top: 1px; }
+.header-right  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lesson-badge {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+  color: #fff; font-size: 0.7rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.07em;
+}
+.nav-link {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px;
+  transition: background 0.2s; text-decoration: none; display: inline-block;
+}
+.nav-link:hover { background: rgba(255,255,255,0.25); text-decoration: none; }
+.theme-btn {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: background 0.2s;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* ============================================================
+   HERO — teal-tinted for "network/infrastructure" domain
+   ============================================================ */
+.hero {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 42%, #00695c33 100%);
+  color: #fff; padding: 48px 24px 40px;
+  position: relative; overflow: hidden;
+}
+.hero::after {
+  content: '06';
+  position: absolute; right: 40px; bottom: -10px;
+  font-size: 120px; font-weight: 900;
+  opacity: 0.07; line-height: 1; pointer-events: none;
+}
+.hero-inner { max-width: 860px; margin: 0 auto; }
+.hero-eyebrow {
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; opacity: 0.8; margin-bottom: 10px;
+}
+.hero h2 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+.hero-sub { font-size: 1rem; opacity: 0.85; max-width: 640px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.hero-tag {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+  font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page-body { max-width: 1180px; margin: 0 auto; padding: 36px 24px 64px; }
+.section-gap { margin-bottom: 48px; }
+.section-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--green);
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--green-pale2);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: block; width: 4px; height: 16px;
+  background: var(--green); border-radius: 2px;
+}
+
+/* ============================================================
+   OBJECTIVES
+   ============================================================ */
+.objectives-box {
+  background: var(--green-pale); border: 1px solid var(--green-pale2);
+  border-left: 5px solid var(--green); border-radius: var(--radius); padding: 24px 28px;
+}
+.objectives-box h3 { color: var(--green-dark); margin-bottom: 12px; font-size: 1rem; }
+.objectives-box li { margin-bottom: 8px; color: var(--text-mid); font-size: 0.93rem; }
+.objectives-box li::marker { color: var(--green); }
+
+/* ============================================================
+   KEY TERMS
+   ============================================================ */
+.terms-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;
+}
+.term-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+}
+.term-name { font-weight: 700; font-size: 0.88rem; color: var(--green-dark); margin-bottom: 4px; }
+.term-def  { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; }
+
+/* ============================================================
+   INTRO CARD
+   ============================================================ */
+.intro-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 5px solid var(--green-light);
+  border-radius: var(--radius-lg); padding: 28px 32px; box-shadow: var(--shadow-sm);
+}
+.intro-card p { color: var(--text-mid); font-size: 0.97rem; line-height: 1.75; }
+.intro-card p + p { margin-top: 12px; }
+
+/* ============================================================
+   FLIP CARDS
+   ============================================================ */
+.flip-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;
+}
+.flip-wrapper { perspective: 1000px; height: 260px; cursor: pointer; }
+.flip-inner {
+  position: relative; width: 100%; height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4,0.2,0.2,1);
+  transform-style: preserve-3d;
+}
+.flip-wrapper.flipped .flip-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back {
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-lg); padding: 24px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border: 1px solid var(--border); box-shadow: var(--shadow-md);
+}
+.flip-front { background: var(--bg-card); }
+.flip-back  { background: var(--green-dark); color: #fff; transform: rotateY(180deg); }
+.flip-num   { font-size: 2.5rem; font-weight: 900; color: var(--green-pale2); line-height: 1; }
+.flip-front h3 { font-size: 1.05rem; color: var(--green-dark); margin-bottom: 6px; }
+.flip-front p  { font-size: 0.82rem; color: var(--text-muted); }
+.flip-hint { font-size: 0.7rem; color: var(--text-muted); }
+.flip-back h3  { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; opacity: 0.9; }
+.flip-back p   { font-size: 0.82rem; opacity: 0.85; line-height: 1.55; flex: 1; }
+
+/* ── Flip-back link row: View + Download ── */
+.flip-back-links {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+}
+.flip-back a.dive-link {
+  display: inline-block; background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 0.78rem; font-weight: 700;
+  padding: 6px 14px; border-radius: 20px; text-decoration: none;
+  transition: background 0.2s; align-self: flex-start;
+}
+.flip-back a.dive-link:hover { background: rgba(255,255,255,0.28); text-decoration: none; }
+.flip-back a.dive-download {
+  display: inline-block; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.75rem; font-weight: 600;
+  padding: 6px 12px; border-radius: 20px; text-decoration: none;
+  transition: background 0.2s; align-self: flex-start;
+}
+.flip-back a.dive-download:hover { background: rgba(255,255,255,0.22); text-decoration: none; }
+
+/* ============================================================
+   TOPIC SECTIONS
+   ============================================================ */
+.topic-section {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  margin-bottom: 28px; box-shadow: var(--shadow-sm);
+}
+.topic-header {
+  background: var(--green); color: #fff;
+  padding: 18px 28px; display: flex; align-items: center; gap: 14px;
+}
+.topic-header-num {
+  width: 36px; height: 36px; background: rgba(0,0,0,0.2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 900; flex-shrink: 0;
+}
+.topic-header h3 { font-size: 1.1rem; }
+.topic-header p  { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+.topic-body { padding: 28px; }
+.topic-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 18px; }
+.topic-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 18px; }
+
+.concept-block {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.concept-block h4 {
+  font-size: 0.92rem; color: var(--green-dark);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.concept-icon {
+  width: 24px; height: 24px; background: var(--green-pale2);
+  border-radius: 6px; display: inline-flex; align-items: center;
+  justify-content: center; font-size: 13px;
+}
+.concept-block p, .concept-block ul { font-size: 0.87rem; color: var(--text-mid); line-height: 1.6; }
+
+/* Control cards with color-coded left borders */
+.ctrl-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius); padding: 16px;
+}
+.ctrl-card.blue   { border-left-color: var(--blue); }
+.ctrl-card.purple { border-left-color: var(--purple); }
+.ctrl-card.amber  { border-left-color: var(--amber); }
+.ctrl-card.teal   { border-left-color: var(--teal); }
+.ctrl-card.red    { border-left-color: var(--red); }
+.ctrl-card h4 {
+  font-size: 0.9rem; margin-bottom: 8px; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.ctrl-card p, .ctrl-card ul { font-size: 0.84rem; color: var(--text-mid); line-height: 1.55; }
+.ctrl-card ul { margin-top: 6px; }
+
+/* firewall type comparison table */
+.fw-table {
+  width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.84rem;
+}
+.fw-table th {
+  background: var(--green-dark); color: #fff;
+  padding: 10px 14px; text-align: left; font-size: 0.79rem; letter-spacing: 0.04em;
+}
+.fw-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-mid); vertical-align: top;
+}
+.fw-table tr:nth-child(even) td { background: var(--bg-soft); }
+.fw-table tr:hover td { background: var(--green-pale); }
+
+/* Defense-in-depth layer diagram */
+.did-stack {
+  display: flex; flex-direction: column; gap: 6px; margin-top: 14px;
+}
+.did-layer {
+  padding: 12px 18px; border-radius: 8px; border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+}
+.did-icon { font-size: 1.3rem; flex-shrink: 0; width: 32px; text-align: center; }
+.did-info h5 { font-size: 0.86rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.did-info p  { font-size: 0.79rem; color: var(--text-mid); }
+.did-l1 { background: var(--red-pale); border-color: var(--red); }
+.did-l2 { background: var(--amber-pale); border-color: var(--amber); }
+.did-l3 { background: #fff3e055; border-color: #ffab40; }
+.did-l4 { background: var(--blue-pale); border-color: var(--blue); }
+.did-l5 { background: var(--teal-pale); border-color: var(--teal); }
+.did-l6 { background: var(--purple-pale); border-color: var(--purple); }
+.did-l7 { background: var(--green-pale); border-color: var(--green); }
+
+/* callouts */
+.callout {
+  background: var(--green-pale); border-left: 4px solid var(--green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout strong { color: var(--green-dark); }
+.callout-blue {
+  background: var(--blue-pale); border-left: 4px solid var(--blue);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-blue strong { color: var(--blue); }
+.callout-amber {
+  background: var(--amber-pale); border-left: 4px solid var(--amber);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-amber strong { color: var(--amber); }
+.callout-red {
+  background: var(--red-pale); border-left: 4px solid var(--red);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-red strong { color: var(--red-mid); }
+
+/* ============================================================
+   ACTIVITIES — common
+   ============================================================ */
+.activity-box {
+  background: var(--bg-card); border: 2px solid var(--green-pale2);
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md);
+}
+.activity-header {
+  background: var(--green-dark); color: #fff;
+  padding: 16px 24px; display: flex; align-items: center; gap: 12px;
+}
+.activity-badge {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+  font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.activity-header h3 { font-size: 1rem; }
+.activity-header p  { font-size: 0.8rem; opacity: 0.8; margin-top: 2px; }
+.activity-body { padding: 24px; }
+.activity-instructions {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 16px;
+  font-size: 0.85rem; color: var(--text-mid); margin-bottom: 20px;
+}
+.activity-result {
+  margin-top: 14px; padding: 12px 16px; border-radius: var(--radius);
+  font-size: 0.88rem; font-weight: 600; display: none;
+}
+.result-pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.result-fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.activity-actions { margin-top: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--green-dark); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--green); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--bg-soft); color: var(--text);
+  border: 1px solid var(--border-dark); padding: 10px 22px;
+  border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: var(--border); }
+
+/* ============================================================
+   ACTIVITY 1 — CONTROL-TO-THREAT DRAG & DROP
+   ============================================================ */
+.drag-pool {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 20px; min-height: 56px;
+  background: var(--bg-soft); border: 1px dashed var(--border-dark);
+  border-radius: var(--radius); padding: 12px;
+}
+.drag-item {
+  background: var(--green-dark); color: #fff;
+  padding: 7px 13px; border-radius: 20px;
+  font-size: 0.79rem; font-weight: 600;
+  cursor: grab; user-select: none;
+  transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.drag-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.drag-item.dragging { opacity: 0.35; }
+.drop-zones-5 {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+}
+.drop-zone {
+  border: 2px dashed var(--border-dark); border-radius: var(--radius);
+  padding: 12px; min-height: 110px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.drop-zone.drag-over { border-color: var(--green); background: var(--green-pale); }
+.drop-zone-label {
+  font-size: 0.74rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-muted);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.dz-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dropped-item {
+  display: inline-block; padding: 4px 11px; border-radius: 20px;
+  font-size: 0.75rem; font-weight: 600; margin: 3px;
+}
+.dropped-item.correct   { background: var(--green-pale2); color: var(--green-dark); border: 1px solid var(--green); }
+.dropped-item.incorrect { background: var(--red-pale); color: var(--red); border: 1px solid var(--red); animation: shake 0.35s; }
+.dropped-item .rm { margin-left: 5px; cursor: pointer; opacity: 0.6; }
+.dropped-item .rm:hover { opacity: 1; }
+@keyframes shake {
+  0%,100%{ transform:translateX(0); }
+  20%{ transform:translateX(-5px); }
+  40%{ transform:translateX(5px); }
+  60%{ transform:translateX(-3px); }
+  80%{ transform:translateX(3px); }
+}
+
+/* ============================================================
+   ACTIVITY 2 — NETWORK DEFENSE SCENARIO ANALYZER
+   ============================================================ */
+.scenario-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.scenario-tab {
+  background: var(--bg-soft); border: 1px solid var(--border-dark);
+  color: var(--text-mid); padding: 8px 16px; border-radius: 20px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.scenario-tab.active, .scenario-tab:hover {
+  background: var(--green-dark); color: #fff; border-color: var(--green-dark);
+}
+.scenario-panel { display: none; }
+.scenario-panel.active { display: block; }
+.scenario-desc-box {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px; margin-bottom: 16px;
+}
+.scenario-title { font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 6px; }
+.scenario-body  { font-size: 0.88rem; color: var(--text-mid); line-height: 1.6; }
+.net-questions { display: flex; flex-direction: column; gap: 12px; }
+.net-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.net-q-text { font-size: 0.9rem; font-weight: 600; margin-bottom: 10px; color: var(--text); }
+.net-opts { display: flex; flex-direction: column; gap: 7px; }
+.net-opt {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 12px; background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: 8px;
+  cursor: pointer; font-size: 0.86rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.net-opt:hover { background: var(--green-pale); border-color: var(--green-light); }
+.net-opt input { flex-shrink: 0; margin-top: 2px; accent-color: var(--green); }
+.net-opt.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.net-opt.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.net-fb {
+  margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+  font-size: 0.84rem; display: none;
+}
+.net-fb.show { display: block; }
+.net-fb.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.net-fb.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+.quiz-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 16px; transition: border-color 0.3s;
+}
+.quiz-q.answered-correct { border-color: var(--green); background: var(--green-pale); }
+.quiz-q.answered-wrong   { border-color: var(--red);   background: var(--red-pale); }
+.q-num  { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+.q-text { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.45; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-option {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px; background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  cursor: pointer; font-size: 0.88rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.q-option:hover { background: var(--green-pale); border-color: var(--green-light); }
+.q-option input[type="radio"] { margin-top: 1px; flex-shrink: 0; accent-color: var(--green); }
+.q-option.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.q-option.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.q-feedback { margin-top: 12px; padding: 12px 16px; border-radius: var(--radius); font-size: 0.85rem; line-height: 1.55; display: none; }
+.q-feedback.show { display: block; }
+.q-feedback.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.q-feedback.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.quiz-submit-row { margin-top: 20px; display: flex; align-items: center; gap: 14px; }
+#quiz-result {
+  padding: 18px 24px; border-radius: var(--radius-lg);
+  font-size: 1rem; font-weight: 700; display: none; margin-top: 20px;
+}
+.quiz-pass { background: var(--green-pale); color: var(--green-dark); border: 2px solid var(--green-pale2); }
+.quiz-fail { background: var(--red-pale); color: var(--red); border: 2px solid #ffcdd2; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.page-footer {
+  background: var(--bg-soft); border-top: 1px solid var(--border);
+  padding: 24px; text-align: center; font-size: 0.78rem; color: var(--text-muted);
+}
+.footer-nav { display: flex; justify-content: center; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
+.footer-nav a { color: var(--green); font-weight: 600; font-size: 0.85rem; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .hero h2 { font-size: 1.4rem; }
+  .topic-grid, .topic-grid-3, .drop-zones-5 { grid-template-columns: 1fr; }
+  .flip-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="brand-icon">S+</div>
+      <div class="brand-info">
+        <h1>CompTIA Security+ SY0-701</h1>
+        <p>Lesson 6 of 12 &mdash; Network &amp; Infrastructure Security</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="lesson-badge">Day 6</span>
+      <a href="index.html" class="nav-link">&#8592; Course Home</a>
+      <a href="lesson05.html" class="nav-link">&#8592; Lesson 5</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Lesson 6 &mdash; Security Architecture (18% of exam)</div>
+    <h2>Network &amp; Infrastructure Security</h2>
+    <p class="hero-sub">Firewalls, IDS/IPS, DNS filtering, NAC, DLP, and endpoint security — the layered control stack that defends the enterprise network, and the defense-in-depth strategy that makes individual controls effective together.</p>
+    <div class="hero-meta">
+      <span class="hero-tag">📖 3 Topics</span>
+      <span class="hero-tag">🎯 2 Activities</span>
+      <span class="hero-tag">📝 5-Question Quiz</span>
+      <span class="hero-tag">⏱ ~60 min</span>
+      <span class="hero-tag">Domain: Security Architecture</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE BODY
+     ============================================================ -->
+<div class="page-body">
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="section-gap">
+    <div class="section-label">Learning Objectives</div>
+    <div class="objectives-box">
+      <h3>By the end of this lesson, you will be able to:</h3>
+      <ul>
+        <li>Compare and contrast firewall types — packet filtering, stateful, NGFW, and WAF — and select the appropriate type for a described network scenario.</li>
+        <li>Distinguish between IDS and IPS by their detection methods, placement, and response capabilities, explaining when each is the correct choice.</li>
+        <li>Describe how DNS filtering, NAC, and DLP each address different threat vectors and data protection requirements in an enterprise environment.</li>
+        <li>Explain the role of endpoint security in a layered defense strategy, including EDR, application control, and host-based firewalls.</li>
+        <li>Map specific security controls to the threats they are designed to address, justifying the selection in the context of a described scenario.</li>
+        <li>Construct a defense-in-depth strategy for a described enterprise environment by selecting and sequencing controls that address multiple threat vectors simultaneously.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- KEY TERMS -->
+  <div class="section-gap">
+    <div class="section-label">Key Terms</div>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">Firewall</div>
+        <div class="term-def">A network security device (hardware or software) that monitors and controls incoming and outgoing network traffic based on a defined set of security rules. Firewalls establish a barrier between trusted internal networks and untrusted external networks.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">IDS / IPS (Intrusion Detection / Prevention System)</div>
+        <div class="term-def">IDS monitors network traffic and generates alerts when suspicious patterns are detected — it does not block traffic. IPS sits inline and actively blocks or drops malicious traffic in real time. Both use signature-based and anomaly-based detection methods.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">NAC (Network Access Control)</div>
+        <div class="term-def">A security solution that enforces policy-based access to the network by evaluating connecting devices against defined compliance requirements (OS version, patch level, antivirus status) before granting access. Non-compliant devices are quarantined or redirected.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">DLP (Data Loss Prevention)</div>
+        <div class="term-def">A set of tools and processes that detect and prevent the unauthorized transmission, storage, or use of sensitive data. DLP classifies data in use, in motion, and at rest, and enforces policies to block or alert on policy violations such as emailing a SSN or uploading a classified document to a personal cloud drive.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Endpoint Security</div>
+        <div class="term-def">Security controls deployed on individual devices (workstations, laptops, mobile devices, servers) to detect, prevent, and respond to threats at the device level. Includes antivirus, EDR (Endpoint Detection and Response), host-based firewalls, and application control.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">DNS Filtering</div>
+        <div class="term-def">A security control that blocks access to malicious, unauthorized, or policy-violating domains by intercepting and evaluating DNS queries before resolution. Prevents connections to known malware C2 servers, phishing sites, and blocked content categories without requiring traffic decryption.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Defense in Depth</div>
+        <div class="term-def">A security architecture strategy that layers multiple independent controls so the failure of any single control does not result in a complete compromise. Each layer slows or stops an attacker who has bypassed the previous layer, providing time for detection and response.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">UTM (Unified Threat Management)</div>
+        <div class="term-def">A security appliance that combines multiple security functions — firewall, IPS, antivirus, content filtering, VPN, and DLP — into a single device. Common in SMB environments where managing multiple point solutions is impractical. Enterprise environments typically use best-of-breed individual solutions.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="section-gap">
+    <div class="section-label">Topic Introduction</div>
+    <div class="intro-card">
+      <p>In Lesson 5, you designed secure architectures — the blueprint. In this lesson, you populate that blueprint with the specific security controls that enforce it. Every enterprise network defense strategy relies on layering tools that detect, block, monitor, and respond at different points along an attacker's path. No single control stops every threat; a firewall cannot prevent an insider from emailing sensitive data, and a DLP solution cannot stop a port scan. The art is in selecting the right combination and understanding how they work together.</p>
+      <p>The Security Architecture domain tests your ability to do exactly this: read a scenario, identify which control addresses the specific threat described, and understand why the other options don't fit. This lesson teaches both the individual tools and the strategic framework — defense in depth — that connects them into a coherent enterprise defense posture. By the end of this lesson, you will be able to build a layered control map for any described enterprise environment and justify every control selection.</p>
+    </div>
+  </div>
+
+  <!-- FLIP CARDS -->
+  <div class="section-gap">
+    <div class="section-label">Topic Navigation — Click a Card to Explore</div>
+    <div class="flip-grid">
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">01</div>
+              <h3>Firewalls &amp; IDS/IPS</h3>
+              <p>The network's gatekeepers — firewall types from packet filtering to NGFW, and the critical difference between detecting and blocking.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Firewalls &amp; IDS/IPS</h3>
+              <p>Firewalls enforce access control at the network boundary. NGFWs add application awareness and deep packet inspection. IDS alerts on threats; IPS blocks them inline. Detection methods: signature (known threats) vs. anomaly (behavioral deviation). False positives are the key operational challenge for IPS.</p>
+            </div>
+            <div class="flip-back-links">
+              <a class="dive-link" href="lesson06-part01.png" target="_blank" rel="noopener">View Graphic &#8594;</a>
+              <a class="dive-download" href="lesson06-part01.png" download="lesson06-part01.png">&#8675; Download PNG</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">02</div>
+              <h3>DNS Filtering, NAC &amp; DLP</h3>
+              <p>Controlling what domains users can reach, enforcing device compliance before network access, and preventing sensitive data from leaving the organization.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>DNS Filtering, NAC &amp; DLP</h3>
+              <p>DNS filtering blocks malicious domains at the query level — no decryption needed. NAC verifies device compliance (patch level, AV status) before granting access. DLP monitors data in use, in motion, and at rest — preventing unauthorized exfiltration of classified or regulated data.</p>
+            </div>
+            <div class="flip-back-links">
+              <a class="dive-link" href="lesson06-part02.png" target="_blank" rel="noopener">View Graphic &#8594;</a>
+              <a class="dive-download" href="lesson06-part02.png" download="lesson06-part02.png">&#8675; Download PNG</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">03</div>
+              <h3>Endpoint Security &amp; Defense in Depth</h3>
+              <p>The last line of defense on every device — EDR, host firewalls, application control — and the enterprise defense-in-depth strategy that sequences all controls into a unified posture.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Endpoint Security &amp; Defense in Depth</h3>
+              <p>EDR moves beyond antivirus — behavioral monitoring, threat hunting, and containment at the device level. Application whitelisting prevents execution of unauthorized code. Defense in depth sequences controls from perimeter to endpoint so an attacker must defeat every layer. Analogize: concentric security rings around the data.</p>
+            </div>
+            <div class="flip-back-links">
+              <a class="dive-link" href="lesson06-part03.png" target="_blank" rel="noopener">View Graphic &#8594;</a>
+              <a class="dive-download" href="lesson06-part03.png" download="lesson06-part03.png">&#8675; Download PNG</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 1 — FIREWALLS & IDS/IPS
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 1 Content</div>
+    <div class="topic-section">
+      <div class="topic-header">
+        <div class="topic-header-num">1</div>
+        <div>
+          <h3>Firewalls &amp; IDS/IPS</h3>
+          <p>The network boundary enforcement and threat detection/prevention layer</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">The firewall is the foundational network security control — it decides which traffic is allowed into and out of a network segment. IDS and IPS extend that protection by analyzing traffic for attack signatures and behavioral anomalies. Together, they form the core of every enterprise network perimeter defense.</p>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">Firewall Types — Evolution and Capabilities</h4>
+        <table class="fw-table">
+          <thead>
+            <tr>
+              <th style="width:20%">Type</th>
+              <th style="width:25%">How It Works</th>
+              <th style="width:27%">Strengths</th>
+              <th>Limitations / When to Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Packet Filtering</strong><br><small style="color:var(--text-muted);">Layer 3/4</small></td>
+              <td>Inspects individual packets based on source/destination IP, port, and protocol. No session awareness — each packet evaluated independently.</td>
+              <td>Very fast; low overhead; simple ACL-based rules. Still used in router ACLs for coarse-grained filtering.</td>
+              <td>Cannot detect split-packet attacks or maintain session state. Use for high-speed coarse filtering, not as primary defense.</td>
+            </tr>
+            <tr>
+              <td><strong>Stateful Inspection</strong><br><small style="color:var(--text-muted);">Layer 3/4</small></td>
+              <td>Tracks the state of active connections in a state table. Only packets belonging to established, legitimate sessions are allowed through.</td>
+              <td>Understands TCP/UDP sessions; blocks unsolicited inbound packets; standard enterprise firewall for 20+ years.</td>
+              <td>Cannot inspect encrypted traffic or application-layer content. Cannot distinguish legitimate web traffic from attack traffic over port 80/443.</td>
+            </tr>
+            <tr>
+              <td><strong>NGFW (Next-Generation Firewall)</strong><br><small style="color:var(--text-muted);">Layer 3–7</small></td>
+              <td>Combines stateful inspection with deep packet inspection (DPI), application identification, user identity awareness, SSL/TLS decryption, and integrated IPS.</td>
+              <td>Application control ("block Dropbox on corporate network"), user-based policies, threat prevention, SSL inspection. Industry standard for modern enterprise.</td>
+              <td>More expensive; SSL inspection raises privacy concerns; requires tuning. Use as the primary perimeter and internal segmentation firewall.</td>
+            </tr>
+            <tr>
+              <td><strong>WAF (Web Application Firewall)</strong><br><small style="color:var(--text-muted);">Layer 7</small></td>
+              <td>Specifically protects web applications by inspecting HTTP/HTTPS request and response traffic. Enforces OWASP rules to detect SQLi, XSS, CSRF, and other application-layer attacks.</td>
+              <td>The only firewall type that protects against web application attacks (SQLi, XSS, SSRF). Can be deployed as inline hardware, software, or cloud service (AWS WAF, Cloudflare).</td>
+              <td>Only protects HTTP/HTTPS — not a general network firewall. Requires tuning to avoid blocking legitimate traffic. Use in front of every public-facing web application.</td>
+            </tr>
+            <tr>
+              <td><strong>Proxy Firewall</strong><br><small style="color:var(--text-muted);">Layer 7</small></td>
+              <td>Acts as an intermediary — all traffic passes through the proxy, which establishes separate connections to both the client and server. Full content inspection possible.</td>
+              <td>Complete content inspection; SSL decryption for inspection; caching for performance; URL categorization and content filtering.</td>
+              <td>Adds latency; requires explicit or transparent configuration; modern HTTPS inspection adds certificate management complexity. Use for web content filtering and egress control.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>Analogy — Firewall as Building Security:</strong> A packet filtering firewall is like a parking lot gate that opens for any vehicle with the right sticker — it checks a simple credential but can't tell a delivery truck from a getaway car. A stateful firewall is the lobby receptionist who knows which visitors are expected and won't let unscheduled guests past the front desk. An NGFW is a full security desk with biometric check-in, visitor management software, and the ability to scan packages — it knows not just who you are but what you're carrying and whether it's allowed.
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">IDS vs. IPS — Detect or Block?</h4>
+        <div class="topic-grid">
+          <div class="ctrl-card blue">
+            <h4>🔍 IDS — Intrusion Detection System</h4>
+            <p>IDS monitors a copy of network traffic (via port mirroring / SPAN port) and generates alerts when suspicious patterns are detected. It is <em>passive</em> — it cannot block or modify traffic. Its value is in visibility and forensic logging.</p>
+            <ul>
+              <li><strong>Placement:</strong> Out-of-band — monitors a mirror of traffic, not inline. Cannot introduce latency or cause outages by misblocking</li>
+              <li><strong>Response:</strong> Generates alerts, logs events, sends SIEM notifications — analyst must take action manually</li>
+              <li><strong>Best for:</strong> Environments where false positives blocking legitimate traffic are unacceptable (financial trading floors, ICS networks, hospital systems)</li>
+              <li><strong>Limitation:</strong> Cannot stop an attack in progress — by the time an analyst responds, the attacker may have already succeeded</li>
+            </ul>
+          </div>
+          <div class="ctrl-card purple">
+            <h4>🛡️ IPS — Intrusion Prevention System</h4>
+            <p>IPS is deployed <em>inline</em> in the traffic path and actively blocks, drops, or resets connections that match threat signatures or behavioral anomalies. It is the active counterpart to IDS.</p>
+            <ul>
+              <li><strong>Placement:</strong> Inline — all traffic passes through the IPS. Can introduce latency; failure can cause network outage if not redundant</li>
+              <li><strong>Response:</strong> Drops packets, resets connections, blocks source IPs — in real time, before the attacker's payload reaches the target</li>
+              <li><strong>Best for:</strong> Internet perimeter, DMZ, and high-risk internal segments where attack prevention outweighs the risk of false positives</li>
+              <li><strong>Risk:</strong> False positives block legitimate traffic — a misconfigured IPS can cause application outages. Signature tuning is essential</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <h4 style="font-size:0.9rem;color:var(--green-dark);margin-bottom:12px;">IDS/IPS Detection Methods</h4>
+          <div class="topic-grid">
+            <div class="concept-block">
+              <h4><span class="concept-icon">📋</span> Signature-Based Detection</h4>
+              <p>Compares traffic against a database of known attack patterns (signatures). Like antivirus for network traffic — highly accurate for known threats, zero false positives on mature signatures, but completely blind to zero-day and novel attacks.</p>
+              <ul style="margin-top:8px;">
+                <li><strong>Pros:</strong> Low false positive rate; fast; well-understood</li>
+                <li><strong>Cons:</strong> Cannot detect threats not in the signature database; signatures must be continuously updated</li>
+                <li><strong>Example:</strong> Detecting a Mimikatz LSASS memory dump by its known tool output pattern</li>
+              </ul>
+            </div>
+            <div class="concept-block">
+              <h4><span class="concept-icon">📈</span> Anomaly-Based Detection</h4>
+              <p>Establishes a baseline of normal behavior and alerts when traffic deviates significantly from that baseline. Can detect zero-day attacks and novel threats — but generates more false positives because "unusual" is not always malicious.</p>
+              <ul style="margin-top:8px;">
+                <li><strong>Pros:</strong> Can detect unknown threats; catches behavioral anomalies signatures would miss</li>
+                <li><strong>Cons:</strong> High false positive rate during tuning; baseline must be established before it's useful</li>
+                <li><strong>Example:</strong> A workstation that normally transfers 100MB/day suddenly transferring 40GB to an external IP triggers an anomaly alert</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout-amber">
+          <strong>Exam Focus — HIDS vs. NIDS:</strong> IDS/IPS can be deployed at the network level (NIDS/NIPS — monitors all traffic flowing through a network segment) or the host level (HIDS/HIPS — monitors activity on a single endpoint, including system calls, file changes, and process behavior). HIDS can detect attacks that encrypted network traffic would hide from NIDS, but requires an agent on every monitored host. Expect Security+ scenarios to ask you to choose between them based on visibility requirements.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 2 — DNS FILTERING, NAC & DLP
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 2 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-dark);">
+        <div class="topic-header-num">2</div>
+        <div>
+          <h3>DNS Filtering, NAC &amp; DLP</h3>
+          <p>Controlling domain access, enforcing device compliance, and preventing data exfiltration</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">These three controls address distinct attack vectors: DNS filtering stops connections to malicious domains before they reach the threat; NAC ensures only compliant, trusted devices connect to the network; DLP prevents sensitive data from leaving through authorized channels being misused. Together they close attack paths that firewalls and IDS/IPS cannot fully address.</p>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">DNS Filtering</h4>
+        <div class="topic-grid">
+          <div class="ctrl-card teal">
+            <h4>🌐 How DNS Filtering Works</h4>
+            <p>Every internet connection begins with a DNS query — the device must resolve a domain name to an IP address before connecting. DNS filtering intercepts these queries and blocks resolution of domains that are classified as malicious, phishing, malware distribution, or policy-violating.</p>
+            <ul>
+              <li><strong>Mechanism:</strong> DNS queries are routed through a filtering resolver (Cisco Umbrella, Cloudflare Gateway, Quad9) that checks each domain against threat intelligence feeds before returning an answer</li>
+              <li><strong>No decryption needed:</strong> The domain name is visible even in HTTPS traffic — DNS filtering blocks at the domain level before a connection is established</li>
+              <li><strong>C2 blocking:</strong> Most malware callbacks use domain names (not hardcoded IPs) — DNS filtering blocks the callback before the malware can receive instructions</li>
+              <li><strong>Category filtering:</strong> Beyond security, DNS filtering can enforce acceptable use policies — blocking gambling, social media, or adult content categories by domain classification</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">✅</span> DNS Filtering — Capabilities &amp; Limits</h4>
+            <p><strong>What it stops:</strong></p>
+            <ul>
+              <li>Connections to known malware C2 servers</li>
+              <li>Phishing domain visits (typosquatted or newly registered malicious domains)</li>
+              <li>Drive-by download sites classified as malicious</li>
+              <li>Botnet beaconing to command-and-control infrastructure</li>
+            </ul>
+            <p style="margin-top:10px;"><strong>What it does NOT stop:</strong></p>
+            <ul>
+              <li>Attacks that use IP addresses directly (no DNS query needed)</li>
+              <li>Threats hosted on legitimate, unblocked domains (Google Drive malware, OneDrive C2)</li>
+              <li>DNS-over-HTTPS (DoH) traffic that bypasses the filtering resolver — must be blocked at the firewall level</li>
+              <li>Internal/lateral movement attacks that don't generate external DNS queries</li>
+            </ul>
+            <p style="margin-top:8px;font-size:0.83rem;color:var(--text-muted);"><strong>Analogy:</strong> DNS filtering is like a receptionist who checks whether the person you're calling is on a "known fraudsters" list before connecting your call — if the number is flagged, the call never goes through.</p>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">NAC — Network Access Control</h4>
+        <div class="topic-grid">
+          <div class="ctrl-card amber">
+            <h4>🔐 How NAC Works — The Compliance Gate</h4>
+            <p>NAC evaluates every device attempting to connect to the network against a defined security policy before granting access. The evaluation (called a "posture assessment") checks whether the device meets compliance requirements.</p>
+            <ul>
+              <li><strong>Pre-admission NAC:</strong> Evaluates device compliance before network access is granted. Non-compliant devices are denied or quarantined</li>
+              <li><strong>Post-admission NAC:</strong> Continuously monitors devices on the network and revokes access if compliance drops (e.g., AV definition update fails)</li>
+              <li><strong>Agent-based:</strong> A software agent on the endpoint reports compliance status. More accurate but requires agent deployment and management</li>
+              <li><strong>Agentless:</strong> Uses network scanning, SNMP, or directory integration to assess compliance. Less invasive but less detailed visibility</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">📋</span> NAC Posture Assessment Criteria</h4>
+            <p>Common policy requirements checked during NAC evaluation:</p>
+            <ul style="margin-top:6px;">
+              <li>Operating system version and patch level (e.g., Windows must be at current patch level)</li>
+              <li>Antivirus/EDR installed, running, and definitions current</li>
+              <li>Host-based firewall enabled</li>
+              <li>Disk encryption (BitLocker/FileVault) active</li>
+              <li>Certificate-based device authentication (proves the device is corporate-owned)</li>
+              <li>No prohibited software installed (peer-to-peer clients, unauthorized VPNs)</li>
+            </ul>
+            <p style="margin-top:10px;font-size:0.83rem;color:var(--text-mid);"><strong>Quarantine VLAN:</strong> Devices that fail posture assessment are placed in a restricted VLAN with access only to a remediation server (Windows Update, AV update server). Once they meet compliance, they are moved to the appropriate production VLAN automatically.</p>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">DLP — Data Loss Prevention</h4>
+        <div class="topic-grid-3">
+          <div class="ctrl-card">
+            <h4>📧 DLP in Motion</h4>
+            <p>Monitors data being transmitted over the network — email, web uploads, FTP, cloud sync. If a transmission contains content matching a DLP policy (e.g., a Social Security Number pattern, a document labeled "Confidential"), the DLP system can block, quarantine, or alert.</p>
+            <ul>
+              <li><strong>Email DLP:</strong> Intercepts outbound email — blocks emails containing credit card numbers, SSNs, or documents with sensitivity labels</li>
+              <li><strong>Web DLP:</strong> Inspects HTTP/HTTPS uploads — blocks uploading sensitive files to personal cloud storage (Google Drive, Dropbox)</li>
+              <li><strong>Note:</strong> Requires SSL inspection for encrypted traffic analysis</li>
+            </ul>
+          </div>
+          <div class="ctrl-card blue">
+            <h4>💾 DLP at Rest</h4>
+            <p>Scans data stored in file servers, databases, SharePoint, cloud storage repositories, and endpoint file systems for sensitive content that is misclassified or improperly stored.</p>
+            <ul>
+              <li>Discovers PII stored outside approved repositories (SSNs in spreadsheets on a shared drive)</li>
+              <li>Identifies unencrypted sensitive data that should be encrypted</li>
+              <li>Enforces data residency requirements (data must stay in specific geographic regions)</li>
+              <li>Supports data classification labeling and rights management integration</li>
+            </ul>
+          </div>
+          <div class="ctrl-card purple">
+            <h4>🖥️ DLP in Use</h4>
+            <p>Agent-based DLP deployed on endpoints monitors how users interact with sensitive data in real time — blocking or alerting on policy-violating actions at the device level.</p>
+            <ul>
+              <li>Blocks copy/paste of sensitive data to unauthorized applications</li>
+              <li>Prevents saving sensitive documents to personal USB drives</li>
+              <li>Blocks screenshot of classified content</li>
+              <li>Alerts on printing of sensitive documents</li>
+              <li>Logs who accessed what sensitive data and when — supports forensic investigations</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout-blue">
+          <strong>Analogy — DLP as a Mail Room:</strong> Think of DLP like a corporate mail room where every package going out is X-rayed before it leaves the building. If a package contains something labeled "Top Secret" or "Customer SSNs," the mail room flags it and calls security before it ships. DLP is that X-ray machine — applied to email, web uploads, USB ports, and cloud sync simultaneously. Like a mail room, it can slow things down and needs calibration to avoid blocking legitimate packages, but for regulated industries handling sensitive data, it's non-negotiable.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 3 — ENDPOINT SECURITY & DEFENSE IN DEPTH
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 3 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-mid);">
+        <div class="topic-header-num">3</div>
+        <div>
+          <h3>Endpoint Security &amp; Defense in Depth</h3>
+          <p>The device-level security layer — and the enterprise strategy that connects all controls</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">The endpoint is where data lives, users work, and attackers ultimately want to land. Every attack — whether delivered via phishing, web exploit, or supply chain compromise — eventually executes on an endpoint. Endpoint security is the last line of defense when perimeter controls have been bypassed. Defense in depth is the strategic framework that ensures multiple lines of defense are always between an attacker and their goal.</p>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">Endpoint Security Controls</h4>
+        <div class="topic-grid">
+          <div class="ctrl-card">
+            <h4><span class="concept-icon">🔬</span> EDR — Endpoint Detection and Response</h4>
+            <p>EDR is the evolution of antivirus — instead of matching file signatures, EDR monitors endpoint behavior continuously: process creation, file system changes, registry modifications, network connections, and memory operations. It detects threats based on behavior, not signatures, enabling it to identify novel malware and advanced threats.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Detection:</strong> Behavioral analysis, machine learning models, threat intelligence integration, MITRE ATT&CK framework mapping</li>
+              <li><strong>Response:</strong> Automated containment (isolate endpoint from network), process killing, file quarantine, forensic data collection</li>
+              <li><strong>Threat hunting:</strong> EDR platforms store telemetry for weeks/months — analysts can query historical data to hunt for indicators of compromise from past attacks</li>
+              <li><strong>Examples:</strong> CrowdStrike Falcon, Microsoft Defender for Endpoint, SentinelOne, Carbon Black</li>
+              <li><strong>Exam tip:</strong> EDR = behavioral monitoring + automated response + threat hunting. Antivirus = signature matching only</li>
+            </ul>
+          </div>
+          <div class="ctrl-card blue">
+            <h4><span class="concept-icon">🚫</span> Application Control &amp; Whitelisting</h4>
+            <p>Application control enforces a policy of which software is allowed to execute on an endpoint. Whitelisting only permits explicitly approved applications — anything not on the list is blocked from running, regardless of whether it is known malware.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Whitelisting:</strong> Only approved applications run — most restrictive and most effective. Defeats zero-day malware that no signature database has seen</li>
+              <li><strong>Blacklisting:</strong> Blocks known-malicious applications — easier to manage but misses unknown threats</li>
+              <li><strong>Windows AppLocker/WDAC:</strong> Microsoft's built-in application control — can restrict execution by publisher certificate, path, or hash</li>
+              <li><strong>Challenge:</strong> Initial whitelisting is labor-intensive; legitimate software updates must be approved before they can run</li>
+            </ul>
+          </div>
+          <div class="ctrl-card amber">
+            <h4><span class="concept-icon">🔥</span> Host-Based Firewall</h4>
+            <p>A software firewall running on each individual endpoint that controls inbound and outbound traffic at the device level — independent of any network firewall. Provides protection even when a device is on an untrusted network (home Wi-Fi, hotel, airport).</p>
+            <ul style="margin-top:8px;">
+              <li>Blocks unauthorized inbound connections to services running on the endpoint</li>
+              <li>Can restrict which applications are allowed to make outbound connections</li>
+              <li>Essential for laptop users who frequently work outside the corporate perimeter</li>
+              <li>Windows Defender Firewall, macOS Application Firewall, iptables/nftables (Linux)</li>
+            </ul>
+          </div>
+          <div class="ctrl-card teal">
+            <h4><span class="concept-icon">🔒</span> Full-Disk Encryption &amp; Patch Cadence</h4>
+            <p>Two foundational endpoint security baselines that address different risk categories:</p>
+            <p style="margin-top:8px;"><strong>Full-disk encryption (FDE):</strong> BitLocker (Windows), FileVault (macOS) encrypt all data on the disk. If a laptop is stolen, the data is unreadable without the encryption key. Directly satisfies data-at-rest confidentiality requirements for most regulatory frameworks.</p>
+            <p style="margin-top:8px;"><strong>Endpoint patch management:</strong> The OS and all installed applications on every endpoint must be patched on a defined cadence. Unpatched endpoints are the primary initial access vector for both malware and human attackers exploiting known CVEs.</p>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:26px;margin-bottom:14px;">Defense in Depth — The Enterprise Control Stack</h4>
+        <p style="font-size:0.87rem;color:var(--text-mid);margin-bottom:14px;">Defense in depth layers controls so that an attacker must defeat every layer to reach their goal. No layer is assumed to be impenetrable — each layer buys time for the next layer to engage and for defenders to detect and respond. Here is a representative enterprise defense-in-depth stack from the internet perimeter inward to the data:</p>
+
+        <div class="did-stack">
+          <div class="did-layer did-l1">
+            <div class="did-icon">🌐</div>
+            <div class="did-info">
+              <h5>Layer 1: Perimeter Firewall / NGFW</h5>
+              <p>First barrier — blocks unauthorized inbound and outbound traffic. Application-aware policies deny non-business traffic. SSL inspection decrypts HTTPS for deeper analysis. Defeats: network scanning, direct exploitation of internal services from internet.</p>
+            </div>
+          </div>
+          <div class="did-layer did-l2">
+            <div class="did-icon">📡</div>
+            <div class="did-info">
+              <h5>Layer 2: IDS/IPS</h5>
+              <p>Analyzes traffic that passes the firewall for attack signatures and behavioral anomalies. Inline IPS drops exploit traffic before it reaches internal systems. Defeats: known exploits, vulnerability scanning, protocol attacks.</p>
+            </div>
+          </div>
+          <div class="did-layer did-l3">
+            <div class="did-icon">🌍</div>
+            <div class="did-info">
+              <h5>Layer 3: DNS Filtering &amp; Web Proxy</h5>
+              <p>Blocks user access to malicious domains and filters outbound web traffic through a proxy for content inspection. Defeats: phishing link visits, C2 callbacks, malware downloads, botnet beaconing.</p>
+            </div>
+          </div>
+          <div class="did-layer did-l4">
+            <div class="did-icon">📧</div>
+            <div class="did-info">
+              <h5>Layer 4: Email Security Gateway</h5>
+              <p>Filters inbound and outbound email — strips malicious attachments, blocks phishing links, verifies DMARC/DKIM/SPF, and quarantines suspicious messages. Defeats: phishing, BEC, malware delivery via email attachment.</p>
+            </div>
+          </div>
+          <div class="did-layer did-l5">
+            <div class="did-icon">🔐</div>
+            <div class="did-info">
+              <h5>Layer 5: NAC &amp; Network Segmentation</h5>
+              <p>Only compliant, authenticated devices connect to the network. Segmentation limits lateral movement — a compromised workstation cannot directly reach the database server. Defeats: unauthorized device access, lateral movement post-compromise.</p>
+            </div>
+          </div>
+          <div class="did-layer did-l6">
+            <div class="did-icon">🖥️</div>
+            <div class="did-info">
+              <h5>Layer 6: Endpoint Security (EDR + Application Control + HBF)</h5>
+              <p>Behavioral monitoring, process control, and host-level traffic filtering on every endpoint. Even if an attacker lands on a device, EDR detects their tools and techniques; application control prevents unauthorized code execution. Defeats: fileless malware, living-off-the-land attacks, zero-day exploits.</p>
+            </div>
+          </div>
+          <div class="did-layer did-l7">
+            <div class="did-icon">📂</div>
+            <div class="did-info">
+              <h5>Layer 7: DLP + Data Encryption + Access Control</h5>
+              <p>The final protection layer around the data itself — encryption at rest and in transit, least-privilege access control, and DLP to prevent unauthorized exfiltration. Even if all other layers are bypassed, encrypted data with enforced access control limits the damage. Defeats: insider exfiltration, data theft post-compromise.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Analogy — Medieval Castle Defense:</strong> Defense in depth is exactly how medieval castles were designed. The outer moat (perimeter firewall) stops most attackers from even reaching the walls. The drawbridge mechanism (IPS) drops if someone hostile gets through the moat. The outer wall (DNS/email filtering) blocks projectiles. The inner wall (NAC/segmentation) separates the outer courtyard from the keep. The keep itself (endpoint security) is a hardened fortress. The vault in the keep's basement (DLP + encryption) requires a separate key even if the keep falls. An attacker must breach every layer — defenders only need to stop them at one.
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Matching Controls to Threats — The Core Exam Skill</h4>
+        <div class="topic-grid">
+          <div class="concept-block">
+            <h4><span class="concept-icon">🎯</span> Control-to-Threat Mapping Framework</h4>
+            <p>Security+ scenario questions frequently describe a threat and ask which control addresses it. Use this framework to match them:</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Unauthorized network access / non-compliant device → NAC</strong></li>
+              <li><strong>Malware C2 callback / phishing domain visit → DNS Filtering</strong></li>
+              <li><strong>Employee emailing SSNs to personal account → DLP</strong></li>
+              <li><strong>Web application SQLi / XSS attack → WAF</strong></li>
+              <li><strong>Port scanning / network intrusion attempt → IDS/IPS</strong></li>
+              <li><strong>Fileless malware / behavioral attack on endpoint → EDR</strong></li>
+              <li><strong>Unauthorized application execution → Application Whitelisting</strong></li>
+              <li><strong>Unauthorized network traffic between segments → Firewall / ACL</strong></li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">⚠️</span> Common Exam Traps</h4>
+            <ul style="margin-top:6px;">
+              <li><strong>IDS vs. IPS:</strong> If the scenario asks for a control that BLOCKS traffic, the answer is IPS. If it only needs to DETECT and ALERT, it's IDS. "Monitor and alert" = IDS; "prevent in real time" = IPS</li>
+              <li><strong>Firewall vs. IPS:</strong> Firewalls enforce access control by port/IP/protocol. IPS inspects content for attack signatures. Both can block — but IPS acts on what's in the packet, not just where it's going</li>
+              <li><strong>DLP vs. Firewall:</strong> A firewall blocks by destination; DLP blocks by content. If the threat is data leaving through an authorized channel (email, approved cloud storage), a firewall won't stop it — DLP will</li>
+              <li><strong>NAC vs. Authentication:</strong> Authentication proves who you are; NAC proves your device is compliant. A user can authenticate perfectly and still be quarantined by NAC if their laptop lacks current patches</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 1 — CONTROL-TO-THREAT DRAG & DROP
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 1</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 1</span>
+        <div>
+          <h3>Control-to-Threat Matcher — Drag &amp; Drop</h3>
+          <p>Match each threat scenario to the security control that BEST addresses it</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Each chip describes a specific security threat or incident. Drag it to the control zone that is most directly designed to address that threat. Submit for graded feedback. Click × on a placed chip to return it to the pool.
+        </div>
+
+        <div class="drag-pool" id="dp6">
+          <div class="drag-item" draggable="true" data-answer="Firewall" id="d6-1">Port scan from internet IP reaching internal subnet</div>
+          <div class="drag-item" draggable="true" data-answer="DNS-Filter" id="d6-2">Malware beaconing to a known C2 domain</div>
+          <div class="drag-item" draggable="true" data-answer="NAC" id="d6-3">Personal laptop with outdated AV connecting to corp Wi-Fi</div>
+          <div class="drag-item" draggable="true" data-answer="DLP" id="d6-4">Employee uploads confidential contract to personal Google Drive</div>
+          <div class="drag-item" draggable="true" data-answer="IPS" id="d6-5">SQL injection payload in HTTP request to web server</div>
+          <div class="drag-item" draggable="true" data-answer="EDR" id="d6-6">Fileless malware running in PowerShell memory — no disk artifact</div>
+          <div class="drag-item" draggable="true" data-answer="DNS-Filter" id="d6-7">User clicks phishing link to typosquatted bank domain</div>
+          <div class="drag-item" draggable="true" data-answer="DLP" id="d6-8">Email with 10 SSNs sent to external recipient</div>
+          <div class="drag-item" draggable="true" data-answer="Firewall" id="d6-9">RDP access from internet to internal server on port 3389</div>
+          <div class="drag-item" draggable="true" data-answer="EDR" id="d6-10">Ransomware encrypting files — unknown malware variant</div>
+        </div>
+
+        <div class="drop-zones-5">
+          <div class="drop-zone" id="zone6-Firewall" data-zone="Firewall">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--green);"></span> Firewall / NGFW</div>
+          </div>
+          <div class="drop-zone" id="zone6-IPS" data-zone="IPS">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--blue);"></span> IDS / IPS</div>
+          </div>
+          <div class="drop-zone" id="zone6-DNS-Filter" data-zone="DNS-Filter">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--teal);"></span> DNS Filtering</div>
+          </div>
+          <div class="drop-zone" id="zone6-NAC" data-zone="NAC">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--amber);"></span> NAC</div>
+          </div>
+          <div class="drop-zone" id="zone6-DLP" data-zone="DLP">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--purple);"></span> DLP</div>
+          </div>
+          <div class="drop-zone" id="zone6-EDR" data-zone="EDR">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--red);"></span> EDR / Endpoint Security</div>
+          </div>
+        </div>
+
+        <div class="activity-actions">
+          <button class="btn-primary" onclick="checkAct6()">Check Answers</button>
+          <button class="btn-secondary" onclick="resetAct6()">Reset</button>
+        </div>
+        <div class="activity-result" id="act6-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 2 — NETWORK DEFENSE SCENARIO ANALYZER
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 2</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 2</span>
+        <div>
+          <h3>Network Defense Scenario Analyzer</h3>
+          <p>Select a real-world incident and identify which controls failed, which should have been deployed, and why</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Select a scenario tab below. Read the incident description, then answer each analysis question individually for graded feedback and detailed explanations.
+        </div>
+
+        <div class="scenario-tabs">
+          <button class="scenario-tab active" onclick="showNet(0,this)">Scenario A: Ransomware Incident</button>
+          <button class="scenario-tab" onclick="showNet(1,this)">Scenario B: Data Exfiltration</button>
+          <button class="scenario-tab" onclick="showNet(2,this)">Scenario C: Rogue Device</button>
+        </div>
+
+        <!-- Scenario A -->
+        <div class="scenario-panel active" id="net-0">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🔴 Scenario A: Manufacturing Company Ransomware Incident</div>
+            <div class="scenario-body">A manufacturing company's file server is encrypted by ransomware. Investigation reveals: (1) An employee received a phishing email with a malicious macro-enabled Word document. (2) The employee's laptop was running Windows 10 with patches 6 months out of date and no EDR — only legacy antivirus. (3) After the macro executed, the malware made a DNS query to a known ransomware C2 domain to retrieve the encryption key. (4) The malware then spread laterally through the flat network, encrypting the file server and two additional workstations. (5) No DNS filtering was in place. (6) Network segmentation was not implemented — all devices were on the same /24 subnet.</div>
+          </div>
+          <div class="net-questions">
+
+            <div class="net-q" id="nq-a1">
+              <div class="net-q-text">Q1: Which SINGLE control, if deployed at the DNS level, would most likely have stopped the ransomware from completing its encryption routine?</div>
+              <div class="net-opts">
+                <label class="net-opt"><input type="radio" name="nqa1" value="A"> A network IPS with signature-based detection enabled</label>
+                <label class="net-opt"><input type="radio" name="nqa1" value="B"> DNS filtering that blocks queries to known malware C2 domains</label>
+                <label class="net-opt"><input type="radio" name="nqa1" value="C"> A host-based firewall on the employee's laptop</label>
+                <label class="net-opt"><input type="radio" name="nqa1" value="D"> Full-disk encryption on the file server</label>
+              </div>
+              <div class="net-fb" id="nq-a1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkNet('nq-a1','B','nqa1','✅ Correct! The investigation identified that the malware made a DNS query to a known C2 domain to retrieve the encryption key. DNS filtering would have blocked this query — the malware would not receive the encryption key and could not complete the encryption process. Many ransomware families require C2 contact for the key exchange; disrupting this communication is a critical defensive step. DNS filtering is highly effective against ransomware because it requires no signatures for the malware itself — blocking the C2 domain is sufficient.','❌ Correct answer: B — DNS Filtering. The scenario specifically states the malware made a DNS query to a known C2 domain. Blocking that DNS resolution would deny the malware the encryption key it needs. An IPS might detect the malware traffic but would need specific signatures. A host firewall limits ports/IPs but doesn\'t inspect DNS queries for threat intelligence. FDE protects data if the disk is stolen but does nothing against active malware with OS-level access.')">Submit</button></div>
+            </div>
+
+            <div class="net-q" id="nq-a2">
+              <div class="net-q-text">Q2: The malware spread to two additional systems through the flat /24 network. Which architectural control would have MOST limited this lateral movement?</div>
+              <div class="net-opts">
+                <label class="net-opt"><input type="radio" name="nqa2" value="A"> Installing antivirus on all workstations to detect the malware before it spreads</label>
+                <label class="net-opt"><input type="radio" name="nqa2" value="B"> Network segmentation — placing workstations, servers, and printers in separate VLANs with firewall controls between them</label>
+                <label class="net-opt"><input type="radio" name="nqa2" value="C"> Enabling HTTPS inspection on the perimeter firewall</label>
+                <label class="net-opt"><input type="radio" name="nqa2" value="D"> Deploying a WAF in front of the file server</label>
+              </div>
+              <div class="net-fb" id="nq-a2-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkNet('nq-a2','B','nqa2','✅ Correct! A flat /24 network means every device can communicate directly with every other device — there are no barriers to lateral movement. Network segmentation places workstations in one VLAN, servers in another, and enforces firewall rules between them. Even if a workstation is fully compromised, it cannot directly reach the file server without passing through a firewall that enforces access control. Ransomware spreading laterally is primarily a network segmentation failure — the blast radius is contained by how segmented the network is.','❌ Correct answer: B — Network segmentation. Antivirus that didn\'t catch the original malware won\'t catch it spreading. HTTPS inspection addresses encrypted web traffic at the perimeter, not internal lateral movement. A WAF protects web applications from HTTP attacks — it is completely irrelevant to internal SMB/file share lateral movement. Only segmentation creates a barrier that requires the malware to pass through additional controls before reaching each new target.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Scenario B -->
+        <div class="scenario-panel" id="net-1">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🟠 Scenario B: Insider Data Exfiltration</div>
+            <div class="scenario-body">A financial services company discovers that a departing employee copied 14,000 customer account records to a personal USB drive during their final week of employment. The HR system had already begun the offboarding process, but the employee's Active Directory account was not disabled until the day they physically left the building. There was no DLP solution in place. The USB port policy allowed any USB device to be plugged into workstations. The discovery was made three weeks later when a competitor began using customer data that matched the stolen records. The employee had legitimate access to the customer database as part of their normal job function.</div>
+          </div>
+          <div class="net-questions">
+
+            <div class="net-q" id="nq-b1">
+              <div class="net-q-text">Q1: Which control would MOST directly have prevented the data from being copied to the USB drive?</div>
+              <div class="net-opts">
+                <label class="net-opt"><input type="radio" name="nqb1" value="A"> A perimeter firewall blocking outbound connections to competitor IP addresses</label>
+                <label class="net-opt"><input type="radio" name="nqb1" value="B"> An IPS with anomaly detection for large database queries</label>
+                <label class="net-opt"><input type="radio" name="nqb1" value="C"> DLP with endpoint agent configured to block write operations to removable media for data classified as sensitive</label>
+                <label class="net-opt"><input type="radio" name="nqb1" value="D"> DNS filtering to block access to cloud storage upload sites</label>
+              </div>
+              <div class="net-fb" id="nq-b1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkNet('nq-b1','C','nqb1','✅ Correct! DLP in-use (endpoint agent) configured to block write operations to removable media is the direct preventive control for this specific threat. The employee plugged in a USB drive and copied files — endpoint DLP can detect that the files being copied are classified as customer PII and block the write operation to the unauthorized destination. A firewall addresses network traffic, not local USB operations. An IPS monitors network traffic, not local file copy operations. DNS filtering prevents web-based uploads, not USB writes.','❌ Correct answer: C — DLP endpoint agent blocking removable media writes. The data never crossed the network — it was copied to a physical USB drive. Perimeter firewall and DNS filtering only address network-based exfiltration. IPS monitors network traffic. Only a DLP endpoint agent that monitors and controls how data moves on the physical device can detect and block a USB write operation. Blocking all USB write access for users who handle sensitive data (or implementing device encryption requirements for USB) are the correct preventive controls.')">Submit</button></div>
+            </div>
+
+            <div class="net-q" id="nq-b2">
+              <div class="net-q-text">Q2: The employee had legitimate database access and the account wasn't disabled until their last day. Which access control process failure contributed MOST to this incident, and what is the correct practice?</div>
+              <div class="net-opts">
+                <label class="net-opt"><input type="radio" name="nqb2" value="A"> Password policy failure — the employee should have been required to change their password during the final week</label>
+                <label class="net-opt"><input type="radio" name="nqb2" value="B"> Offboarding process failure — access should be revoked at the start of the notice period or when offboarding is initiated, not on the last physical day</label>
+                <label class="net-opt"><input type="radio" name="nqb2" value="C"> MFA failure — requiring MFA on the database would have prevented the employee from accessing it</label>
+                <label class="net-opt"><input type="radio" name="nqb2" value="D"> Audit log failure — if logs were reviewed daily, the exfiltration would have been caught immediately</label>
+              </div>
+              <div class="net-fb" id="nq-b2-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkNet('nq-b2','B','nqb2','✅ Correct! The offboarding process failure is the root cause. Best practice is to revoke or significantly restrict access at the moment an employee submits their resignation or when HR initiates the offboarding process — not on their last physical day. A departing employee with two weeks of notice and full database access has two weeks to exfiltrate data. The correct process: disable sensitive data access immediately upon notice, transfer job function access to a manager review process, and disable the account on or before the last day. Audit logs and MFA support detection and access control but don\'t address the core problem — the account remaining fully active during the notice period.','❌ Correct answer: B — Offboarding process failure. The employee had legitimate access and wasn\'t violating authentication controls — they were authenticated. MFA verifies identity but doesn\'t prevent an authenticated, authorized user from copying data. Password changes don\'t revoke access. Audit logs help detect (and would have been valuable here) but are detective, not preventive. The preventive control is removing or restricting access as soon as an employee\'s departure is known — making the notice period a window of reduced, monitored, access rather than full, unmonitored access.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Scenario C -->
+        <div class="scenario-panel" id="net-2">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🔵 Scenario C: Rogue Device on Corporate Network</div>
+            <div class="scenario-body">During a quarterly security audit, a network scan identifies an unknown device on the corporate network — a Raspberry Pi configured as a wireless access point. The device is transmitting its own Wi-Fi SSID called "CorpGuest" and routing traffic through the corporate LAN. Any device that connects to this rogue AP is on the corporate network with full internal access. Investigation reveals a contractor connected the device behind a conference room switch port three weeks ago. The corporate network uses 802.1X authentication for employee laptops but the conference room switch ports were not configured to require authentication. The rogue AP has been collecting credentials from connecting devices via a captive portal that mimics the corporate login page.</div>
+          </div>
+          <div class="net-questions">
+
+            <div class="net-q" id="nq-c1">
+              <div class="net-q-text">Q1: Which control, applied to the conference room switch port, would have PREVENTED the rogue device from connecting to the corporate network?</div>
+              <div class="net-opts">
+                <label class="net-opt"><input type="radio" name="nqc1" value="A"> DNS filtering on the conference room VLAN to block malicious domains</label>
+                <label class="net-opt"><input type="radio" name="nqc1" value="B"> NAC with 802.1X port authentication — all switch ports require device/user authentication before granting network access</label>
+                <label class="net-opt"><input type="radio" name="nqc1" value="C"> An IPS deployed inline on the corporate core switch</label>
+                <label class="net-opt"><input type="radio" name="nqc1" value="D"> A DLP agent on all corporate laptops to prevent credential submission to untrusted portals</label>
+              </div>
+              <div class="net-fb" id="nq-c1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkNet('nq-c1','B','nqc1','✅ Correct! NAC with 802.1X port authentication would have prevented the Raspberry Pi from connecting. 802.1X requires every device plugged into a switch port to authenticate (using a certificate or credentials) before the switch port allows any traffic. The Raspberry Pi, being an unauthorized device without a valid corporate certificate, would have been blocked at Layer 2 before it could pass any traffic. The gap in this scenario was that conference room switch ports were exempt from 802.1X — every switch port in a corporate environment should require authentication, including conference room ports used by contractors.','❌ Correct answer: B — NAC with 802.1X on all switch ports. DNS filtering, IPS, and DLP operate after the device is already connected. The problem here is that an unauthorized device was able to connect at all. 802.1X forces authentication before any network access is granted at the switch level. If the conference room port had required 802.1X authentication, the Raspberry Pi would not have received a network connection, period. NAC is specifically designed to solve the "unauthorized device connecting to the network" threat.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       QUIZ — 5 QUESTIONS
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Lesson 6 Quiz — 5 Questions</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Assessment</span>
+        <div>
+          <h3>Knowledge Check: Network &amp; Infrastructure Security</h3>
+          <p>Select the best answer for each question, then submit for graded feedback</p>
+        </div>
+      </div>
+      <div class="activity-body">
+
+        <!-- Q1 -->
+        <div class="quiz-q" id="q1">
+          <div class="q-num">Question 1 of 5</div>
+          <div class="q-text">A security architect is designing the network defense strategy for a company that processes credit card transactions. The architect wants a control that inspects HTTP and HTTPS traffic directed at the company's payment portal, specifically to detect and block SQL injection and cross-site scripting attacks. Which control is MOST appropriate?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q1" value="A"> A stateful inspection firewall configured to block inbound traffic on non-standard ports</label>
+            <label class="q-option"><input type="radio" name="q1" value="B"> A network IPS with signature-based detection enabled for common web attack signatures</label>
+            <label class="q-option"><input type="radio" name="q1" value="C"> A Web Application Firewall (WAF) deployed in front of the payment portal, enforcing OWASP rules</label>
+            <label class="q-option"><input type="radio" name="q1" value="D"> DNS filtering configured to block known malicious domains from resolving</label>
+          </div>
+          <div class="q-feedback" id="q1-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-q" id="q2">
+          <div class="q-num">Question 2 of 5</div>
+          <div class="q-text">A hospital's network team wants to ensure that only managed, corporate-issued devices with current OS patches and active endpoint protection can access the clinical network segment where EHR systems reside. Personally-owned devices and unmanaged contractor laptops should receive internet-only access via a guest VLAN. Which control BEST implements this requirement?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q2" value="A"> A NGFW with application-aware policies blocking non-EHR traffic on the clinical segment</label>
+            <label class="q-option"><input type="radio" name="q2" value="B"> NAC performing pre-admission posture assessment — compliant devices receive clinical access; non-compliant devices are placed in the guest VLAN</label>
+            <label class="q-option"><input type="radio" name="q2" value="C"> DNS filtering configured to block medical information sites for devices not meeting compliance</label>
+            <label class="q-option"><input type="radio" name="q2" value="D"> An IPS deployed inline on the switch connecting to the clinical VLAN</label>
+          </div>
+          <div class="q-feedback" id="q2-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-q" id="q3">
+          <div class="q-num">Question 3 of 5</div>
+          <div class="q-text">A security operations team is reviewing an IDS alert that shows a spike of 2,400 alerts per hour — mostly flagging normal employee web browsing as "suspicious HTTP patterns." The volume of alerts is preventing the team from investigating genuinely suspicious events. Which term describes this problem, and what is the MOST appropriate remediation?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q3" value="A"> False negatives — the IDS is missing real attacks. Remediation: add more signature rules to catch missed events</label>
+            <label class="q-option"><input type="radio" name="q3" value="B"> Alert fatigue caused by false positives — the IDS signatures are triggering on legitimate traffic. Remediation: tune signatures, create exclusion rules for known-good traffic, and establish severity tiers to prioritize high-confidence alerts</label>
+            <label class="q-option"><input type="radio" name="q3" value="C"> A denial-of-service attack on the IDS itself — the volume indicates the IDS is under attack. Remediation: deploy a DDoS mitigation service</label>
+            <label class="q-option"><input type="radio" name="q3" value="D"> Normal IDS behavior — high alert volumes are expected and no action is required</label>
+          </div>
+          <div class="q-feedback" id="q3-feedback"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-q" id="q4">
+          <div class="q-num">Question 4 of 5</div>
+          <div class="q-text">An employee working from home inadvertently installs a trojan that, once running, attempts to communicate with its command-and-control server. The employee's corporate laptop has an EDR solution installed. The trojan uses fileless techniques — running entirely in PowerShell memory with no executable file on disk. Which statement BEST describes how EDR addresses this threat compared to traditional antivirus?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q4" value="A"> EDR is less effective than antivirus against fileless malware because there is no file to scan for signatures</label>
+            <label class="q-option"><input type="radio" name="q4" value="B"> Both EDR and antivirus are equally effective because they both inspect running processes for known patterns</label>
+            <label class="q-option"><input type="radio" name="q4" value="C"> EDR is more effective because it monitors behavioral indicators (PowerShell spawning network connections, unusual memory allocation) rather than relying on file signatures — detecting threats based on what they do, not what they are</label>
+            <label class="q-option"><input type="radio" name="q4" value="D"> Antivirus is more effective because it has a larger signature database that includes PowerShell-based attack patterns</label>
+          </div>
+          <div class="q-feedback" id="q4-feedback"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-q" id="q5">
+          <div class="q-num">Question 5 of 5</div>
+          <div class="q-text">A company's DLP solution is configured to block outbound email containing Social Security Numbers (SSNs) that match a regex pattern for XXX-XX-XXXX. An analyst discovers that a malicious insider has been successfully exfiltrating SSNs by typing them without hyphens (e.g., 123456789 instead of 123-45-6789) — the DLP system did not flag these emails. Which statement BEST describes this situation, and the appropriate remediation?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q5" value="A"> The DLP is functioning correctly — SSNs without hyphens are not SSNs and do not need to be protected</label>
+            <label class="q-option"><input type="radio" name="q5" value="B"> The DLP policy has a coverage gap — SSN detection patterns must include multiple format variations (with/without hyphens, with spaces, in documents). Update patterns and add content fingerprinting for sensitive documents</label>
+            <label class="q-option"><input type="radio" name="q5" value="C"> The IPS should have caught this — DLP is not designed to detect structured data patterns in email</label>
+            <label class="q-option"><input type="radio" name="q5" value="D"> The firewall should block all email to external recipients to prevent this type of exfiltration</label>
+          </div>
+          <div class="q-feedback" id="q5-feedback"></div>
+        </div>
+
+        <div class="quiz-submit-row">
+          <button class="btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          <button class="btn-secondary" onclick="resetQuiz()">Reset</button>
+        </div>
+        <div id="quiz-result"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-body -->
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<div class="page-footer">
+  <div class="footer-nav">
+    <a href="index.html">← Course Home</a>
+    <a href="lesson05.html">← Lesson 5: Secure Architecture</a>
+    <a href="lesson06-part01.png" target="_blank" rel="noopener">Topic 1 Graphic</a>
+    <a href="lesson06-part02.png" target="_blank" rel="noopener">Topic 2 Graphic</a>
+    <a href="lesson06-part03.png" target="_blank" rel="noopener">Topic 3 Graphic</a>
+    <a href="lesson07.html">Next: Identity &amp; Access Management &rarr;</a>
+  </div>
+  CompTIA Security+ SY0-701 &nbsp;|&nbsp; Lesson 6: Network &amp; Infrastructure Security &nbsp;|&nbsp; Moraine Valley Community College
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ---- THEME ---- */
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+  localStorage.setItem('secplus-theme', next);
+}
+(function () {
+  const saved = localStorage.getItem('secplus-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Light';
+  }
+})();
+
+/* ============================================================
+   ACTIVITY 1 — DRAG & DROP
+   ============================================================ */
+let drag6 = null;
+
+document.querySelectorAll('#dp6 .drag-item').forEach(item => {
+  item.addEventListener('dragstart', e => {
+    drag6 = item.id;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  item.addEventListener('dragend', () => item.classList.remove('dragging'));
+});
+
+document.querySelectorAll('[id^="zone6-"]').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const item = document.getElementById(drag6);
+    if (!item) return;
+    const isCorrect = item.dataset.answer === zone.dataset.zone;
+    const chip = document.createElement('span');
+    chip.className = 'dropped-item ' + (isCorrect ? 'correct' : 'incorrect');
+    chip.dataset.itemId = drag6;
+    const lbl = item.textContent.length > 36 ? item.textContent.substring(0, 36) + '…' : item.textContent;
+    chip.innerHTML = lbl + ' <span class="rm">×</span>';
+    chip.querySelector('.rm').addEventListener('click', () => returnItem6(drag6, chip));
+    zone.appendChild(chip);
+    item.style.display = 'none';
+    document.getElementById('act6-result').style.display = 'none';
+  });
+});
+
+function returnItem6(id, chip) {
+  const item = document.getElementById(id);
+  if (item) item.style.display = '';
+  chip.remove();
+}
+
+function checkAct6() {
+  let correct = 0, total = 0;
+  document.querySelectorAll('[id^="zone6-"]').forEach(zone => {
+    zone.querySelectorAll('.dropped-item').forEach(chip => {
+      total++;
+      const item = document.getElementById(chip.dataset.itemId);
+      if (item && item.dataset.answer === zone.dataset.zone) {
+        chip.className = 'dropped-item correct'; correct++;
+      } else {
+        chip.className = 'dropped-item incorrect';
+        chip.style.animation = 'none'; void chip.offsetWidth; chip.style.animation = '';
+      }
+    });
+  });
+  const res = document.getElementById('act6-result');
+  res.style.display = 'block';
+  if (total === 0) { res.className = 'activity-result result-fail'; res.textContent = 'Sort at least one threat before checking.'; return; }
+  if (correct === total && total === 10) {
+    res.className = 'activity-result result-pass';
+    res.textContent = '✅ Perfect! All 10 threat scenarios correctly matched to their primary control. You can map threats to controls — a critical Security+ skill.';
+  } else {
+    res.className = 'activity-result result-fail';
+    res.textContent = `${correct}/${total} correct. Red chips are mismatched. Key distinctions: Firewall = port/IP/protocol control; IPS = content/signature blocking; DNS Filter = domain-level blocking; NAC = device compliance gate; DLP = data content control; EDR = endpoint behavioral detection.`;
+  }
+}
+
+function resetAct6() {
+  document.querySelectorAll('[id^="zone6-"] .dropped-item').forEach(chip => returnItem6(chip.dataset.itemId, chip));
+  document.getElementById('act6-result').style.display = 'none';
+}
+
+/* ============================================================
+   ACTIVITY 2 — NETWORK SCENARIOS
+   ============================================================ */
+function showNet(idx, btn) {
+  document.querySelectorAll('.scenario-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function checkNet(qId, correct, radioName, passMsg, failMsg) {
+  const qDiv = document.getElementById(qId);
+  const selected = qDiv.querySelector(`input[name="${radioName}"]:checked`);
+  const fb = document.getElementById(qId + '-fb');
+  qDiv.querySelectorAll('input').forEach(r => r.disabled = true);
+  qDiv.querySelector('button').disabled = true;
+  if (!selected) { fb.className = 'net-fb show fail'; fb.textContent = '⚠️ Please select an answer first.'; return; }
+  const isCorrect = selected.value === correct;
+  qDiv.querySelectorAll('.net-opt').forEach(opt => {
+    if (opt.querySelector('input').value === correct) opt.classList.add('correct');
+    else if (opt.querySelector('input').value === selected.value && !isCorrect) opt.classList.add('wrong');
+  });
+  fb.className = 'net-fb show ' + (isCorrect ? 'pass' : 'fail');
+  fb.textContent = isCorrect ? passMsg : failMsg;
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+const qA = { q1: 'C', q2: 'B', q3: 'B', q4: 'C', q5: 'B' };
+const qFB = {
+  q1: {
+    correct: "✅ Correct! A WAF is specifically designed to protect web applications from HTTP/HTTPS-based attacks including SQL injection and XSS. It operates at Layer 7 with application-layer awareness of web protocols and can enforce the OWASP Top 10 ruleset. A stateful firewall operates at Layer 3/4 and has no visibility into HTTP request content — it cannot distinguish a SQLi payload from a legitimate form submission on port 443. A network IPS can detect some web attacks via signatures but is not as tuned for web application-specific attacks as a dedicated WAF. DNS filtering operates at the DNS query level and has no ability to inspect HTTP payloads.",
+    wrong:   "❌ Correct answer: C — Web Application Firewall (WAF). SQL injection and XSS are Layer 7 application-layer attacks embedded in HTTP requests. Only a WAF, operating with full HTTP/HTTPS application awareness, can inspect request parameters, cookies, and body content against OWASP rules. A stateful firewall sees only IP/port — it allows all port 443 traffic without content inspection. A network IPS has signatures for some attacks but WAF is the purpose-built tool for web application attack prevention. DNS filtering blocks domain resolution — it operates before any HTTP connection is made."
+  },
+  q2: {
+    correct: "✅ Correct! NAC is the control designed to evaluate device compliance before granting network access and to dynamically assign devices to appropriate network segments (clinical VLAN for compliant devices, guest VLAN for non-compliant). NAC performs a posture assessment — checking OS patch level, AV status, certificate, etc. — and uses 802.1X or similar mechanisms to place the device in the correct VLAN based on the assessment result. An NGFW controls traffic between segments but cannot distinguish a managed from an unmanaged device during the connection process. IPS monitors traffic content, not device compliance. DNS filtering is content-level, not device-compliance-based.",
+    wrong:   "❌ Correct answer: B — NAC. The scenario requires determining which devices are managed/compliant and granting them access to the clinical segment, while placing unmanaged devices in a guest VLAN. This is exactly the function of NAC — pre-admission posture assessment followed by dynamic VLAN assignment based on results. NGFWs and IPS control traffic flows and content but cannot evaluate whether a connecting device is managed or compliant before assigning it to a network segment. DNS filtering controls domain access, not network segment membership."
+  },
+  q3: {
+    correct: "✅ Correct! This is alert fatigue caused by false positives. A false positive is when the IDS triggers an alert on legitimate, benign traffic — incorrectly classifying it as suspicious. At 2,400 alerts per hour on normal browsing, the team is overwhelmed and cannot distinguish real threats from noise. The remediation is signature tuning: creating exclusion rules for known-good traffic patterns (e.g., excluding internal IP ranges from certain signature triggers), adjusting signature sensitivity thresholds, categorizing alerts by confidence level, and integrating with SIEM for correlation to reduce noise. An untuned IDS is operationally worse than no IDS because it creates alert fatigue and causes analysts to miss real incidents.",
+    wrong:   "❌ Correct answer: B — Alert fatigue from false positives. False positives are legitimate traffic incorrectly flagged as malicious. False negatives are actual attacks that were missed. 2,400 alerts per hour from normal web browsing is definitionally false positives — the IDS is over-triggering. This is the primary operational challenge for IDS deployment. The remediation is tuning: adjusting signatures to reduce false positives while maintaining detection capability for real threats."
+  },
+  q4: {
+    correct: "✅ Correct! EDR monitors behavioral indicators — what processes do, not what files contain. Fileless malware (PowerShell in-memory) has no file signature for traditional antivirus to detect. EDR detects the malware's behavior: unusual PowerShell network connections, suspicious memory allocation patterns, spawning of child processes associated with malware techniques (living-off-the-land). Traditional antivirus scanning files on disk would find nothing because there is no file. EDR's behavioral analysis model is specifically designed to address the fileless malware gap that has made legacy antivirus increasingly insufficient as a standalone endpoint security control.",
+    wrong:   "❌ Correct answer: C — EDR's behavioral monitoring detects fileless malware that antivirus misses. Traditional antivirus scans files for known signatures. A fileless attack runs entirely in memory with no file artifact — antivirus has nothing to scan. EDR monitors process behavior (PowerShell making unusual outbound connections, injecting into legitimate processes, unusual API calls) — it detects malicious behavior regardless of whether a file is written to disk. This is the primary architectural advantage of EDR over traditional antivirus for modern threat landscapes."
+  },
+  q5: {
+    correct: "✅ Correct! The DLP regex pattern only matches the formatted SSN pattern (XXX-XX-XXXX). A malicious insider simply removed the hyphens, creating a coverage gap. This is a policy/pattern coverage failure — the DLP rule was too narrow. The correct remediation is: (1) Update SSN detection patterns to include multiple format variants (no hyphens, spaces, in documents, in images via OCR); (2) Add data fingerprinting to classify source documents containing sensitive data; (3) Implement document classification labels that DLP enforces regardless of content format. DLP policies must be continuously tested and updated — attackers and careless users will find gaps in naive content-matching rules.",
+    wrong:   "❌ Correct answer: B — DLP policy coverage gap requiring pattern updates. The DLP is functioning as configured — but the configuration is insufficient. SSNs appear in many formats; a single regex pattern is inadequate. DLP is designed for exactly this use case (structured data in email); IPS monitors network attack signatures, not data content policy. Blocking all external email would cause massive business disruption and is operationally unacceptable. The correct fix is improving the DLP policy's detection coverage to match all realistic SSN formats and supplement with document fingerprinting."
+  }
+};
+
+function submitQuiz() {
+  let score = 0;
+  Object.keys(qA).forEach(qid => {
+    const selected = document.querySelector(`input[name="${qid}"]:checked`);
+    const qDiv = document.getElementById(qid);
+    const fb = document.getElementById(qid + '-feedback');
+    qDiv.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+    if (!selected) {
+      fb.className = 'q-feedback show fail';
+      fb.innerHTML = '⚠️ No answer selected. ' + qFB[qid].wrong;
+      qDiv.className = 'quiz-q answered-wrong';
+      return;
+    }
+    const isCorrect = selected.value === qA[qid];
+    if (isCorrect) score++;
+    qDiv.className = 'quiz-q ' + (isCorrect ? 'answered-correct' : 'answered-wrong');
+    fb.className = 'q-feedback show ' + (isCorrect ? 'pass' : 'fail');
+    fb.innerHTML = qFB[qid][isCorrect ? 'correct' : 'wrong'];
+    qDiv.querySelectorAll('.q-option').forEach(opt => {
+      const v = opt.querySelector('input').value;
+      if (v === qA[qid]) opt.classList.add('correct');
+      else if (selected && v === selected.value && !isCorrect) opt.classList.add('wrong');
+    });
+  });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'block';
+  const pct = Math.round((score / 5) * 100);
+  if (score >= 4) {
+    result.className = 'quiz-pass';
+    result.innerHTML = `🎉 <strong>Excellent! ${score}/5 (${pct}%)</strong> — Strong command of network security controls and defense-in-depth strategy. Ready for Lesson 7: Identity &amp; Access Management. <a href="lesson07.html" style="color:var(--green-dark);font-weight:700;margin-left:8px;">Next Lesson →</a>`;
+  } else {
+    result.className = 'quiz-fail';
+    result.innerHTML = `📚 <strong>${score}/5 (${pct}%)</strong> — Review the feedback above. Focus on control-to-threat matching (WAF for web app attacks, NAC for device compliance, EDR for behavioral endpoint threats, DLP for data exfiltration) and the IDS/IPS distinction. The Control-to-Threat Matcher in Activity 1 and the scenario analyzer in Activity 2 are good review resources.`;
+  }
+  result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetQuiz() {
+  document.querySelectorAll('.quiz-q').forEach(q => q.className = 'quiz-q');
+  document.querySelectorAll('input[type="radio"]').forEach(r => { r.checked = false; r.disabled = false; });
+  document.querySelectorAll('.q-option').forEach(o => o.classList.remove('correct', 'wrong'));
+  document.querySelectorAll('.q-feedback').forEach(f => { f.className = 'q-feedback'; f.innerHTML = ''; });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'none'; result.className = '';
+}
+</script>
+</body>
+</html>

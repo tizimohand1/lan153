@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 9: Vulnerability Management & Incident Response | CompTIA Security+ SY0-701</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS — consistent with lessons 1–6
+   ============================================================ */
+:root {
+  --bg:          #ffffff;
+  --bg-soft:     #f7f9f7;
+  --bg-card:     #ffffff;
+  --border:      #d8e4d8;
+  --border-dark: #b2ccb2;
+  --text:        #111111;
+  --text-mid:    #3a4a3a;
+  --text-muted:  #5c6e5c;
+  --green-dark:  #1b5e20;
+  --green:       #2e7d32;
+  --green-mid:   #388e3c;
+  --green-light: #4caf50;
+  --green-pale:  #e8f5e9;
+  --green-pale2: #c8e6c9;
+  --red:         #b71c1c;
+  --red-pale:    #ffebee;
+  --red-mid:     #c62828;
+  --blue:        #1565c0;
+  --blue-pale:   #e3f2fd;
+  --purple:      #6a1b9a;
+  --purple-pale: #f3e5f5;
+  --amber:       #e65100;
+  --amber-pale:  #fff3e0;
+  --teal:        #00695c;
+  --teal-pale:   #e0f2f1;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.13);
+  --radius:      10px;
+  --radius-lg:   16px;
+}
+[data-theme="dark"] {
+  --bg:          #0e120e;
+  --bg-soft:     #141a14;
+  --bg-card:     #1a221a;
+  --border:      #2a3a2a;
+  --border-dark: #3a4e3a;
+  --text:        #e8f0e8;
+  --text-mid:    #b8ccb8;
+  --text-muted:  #7a9a7a;
+  --green-dark:  #81c784;
+  --green:       #4caf50;
+  --green-mid:   #66bb6a;
+  --green-light: #a5d6a7;
+  --green-pale:  #1a2e1a;
+  --green-pale2: #1e3a1e;
+  --red:         #ef9a9a;
+  --red-pale:    #2a1010;
+  --red-mid:     #ef9a9a;
+  --blue:        #90caf9;
+  --blue-pale:   #0d1f35;
+  --purple:      #ce93d8;
+  --purple-pale: #1f0d2a;
+  --amber:       #ffcc80;
+  --amber-pale:  #2a1a00;
+  --teal:        #80cbc4;
+  --teal-pale:   #0d2520;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.30);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.40);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.50);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.65; font-size: 16px;
+  transition: background 0.3s, color 0.3s;
+}
+h1,h2,h3,h4 { line-height: 1.25; font-weight: 700; }
+a { color: var(--green); text-decoration: none; }
+a:hover { text-decoration: underline; }
+ul { padding-left: 1.4em; }
+li { margin-bottom: 0.35em; }
+code {
+  font-family: 'Courier New', monospace; font-size: 0.87em;
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 5px;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header {
+  background: var(--green-dark); color: #fff;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+.header-inner {
+  max-width: 1180px; margin: 0 auto; padding: 14px 24px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.brand-icon {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px; letter-spacing: -0.5px; color: #fff; flex-shrink: 0;
+}
+.brand-info h1 { font-size: 1rem; font-weight: 700; }
+.brand-info p  { font-size: 0.74rem; opacity: 0.7; margin-top: 1px; }
+.header-right  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lesson-badge {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+  color: #fff; font-size: 0.7rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.07em;
+}
+.nav-link {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px;
+  transition: background 0.2s; text-decoration: none; display: inline-block;
+}
+.nav-link:hover { background: rgba(255,255,255,0.25); text-decoration: none; }
+.theme-btn {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: background 0.2s;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* ============================================================
+   HERO — purple-tinted for "operations/response" domain
+   ============================================================ */
+.hero {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 42%, #6a1b9a22 100%);
+  color: #fff; padding: 48px 24px 40px;
+  position: relative; overflow: hidden;
+}
+.hero::after {
+  content: '09';
+  position: absolute; right: 40px; bottom: -10px;
+  font-size: 120px; font-weight: 900;
+  opacity: 0.07; line-height: 1; pointer-events: none;
+}
+.hero-inner { max-width: 860px; margin: 0 auto; }
+.hero-eyebrow {
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; opacity: 0.8; margin-bottom: 10px;
+}
+.hero h2 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+.hero-sub { font-size: 1rem; opacity: 0.85; max-width: 640px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.hero-tag {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+  font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page-body { max-width: 1180px; margin: 0 auto; padding: 36px 24px 64px; }
+.section-gap { margin-bottom: 48px; }
+.section-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--green);
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--green-pale2);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: block; width: 4px; height: 16px;
+  background: var(--green); border-radius: 2px;
+}
+
+/* ============================================================
+   OBJECTIVES
+   ============================================================ */
+.objectives-box {
+  background: var(--green-pale); border: 1px solid var(--green-pale2);
+  border-left: 5px solid var(--green); border-radius: var(--radius); padding: 24px 28px;
+}
+.objectives-box h3 { color: var(--green-dark); margin-bottom: 12px; font-size: 1rem; }
+.objectives-box li { margin-bottom: 8px; color: var(--text-mid); font-size: 0.93rem; }
+.objectives-box li::marker { color: var(--green); }
+
+/* ============================================================
+   KEY TERMS
+   ============================================================ */
+.terms-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;
+}
+.term-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+}
+.term-name { font-weight: 700; font-size: 0.88rem; color: var(--green-dark); margin-bottom: 4px; }
+.term-def  { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; }
+
+/* ============================================================
+   INTRO CARD
+   ============================================================ */
+.intro-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 5px solid var(--green-light);
+  border-radius: var(--radius-lg); padding: 28px 32px; box-shadow: var(--shadow-sm);
+}
+.intro-card p { color: var(--text-mid); font-size: 0.97rem; line-height: 1.75; }
+.intro-card p + p { margin-top: 12px; }
+
+/* ============================================================
+   FLIP CARDS
+   ============================================================ */
+.flip-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;
+}
+.flip-wrapper { perspective: 1000px; height: 240px; cursor: pointer; }
+.flip-inner {
+  position: relative; width: 100%; height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4,0.2,0.2,1);
+  transform-style: preserve-3d;
+}
+.flip-wrapper.flipped .flip-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back {
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-lg); padding: 24px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border: 1px solid var(--border); box-shadow: var(--shadow-md);
+}
+.flip-front { background: var(--bg-card); }
+.flip-back  { background: var(--green-dark); color: #fff; transform: rotateY(180deg); }
+.flip-num   { font-size: 2.5rem; font-weight: 900; color: var(--green-pale2); line-height: 1; }
+.flip-front h3 { font-size: 1.05rem; color: var(--green-dark); margin-bottom: 6px; }
+.flip-front p  { font-size: 0.82rem; color: var(--text-muted); }
+.flip-hint { font-size: 0.7rem; color: var(--text-muted); }
+.flip-back h3  { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; opacity: 0.9; }
+.flip-back p   { font-size: 0.82rem; opacity: 0.85; line-height: 1.55; flex: 1; }
+.flip-back a.dive-link {
+  display: inline-block; background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 0.78rem; font-weight: 700;
+  padding: 6px 14px; border-radius: 20px; text-decoration: none;
+  transition: background 0.2s; margin-top: 10px; align-self: flex-start;
+}
+.flip-back a.dive-link:hover { background: rgba(255,255,255,0.28); }
+
+/* ============================================================
+   TOPIC SECTIONS
+   ============================================================ */
+.topic-section {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  margin-bottom: 28px; box-shadow: var(--shadow-sm);
+}
+.topic-header {
+  background: var(--green); color: #fff;
+  padding: 18px 28px; display: flex; align-items: center; gap: 14px;
+}
+.topic-header-num {
+  width: 36px; height: 36px; background: rgba(0,0,0,0.2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 900; flex-shrink: 0;
+}
+.topic-header h3 { font-size: 1.1rem; }
+.topic-header p  { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+.topic-body { padding: 28px; }
+.topic-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 18px; }
+.topic-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 18px; }
+
+.concept-block {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.concept-block h4 {
+  font-size: 0.92rem; color: var(--green-dark);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.concept-icon {
+  width: 24px; height: 24px; background: var(--green-pale2);
+  border-radius: 6px; display: inline-flex; align-items: center;
+  justify-content: center; font-size: 13px;
+}
+.concept-block p, .concept-block ul { font-size: 0.87rem; color: var(--text-mid); line-height: 1.6; }
+
+/* Phase/process cards with colored left borders */
+.phase-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius); padding: 16px;
+}
+.phase-card.blue   { border-left-color: var(--blue); }
+.phase-card.purple { border-left-color: var(--purple); }
+.phase-card.amber  { border-left-color: var(--amber); }
+.phase-card.teal   { border-left-color: var(--teal); }
+.phase-card.red    { border-left-color: var(--red); }
+.phase-card h4 {
+  font-size: 0.9rem; margin-bottom: 8px; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.phase-card p, .phase-card ul { font-size: 0.84rem; color: var(--text-mid); line-height: 1.55; }
+.phase-card ul { margin-top: 6px; }
+
+/* IR timeline stepper */
+.ir-timeline {
+  display: flex; flex-direction: column; gap: 0; margin-top: 16px; position: relative;
+}
+.ir-timeline::before {
+  content: ''; position: absolute;
+  left: 20px; top: 0; bottom: 0;
+  width: 2px; background: var(--green-pale2);
+}
+.ir-step {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 12px 0; position: relative;
+}
+.ir-dot {
+  width: 40px; height: 40px; flex-shrink: 0;
+  background: var(--green-dark); color: #fff;
+  border-radius: 50%; display: flex;
+  align-items: center; justify-content: center;
+  font-weight: 900; font-size: 0.85rem;
+  z-index: 1; box-shadow: 0 0 0 4px var(--bg-card);
+}
+.ir-content h4 { font-size: 0.9rem; color: var(--green-dark); margin-bottom: 4px; font-weight: 700; }
+.ir-content p  { font-size: 0.83rem; color: var(--text-mid); line-height: 1.55; }
+.ir-content ul { font-size: 0.83rem; color: var(--text-mid); margin-top: 4px; }
+
+/* Forensics evidence table */
+.evid-table {
+  width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.84rem;
+}
+.evid-table th {
+  background: var(--green-dark); color: #fff;
+  padding: 10px 14px; text-align: left; font-size: 0.79rem; letter-spacing: 0.04em;
+}
+.evid-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-mid); vertical-align: top;
+}
+.evid-table tr:nth-child(even) td { background: var(--bg-soft); }
+.evid-table tr:hover td { background: var(--green-pale); }
+
+/* Severity badge */
+.sev-badge {
+  font-size: 0.64rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.07em; padding: 2px 8px; border-radius: 10px; flex-shrink: 0;
+}
+.sev-critical { background: #b71c1c22; color: var(--red); }
+.sev-high     { background: var(--amber-pale); color: var(--amber); }
+.sev-medium   { background: var(--blue-pale); color: var(--blue); }
+.sev-low      { background: var(--green-pale); color: var(--green-dark); }
+
+/* Callouts */
+.callout {
+  background: var(--green-pale); border-left: 4px solid var(--green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout strong { color: var(--green-dark); }
+.callout-blue {
+  background: var(--blue-pale); border-left: 4px solid var(--blue);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-blue strong { color: var(--blue); }
+.callout-amber {
+  background: var(--amber-pale); border-left: 4px solid var(--amber);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-amber strong { color: var(--amber); }
+.callout-red {
+  background: var(--red-pale); border-left: 4px solid var(--red);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-red strong { color: var(--red-mid); }
+.callout-purple {
+  background: var(--purple-pale); border-left: 4px solid var(--purple);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px; font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-purple strong { color: var(--purple); }
+
+/* ============================================================
+   ACTIVITIES — common
+   ============================================================ */
+.activity-box {
+  background: var(--bg-card); border: 2px solid var(--green-pale2);
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md);
+}
+.activity-header {
+  background: var(--green-dark); color: #fff;
+  padding: 16px 24px; display: flex; align-items: center; gap: 12px;
+}
+.activity-badge {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+  font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.activity-header h3 { font-size: 1rem; }
+.activity-header p  { font-size: 0.8rem; opacity: 0.8; margin-top: 2px; }
+.activity-body { padding: 24px; }
+.activity-instructions {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 16px;
+  font-size: 0.85rem; color: var(--text-mid); margin-bottom: 20px;
+}
+.activity-result {
+  margin-top: 14px; padding: 12px 16px; border-radius: var(--radius);
+  font-size: 0.88rem; font-weight: 600; display: none;
+}
+.result-pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.result-fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.activity-actions { margin-top: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--green-dark); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--green); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--bg-soft); color: var(--text);
+  border: 1px solid var(--border-dark); padding: 10px 22px;
+  border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: var(--border); }
+
+/* ============================================================
+   ACTIVITY 1 — VULNERABILITY TRIAGE DRAG & DROP
+   ============================================================ */
+.drag-pool {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 20px; min-height: 56px;
+  background: var(--bg-soft); border: 1px dashed var(--border-dark);
+  border-radius: var(--radius); padding: 12px;
+}
+.drag-item {
+  background: var(--green-dark); color: #fff;
+  padding: 7px 13px; border-radius: 20px;
+  font-size: 0.79rem; font-weight: 600;
+  cursor: grab; user-select: none;
+  transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.drag-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.drag-item.dragging { opacity: 0.35; }
+.drop-zones-4 {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+}
+.drop-zone {
+  border: 2px dashed var(--border-dark); border-radius: var(--radius);
+  padding: 12px; min-height: 110px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.drop-zone.drag-over { border-color: var(--green); background: var(--green-pale); }
+.drop-zone-label {
+  font-size: 0.74rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-muted);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.dz-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dropped-item {
+  display: inline-block; padding: 4px 11px; border-radius: 20px;
+  font-size: 0.75rem; font-weight: 600; margin: 3px;
+}
+.dropped-item.correct   { background: var(--green-pale2); color: var(--green-dark); border: 1px solid var(--green); }
+.dropped-item.incorrect { background: var(--red-pale); color: var(--red); border: 1px solid var(--red); animation: shake 0.35s; }
+.dropped-item .rm { margin-left: 5px; cursor: pointer; opacity: 0.6; }
+.dropped-item .rm:hover { opacity: 1; }
+@keyframes shake {
+  0%,100%{ transform:translateX(0); }
+  20%{ transform:translateX(-5px); }
+  40%{ transform:translateX(5px); }
+  60%{ transform:translateX(-3px); }
+  80%{ transform:translateX(3px); }
+}
+
+/* ============================================================
+   ACTIVITY 2 — IR SCENARIO ANALYZER
+   ============================================================ */
+.scenario-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.scenario-tab {
+  background: var(--bg-soft); border: 1px solid var(--border-dark);
+  color: var(--text-mid); padding: 8px 16px; border-radius: 20px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.scenario-tab.active, .scenario-tab:hover {
+  background: var(--green-dark); color: #fff; border-color: var(--green-dark);
+}
+.scenario-panel { display: none; }
+.scenario-panel.active { display: block; }
+.scenario-desc-box {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px; margin-bottom: 16px;
+}
+.scenario-title { font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 6px; }
+.scenario-body  { font-size: 0.88rem; color: var(--text-mid); line-height: 1.6; }
+.ir-questions { display: flex; flex-direction: column; gap: 12px; }
+.ir-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.ir-q-text { font-size: 0.9rem; font-weight: 600; margin-bottom: 10px; color: var(--text); }
+.ir-opts { display: flex; flex-direction: column; gap: 7px; }
+.ir-opt {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 12px; background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: 8px;
+  cursor: pointer; font-size: 0.86rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.ir-opt:hover { background: var(--green-pale); border-color: var(--green-light); }
+.ir-opt input { flex-shrink: 0; margin-top: 2px; accent-color: var(--green); }
+.ir-opt.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.ir-opt.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.ir-fb {
+  margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+  font-size: 0.84rem; display: none;
+}
+.ir-fb.show { display: block; }
+.ir-fb.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.ir-fb.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+.quiz-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 16px; transition: border-color 0.3s;
+}
+.quiz-q.answered-correct { border-color: var(--green); background: var(--green-pale); }
+.quiz-q.answered-wrong   { border-color: var(--red);   background: var(--red-pale); }
+.q-num  { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+.q-text { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.45; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-option {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px; background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  cursor: pointer; font-size: 0.88rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.q-option:hover { background: var(--green-pale); border-color: var(--green-light); }
+.q-option input[type="radio"] { margin-top: 1px; flex-shrink: 0; accent-color: var(--green); }
+.q-option.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.q-option.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.q-feedback { margin-top: 12px; padding: 12px 16px; border-radius: var(--radius); font-size: 0.85rem; line-height: 1.55; display: none; }
+.q-feedback.show { display: block; }
+.q-feedback.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.q-feedback.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.quiz-submit-row { margin-top: 20px; display: flex; align-items: center; gap: 14px; }
+#quiz-result {
+  padding: 18px 24px; border-radius: var(--radius-lg);
+  font-size: 1rem; font-weight: 700; display: none; margin-top: 20px;
+}
+.quiz-pass { background: var(--green-pale); color: var(--green-dark); border: 2px solid var(--green-pale2); }
+.quiz-fail { background: var(--red-pale); color: var(--red); border: 2px solid #ffcdd2; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.page-footer {
+  background: var(--bg-soft); border-top: 1px solid var(--border);
+  padding: 24px; text-align: center; font-size: 0.78rem; color: var(--text-muted);
+}
+.footer-nav { display: flex; justify-content: center; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
+.footer-nav a { color: var(--green); font-weight: 600; font-size: 0.85rem; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .hero h2 { font-size: 1.4rem; }
+  .topic-grid, .topic-grid-3, .drop-zones-4 { grid-template-columns: 1fr; }
+  .flip-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="brand-icon">S+</div>
+      <div class="brand-info">
+        <h1>CompTIA Security+ SY0-701</h1>
+        <p>Lesson 9 of 12 &mdash; Vulnerability Management &amp; Incident Response</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="lesson-badge">Day 9</span>
+      <a href="index.html" class="nav-link">&#8592; Course Home</a>
+      <a href="lesson08.html" class="nav-link">&#8592; Lesson 8</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Lesson 9 &mdash; Security Operations (28% of exam)</div>
+    <h2>Vulnerability Management &amp; Incident Response</h2>
+    <p class="hero-sub">Finding vulnerabilities before attackers do, triaging and remediating them by risk, and — when attacks succeed — executing a structured incident response, conducting root cause analysis, and preserving forensic evidence that stands up to scrutiny.</p>
+    <div class="hero-meta">
+      <span class="hero-tag">📖 3 Topics</span>
+      <span class="hero-tag">🎯 2 Activities</span>
+      <span class="hero-tag">📝 5-Question Quiz</span>
+      <span class="hero-tag">⏱ ~60 min</span>
+      <span class="hero-tag">Domain: Security Operations</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE BODY
+     ============================================================ -->
+<div class="page-body">
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="section-gap">
+    <div class="section-label">Learning Objectives</div>
+    <div class="objectives-box">
+      <h3>By the end of this lesson, you will be able to:</h3>
+      <ul>
+        <li>Explain the vulnerability management lifecycle — scanning, analysis, remediation, and validation — and describe what happens at each stage.</li>
+        <li>Compare credentialed and non-credentialed vulnerability scans and justify which scan type is appropriate for a given scenario.</li>
+        <li>Apply a risk-based prioritization framework to a list of scan findings, using CVSS score, asset criticality, and exploitability to determine remediation order.</li>
+        <li>Outline the six phases of the NIST/PICERL incident response lifecycle and describe the key activities, decisions, and outputs of each phase.</li>
+        <li>Distinguish root cause analysis from symptom remediation and explain how lessons-learned activities improve future security posture.</li>
+        <li>Describe the principles of digital forensics — chain of custody, order of volatility, write blockers, and forensic imaging — and explain why each is essential for evidence admissibility.</li>
+        <li>Select appropriate IR actions and forensic procedures for a described security incident scenario.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- KEY TERMS -->
+  <div class="section-gap">
+    <div class="section-label">Key Terms</div>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">Vulnerability Scan</div>
+        <div class="term-def">An automated process that probes systems, applications, and network devices for known security weaknesses — misconfigurations, missing patches, default credentials, and software flaws — and produces a prioritized report of findings mapped to CVE identifiers and CVSS scores.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Remediation</div>
+        <div class="term-def">The process of eliminating or reducing a vulnerability to an acceptable risk level. Remediation may involve patching, configuration changes, removing a vulnerable component, implementing a compensating control, or formally accepting the risk when remediation is not feasible.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">IR (Incident Response)</div>
+        <div class="term-def">The structured process an organization follows to prepare for, detect, contain, eradicate, recover from, and learn from security incidents. A documented IR plan reduces the cost and duration of incidents and satisfies regulatory requirements for breach notification timelines.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Forensic Evidence</div>
+        <div class="term-def">Digital or physical data collected during an investigation that is preserved and documented in a manner that maintains its integrity and admissibility. Forensic evidence must be collected using validated tools, documented with a chain of custody, and stored in a tamper-evident fashion.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Chain of Custody</div>
+        <div class="term-def">A documented, unbroken record of who collected, handled, transferred, and analyzed a piece of evidence — and when. Breaks in chain of custody can render evidence inadmissible in legal proceedings or cast doubt on its integrity in regulatory investigations.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Root Cause Analysis (RCA)</div>
+        <div class="term-def">A structured investigation technique used during the post-incident lessons-learned phase to identify the fundamental underlying cause of an incident — not just its symptoms. RCA ensures that remediation addresses the actual problem so the same incident does not recur.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">CVSS (Common Vulnerability Scoring System)</div>
+        <div class="term-def">A standardized 0–10 scoring framework for rating vulnerability severity. CVSS base scores consider attack vector, complexity, privileges required, user interaction, and CIA impact. Used as a primary input for vulnerability prioritization decisions.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Order of Volatility</div>
+        <div class="term-def">The principle that forensic evidence should be collected in order from most volatile (data that disappears quickest) to least volatile. RAM contents and running processes disappear the moment power is cut; hard drive contents and log files persist. Collecting volatile evidence first preserves data that would otherwise be permanently lost.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="section-gap">
+    <div class="section-label">Topic Introduction</div>
+    <div class="intro-card">
+      <p>Security professionals live in two modes: proactive and reactive. Vulnerability management is the proactive mode — finding weaknesses in your environment before an attacker does, assessing their real-world risk, fixing the highest-priority issues first, and verifying the fix worked. Incident response is the reactive mode — the structured process that kicks in when a security event occurs, requiring disciplined decision-making under pressure to contain damage, eradicate the threat, recover operations, and learn from what happened.</p>
+      <p>Both disciplines are tested heavily in the Security Operations domain, which carries 28% of the Security+ exam — the single highest-weighted domain. CompTIA tests these topics almost entirely through scenario questions: you will read an incident description and be asked what the next correct IR action is, or you will see a vulnerability scan output and be asked which finding to remediate first. Mastering the frameworks in this lesson — the vulnerability management lifecycle and the PICERL incident response lifecycle — gives you the mental model to answer those questions correctly every time.</p>
+    </div>
+  </div>
+
+  <!-- FLIP CARDS -->
+  <div class="section-gap">
+    <div class="section-label">Topic Navigation — Click a Card to Explore</div>
+    <div class="flip-grid">
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">01</div>
+              <h3>Vulnerability Management Lifecycle</h3>
+              <p>Scanning, analysis, remediation, and validation — finding weaknesses before attackers do and closing them systematically.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Vulnerability Management</h3>
+              <p>The lifecycle: scan (discover weaknesses) → analyze (prioritize by risk) → remediate (patch, configure, mitigate) → validate (confirm the fix worked). Credentialed scans see more than non-credentialed. CVSS + asset criticality + exploitability-in-wild drives remediation order.</p>
+            </div>
+            <a class="dive-link" href="lesson09-part01.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">02</div>
+              <h3>Incident Response Phases</h3>
+              <p>The PICERL lifecycle — Preparation, Identification, Containment, Eradication, Recovery, and Lessons Learned — and the critical decisions at each phase.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Incident Response Phases</h3>
+              <p>IR is not improvised — it follows a documented playbook. Preparation builds the capability before an incident. Identification determines that an incident is real. Containment stops the bleeding. Eradication removes the threat. Recovery restores operations. Lessons Learned prevents recurrence.</p>
+            </div>
+            <a class="dive-link" href="lesson09-part02.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">03</div>
+              <h3>Root Cause Analysis &amp; Digital Forensics</h3>
+              <p>Why the attack succeeded — and how to collect, preserve, and analyze evidence that proves it in legal and regulatory proceedings.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>RCA &amp; Digital Forensics</h3>
+              <p>RCA distinguishes root causes from symptoms — fixing only the symptom means the same attack succeeds again. Forensics requires: collect volatile evidence first (RAM before disk), maintain chain of custody, use write blockers, create forensic images, and never work on originals.</p>
+            </div>
+            <a class="dive-link" href="lesson09-part03.html">Deep Dive →</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 1 — VULNERABILITY MANAGEMENT LIFECYCLE
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 1 Content</div>
+    <div class="topic-section">
+      <div class="topic-header">
+        <div class="topic-header-num">1</div>
+        <div>
+          <h3>Vulnerability Management Lifecycle</h3>
+          <p>Scanning, analysis, remediation, and validation — finding weaknesses systematically before attackers do</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Vulnerability management is a continuous cycle, not a one-time project. Every organization has vulnerabilities — the goal is not to achieve zero vulnerabilities (impossible) but to identify, prioritize, and eliminate the highest-risk ones faster than attackers can exploit them.</p>
+
+        <div class="callout">
+          <strong>Analogy — The Building Inspector:</strong> Think of vulnerability management like a building inspector who visits every floor of an office tower on a regular schedule. The scan is the inspection visit — walking every room, checking every outlet, testing every door. The analysis is the inspection report — prioritizing items by safety risk (a gas leak is fixed today; a loose doorknob can wait). Remediation is the repair work. Validation is the re-inspection to confirm the repairs passed code. Without the re-inspection, you don't actually know if the problem was fixed.
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:22px;margin-bottom:14px;">Phase 1: Vulnerability Scanning</h4>
+        <div class="topic-grid">
+          <div class="phase-card blue">
+            <h4>🔍 Credentialed vs. Non-Credentialed Scans</h4>
+            <p><strong>Non-credentialed (unauthenticated):</strong> The scanner connects to the target like an attacker would — without login credentials. It can only detect vulnerabilities visible from the network: open ports, service banners, exposed web interfaces, and publicly exploitable conditions.</p>
+            <p style="margin-top:8px;"><strong>Credentialed (authenticated):</strong> The scanner is provided valid credentials (admin/service account) and logs into each target system. It can read installed software versions, registry keys, configuration files, and applied patches — providing a far more complete and accurate picture of the vulnerability landscape.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Credentialed scans find ~5–10x more vulnerabilities</strong> than non-credentialed scans on the same target</li>
+              <li><strong>Exam tip:</strong> If a scenario asks which scan gives more accurate results or finds more vulnerabilities — credentialed is always the answer</li>
+            </ul>
+          </div>
+          <div class="phase-card teal">
+            <h4>🌐 Scan Types and Placement</h4>
+            <p><strong>Internal scan:</strong> Conducted from inside the network — finds vulnerabilities that an insider or already-compromised system could exploit. Represents the attacker's post-initial-access view.</p>
+            <p style="margin-top:8px;"><strong>External scan:</strong> Conducted from outside the network perimeter — simulates an attacker's view from the internet. Identifies what is exposed to the public and exploitable without prior network access.</p>
+            <p style="margin-top:8px;"><strong>Agent-based scan:</strong> A lightweight agent installed on each endpoint continuously reports vulnerability status. Provides real-time visibility without needing to schedule scan windows or maintain scan credentials.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Common tools:</strong> Nessus (Tenable), Qualys, Rapid7 InsightVM, OpenVAS (open source)</li>
+              <li><strong>Scan frequency:</strong> Critical assets: weekly minimum; standard assets: monthly; all assets after significant changes</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Phase 2: Vulnerability Analysis &amp; Prioritization</h4>
+        <div class="topic-grid">
+          <div class="concept-block">
+            <h4><span class="concept-icon">📊</span> Risk-Based Prioritization Framework</h4>
+            <p>CVSS score alone is insufficient for prioritization. A CVSS 10.0 vulnerability on a test server with no sensitive data is less urgent than a CVSS 7.0 on an internet-facing payment system with an active exploit. The correct framework combines multiple factors:</p>
+            <ul style="margin-top:8px;">
+              <li><strong>CVSS Base Score:</strong> Severity rating (0–10) — first filter</li>
+              <li><strong>Exploitability:</strong> Is there a public exploit or active exploitation in the wild? CISA KEV (Known Exploited Vulnerabilities) catalog is authoritative</li>
+              <li><strong>Asset Criticality:</strong> What business function does this system perform? What data does it hold?</li>
+              <li><strong>Exposure:</strong> Is this system internet-facing or internal-only?</li>
+              <li><strong>Compensating controls:</strong> Are there existing controls (firewall rules, segmentation) that reduce exploitability even if the vulnerability exists?</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">🎯</span> Remediation Priority Tiers</h4>
+            <p>A practical SLA framework for vulnerability remediation:</p>
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+              <div style="padding:10px 14px;background:var(--red-pale);border-radius:8px;border:1px solid var(--red);font-size:0.82rem;">
+                <strong style="color:var(--red);">Critical (CVSS 9.0–10.0 + KEV):</strong> Remediate within 24–72 hours. Active exploitation reported. No compensating controls — patch immediately.
+              </div>
+              <div style="padding:10px 14px;background:var(--amber-pale);border-radius:8px;border:1px solid var(--amber);font-size:0.82rem;">
+                <strong style="color:var(--amber);">High (CVSS 7.0–8.9 or Critical on non-critical asset):</strong> Remediate within 7–14 days. Prioritize internet-facing systems first.
+              </div>
+              <div style="padding:10px 14px;background:var(--blue-pale);border-radius:8px;border:1px solid var(--blue);font-size:0.82rem;">
+                <strong style="color:var(--blue);">Medium (CVSS 4.0–6.9):</strong> Remediate within 30 days. Schedule during regular maintenance windows.
+              </div>
+              <div style="padding:10px 14px;background:var(--green-pale);border-radius:8px;border:1px solid var(--green);font-size:0.82rem;">
+                <strong style="color:var(--green-dark);">Low (CVSS 0.1–3.9):</strong> Remediate within 90 days or accept risk with documented justification.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Phase 3: Remediation — More Than Just Patching</h4>
+        <div class="topic-grid-3">
+          <div class="phase-card">
+            <h4>🔄 Patching</h4>
+            <p>The direct fix — vendor-supplied code that closes the vulnerability. The gold standard: eliminates the root cause. Requires testing before production deployment to avoid introducing service disruptions.</p>
+            <ul>
+              <li>Test in staging environment first</li>
+              <li>Maintain a rollback plan</li>
+              <li>Track patching SLA compliance for audit purposes</li>
+            </ul>
+          </div>
+          <div class="phase-card amber">
+            <h4>🛡️ Mitigation</h4>
+            <p>When a patch is not available (zero-day) or not immediately deployable (requires system downtime), mitigation reduces exploitability without eliminating the vulnerability:</p>
+            <ul>
+              <li>WAF virtual patch blocks the specific exploit pattern</li>
+              <li>Disable the vulnerable service or feature</li>
+              <li>Network access restriction limits who can reach the vulnerability</li>
+            </ul>
+          </div>
+          <div class="phase-card blue">
+            <h4>✅ Risk Acceptance</h4>
+            <p>For low-risk vulnerabilities where remediation cost exceeds the potential impact, the organization may formally accept the risk. This requires:</p>
+            <ul>
+              <li>Documented risk acceptance signed by the asset owner and CISO</li>
+              <li>Defined acceptance period (not permanent)</li>
+              <li>Compensating controls documented</li>
+              <li>Scheduled for re-evaluation at next review cycle</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Phase 4: Validation — Confirming the Fix</h4>
+        <div class="concept-block">
+          <h4><span class="concept-icon">✔️</span> Why Validation Is Non-Negotiable</h4>
+          <p>Applying a patch does not guarantee the vulnerability is closed. Patches can fail to install, can be rolled back by other updates, or may not address the specific configuration that made the system vulnerable. Validation is the re-scan that proves the remediation worked.</p>
+          <div class="topic-grid" style="margin-top:14px;">
+            <div>
+              <ul style="font-size:0.86rem;color:var(--text-mid);">
+                <li><strong>Verification scan:</strong> Run the same vulnerability scan (same scope, same credentials) after remediation. Confirm the specific CVE no longer appears in the results.</li>
+                <li><strong>Penetration test validation:</strong> For critical vulnerabilities, a manual penetration tester attempts to exploit the specific vulnerability post-remediation to confirm it is not reachable.</li>
+                <li><strong>Compliance reporting:</strong> Validation scan results are the evidence submitted to auditors and regulators proving that required patches were applied within the required SLA window.</li>
+              </ul>
+            </div>
+            <div>
+              <p style="font-size:0.86rem;color:var(--text-mid);">The vulnerability management lifecycle is a continuous loop — not a linear process. After validation, monitoring for new vulnerabilities in the same asset begins immediately. New CVEs for already-patched software versions can appear within days of the previous patch cycle closing.</p>
+              <div class="callout-amber" style="margin-top:10px;">
+                <strong>False Positives vs. False Negatives in Scanning:</strong> A false positive is when a scanner reports a vulnerability that doesn't actually exist (often from incorrect version detection). A false negative is when a real vulnerability exists but the scanner misses it. Credentialed scans dramatically reduce both by directly querying installed software versions rather than inferring them from network responses.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 2 — INCIDENT RESPONSE PHASES
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 2 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-dark);">
+        <div class="topic-header-num">2</div>
+        <div>
+          <h3>Incident Response Phases — PICERL</h3>
+          <p>The structured lifecycle that transforms chaos into disciplined response: Preparation, Identification, Containment, Eradication, Recovery, Lessons Learned</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Incident response is not improvised — organizations that improvise under the pressure of an active attack consistently make costly mistakes: destroying evidence by rebooting systems, alerting attackers by changing credentials too early, or declaring recovery before the threat is fully eradicated. The PICERL framework (aligned to NIST SP 800-61) provides the mental model for disciplined IR decision-making.</p>
+
+        <div class="callout-blue">
+          <strong>Analogy — Responding to a Building Fire:</strong> The IR lifecycle maps perfectly to emergency response. Preparation = fire drills, extinguishers, and evacuation maps already in place. Identification = the smoke alarm goes off and someone confirms there's an actual fire (not a false alarm). Containment = close fire doors to stop the spread. Eradication = fire department puts out the fire. Recovery = inspect the building, repair damage, reopen. Lessons Learned = determine why the fire started and update fire prevention policies. Each phase must be completed before the next begins — you don't start rebuilding while the fire is still burning.
+        </div>
+
+        <div class="ir-timeline" style="margin-top:20px;">
+          <div class="ir-step">
+            <div class="ir-dot">P</div>
+            <div class="ir-content">
+              <h4>Phase 1 — Preparation</h4>
+              <p>Everything you do <em>before</em> an incident occurs. Preparation determines whether your organization responds effectively or chaotically. No amount of technical skill during an incident compensates for missing preparation.</p>
+              <ul>
+                <li><strong>IR policy and plan:</strong> Documented procedures for every major incident type (ransomware, data breach, DDoS, insider threat) — including escalation paths and communication templates</li>
+                <li><strong>IR team (CIRT/CSIRT):</strong> Defined roles: Incident Manager (coordinates), Technical Analyst (investigates), Communications Lead (stakeholder updates), Legal/Compliance liaison</li>
+                <li><strong>Tools and infrastructure:</strong> Forensic workstations, EDR platform, SIEM configured and tuned, out-of-band communication channel (attackers may be monitoring email)</li>
+                <li><strong>Training and tabletops:</strong> Regular tabletop exercises test the plan without the stakes of a real incident — exposes gaps before an adversary does</li>
+                <li><strong>Secure out-of-band comms:</strong> During an incident, assume the attacker may be reading email — use an out-of-band channel (encrypted messaging, separate phone bridge) for sensitive IR coordination</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ir-step">
+            <div class="ir-dot">I</div>
+            <div class="ir-content">
+              <h4>Phase 2 — Identification</h4>
+              <p>Detecting that a security event has occurred, determining whether it constitutes a confirmed incident, and characterizing its scope and severity. This phase is where alerts become incidents — or are triaged as false alarms.</p>
+              <ul>
+                <li><strong>Detection sources:</strong> SIEM alerts, EDR detections, user reports, threat intelligence feeds, external notification (FBI, CISA, partner disclosure)</li>
+                <li><strong>Event vs. Incident:</strong> An event is any observable occurrence. An incident is an event that negatively impacts — or threatens to impact — confidentiality, integrity, or availability. Not every alert is an incident.</li>
+                <li><strong>Initial scoping questions:</strong> What systems are affected? What data is at risk? Is the attacker still active? What is the likely initial access vector?</li>
+                <li><strong>Critical decision — notify legal counsel immediately:</strong> If data may be breached, legal counsel must be notified early to protect privilege, manage regulatory notification timelines, and guide evidence handling</li>
+                <li><strong>Preserve evidence:</strong> Do NOT reboot systems, delete logs, or take any action that destroys volatile forensic evidence — identification is when forensic collection begins</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ir-step">
+            <div class="ir-dot">C</div>
+            <div class="ir-content">
+              <h4>Phase 3 — Containment</h4>
+              <p>Stopping the attack from spreading further while preserving evidence for investigation. Containment is a two-stage process: short-term (immediate stoppage) and long-term (stable, sustainable containment while eradication is prepared).</p>
+              <ul>
+                <li><strong>Short-term containment:</strong> Isolate infected endpoints from the network (EDR containment, VLAN quarantine, firewall block rule) — immediately. Do NOT power off if forensics is needed (RAM evidence is lost)</li>
+                <li><strong>Long-term containment:</strong> Set up a clean environment alongside the compromised one if the business cannot tolerate downtime — run operations on clean systems while the compromised environment is investigated</li>
+                <li><strong>Attacker communication:</strong> Do not alert the attacker to your awareness — avoid changing passwords, blocking IPs, or removing access until you are ready to eradicate. Tipping off the attacker may cause them to escalate or destroy evidence</li>
+                <li><strong>Evidence preservation:</strong> Capture forensic images and memory dumps of contained systems before any remediation begins</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ir-step">
+            <div class="ir-dot">E</div>
+            <div class="ir-content">
+              <h4>Phase 4 — Eradication</h4>
+              <p>Removing the threat — the attacker's tools, malware, persistence mechanisms, and unauthorized accounts — completely and verifiably from the environment. Partial eradication is worse than no eradication (it creates false confidence).</p>
+              <ul>
+                <li><strong>Identify all affected systems:</strong> Use forensic analysis and SIEM correlation to map every system the attacker touched — eradication is not complete until all footholds are removed</li>
+                <li><strong>Remove malware and artifacts:</strong> Malware, web shells, scheduled tasks, registry keys, service installations, unauthorized user accounts</li>
+                <li><strong>Close the initial access vector:</strong> Patch the vulnerability, disable the compromised account, or remove the attack entry point — or the attacker simply re-enters</li>
+                <li><strong>Credential reset:</strong> Reset all credentials that may have been exposed — starting with privileged accounts. Consider resetting all Active Directory credentials for significant breaches</li>
+                <li><strong>Re-image option:</strong> For deeply compromised systems, re-imaging from a known-good baseline is faster and more reliable than attempting manual cleanup of an unknown-depth compromise</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ir-step">
+            <div class="ir-dot">R</div>
+            <div class="ir-content">
+              <h4>Phase 5 — Recovery</h4>
+              <p>Restoring affected systems and services to normal operations — but only after verifying the threat has been eradicated. Premature recovery that returns systems before the threat is gone restarts the incident cycle.</p>
+              <ul>
+                <li><strong>Validation before restoration:</strong> Scan restored systems with vulnerability scanner and EDR before connecting to production network</li>
+                <li><strong>Phased return:</strong> Bring systems back incrementally — critical business systems first, then secondary systems — monitoring closely for signs of re-compromise</li>
+                <li><strong>Enhanced monitoring period:</strong> Maintain elevated monitoring and alerting for 30–90 days post-recovery — recurrence attempts are common</li>
+                <li><strong>Business continuity:</strong> If recovery will take days, implement business continuity plans — manual processes, backup systems, vendor escalation</li>
+                <li><strong>Declaration of recovery:</strong> Formally declare the incident closed only when business operations are fully restored and sustained monitoring confirms no recurrence</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ir-step">
+            <div class="ir-dot">L</div>
+            <div class="ir-content">
+              <h4>Phase 6 — Lessons Learned</h4>
+              <p>The most frequently skipped and most valuable phase. Lessons learned directly improves the organization's security posture and prepares for the next incident. Conducted as a structured after-action review within 1–2 weeks of incident closure.</p>
+              <ul>
+                <li><strong>Timeline reconstruction:</strong> Document the complete incident timeline — initial access, lateral movement, data impact, detection point, response actions, and resolution</li>
+                <li><strong>Root cause analysis:</strong> Identify the fundamental cause (not just symptoms) — the control failure, process gap, or configuration weakness that enabled the incident</li>
+                <li><strong>What went well:</strong> Identify effective response actions to formalize as standard procedures</li>
+                <li><strong>What could be improved:</strong> Identify response gaps, communication failures, and missing tools or authority to act</li>
+                <li><strong>Action items:</strong> Document specific, measurable improvement actions with owners and deadlines — lessons learned without action items are post-mortems, not improvements</li>
+                <li><strong>Update the IR plan:</strong> Revise playbooks, detection rules, and procedures based on the incident's specific indicators and techniques</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout-red">
+          <strong>Exam Focus — Sequence Matters:</strong> Security+ scenario questions frequently describe an incident in progress and ask "what should the security team do NEXT?" The correct answer is almost always the next logical step in the PICERL lifecycle — not the most dramatic option. If the scenario describes detection (Identification phase), the next step is Containment — not immediately wiping the system (that skips Containment and destroys evidence) and not calling the press (that belongs in external communications during Recovery). Know the sequence: P → I → C → E → R → L.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 3 — ROOT CAUSE ANALYSIS & DIGITAL FORENSICS
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 3 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-mid);">
+        <div class="topic-header-num">3</div>
+        <div>
+          <h3>Root Cause Analysis &amp; Digital Forensics</h3>
+          <p>Finding the underlying "why" behind an incident — and collecting evidence that proves what happened</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Root cause analysis and digital forensics are closely linked: forensics collects the evidence, and RCA interprets that evidence to find the fundamental failure. Without RCA, organizations fix symptoms and face the same incident again. Without proper forensics, there is no evidence to support RCA — or legal proceedings.</p>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">Root Cause Analysis</h4>
+        <div class="topic-grid">
+          <div class="phase-card purple">
+            <h4>🔎 Symptom vs. Root Cause</h4>
+            <p>The most common RCA failure is treating the symptom as the root cause. A ransomware infection is a symptom — the root cause is usually one of: unpatched vulnerability, phishing email that bypassed email filtering and security awareness training, or credentials compromised and MFA not enforced.</p>
+            <p style="margin-top:8px;">If you only remove the ransomware (treat the symptom) without identifying and closing the initial access vector, the same attacker — or the next one — will re-enter through the same door within weeks.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>The "5 Whys" technique:</strong> Ask "why?" five times to drill from symptom to root cause</li>
+              <li>Why were files encrypted? → Ransomware executed</li>
+              <li>Why did it execute? → Macro in Word document ran</li>
+              <li>Why did the macro run? → User enabled macros despite policy</li>
+              <li>Why did the user enable macros? → Not trained to recognize the phishing tactic</li>
+              <li>Why was training inadequate? → Security awareness program not updated in 3 years</li>
+              <li><strong>Root cause:</strong> Outdated security awareness training — not "ransomware"</li>
+            </ul>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">📋</span> RCA Outputs</h4>
+            <p>A completed RCA produces three categories of outputs:</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Technical findings:</strong> Specific CVE exploited, misconfiguration identified, control gap documented (e.g., "MFA was not enforced on VPN")</li>
+              <li><strong>Process findings:</strong> Procedural gaps — the firewall rule exception was never reviewed, the offboarding checklist did not include revoking cloud access</li>
+              <li><strong>People/training findings:</strong> Awareness gaps — users were not trained to recognize this social engineering technique; IR team did not know how to isolate an endpoint using EDR</li>
+            </ul>
+            <p style="margin-top:10px;font-size:0.85rem;color:var(--text-mid);">Each finding maps to a corrective action with an owner, timeline, and success metric. RCA is not about blame — it is about systemic improvement. Organizations with mature incident response programs treat every incident as a learning opportunity, not a failure to hide.</p>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Digital Forensics Principles</h4>
+        <div class="topic-grid">
+          <div class="phase-card blue">
+            <h4>⚡ Order of Volatility — Collect Most Volatile First</h4>
+            <p>Digital evidence exists on a spectrum from highly volatile (disappears within seconds of power loss) to highly persistent (survives storage for years). The order of collection must match this spectrum — collect the most volatile evidence first.</p>
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;font-size:0.82rem;">
+              <div style="padding:8px 12px;background:var(--red-pale);border-radius:6px;border:1px solid var(--red);">
+                <strong style="color:var(--red);">1. CPU registers &amp; cache</strong> — lost in microseconds; captured via memory dump tools only
+              </div>
+              <div style="padding:8px 12px;background:var(--amber-pale);border-radius:6px;border:1px solid var(--amber);">
+                <strong style="color:var(--amber);">2. RAM (system memory)</strong> — lost immediately on power off; contains running processes, decrypted keys, active connections; use Volatility, WinPmem, or FTK Imager
+              </div>
+              <div style="padding:8px 12px;background:var(--blue-pale);border-radius:6px;border:1px solid var(--blue);">
+                <strong style="color:var(--blue);">3. Network state</strong> — active connections, ARP cache, routing table; use <code>netstat -ano</code>, <code>arp -a</code>
+              </div>
+              <div style="padding:8px 12px;background:var(--teal-pale);border-radius:6px;border:1px solid var(--teal);">
+                <strong style="color:var(--teal);">4. Running processes &amp; services</strong> — <code>ps aux</code>, Task Manager export, process tree
+              </div>
+              <div style="padding:8px 12px;background:var(--green-pale);border-radius:6px;border:1px solid var(--green);">
+                <strong style="color:var(--green-dark);">5. Disk image (HDD/SSD)</strong> — least volatile; persists after power off; create forensic image with write blocker
+              </div>
+              <div style="padding:8px 12px;background:var(--bg-soft);border-radius:6px;border:1px solid var(--border);">
+                <strong style="color:var(--text-mid);">6. Logs, backups, archives</strong> — remote logs (SIEM), backup media — most persistent evidence
+              </div>
+            </div>
+          </div>
+          <div class="concept-block">
+            <h4><span class="concept-icon">🔒</span> Chain of Custody</h4>
+            <p>Chain of custody is the documented, unbroken record proving that evidence was collected, handled, and stored without tampering. It is the forensic foundation for legal admissibility.</p>
+            <ul style="margin-top:8px;">
+              <li><strong>Documentation required:</strong> Who collected the evidence (date, time, location), cryptographic hash of the original (MD5/SHA-256) taken immediately after collection, every transfer of custody documented (who gave it to whom, when), storage conditions (locked evidence cabinet with access log)</li>
+              <li><strong>Hash verification:</strong> A forensic image is hashed immediately after creation. Every time the image is accessed, the hash is re-verified — any change to the image produces a different hash, proving tampering</li>
+              <li><strong>Work on copies only:</strong> Forensic analysis is always performed on a verified copy of the image — never on the original evidence. The original is preserved untouched</li>
+              <li><strong>Legal implications:</strong> A broken chain of custody can render evidence inadmissible in civil or criminal proceedings and undermine regulatory investigations</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Forensic Tools &amp; Evidence Types</h4>
+        <table class="evid-table">
+          <thead>
+            <tr>
+              <th style="width:18%">Evidence Type</th>
+              <th style="width:22%">What It Contains</th>
+              <th style="width:28%">Collection Method</th>
+              <th>Key Forensic Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>RAM Image</strong></td>
+              <td>Running processes, decrypted files, active network connections, user sessions, registry hive loaded into memory, encryption keys</td>
+              <td>Volatility, WinPmem, FTK Imager (live acquisition) — must be collected before power off</td>
+              <td>Fileless malware only exists here; encryption keys for encrypted ransomware may be in RAM</td>
+            </tr>
+            <tr>
+              <td><strong>Disk Image</strong></td>
+              <td>All files, deleted files (recoverable from unallocated space), file metadata (timestamps, ownership), partition tables, slack space</td>
+              <td>Write blocker (hardware) + FTK Imager or dd — creates forensic copy while blocking any writes to the original</td>
+              <td>Deleted malware artifacts, attacker tools, modified system files, timeline analysis</td>
+            </tr>
+            <tr>
+              <td><strong>Network Capture (PCAP)</strong></td>
+              <td>All network traffic packets — full content (if unencrypted) or metadata (source/dest IP, port, timing, payload size)</td>
+              <td>Wireshark, tcpdump, SPAN port mirror — ideally collected before incident is contained</td>
+              <td>C2 communication patterns, data exfiltration volume/destination, lateral movement traffic</td>
+            </tr>
+            <tr>
+              <td><strong>Log Files</strong></td>
+              <td>System events, authentication attempts, process execution, network connections — from OS, applications, and security tools</td>
+              <td>Export from SIEM; local logs from <code>/var/log/</code> (Linux) or Windows Event Viewer; preserve originals</td>
+              <td>Authentication timeline, initial access evidence, attacker command execution, lateral movement path</td>
+            </tr>
+            <tr>
+              <td><strong>Mobile Device</strong></td>
+              <td>Call logs, messages, photos, app data, location history, browser history, deleted data in flash memory</td>
+              <td>Cellebrite UFED, Oxygen Forensics — device in airplane mode to prevent remote wipe; Faraday bag to block signals</td>
+              <td>Insider threat evidence, attacker communication, location alibi verification</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout-purple">
+          <strong>Write Blockers — The Forensic Non-Negotiable:</strong> A write blocker (hardware or software) prevents any write operations from reaching the evidence drive during forensic imaging. Without a write blocker, the act of connecting a drive to a forensic workstation can modify file access timestamps, swap file contents, and other metadata — altering the evidence. Hardware write blockers are preferred because they operate at the interface level and cannot be bypassed by software bugs. Using a write blocker is the baseline standard for forensically sound disk acquisition. Any disk image acquired without a write blocker may be challenged in legal proceedings.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 1 — VULNERABILITY TRIAGE DRAG & DROP
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 1</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 1</span>
+        <div>
+          <h3>Vulnerability Triage — Remediation Priority Sort</h3>
+          <p>Sort each vulnerability finding into the correct remediation priority tier based on CVSS score, asset criticality, and exploitability</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Each chip represents a vulnerability finding from a recent enterprise scan. Drag it to the remediation priority tier that BEST reflects risk-based prioritization — considering CVSS score, asset exposure, and whether active exploitation exists. Submit for graded feedback.
+        </div>
+
+        <div class="drag-pool" id="dp9">
+          <div class="drag-item" draggable="true" data-answer="Immediate" id="d9-1">CVSS 9.8 RCE on internet-facing web server — active Metasploit module exists</div>
+          <div class="drag-item" draggable="true" data-answer="High" id="d9-2">CVSS 7.5 SQLi on internal HR portal — no known public exploit</div>
+          <div class="drag-item" draggable="true" data-answer="Medium" id="d9-3">CVSS 5.3 information disclosure on dev server — internal access only</div>
+          <div class="drag-item" draggable="true" data-answer="Immediate" id="d9-4">CVSS 8.1 on VPN gateway — listed in CISA KEV catalog</div>
+          <div class="drag-item" draggable="true" data-answer="Accept" id="d9-5">CVSS 2.1 cosmetic misconfiguration — test server, no data</div>
+          <div class="drag-item" draggable="true" data-answer="High" id="d9-6">CVSS 8.8 privilege escalation on domain controller — no public exploit yet</div>
+          <div class="drag-item" draggable="true" data-answer="Medium" id="d9-7">CVSS 6.1 XSS on internal wiki — authenticated users only</div>
+          <div class="drag-item" draggable="true" data-answer="Accept" id="d9-8">CVSS 3.5 outdated jQuery on static marketing site — no form inputs or data</div>
+        </div>
+
+        <div class="drop-zones-4">
+          <div class="drop-zone" id="zone9-Immediate" data-zone="Immediate">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--red);"></span> Immediate (24–72 hrs)</div>
+          </div>
+          <div class="drop-zone" id="zone9-High" data-zone="High">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--amber);"></span> High (7–14 days)</div>
+          </div>
+          <div class="drop-zone" id="zone9-Medium" data-zone="Medium">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--blue);"></span> Medium (30 days)</div>
+          </div>
+          <div class="drop-zone" id="zone9-Accept" data-zone="Accept">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--green);"></span> Accept / 90-day cycle</div>
+          </div>
+        </div>
+
+        <div class="activity-actions">
+          <button class="btn-primary" onclick="checkAct9()">Check Answers</button>
+          <button class="btn-secondary" onclick="resetAct9()">Reset</button>
+        </div>
+        <div class="activity-result" id="act9-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 2 — INCIDENT RESPONSE SCENARIO ANALYZER
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 2</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 2</span>
+        <div>
+          <h3>Incident Response Scenario Analyzer</h3>
+          <p>Select a real-world incident and answer questions about the correct IR phase actions, forensic procedures, and RCA findings</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Select a scenario tab. Read the incident description, then answer each question individually for graded feedback. Focus on applying the PICERL lifecycle and forensic principles correctly.
+        </div>
+
+        <div class="scenario-tabs">
+          <button class="scenario-tab active" onclick="showIR(0,this)">Scenario A: Ransomware at Midnight</button>
+          <button class="scenario-tab" onclick="showIR(1,this)">Scenario B: Suspected Insider Theft</button>
+          <button class="scenario-tab" onclick="showIR(2,this)">Scenario C: Web Server Compromise</button>
+        </div>
+
+        <!-- Scenario A -->
+        <div class="scenario-panel active" id="ir-0">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🔴 Scenario A: Ransomware at Midnight — Regional Logistics Company</div>
+            <div class="scenario-body">At 11:47 PM, the on-call security analyst receives an EDR alert: 14 workstations are showing high-volume file encryption activity. A ransom note has appeared on several desktops. The SIEM shows that Patient Zero (a dispatch manager's laptop) connected to an external IP via SMB at 11:31 PM. The company operates 24/7 logistics operations — shutting down the network would ground all shipment tracking. The analyst is the only security staff on duty. The CTO is asleep. Legal counsel has not been notified. No IR playbook is open yet.</div>
+          </div>
+          <div class="ir-questions">
+
+            <div class="ir-q" id="iq-a1">
+              <div class="ir-q-text">Q1: The analyst confirmed ransomware is actively spreading. Which action should the analyst take FIRST?</div>
+              <div class="ir-opts">
+                <label class="ir-opt"><input type="radio" name="iqa1" value="A"> Immediately power off all 14 affected workstations to stop the encryption</label>
+                <label class="ir-opt"><input type="radio" name="iqa1" value="B"> Notify the CTO and legal counsel, then use EDR to network-isolate the confirmed affected endpoints while preserving their powered state</label>
+                <label class="ir-opt"><input type="radio" name="iqa1" value="C"> Pay the ransom immediately to restore operations — the logistics impact is too severe to wait</label>
+                <label class="ir-opt"><input type="radio" name="iqa1" value="D"> Take a complete inventory of all affected systems before taking any containment action</label>
+              </div>
+              <div class="ir-fb" id="iq-a1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkIR('iq-a1','B','iqa1','✅ Correct! This is Containment — stopping the spread by network-isolating affected endpoints. Using EDR containment preserves the powered state of the machines, allowing RAM forensics (encryption keys may still be in memory). Immediately powering off destroys RAM evidence and may actually trigger some ransomware variants to escalate or delete logs. Paying the ransom before exhausting all options is premature. A complete inventory first delays containment while ransomware continues spreading. Notifying CTO and legal immediately is also correct — legal counsel must be engaged early for regulatory notification obligations.','❌ Correct answer: B. Powering off destroys RAM evidence — ransomware encryption keys may still be in RAM and recoverable with memory forensics. EDR containment (network isolation while leaving the system powered) stops lateral spread while preserving forensic evidence. Paying ransom without exhausting recovery options is premature and funds criminal operations. Inventory before containment allows spread to continue. The PICERL phase here is Containment — stop the bleeding, preserve evidence.')">Submit</button></div>
+            </div>
+
+            <div class="ir-q" id="iq-a2">
+              <div class="ir-q-text">Q2: Three days after the incident is contained and eradicated, the IR team holds a post-incident review. The RCA reveals the ransomware entered via a phishing email that the dispatch manager opened, which installed a Trojan that exploited an unpatched Windows SMB vulnerability (CVE-2023-XXXX, CVSS 8.8) to spread. What is the TRUE root cause of this incident — and what is the correct remediation?</div>
+              <div class="ir-opts">
+                <label class="ir-opt"><input type="radio" name="iqa2" value="A"> Root cause: ransomware malware. Remediation: deploy better antivirus to detect ransomware before it executes</label>
+                <label class="ir-opt"><input type="radio" name="iqa2" value="B"> Root cause: user error. Remediation: discipline the dispatch manager for opening a phishing email</label>
+                <label class="ir-opt"><input type="radio" name="iqa2" value="C"> Root cause: unpatched high-severity CVE on workstations combined with insufficient phishing-resistant email security. Remediation: implement a patch management SLA ensuring CVSS 8.0+ are patched within 7 days; deploy anti-phishing training and email filtering; enable MFA on all accounts</label>
+                <label class="ir-opt"><input type="radio" name="iqa2" value="D"> Root cause: no backups. Remediation: implement immutable backups to recover from future ransomware attacks without paying</label>
+              </div>
+              <div class="ir-fb" id="iq-a2-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkIR('iq-a2','C','iqa2','✅ Correct! The root cause has two components: (1) an unpatched CVSS 8.8 SMB vulnerability that enabled lateral spread — a patch management failure, and (2) a phishing email that successfully delivered the initial payload — a security awareness and email filtering failure. Blaming the user treats a symptom; the user is the vehicle, not the root cause. Better antivirus addresses the symptom, not the underlying unpatched vulnerability or email control gaps. Backups are critical for recovery but don\'t address how the attacker got in. The 5-Whys approach leads to systemic process and control failures, not individual user decisions.','❌ Correct answer: C. Root cause analysis identifies systemic failures, not symptoms or individual mistakes. The ransomware (C) is the symptom; the unpatched high-severity CVE and weak email security are the root causes. Blaming the user (B) fails to address why the email passed filtering and why no MFA prevented credential-based lateral movement. Antivirus (A) is a symptom-level fix. Backups (D) are critical but address recovery, not prevention. The correct remediation addresses both the patch management gap and the email/awareness gap.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Scenario B -->
+        <div class="scenario-panel" id="ir-1">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🟠 Scenario B: Suspected Insider Data Theft</div>
+            <div class="scenario-body">A pharmaceutical company's DLP system alerts that a senior research scientist has uploaded 847 files containing proprietary drug synthesis data to a personal Dropbox account. The scientist submitted their resignation two days ago and their last day is Friday — three days away. HR has been notified. Legal counsel advises that this may constitute IP theft under the company's employment agreement and is preserving options for civil action. The scientist's laptop is a corporate-issued MacBook Pro. The scientist is currently working from home.</div>
+          </div>
+          <div class="ir-questions">
+
+            <div class="ir-q" id="iq-b1">
+              <div class="ir-q-text">Q1: Legal counsel needs to preserve the evidence for potential civil litigation. What is the MOST forensically sound approach for collecting evidence from the scientist's corporate MacBook Pro?</div>
+              <div class="ir-opts">
+                <label class="ir-opt"><input type="radio" name="iqb1" value="A"> Remotely access the MacBook using the MDM solution and copy the relevant files to a corporate server for review</label>
+                <label class="ir-opt"><input type="radio" name="iqb1" value="B"> Ask the scientist to email any relevant documents to HR before their last day</label>
+                <label class="ir-opt"><input type="radio" name="iqb1" value="C"> Retrieve the physical MacBook, place it in a sealed evidence bag with a chain-of-custody form, create a write-blocked forensic image using FTK Imager, hash both original and copy, and perform all analysis on the copy</label>
+                <label class="ir-opt"><input type="radio" name="iqb1" value="D"> Use macOS Finder to copy the suspect files to a USB drive for review by legal counsel</label>
+              </div>
+              <div class="ir-fb" id="iq-b1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkIR('iq-b1','C','iqb1','✅ Correct! For potential legal action, forensic evidence must be collected using legally defensible procedures. The correct approach: physically retrieve the laptop (removing remote access capability), place it in a tamper-evident evidence bag with chain of custody documentation, create a forensic image using a hardware write blocker (prevents any modification to the original), hash both the original drive and the copy (proving the copy is identical), and perform all analysis on the verified copy. Remote MDM access may alter file timestamps and access metadata. Asking the scientist to email files gives them opportunity to delete or alter data. Copying files with Finder modifies "last accessed" timestamps and does not capture deleted files or metadata in a legally defensible format.','❌ Correct answer: C — forensic image with write blocker, chain of custody documentation, and analysis on a copy. Remote access via MDM modifies metadata. Asking the scientist to self-collect is operationally unreasonable and allows evidence tampering. Copying files with Finder alters access timestamps and misses deleted files. Legal proceedings require evidence collected using forensically sound, reproducible methods with documented chain of custody. Any modification to the original evidence — even accessing it — can be challenged in court.')">Submit</button></div>
+            </div>
+
+            <div class="ir-q" id="iq-b2">
+              <div class="ir-q-text">Q2: The forensic image of the MacBook reveals the files were uploaded at 9:47 PM last Tuesday — 4 hours after the scientist's normal working hours. Browser history shows the Dropbox session originated from a coffee shop IP address. This evidence needs to be preserved for litigation. Which document is MOST critical for ensuring this evidence is legally admissible?</div>
+              <div class="ir-opts">
+                <label class="ir-opt"><input type="radio" name="iqb2" value="A"> An email from the CISO confirming the evidence was reviewed and is authentic</label>
+                <label class="ir-opt"><input type="radio" name="iqb2" value="B"> A chain-of-custody form documenting every person who handled the MacBook and forensic image, with timestamps, from the moment of collection through to legal counsel's review</label>
+                <label class="ir-opt"><input type="radio" name="iqb2" value="C"> A screenshot of the browser history saved to a PDF for the legal team</label>
+                <label class="ir-opt"><input type="radio" name="iqb2" value="D"> The DLP alert notification email originally sent to the security team</label>
+              </div>
+              <div class="ir-fb" id="iq-b2-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkIR('iq-b2','B','iqb2','✅ Correct! Chain of custody documentation is the legal foundation for evidence admissibility. It proves: who collected the evidence, when and where, how it was stored, who had access, and that it was never tampered with. An unbroken chain of custody allows the forensic evidence to withstand defense challenges. A CISO email is informal and does not document handling procedures. A PDF screenshot is not forensically sound — it can be fabricated and does not prove what was on the actual disk. The DLP alert is useful supporting context but does not substitute for formal evidence handling documentation of the device itself.','❌ Correct answer: B — chain-of-custody form. For evidence to be admissible in civil or criminal proceedings, it must have an unbroken, documented chain of custody proving it was not tampered with between collection and courtroom. An email from the CISO does not document physical handling procedures. A screenshot PDF can be fabricated and lacks forensic provenance. The DLP alert is useful context but is not evidence of what was on the physical device. The chain of custody form is the document that makes all other forensic evidence legally meaningful.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Scenario C -->
+        <div class="scenario-panel" id="ir-2">
+          <div class="scenario-desc-box">
+            <div class="scenario-title">🔵 Scenario C: Web Server Compromise Discovered During Vulnerability Scan</div>
+            <div class="scenario-body">A weekly vulnerability scan of a retail company's e-commerce web server returns a surprising result: the scanner's credentialed scan finds a web shell (<code>cmd.php</code>) in the web root directory that was not present in last week's scan. The web shell was created on a Tuesday at 2:14 AM — six days ago. The e-commerce site has been running normally. No customer-visible outage occurred. The security team has no idea what the attacker did during those six days. The server stores customer session tokens and processes credit card transactions (PCI DSS in scope).</div>
+          </div>
+          <div class="ir-questions">
+
+            <div class="ir-q" id="iq-c1">
+              <div class="ir-q-text">Q1: The security team wants to understand exactly what the attacker did during the six days of access. Which combination of evidence sources would BEST provide a complete picture of attacker activity?</div>
+              <div class="ir-opts">
+                <label class="ir-opt"><input type="radio" name="iqc1" value="A"> Delete the web shell immediately, then restore the server from last week's backup — the backup is clean</label>
+                <label class="ir-opt"><input type="radio" name="iqc1" value="B"> Web server access logs (HTTP requests to cmd.php), OS command execution logs (bash_history / Windows Event ID 4688), network flow data showing outbound connections, and a forensic image of the server's disk before any remediation</label>
+                <label class="ir-opt"><input type="radio" name="iqc1" value="C"> Interview the web developer to ask if they recognize the cmd.php file — they may have accidentally deployed it during testing</label>
+                <label class="ir-opt"><input type="radio" name="iqc1" value="D"> Run a new vulnerability scan immediately to identify what additional vulnerabilities the attacker may have exploited</label>
+              </div>
+              <div class="ir-fb" id="iq-c1-fb"></div>
+              <div style="margin-top:10px;"><button class="btn-primary" onclick="checkIR('iq-c1','B','iqc1','✅ Correct! Reconstructing the attacker\'s six-day timeline requires multiple evidence sources: (1) Web server logs showing every HTTP request made to cmd.php — what commands were executed through the shell; (2) OS execution logs showing what processes were spawned, what commands were run, what accounts were accessed; (3) Network flow data showing what external IPs the server connected to (data exfiltration destinations) and what internal systems it reached (lateral movement); (4) A forensic disk image created BEFORE remediation — deleted files and slack space may contain attacker tools and artifacts that disappear on restore. Deleting the web shell and restoring destroys all this forensic evidence. The developer interview is useful context but not the primary evidence source. A new vulnerability scan tests for vulnerabilities, not what an attacker did with access.','❌ Correct answer: B — multi-source log analysis plus forensic disk image before any remediation. Deleting and restoring immediately destroys all evidence of attacker activity — violating forensic preservation principles and eliminating the ability to scope the breach for PCI DSS notification requirements. A developer interview provides context but not timeline evidence. A vulnerability scan tests for security weaknesses, not historical attacker activity. PCI DSS requires a forensic investigation to determine if cardholder data was accessed — you cannot satisfy this requirement if you destroy the evidence before investigating.')">Submit</button></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       QUIZ — 5 QUESTIONS
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Lesson 9 Quiz — 5 Questions</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Assessment</span>
+        <div>
+          <h3>Knowledge Check: Vulnerability Management &amp; Incident Response</h3>
+          <p>Select the best answer for each question, then submit for graded feedback</p>
+        </div>
+      </div>
+      <div class="activity-body">
+
+        <!-- Q1 -->
+        <div class="quiz-q" id="q1">
+          <div class="q-num">Question 1 of 5</div>
+          <div class="q-text">A vulnerability scan reports a finding of CVSS 9.4 on an internal file server that stores only archived project documents with no regulatory classification. A separate scan finds a CVSS 6.8 vulnerability on an internet-facing customer portal that processes real-time credit card transactions, with a public proof-of-concept exploit available. Using risk-based prioritization, which finding should be remediated FIRST?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q1" value="A"> The CVSS 9.4 internal file server — the higher CVSS score always takes priority</label>
+            <label class="q-option"><input type="radio" name="q1" value="B"> The CVSS 6.8 customer portal — internet-facing exposure, PCI scope, and a public exploit elevate the real-world risk above the higher-scored internal finding</label>
+            <label class="q-option"><input type="radio" name="q1" value="C"> Both simultaneously — PCI compliance requires all vulnerabilities above CVSS 4.0 to be addressed in the same remediation window</label>
+            <label class="q-option"><input type="radio" name="q1" value="D"> Neither — CVSS 6.8 is a Medium severity finding and does not require immediate action</label>
+          </div>
+          <div class="q-feedback" id="q1-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-q" id="q2">
+          <div class="q-num">Question 2 of 5</div>
+          <div class="q-text">A security analyst discovers that last week's vulnerability scan of a database server reported zero critical findings. However, a credentialed scan run this week on the same server identifies 14 critical CVEs, all related to unpatched Oracle database software. What is the MOST likely explanation for the discrepancy?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q2" value="A"> 14 new critical CVEs were published for Oracle database software between the two scans</label>
+            <label class="q-option"><input type="radio" name="q2" value="B"> Last week's scan was non-credentialed and could not read the installed Oracle version — the vulnerabilities existed last week but were invisible to the unauthenticated scanner</label>
+            <label class="q-option"><input type="radio" name="q2" value="C"> The database server was compromised between the two scans — the new vulnerabilities were introduced by an attacker</label>
+            <label class="q-option"><input type="radio" name="q2" value="D"> The credentialed scan malfunctioned and generated false positives for Oracle software</label>
+          </div>
+          <div class="q-feedback" id="q2-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-q" id="q3">
+          <div class="q-num">Question 3 of 5</div>
+          <div class="q-text">During an active ransomware incident, a junior analyst suggests immediately powering off all affected servers to stop the encryption. The senior IR lead overrules this and directs the team to use EDR to network-isolate the affected endpoints while leaving them powered on. What is the MOST important reason for the senior lead's decision?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q3" value="A"> Powering off servers during business hours violates the acceptable use policy and requires executive approval</label>
+            <label class="q-option"><input type="radio" name="q3" value="B"> Powering off the systems immediately destroys volatile evidence in RAM — including encryption keys, running attacker processes, and active network connections — that may be essential for decryption or prosecution</label>
+            <label class="q-option"><input type="radio" name="q3" value="C"> The EDR containment feature is faster than physically pressing power buttons across multiple servers</label>
+            <label class="q-option"><input type="radio" name="q3" value="D"> Network isolation allows the ransomware to continue encrypting local files so the full scope of damage can be documented</label>
+          </div>
+          <div class="q-feedback" id="q3-feedback"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-q" id="q4">
+          <div class="q-num">Question 4 of 5</div>
+          <div class="q-text">A forensic investigator arrives at a scene where a suspected compromised Windows server is still powered on. The investigation requires collecting all available digital evidence in the correct order. Which sequence correctly applies the order of volatility principle?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q4" value="A"> Hard drive forensic image → RAM dump → network connection state → running processes</label>
+            <label class="q-option"><input type="radio" name="q4" value="B"> RAM dump → active network connections and ARP cache → running processes → hard drive forensic image</label>
+            <label class="q-option"><input type="radio" name="q4" value="C"> Log files from SIEM → hard drive image → RAM dump → network state</label>
+            <label class="q-option"><input type="radio" name="q4" value="D"> Interview the system administrator → collect log files → shut down and image the hard drive</label>
+          </div>
+          <div class="q-feedback" id="q4-feedback"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-q" id="q5">
+          <div class="q-num">Question 5 of 5</div>
+          <div class="q-text">An organization suffers its third phishing-based credential compromise in 18 months. Each time, the IR team removes the malware, resets the affected account's password, and declares the incident closed. The CISO observes that the root cause analysis in each after-action report identifies "user clicked phishing link" as the root cause and recommends "additional user training." Why is this RCA methodology flawed, and what should the RCA process identify instead?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q5" value="A"> The RCA is flawed because it focuses too heavily on user behavior instead of technical vulnerabilities; the correct root cause is always a software CVE</label>
+            <label class="q-option"><input type="radio" name="q5" value="B"> The RCA is valid — if users stopped clicking phishing links, these incidents would not occur; the training program is clearly insufficient</label>
+            <label class="q-option"><input type="radio" name="q5" value="C"> The RCA is flawed because "user clicked phishing link" is a symptom, not a root cause. The underlying failures include: email filtering not blocking the phishing email, MFA not being enforced (compromised credentials used successfully), and no behavioral analytics detecting the anomalous post-compromise activity. Addressing only user behavior leaves all systemic control failures in place.</label>
+            <label class="q-option"><input type="radio" name="q5" value="D"> The RCA is flawed only because the incidents were declared closed too quickly — extending the recovery phase would have produced better RCA quality</label>
+          </div>
+          <div class="q-feedback" id="q5-feedback"></div>
+        </div>
+
+        <div class="quiz-submit-row">
+          <button class="btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          <button class="btn-secondary" onclick="resetQuiz()">Reset</button>
+        </div>
+        <div id="quiz-result"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-body -->
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<div class="page-footer">
+  <div class="footer-nav">
+    <a href="index.html">← Course Home</a>
+    <a href="lesson08.html">← Lesson 8: Security Operations &amp; Monitoring</a>
+    <a href="lesson09-part01.html">Topic 1 Deep Dive</a>
+    <a href="lesson09-part02.html">Topic 2 Deep Dive</a>
+    <a href="lesson09-part03.html">Topic 3 Deep Dive</a>
+    <a href="lesson10.html">Next: Security Governance &amp; Policy →</a>
+  </div>
+  CompTIA Security+ SY0-701 &nbsp;|&nbsp; Lesson 9: Vulnerability Management &amp; Incident Response &nbsp;|&nbsp; Moraine Valley Community College
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ---- THEME ---- */
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+  localStorage.setItem('secplus-theme', next);
+}
+(function () {
+  const saved = localStorage.getItem('secplus-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Light';
+  }
+})();
+
+/* ============================================================
+   ACTIVITY 1 — DRAG & DROP
+   ============================================================ */
+let drag9 = null;
+
+document.querySelectorAll('#dp9 .drag-item').forEach(item => {
+  item.addEventListener('dragstart', e => {
+    drag9 = item.id;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  item.addEventListener('dragend', () => item.classList.remove('dragging'));
+});
+
+document.querySelectorAll('[id^="zone9-"]').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const item = document.getElementById(drag9);
+    if (!item) return;
+    const isCorrect = item.dataset.answer === zone.dataset.zone;
+    const chip = document.createElement('span');
+    chip.className = 'dropped-item ' + (isCorrect ? 'correct' : 'incorrect');
+    chip.dataset.itemId = drag9;
+    const lbl = item.textContent.length > 42 ? item.textContent.substring(0, 42) + '…' : item.textContent;
+    chip.innerHTML = lbl + ' <span class="rm">×</span>';
+    chip.querySelector('.rm').addEventListener('click', () => returnItem9(drag9, chip));
+    zone.appendChild(chip);
+    item.style.display = 'none';
+    document.getElementById('act9-result').style.display = 'none';
+  });
+});
+
+function returnItem9(id, chip) {
+  const item = document.getElementById(id);
+  if (item) item.style.display = '';
+  chip.remove();
+}
+
+function checkAct9() {
+  let correct = 0, total = 0;
+  document.querySelectorAll('[id^="zone9-"]').forEach(zone => {
+    zone.querySelectorAll('.dropped-item').forEach(chip => {
+      total++;
+      const item = document.getElementById(chip.dataset.itemId);
+      if (item && item.dataset.answer === zone.dataset.zone) {
+        chip.className = 'dropped-item correct'; correct++;
+      } else {
+        chip.className = 'dropped-item incorrect';
+        chip.style.animation = 'none'; void chip.offsetWidth; chip.style.animation = '';
+      }
+    });
+  });
+  const res = document.getElementById('act9-result');
+  res.style.display = 'block';
+  if (total === 0) { res.className = 'activity-result result-fail'; res.textContent = 'Sort at least one finding before checking.'; return; }
+  if (correct === total && total === 8) {
+    res.className = 'activity-result result-pass';
+    res.textContent = '✅ Perfect! All 8 vulnerability findings correctly triaged. You apply risk-based prioritization — not just CVSS scores alone.';
+  } else {
+    res.className = 'activity-result result-fail';
+    res.textContent = `${correct}/${total} correct. Red chips are mismatched. Key: CVSS score + active exploitation (KEV catalog) = Immediate. High CVSS + internet-facing = High priority. Low CVSS + isolated asset + no sensitive data = Accept.`;
+  }
+}
+
+function resetAct9() {
+  document.querySelectorAll('[id^="zone9-"] .dropped-item').forEach(chip => returnItem9(chip.dataset.itemId, chip));
+  document.getElementById('act9-result').style.display = 'none';
+}
+
+/* ============================================================
+   ACTIVITY 2 — IR SCENARIOS
+   ============================================================ */
+function showIR(idx, btn) {
+  document.querySelectorAll('.scenario-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function checkIR(qId, correct, radioName, passMsg, failMsg) {
+  const qDiv = document.getElementById(qId);
+  const selected = qDiv.querySelector(`input[name="${radioName}"]:checked`);
+  const fb = document.getElementById(qId + '-fb');
+  qDiv.querySelectorAll('input').forEach(r => r.disabled = true);
+  qDiv.querySelector('button').disabled = true;
+  if (!selected) { fb.className = 'ir-fb show fail'; fb.textContent = '⚠️ Please select an answer first.'; return; }
+  const isCorrect = selected.value === correct;
+  qDiv.querySelectorAll('.ir-opt').forEach(opt => {
+    if (opt.querySelector('input').value === correct) opt.classList.add('correct');
+    else if (opt.querySelector('input').value === selected.value && !isCorrect) opt.classList.add('wrong');
+  });
+  fb.className = 'ir-fb show ' + (isCorrect ? 'pass' : 'fail');
+  fb.textContent = isCorrect ? passMsg : failMsg;
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+const qA = { q1: 'B', q2: 'B', q3: 'B', q4: 'B', q5: 'C' };
+const qFB = {
+  q1: {
+    correct: "✅ Correct! Risk-based prioritization combines CVSS score with asset criticality, exposure, and exploitability context. The CVSS 6.8 on the internet-facing PCI-scoped payment portal with a public proof-of-concept exploit is higher real-world priority because: (1) internet exposure means any attacker can reach it, (2) PCI scope means cardholder data is at risk — creating regulatory breach notification obligations, and (3) a public PoC eliminates any gap between theoretical and practical exploitability. The CVSS 9.4 on the internal archive server with no sensitive data has high theoretical severity but low real-world urgency — access requires an insider or existing compromise, and the data has minimal regulatory or business impact.",
+    wrong:   "❌ Correct answer: B — the CVSS 6.8 internet-facing PCI portal. CVSS score is one factor, not the only factor. An internet-facing payment system with active public exploit and PCI cardholder data at risk represents greater immediate business risk than a higher-scored vulnerability on an isolated internal server with no sensitive data. Risk = Likelihood × Impact. The portal has both high likelihood (public exploit, internet-facing) and high impact (cardholder data, regulatory consequences). The internal archive has high theoretical severity but low likelihood (requires internal access) and low impact (no sensitive data)."
+  },
+  q2: {
+    correct: "✅ Correct! This is a textbook illustration of why credentialed scans are essential. A non-credentialed scanner cannot authenticate to the target system — it can only infer what software is installed by examining network responses, service banners, and HTTP headers. Oracle database software does not typically broadcast its exact version in a way that allows precise CVE matching without authentication. A credentialed scan authenticates to the OS and queries the actual installed package versions — finding all 14 CVEs that were always present but invisible to the external scanner. The vulnerabilities existed last week; the scan just couldn't see them.",
+    wrong:   "❌ Correct answer: B — last week's non-credentialed scan couldn't see the Oracle database's installed version. This is the fundamental limitation of non-credentialed scanning: it can only assess what is visible externally. Database software versions are rarely detectable from network responses alone. Credentialed scans log in and query installed software directly — dramatically increasing visibility. 14 new critical CVEs published in one week is extremely unlikely. Attacker-introduced vulnerabilities via compromise would appear very differently in scan output. False positives would typically be lower-severity findings, not 14 critical CVEs all mapped to the same software product."
+  },
+  q3: {
+    correct: "✅ Correct! The order of volatility principle requires preserving evidence in order from most volatile to least volatile — and RAM is the most critical volatile evidence on a running system. RAM may contain: (1) the encryption keys the ransomware is using — enabling potential decryption without paying the ransom; (2) running attacker processes and tools not yet written to disk; (3) active network connections showing the C2 server the attacker is communicating with; (4) decrypted versions of encrypted files. Network isolation via EDR stops lateral spread without losing RAM contents. Once a system is powered off, RAM is instantly and permanently lost. The few minutes of additional encryption activity during memory acquisition is acceptable to preserve this forensic opportunity.",
+    wrong:   "❌ Correct answer: B — preserving volatile RAM evidence. The senior IR lead prioritizes forensic evidence preservation over slightly faster containment. RAM contains encryption keys (potential decryption without ransom payment), attacker tooling, and C2 addresses — all permanently lost on power-off. Network isolation via EDR immediately stops lateral movement while keeping the system powered, preserving the RAM window. AUP and executive approval are not the issue here. Speed of EDR vs. physical power buttons is irrelevant. Network isolation does stop lateral movement — the system is disconnected from the network while remaining powered for forensic acquisition."
+  },
+  q4: {
+    correct: "✅ Correct! Order of volatility requires collecting most-volatile evidence first. RAM disappears the instant power is cut — collect it first using a live memory acquisition tool. Active network connections and ARP cache are stored in RAM and system buffers — they change constantly and vanish on reboot. Running processes provide the current execution tree. Hard drive forensic image comes last because it persists after power-off — it can be collected even if the system must be shut down, but RAM cannot. Remote SIEM logs are the most persistent (already replicated offsite) and are collected last. Never power off before collecting RAM.",
+    wrong:   "❌ Correct answer: B — RAM → network state → running processes → disk image. The order of volatility principle dictates collecting evidence from most to least volatile. RAM contents vanish on power-off; active network state changes every few seconds; running process information changes constantly; the disk image persists indefinitely after shutdown. Starting with the hard drive image (A) is backwards — you can always image a disk later, but RAM evidence is gone forever once power is cut. SIEM logs (C) are remote and persistent; RAM should be first. Interviewing the sysadmin (D) does not preserve any digital evidence."
+  },
+  q5: {
+    correct: "✅ Correct! Three identical incidents in 18 months demonstrate that the RCA process is identifying symptoms, not root causes. \"User clicked phishing link\" describes the delivery mechanism, not the underlying systemic failures that allowed the incident to succeed. The 5 Whys approach reveals the actual root causes: Why did the phishing email reach the user? (Email filtering failed to classify it as malicious.) Why did the stolen credentials enable access? (MFA was not enforced.) Why did the attacker operate undetected? (No behavioral analytics or anomaly detection.) Addressing only user behavior leaves three independent systemic control gaps in place. If MFA had been enforced, credential theft via phishing would not result in unauthorized access — regardless of whether users click links.",
+    wrong:   "❌ Correct answer: C — the RCA identifies symptoms, not systemic root causes. Three identical incidents mean the corrective actions are not preventing recurrence — which is the definition of ineffective RCA. \"User clicked phishing link\" describes behavior, not the control environment that allowed the click to cause harm. Effective RCA identifies why the control environment failed: why did email filtering allow the phishing email through? Why did stolen credentials successfully authenticate (no MFA)? Why was anomalous access not detected? Addressing only one symptom (user training) while leaving all systemic control gaps open will produce a fourth incident. RCA must identify all contributing control failures, not just the most visible human behavior."
+  }
+};
+
+function submitQuiz() {
+  let score = 0;
+  Object.keys(qA).forEach(qid => {
+    const selected = document.querySelector(`input[name="${qid}"]:checked`);
+    const qDiv = document.getElementById(qid);
+    const fb = document.getElementById(qid + '-feedback');
+    qDiv.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+    if (!selected) {
+      fb.className = 'q-feedback show fail';
+      fb.innerHTML = '⚠️ No answer selected. ' + qFB[qid].wrong;
+      qDiv.className = 'quiz-q answered-wrong';
+      return;
+    }
+    const isCorrect = selected.value === qA[qid];
+    if (isCorrect) score++;
+    qDiv.className = 'quiz-q ' + (isCorrect ? 'answered-correct' : 'answered-wrong');
+    fb.className = 'q-feedback show ' + (isCorrect ? 'pass' : 'fail');
+    fb.innerHTML = qFB[qid][isCorrect ? 'correct' : 'wrong'];
+    qDiv.querySelectorAll('.q-option').forEach(opt => {
+      const v = opt.querySelector('input').value;
+      if (v === qA[qid]) opt.classList.add('correct');
+      else if (selected && v === selected.value && !isCorrect) opt.classList.add('wrong');
+    });
+  });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'block';
+  const pct = Math.round((score / 5) * 100);
+  if (score >= 4) {
+    result.className = 'quiz-pass';
+    result.innerHTML = `🎉 <strong>Excellent! ${score}/5 (${pct}%)</strong> — Strong command of vulnerability management, IR lifecycle, forensic principles, and root cause analysis. Ready for Lesson 10: Security Governance &amp; Policy. <a href="lesson10.html" style="color:var(--green-dark);font-weight:700;margin-left:8px;">Next Lesson →</a>`;
+  } else {
+    result.className = 'quiz-fail';
+    result.innerHTML = `📚 <strong>${score}/5 (${pct}%)</strong> — Review the explanations above. Focus on: risk-based prioritization vs. CVSS-only (Q1), credentialed vs. non-credentialed scan visibility (Q2), order of volatility and evidence preservation (Q3–Q4), and root cause vs. symptom analysis (Q5). The IR timeline and vulnerability triage activity are good review resources.`;
+  }
+  result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetQuiz() {
+  document.querySelectorAll('.quiz-q').forEach(q => q.className = 'quiz-q');
+  document.querySelectorAll('input[type="radio"]').forEach(r => { r.checked = false; r.disabled = false; });
+  document.querySelectorAll('.q-option').forEach(o => o.classList.remove('correct', 'wrong'));
+  document.querySelectorAll('.q-feedback').forEach(f => { f.className = 'q-feedback'; f.innerHTML = ''; });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'none'; result.className = '';
+}
+</script>
+</body>
+</html>

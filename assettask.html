@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Audit Training Exercise - FreshFlow Systems</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
+            color: black;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Navigation Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #2d5016, #1a2f0a);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            color: #7dd87d;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 2px solid #4a7c23;
+            padding-bottom: 10px;
+        }
+
+        .sidebar p {
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            color: #b8d8b8;
+            text-align: center;
+        }
+
+        .nav-item {
+            background: rgba(255,255,255,0.1);
+            margin: 8px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #4a7c23;
+            border-color: #7dd87d;
+        }
+
+        .nav-item.completed {
+            background: #2d5016;
+            border-color: #7dd87d;
+        }
+
+        .nav-item a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            font-weight: 500;
+        }
+
+        .task-status {
+            float: right;
+            font-size: 0.8rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .task-status.completed {
+            background: #7dd87d;
+            color: black;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+            background: white;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a7c23, #2d5016);
+            color: white;
+            padding: 30px;
+            margin: -30px -30px 30px -30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .task-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .task-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-header {
+            background: #f8f9fa;
+            border: 2px solid #4a7c23;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .task-header h2 {
+            color: #2d5016;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .task-objective {
+            background: linear-gradient(135deg, #e8f5e8, #d4f0d4);
+            border-left: 4px solid #4a7c23;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .task-objective h3 {
+            color: #2d5016;
+            margin-bottom: 10px;
+        }
+
+        .asset-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .asset-table th {
+            background: linear-gradient(135deg, #4a7c23, #2d5016);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .asset-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .asset-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .asset-table tr:hover {
+            background-color: #e8f5e8;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4a7c23, #2d5016);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #5a8c33, #3d6526);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+        }
+
+        .form-group {
+            margin: 15px 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2d5016;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4a7c23;
+            box-shadow: 0 0 5px rgba(74, 124, 35, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background: #d4f0d4;
+            border: 2px solid #4a7c23;
+            color: #2d5016;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            color: #0c5460;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a7c23, #7dd87d);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .risk-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .risk-high {
+            background: #dc3545;
+            color: white;
+        }
+
+        .risk-medium {
+            background: #ffc107;
+            color: black;
+        }
+
+        .risk-low {
+            background: #28a745;
+            color: white;
+        }
+
+        .category-cui { border-left: 4px solid #dc2626; }
+        .category-spa { border-left: 4px solid #ea580c; }
+        .category-crma { border-left: 4px solid #ca8a04; }
+        .category-sa { border-left: 4px solid #0284c7; }
+        .category-oos { border-left: 4px solid #6b7280; }
+
+        .company-info {
+            background: #f8f9fa;
+            border: 2px solid #4a7c23;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .company-info h3 {
+            color: #2d5016;
+            margin-bottom: 15px;
+        }
+
+        .completion-summary {
+            background: linear-gradient(135deg, #e8f5e8, #d4f0d4);
+            border: 2px solid #4a7c23;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .completion-summary h2 {
+            color: #2d5016;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar Navigation -->
+        <div class="sidebar">
+            <h2>Training Tasks</h2>
+            <p>Cybersecurity Audit Preparation</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            
+            <div class="nav-item active" onclick="showTask('overview')">
+                <a href="#">
+                    Overview & Instructions
+                    <span class="task-status" id="overview-status">Start</span>
+                </a>
+            </div>
+            
+            <div class="nav-item" onclick="showTask('task1')">
+                <a href="#">
+                    Task 1: Asset Lookup
+                    <span class="task-status" id="task1-status">Pending</span>
+                </a>
+            </div>
+            
+            <div class="nav-item" onclick="showTask('task2')">
+                <a href="#">
+                    Task 2: Edit Assets
+                    <span class="task-status" id="task2-status">Pending</span>
+                </a>
+            </div>
+            
+            <div class="nav-item" onclick="showTask('task3')">
+                <a href="#">
+                    Task 3: Delete Asset
+                    <span class="task-status" id="task3-status">Pending</span>
+                </a>
+            </div>
+            
+            <div class="nav-item" onclick="showTask('task4')">
+                <a href="#">
+                    Task 4: Create New Assets
+                    <span class="task-status" id="task4-status">Pending</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="header">
+                <h1>FreshFlow Systems</h1>
+                <p>Cybersecurity Audit Training Exercise</p>
+            </div>
+
+            <!-- Overview Section -->
+            <div id="overview" class="task-section active">
+                <div class="task-header">
+                    <h2>Welcome to Cybersecurity Audit Training</h2>
+                    <p>Learn to manage asset inventories and prepare for compliance audits using real-world scenarios.</p>
+                </div>
+
+                <div class="company-info">
+                    <h3>About FreshFlow Systems</h3>
+                    <p><strong>Company:</strong> FreshFlow Systems</p>
+                    <p><strong>Industry:</strong> Food packaging and automated logistics</p>
+                    <p><strong>Employees:</strong> 64</p>
+                    <p><strong>Facilities:</strong> 3 locations in Lima, Ohio</p>
+                    <p><strong>Growth Rate:</strong> 125% annually</p>
+                    <p><strong>Current Status:</strong> Preparing for DoD contract expansion requiring CMMC 2.0 Level 2 compliance</p>
+                </div>
+
+                <div class="task-objective">
+                    <h3>Training Objectives</h3>
+                    <ul>
+                        <li>Master CMMC 2.0 asset categorization principles</li>
+                        <li>Practice asset inventory management for compliance audits</li>
+                        <li>Learn to handle organizational changes affecting security posture</li>
+                        <li>Understand the relationship between business operations and cybersecurity</li>
+                        <li>Develop skills in preparing documentation for compliance assessments</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Scenario:</strong> FreshFlow Systems has been selected for a new Department of Defense (DoD) contract that requires CMMC 2.0 Level 2 certification. As the compliance specialist, you must ensure all assets are properly categorized and documented according to CMMC standards.
+                </div>
+
+                <button class="btn" onclick="showTask('task1')">Begin Training →</button>
+            </div>
+
+            <!-- Task 1: Asset Lookup -->
+            <div id="task1" class="task-section">
+                <div class="task-header">
+                    <h2>Task 1: Asset Lookup for Security Assessment</h2>
+                    <p>Locate specific assets in the inventory to complete a cybersecurity risk assessment.</p>
+                </div>
+
+                <div class="task-objective">
+                    <h3>Objective</h3>
+                    <p>Find the Rockwell PLCs in the asset inventory and identify their security characteristics for the upcoming CMMC assessment.</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Context:</strong> The CMMC assessor needs detailed information about operational technology (OT) assets, specifically the Rockwell PLCs that control automated packaging processes.
+                </div>
+
+                <table class="asset-table" id="asset-table-task1">
+                    <thead>
+                        <tr>
+                            <th>Asset ID</th>
+                            <th>Asset Name</th>
+                            <th>Category</th>
+                            <th>Location</th>
+                            <th>Risk Level</th>
+                            <th>Function</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assets-tbody-task1">
+                        <!-- Assets will be populated by JavaScript -->
+                    </tbody>
+                </table>
+
+                <div class="form-group">
+                    <label>Search Assets:</label>
+                    <input type="text" id="search-input-task1" placeholder="Type 'Rockwell' or 'PLC' to find the target assets..." onkeyup="searchAssets('task1')">
+                </div>
+
+                <div id="task1-result" style="display: none;">
+                    <div class="alert alert-success">
+                        <strong>Asset Found!</strong> You've successfully located the Rockwell PLCs. 
+                        <div style="margin-top: 10px;">
+                            <strong>Security Assessment Notes:</strong>
+                            <ul>
+                                <li>High-risk OT assets requiring special attention in CMMC assessment</li>
+                                <li>Controls automated packaging processes - critical for business operations</li>
+                                <li>May require specialized security controls per IEC 62443 standards</li>
+                                <li>Network segmentation and access controls are essential</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" onclick="completeTask('task1')">Complete Task 1</button>
+                </div>
+            </div>
+
+            <!-- Task 2: Edit Assets -->
+            <div id="task2" class="task-section">
+                <div class="task-header">
+                    <h2>Task 2: Update Assets for Organizational Changes</h2>
+                    <p>Edit asset information to reflect recent organizational changes and expansion.</p>
+                </div>
+
+                <div class="task-objective">
+                    <h3>Objective</h3>
+                    <p>Update two assets to reflect:</p>
+                    <ol>
+                        <li>Increased laptop quantity due to remote work expansion</li>
+                        <li>Enhanced server security measures for DoD contract compliance</li>
+                    </ol>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Context:</strong> FreshFlow Systems has expanded their remote workforce and upgraded security measures in preparation for DoD contract requirements.
+                </div>
+
+                <table class="asset-table">
+                    <thead>
+                        <tr>
+                            <th>Asset ID</th>
+                            <th>Asset Name</th>
+                            <th>Current Quantity</th>
+                            <th>Security Measures</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>IT-002</td>
+                            <td>Laptops (Dell Latitude)</td>
+                            <td id="laptop-quantity">20</td>
+                            <td id="laptop-security">Standard encryption</td>
+                            <td><button class="btn btn-edit" onclick="editAsset('laptop')">Edit</button></td>
+                        </tr>
+                        <tr>
+                            <td>IT-003</td>
+                            <td>Servers (VMware Cluster)</td>
+                            <td id="server-quantity">5</td>
+                            <td id="server-security">Basic access controls</td>
+                            <td><button class="btn btn-edit" onclick="editAsset('server')">Edit</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div id="task2-progress">
+                    <p>Assets updated: <span id="assets-updated">0</span> / 2</p>
+                </div>
+
+                <div id="task2-complete" style="display: none;">
+                    <div class="alert alert-success">
+                        <strong>Excellent!</strong> You've successfully updated both assets to reflect organizational changes and enhanced security measures for DoD compliance.
+                    </div>
+                    <button class="btn btn-success" onclick="completeTask('task2')">Complete Task 2</button>
+                </div>
+            </div>
+
+            <!-- Task 3: Delete Asset -->
+            <div id="task3" class="task-section">
+                <div class="task-header">
+                    <h2>Task 3: Remove Decommissioned Asset</h2>
+                    <p>Delete an asset that is no longer in use and should not be tracked.</p>
+                </div>
+
+                <div class="task-objective">
+                    <h3>Objective</h3>
+                    <p>Remove the legacy backup system that has been decommissioned and replaced with cloud-based backup solutions.</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Context:</strong> The old tape backup system (Asset ID: IT-007) has been decommissioned and replaced with encrypted cloud backup. It should be removed from the asset inventory to maintain accuracy for the CMMC assessment.
+                </div>
+
+                <table class="asset-table">
+                    <thead>
+                        <tr>
+                            <th>Asset ID</th>
+                            <th>Asset Name</th>
+                            <th>Status</th>
+                            <th>Last Used</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assets-tbody-task3">
+                        <tr id="legacy-backup">
+                            <td>IT-007</td>
+                            <td>Legacy Tape Backup System</td>
+                            <td><span style="color: red;">Decommissioned</span></td>
+                            <td>March 2025</td>
+                            <td><button class="btn btn-danger" onclick="deleteAsset('legacy-backup')">Delete Asset</button></td>
+                        </tr>
+                        <tr>
+                            <td>IT-008</td>
+                            <td>Cloud Backup Service</td>
+                            <td><span style="color: green;">Active</span></td>
+                            <td>Current</td>
+                            <td><button class="btn" disabled>Active Asset</button></td>
+                        </tr>
+                        <tr>
+                            <td>IT-009</td>
+                            <td>Network Storage Array</td>
+                            <td><span style="color: green;">Active</span></td>
+                            <td>Current</td>
+                            <td><button class="btn" disabled>Active Asset</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div id="task3-complete" style="display: none;">
+                    <div class="alert alert-success">
+                        <strong>Asset Removed!</strong> The legacy backup system has been successfully removed from the inventory. This ensures the CMMC assessment will only include active, relevant assets.
+                    </div>
+                    <button class="btn btn-success" onclick="completeTask('task3')">Complete Task 3</button>
+                </div>
+            </div>
+
+            <!-- Task 4: Create New Assets -->
+            <div id="task4" class="task-section">
+                <div class="task-header">
+                    <h2>Task 4: Add New Assets to Inventory</h2>
+                    <p>Create three new asset entries for recently acquired equipment.</p>
+                </div>
+
+                <div class="task-objective">
+                    <h3>Objective</h3>
+                    <p>Add the following new assets required for DoD contract compliance:</p>
+                    <ol>
+                        <li>Network Security Appliance (Firewall)</li>
+                        <li>Endpoint Detection and Response (EDR) System</li>
+                        <li>Security Information and Event Management (SIEM) Solution</li>
+                    </ol>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Context:</strong> FreshFlow Systems has acquired new cybersecurity equipment to meet CMMC 2.0 Level 2 requirements. These assets must be properly categorized and documented.
+                </div>
+
+                <button class="btn" onclick="showAddAssetModal()">Add New Asset</button>
+
+                <table class="asset-table">
+                    <thead>
+                        <tr>
+                            <th>Asset ID</th>
+                            <th>Asset Name</th>
+                            <th>Category</th>
+                            <th>Risk Level</th>
+                            <th>Function</th>
+                        </tr>
+                    </thead>
+                    <tbody id="new-assets-table">
+                        <!-- New assets will be added here -->
+                    </tbody>
+                </table>
+
+                <div id="task4-progress">
+                    <p>Assets created: <span id="assets-created">0</span> / 3</p>
+                </div>
+
+                <div id="task4-complete" style="display: none;">
+                    <div class="alert alert-success">
+                        <strong>Outstanding!</strong> You've successfully added all three required security assets to the inventory. These assets will be crucial for achieving CMMC compliance.
+                    </div>
+                    <button class="btn btn-success" onclick="completeTask('task4')">Complete Task 4</button>
+                    
+                    <div class="completion-summary">
+                        <h2>🎉 Training Complete!</h2>
+                        <p>Congratulations! You have successfully completed all cybersecurity audit training tasks.</p>
+                        <p><strong>Skills Acquired:</strong></p>
+                        <ul style="text-align: left; margin-top: 15px;">
+                            <li>Asset discovery and inventory management</li>
+                            <li>Asset information updates and maintenance</li>
+                            <li>Decommissioned asset removal procedures</li>
+                            <li>New asset creation and categorization</li>
+                        </ul>
+                        <p style="margin-top: 20px;">You are now prepared to assist with CMMC 2.0 compliance assessments and asset inventory management.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Assets -->
+    <div id="addAssetModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Add New Asset</h2>
+            <form id="assetForm">
+                <div class="form-group">
+                    <label>Asset ID:</label>
+                    <input type="text" id="newAssetId" required>
+                </div>
+                <div class="form-group">
+                    <label>Asset Name:</label>
+                    <input type="text" id="newAssetName" required>
+                </div>
+                <div class="form-group">
+                    <label>Category:</label>
+                    <select id="newAssetCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="SPA">Security Protection Asset (SPA)</option>
+                        <option value="CUI">CUI Asset</option>
+                        <option value="CRMA">Contractor Risk Managed Asset</option>
+                        <option value="SA">Specialized Asset</option>
+                        <option value="OOS">Out-of-Scope Asset</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Risk Level:</label>
+                    <select id="newAssetRisk" required>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Function:</label>
+                    <textarea id="newAssetFunction" required></textarea>
+                </div>
+                <button type="submit" class="btn">Add Asset</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Editing Assets -->
+    <div id="editAssetModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2 id="editModalTitle">Edit Asset</h2>
+            <form id="editAssetForm">
+                <div class="form-group">
+                    <label>Quantity:</label>
+                    <input type="number" id="editQuantity" required>
+                </div>
+                <div class="form-group">
+                    <label>Security Measures:</label>
+                    <textarea id="editSecurity" required></textarea>
+                </div>
+                <button type="submit" class="btn">Update Asset</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentTask = 'overview';
+        let completedTasks = [];
+        let assetsUpdated = 0;
+        let assetsCreated = 0;
+        let currentEditAsset = '';
+
+        // Initial asset data
+        let assets = [
+            {id: 'OT-001', name: 'Rockwell PLCs (ControlLogix)', category: 'SA', location: 'Packaging Facility', risk: 'High', function: 'Controls automated packaging processes'},
+            {id: 'IT-001', name: 'Workstations (HP EliteDesk)', category: 'CRMA', location: 'All sites', risk: 'Medium', function: 'Employee work terminals'},
+            {id: 'IT-002', name: 'Laptops (Dell Latitude)', category: 'CUI', location: 'HQ / R&D', risk: 'High', function: 'Mobile computing'},
+            {id: 'IT-003', name: 'Servers (VMware Cluster)', category: 'CUI', location: 'HQ Data Center', risk: 'High', function: 'Internal hosting / AD / file services'},
+            {id: 'OT-002', name: 'HMI Terminals', category: 'SA', location: 'Packaging Facility', risk: 'High', function: 'Human-machine interface for operators'},
+            {id: 'OT-003', name: 'Label Printers (Zebra Industrial)', category: 'CRMA', location: 'Packaging Facility', risk: 'Medium', function: 'High-speed label generation'},
+            {id: 'IT-004', name: 'Network Switches', category: 'SPA', location: 'All sites', risk: 'Medium', function: 'Network infrastructure'},
+            {id: 'IT-005', name: 'Wireless Access Points', category: 'SPA', location: 'All sites', risk: 'Medium', function: 'Wireless connectivity'},
+            {id: 'OT-004', name: 'Temperature Sensors', category: 'OOS', location: 'Warehouse', risk: 'Low', function: 'Environmental monitoring'},
+            {id: 'IT-006', name: 'IP Phones', category: 'OOS', location: 'All sites', risk: 'Low', function: 'Voice communications'}
+        ];
+
+        // Navigation and task management
+        function showTask(taskId) {
+            // Hide all task sections
+            document.querySelectorAll('.task-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected task
+            document.getElementById(taskId).classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            
+            currentTask = taskId;
+            
+            // Initialize task if needed
+            if (taskId === 'task1') {
+                populateAssetTable('task1');
+            }
+        }
+
+        function completeTask(taskId) {
+            if (!completedTasks.includes(taskId)) {
+                completedTasks.push(taskId);
+                
+                // Update task status
+                const statusElement = document.getElementById(taskId + '-status');
+                statusElement.textContent = 'Completed';
+                statusElement.classList.add('completed');
+                
+                // Update navigation item
+                const navItem = document.querySelector(`[onclick="showTask('${taskId}')"]`);
+                navItem.classList.add('completed');
+                
+                // Update progress bar
+                updateProgressBar();
+                
+                // Show next task if available, but end at task4
+                const taskNumber = parseInt(taskId.replace('task', ''));
+                if (taskNumber < 4) {
+                    const nextTask = 'task' + (taskNumber + 1);
+                    setTimeout(() => {
+                        showTask(nextTask);
+                    }, 1500);
+                } else if (taskNumber === 4) {
+                    // Show completion summary for final task
+                    setTimeout(() => {
+                        showCompletionMessage();
+                    }, 2000);
+                }
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = (completedTasks.length / 4) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+        }
+
+        function showCompletionMessage() {
+            // Additional completion message could be added here if needed
+            console.log('All training tasks completed successfully!');
+        }
+
+        // Task 1: Asset Lookup
+        function populateAssetTable(taskId) {
+            const tbody = document.getElementById('assets-tbody-' + taskId);
+            tbody.innerHTML = '';
+            
+            assets.forEach(asset => {
+                const row = tbody.insertRow();
+                row.className = 'category-' + asset.category.toLowerCase();
+                row.innerHTML = `
+                    <td>${asset.id}</td>
+                    <td>${asset.name}</td>
+                    <td>${asset.category}</td>
+                    <td>${asset.location}</td>
+                    <td><span class="risk-badge risk-${asset.risk.toLowerCase()}">${asset.risk}</span></td>
+                    <td>${asset.function}</td>
+                    <td><button class="btn" onclick="inspectAsset('${asset.id}')">Inspect</button></td>
+                `;
+            });
+        }
+
+        function searchAssets(taskId) {
+            const searchTerm = document.getElementById('search-input-' + taskId).value.toLowerCase();
+            const rows = document.querySelectorAll('#assets-tbody-' + taskId + ' tr');
+            let foundRockwell = false;
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                    row.style.backgroundColor = '#e8f5e8';
+                    if (text.includes('rockwell') || text.includes('plc')) {
+                        foundRockwell = true;
+                    }
+                } else {
+                    row.style.display = searchTerm ? 'none' : '';
+                    row.style.backgroundColor = '';
+                }
+            });
+            
+            if (foundRockwell && (searchTerm.includes('rockwell') || searchTerm.includes('plc'))) {
+                document.getElementById('task1-result').style.display = 'block';
+            }
+        }
+
+        function inspectAsset(assetId) {
+            const asset = assets.find(a => a.id === assetId);
+            if (asset && (asset.name.includes('Rockwell') || asset.name.includes('PLC'))) {
+                document.getElementById('task1-result').style.display = 'block';
+            }
+        }
+
+        // Task 2: Edit Assets
+        function editAsset(assetType) {
+            currentEditAsset = assetType;
+            const modal = document.getElementById('editAssetModal');
+            const title = document.getElementById('editModalTitle');
+            
+            if (assetType === 'laptop') {
+                title.textContent = 'Edit Laptops (Dell Latitude)';
+                document.getElementById('editQuantity').value = 20;
+                document.getElementById('editSecurity').value = 'Standard encryption';
+            } else if (assetType === 'server') {
+                title.textContent = 'Edit Servers (VMware Cluster)';
+                document.getElementById('editQuantity').value = 5;
+                document.getElementById('editSecurity').value = 'Basic access controls';
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editAssetModal').style.display = 'none';
+        }
+
+        document.getElementById('editAssetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const quantity = document.getElementById('editQuantity').value;
+            const security = document.getElementById('editSecurity').value;
+            
+            if (currentEditAsset === 'laptop') {
+                document.getElementById('laptop-quantity').textContent = quantity;
+                document.getElementById('laptop-security').textContent = security;
+            } else if (currentEditAsset === 'server') {
+                document.getElementById('server-quantity').textContent = quantity;
+                document.getElementById('server-security').textContent = security;
+            }
+            
+            assetsUpdated++;
+            document.getElementById('assets-updated').textContent = assetsUpdated;
+            
+            if (assetsUpdated >= 2) {
+                document.getElementById('task2-complete').style.display = 'block';
+            }
+            
+            closeEditModal();
+        });
+
+        // Task 3: Delete Asset
+        function deleteAsset(assetId) {
+            if (confirm('Are you sure you want to delete this decommissioned asset?')) {
+                document.getElementById(assetId).style.display = 'none';
+                document.getElementById('task3-complete').style.display = 'block';
+            }
+        }
+
+        // Task 4: Create New Assets
+        function showAddAssetModal() {
+            document.getElementById('addAssetModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('addAssetModal').style.display = 'none';
+        }
+
+        document.getElementById('assetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newAsset = {
+                id: document.getElementById('newAssetId').value,
+                name: document.getElementById('newAssetName').value,
+                category: document.getElementById('newAssetCategory').value,
+                risk: document.getElementById('newAssetRisk').value,
+                function: document.getElementById('newAssetFunction').value
+            };
+            
+            const tbody = document.getElementById('new-assets-table');
+            const row = tbody.insertRow();
+            row.className = 'category-' + newAsset.category.toLowerCase();
+            row.innerHTML = `
+                <td>${newAsset.id}</td>
+                <td>${newAsset.name}</td>
+                <td>${newAsset.category}</td>
+                <td><span class="risk-badge risk-${newAsset.risk.toLowerCase()}">${newAsset.risk}</span></td>
+                <td>${newAsset.function}</td>
+            `;
+            
+            assetsCreated++;
+            document.getElementById('assets-created').textContent = assetsCreated;
+            
+            if (assetsCreated >= 3) {
+                document.getElementById('task4-complete').style.display = 'block';
+            }
+            
+            document.getElementById('assetForm').reset();
+            closeModal();
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const addModal = document.getElementById('addAssetModal');
+            const editModal = document.getElementById('editAssetModal');
+            if (event.target === addModal) {
+                addModal.style.display = 'none';
+            }
+            if (event.target === editModal) {
+                editModal.style.display = 'none';
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgressBar();
+        });
+    </script>
+</body>
+</html>

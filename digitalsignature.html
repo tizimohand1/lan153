@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Lesson: Digital Signatures & X.509 Certificates</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --primary-green: #2e7d32;
+            --light-green: #e8f5e9;
+            --dark-green: #1b5e20;
+            --border-color: #cccccc;
+            --card-bg: #f9f9f9;
+            --accent-black: #000000;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --primary-green: #4caf50;
+            --light-green: #1b2e1c;
+            --dark-green: #81c784;
+            --border-color: #444444;
+            --card-bg: #1e1e1e;
+            --accent-black: #ffffff;
+            --shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            border-bottom: 3px solid var(--primary-green);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3 {
+            color: var(--accent-black);
+            margin-top: 0;
+        }
+
+        h1 {
+            border-left: 5px solid var(--primary-green);
+            padding-left: 15px;
+            font-size: 1.8rem;
+        }
+
+        .theme-toggle-btn {
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--dark-green);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media(min-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .highlight-box {
+            background-color: var(--light-green);
+            border-left: 4px solid var(--primary-green);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Interactive Lab Styles */
+        .interactive-lab {
+            border: 2px dashed var(--primary-green);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--accent-black);
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border-radius: 4px;
+        }
+
+        button.action-btn {
+            background-color: var(--accent-black);
+            color: var(--bg-color);
+            border: 2px solid var(--accent-black);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        button.action-btn:hover {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+            color: white;
+        }
+
+        .crypto-output {
+            background-color: #111;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 15px;
+            border-radius: 4px;
+            word-break: break-all;
+            margin-top: 10px;
+            min-height: 40px;
+        }
+
+        /* Certificate Inspector Layout */
+        .cert-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #222;
+            color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+        }
+
+        .cert-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+            border-bottom: 1px solid #333;
+            cursor: pointer;
+        }
+
+        .cert-row:hover {
+            background-color: #333;
+        }
+
+        .cert-label {
+            color: #81c784;
+            font-weight: bold;
+        }
+
+        .cert-value {
+            color: #ddd;
+            text-align: right;
+            max-width: 60%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .explanation-panel {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--light-green);
+            border: 1px solid var(--primary-green);
+            border-radius: 4px;
+            display: none;
+        }
+
+        .status-valid {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .status-invalid {
+            color: #c62828;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h2>Cybersecurity Foundations</h2>
+            <h1>Digital Signatures & X.509 Certificates</h1>
+        </div>
+        <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()">Dark Mode</button>
+    </header>
+
+    <main>
+        <div class="grid-container">
+            
+            <div class="card">
+                <h2>1. Core Concepts</h2>
+                <p>In asymmetric cryptography, keys work in matching pairs. To prove your identity online and guarantee your data hasn't been altered, you use a <strong>Digital Signature</strong>.</p>
+                
+                <h3>The Mechanics: Identity & Integrity</h3>
+                <ul>
+                    <li><strong>Integrity (Hashing):</strong> The original message is processed through a cryptographic hash function, creating a unique fixed-length mathematical fingerprint. If even one bit of the message changes, the hash changes completely.</li>
+                    <li><strong>Identity (Signing):</strong> The sender encrypts that hash using their private key. Because only the sender possesses that private key, this action establishes non-repudiation. Anyone with the corresponding public key can decrypt it to verify the sender's identity.</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>The Verification Formula:</strong><br>
+                    The recipient decrypts the received signature using the sender's public key to reveal the original hash. They then re-hash the received message. If <code>Hash A == Hash B</code>, identity and integrity are proven!
+                </div>
+
+                <h3>2. What is an X.509 Certificate?</h3>
+                <p>A digital signature proves who signed a message <em>only if you can trust that the public key belongs to them</em>. An <strong>X.509 Certificate</strong> solves this problem. It acts as a digital driver's license, bound to an identity by a trusted third party called a <strong>Certificate Authority (CA)</strong>.</p>
+                <p>Click on the fields in the Certificate Inspector module on the right to examine the anatomy of a standard X.509 certificate.</p>
+            </div>
+
+            <div class="grid-container" style="grid-template-columns: 1fr; gap: 20px;">
+                
+                <div class="card interactive-lab">
+                    <h2>Activity: Digital Signature Lab</h2>
+                    <p>Simulate how a private key signs data. Change the payload text to see how integrity fails if data is tampered with during transmission.</p>
+                    
+                    <label for="payload">Step 1: Enter Course Payload Data</label>
+                    <input type="text" id="payload" value="Grade Update: Student A = A+" oninput="generateCrypto()">
+
+                    <label for="signingKey">Step 2: Choose Signing Key</label>
+                    <select id="signingKey" onchange="generateCrypto()">
+                        <option value="professor_private_key_###01">Professor's Private Key</option>
+                        <option value="attacker_malicious_key_XYZ">Attacker's Private Key</option>
+                    </select>
+
+                    <button class="action-btn" onclick="tamperData()">Tamper With Transmission Data</button>
+
+                    <h3 style="margin-top:20px;">Live Cryptographic Transmission</h3>
+                    
+                    <label>Generated Hash (SHA-256 equivalent proxy):</label>
+                    <div id="hashOutput" class="crypto-output"></div>
+
+                    <label>Digital Signature (Hash encrypted with Private Key):</label>
+                    <div id="signatureOutput" class="crypto-output"></div>
+
+                    <label>Verification Status (Calculated by Recipient):</label>
+                    <div id="verificationStatus" style="padding: 10px; margin-top: 5px; border-radius: 4px; font-weight: bold;"></div>
+                </div>
+
+                <div class="card interactive-lab">
+                    <h2>Activity: X.509 Certificate Inspector</h2>
+                    <p>Click components of this parsed X.509 structure to inspect its architectural standard purpose.</p>
+                    
+                    <div class="cert-container">
+                        <div class="cert-row" onclick="inspectField('version', 'Version', 'Specifies the X.509 standard version. Version 3 supports certificate extensions like Subject Alternative Names (SAN).')">
+                            <span class="cert-label">Version</span>
+                            <span class="cert-value">v3</span>
+                        </div>
+                        <div class="cert-row" onclick="inspectField('serial', 'Serial Number', 'A unique positive integer assigned by the CA to distinguish this certificate from all others it issues.')">
+                            <span class="cert-label">Serial Number</span>
+                            <span class="cert-value">0C:A4:7F:12:9A...</span>
+                        </div>
+                        <div class="cert-row" onclick="inspectField('issuer', 'Issuer (CA)', 'The identity of the trusted Certificate Authority that generated, validated, and cryptographically signed this certificate.')">
+                            <span class="cert-label">Issuer</span>
+                            <span class="cert-value">CN=DigiCert Global CA G2, O=DigiCert Inc</span>
+                        </div>
+                        <div class="cert-row" onclick="inspectField('validity', 'Validity Period', 'Contains Not Before and Not After dates. The certificate is invalid if used outside this absolute timeframe.')">
+                            <span class="cert-label">Validity Period</span>
+                            <span class="cert-value">2026-01-01 to 2027-01-01</span>
+                        </div>
+                        <div class="cert-row" onclick="inspectField('subject', 'Subject', 'The entity or identity holding ownership of the public key contained within this certificate (e.g., domain name).')">
+                            <span class="cert-label">Subject</span>
+                            <span class="cert-value">CN=aisorcery.ai, O=Educational AI Consortium</span>
+                        </div>
+                        <div class="cert-row" onclick="inspectField('pubkey', 'Subject Public Key Info', 'The actual public key being distributed, along with an identifier detailing the algorithm used (e.g., RSA or ECC).')">
+                            <span class="cert-label">Public Key</span>
+                            <span class="cert-value">ECC (256 bits) [04:A1:C9...]</span>
+                        </div>
+                        <div class="cert-row" onclick="inspectField('sigAlgo', 'Signature Algorithm', 'The specific cryptographic hash and encryption algorithm combo used by the CA to sign this certificate.')">
+                            <span class="cert-label">Signature Algorithm</span>
+                            <span class="cert-value">sha256WithRSAEncryption</span>
+                        </div>
+                    </div>
+
+                    <div id="inspectorExplanation" class="explanation-panel">
+                        <strong id="explanationTitle">Field Name</strong>
+                        <p id="explanationText">Click a certificate field row above to inspect its instructional breakdown here.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme Management
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', targetTheme);
+            document.getElementById('themeToggle').innerText = targetTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+        }
+
+        // Basic structural pseudo-hashing for instructional visualization
+        function pseudoHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = (hash << 5) - hash + str.charCodeAt(i);
+                hash |= 0; 
+            }
+            return "HASH-" + Math.abs(hash).toString(16).toUpperCase();
+        }
+
+        // State monitoring variable for tampering injection tracking
+        let actualPayloadInTransit = "";
+
+        function generateCrypto() {
+            const payloadInput = document.getElementById('payload').value;
+            const selectedKey = document.getElementById('signingKey').value;
+            
+            if(actualPayloadInTransit === "" || !event || event.target.id === "payload" || event.target.id === "signingKey") {
+                actualPayloadInTransit = payloadInput;
+            }
+
+            // Calculations
+            const messageHash = pseudoHash(payloadInput);
+            document.getElementById('hashOutput').innerText = messageHash;
+
+            // Signature is hash + structural key sign representation
+            const generatedSignature = btoa(messageHash + "SIGNED_BY_" + selectedKey);
+            document.getElementById('signatureOutput').innerText = generatedSignature;
+
+            verifyTransmission(actualPayloadInTransit, generatedSignature);
+        }
+
+        function tamperData() {
+            actualPayloadInTransit = actualPayloadInTransit + " [Modified by Attacker]";
+            alert("Intercepted! Data changed in transit to: \n\"" + actualPayloadInTransit + "\"");
+            
+            const selectedKey = document.getElementById('signingKey').value;
+            const originalHash = pseudoHash(document.getElementById('payload').value);
+            const currentSignature = btoa(originalHash + "SIGNED_BY_" + selectedKey);
+
+            verifyTransmission(actualPayloadInTransit, currentSignature);
+        }
+
+        function verifyTransmission(receivedPayload, receivedSignature) {
+            const statusBox = document.getElementById('verificationStatus');
+            
+            // Recipient decrypts signature back to structural components
+            try {
+                const decryptedSigData = atob(receivedSignature);
+                
+                // Extract original signed hash details
+                const originalHash = decryptedSigData.split("SIGNED_BY_")[0];
+                const signingKeyUsed = decryptedSigData.split("SIGNED_BY_")[1];
+
+                // Recipient calculates fresh hash of whatever payload they received
+                const recalculateReceivedHash = pseudoHash(receivedPayload);
+
+                if (originalHash === recalculateReceivedHash && signingKeyUsed === "professor_private_key_###01") {
+                    statusBox.innerHTML = "✓ SUCCESS: Signature Matches! Identity Verified (Professor) and Integrity Complete (Data unaltered).";
+                    statusBox.className = "status-valid";
+                    statusBox.style.backgroundColor = "var(--light-green)";
+                } else if (signingKeyUsed !== "professor_private_key_###01" && originalHash === recalculateReceivedHash) {
+                    statusBox.innerHTML = "⚠ WARNING: Integrity intact, but Identity Verification Failed! Data was signed by an unauthorized/malicious key configuration.";
+                    statusBox.className = "status-invalid";
+                    statusBox.style.backgroundColor = "#ffebee";
+                } else {
+                    statusBox.innerHTML = "✗ CRITICAL ALARM: Integrity Compromised! The signature verification failed because the transmitted payload data was manipulated.";
+                    statusBox.className = "status-invalid";
+                    statusBox.style.backgroundColor = "#ffebee";
+                }
+            } catch (e) {
+                statusBox.innerHTML = "Error parsing signature data components.";
+                statusBox.className = "status-invalid";
+            }
+        }
+
+        // X.509 Inspector Engine
+        function inspectField(id, title, explanation) {
+            const panel = document.getElementById('inspectorExplanation');
+            const titleField = document.getElementById('explanationTitle');
+            const textField = document.getElementById('explanationText');
+
+            panel.style.display = 'block';
+            titleField.innerText = title;
+            textField.innerText = explanation;
+        }
+
+        // Bootstrap initialization values on render
+        window.onload = function() {
+            generateCrypto();
+        };
+    </script>
+</body>
+</html>

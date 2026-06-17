@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security+ Lesson: Security Control Categories</title>
+    <style>
+        /* --- DESIGN TOKENS & RESPONSIVE CSS VARIABLES --- */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --text-muted: #555555;
+            
+            /* Academic Green Palette */
+            --primary-green: #1b5e20; /* Deep Forest Green */
+            --accent-green: #2e7d32;  /* Vibrant Instructional Green */
+            --light-green: #e8f5e9;   /* Very Soft Green Accent */
+            --border-color: #cccccc;
+            --card-bg: #f8f9fa;
+            
+            /* Interface Elements */
+            --success-color: #2e7d32;
+            --error-color: #c62828;
+            --header-bg: #111111;
+            --header-text: #ffffff;
+            --toggle-bg: #2e7d32;
+            --toggle-text: #ffffff;
+        }
+
+        /* --- DARK MODE PREFERENCES --- */
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #f5f5f5;
+            --text-muted: #aaaaaa;
+            
+            --primary-green: #4caf50;
+            --accent-green: #81c784;
+            --light-green: #1b301c;
+            --border-color: #333333;
+            --card-bg: #1e1e1e;
+            
+            --header-bg: #000000;
+            --header-text: #ffffff;
+            --toggle-bg: #ffffff;
+            --toggle-text: #111111;
+        }
+
+        /* --- BASE STYLES --- */
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* --- MAIN HEADER & BRANDING --- */
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary-green);
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .header-title p {
+            margin: 0.2rem 0 0 0;
+            font-size: 0.9rem;
+            color: var(--accent-green);
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+
+        #theme-toggle {
+            background-color: var(--toggle-bg);
+            color: var(--toggle-text);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        #theme-toggle:hover {
+            opacity: 0.9;
+        }
+
+        /* --- CONTAINERS & GRID LAYOUTS --- */
+        main {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-block {
+            margin-bottom: 3.5rem;
+        }
+
+        h2.section-heading {
+            font-size: 1.8rem;
+            color: var(--primary-green);
+            border-bottom: 2px solid var(--primary-green);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        p.lead-text {
+            font-size: 1.15rem;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- ANALOGY SECTION --- */
+        .analogy-container {
+            background-color: var(--light-green);
+            border-left: 6px solid var(--primary-green);
+            border-radius: 4px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .analogy-container h3 {
+            margin-top: 0;
+            color: var(--primary-green);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* --- CATEGORIES GRID DISPLAY --- */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .category-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: 5px solid var(--primary-green);
+            border-radius: 6px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .category-card h3 {
+            margin-top: 0;
+            color: var(--primary-green);
+            font-size: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .category-card .focus-badge {
+            background-color: var(--primary-green);
+            color: #ffffff;
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            margin-bottom: 1rem;
+            width: fit-content;
+        }
+
+        .category-card ul {
+            padding-left: 1.2rem;
+            margin: 0.5rem 0 0 0;
+        }
+
+        .category-card li {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* --- INTERACTIVE SORTING CHALLENGE --- */
+        .activity-outer {
+            border: 2px solid var(--primary-green);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--card-bg);
+            margin: 3rem 0;
+        }
+
+        .activity-header {
+            background-color: var(--primary-green);
+            color: #ffffff;
+            padding: 1.2rem 1.5rem;
+        }
+
+        .activity-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .activity-header p {
+            margin: 0.3rem 0 0 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .activity-body {
+            padding: 1.5rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: var(--border-color);
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-green);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Scenario Display Box */
+        .interactive-card {
+            background-color: var(--bg-color);
+            border: 2px dashed var(--primary-green);
+            border-radius: 6px;
+            padding: 2rem;
+            text-align: center;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .interactive-card h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--primary-green);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+        }
+
+        .interactive-card p {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Target Sorter Layout */
+        .target-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .target-button {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.2rem 1rem;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .target-button:hover {
+            border-color: var(--primary-green);
+            background-color: var(--light-green);
+            transform: translateY(-2px);
+        }
+
+        .target-button:active {
+            transform: translateY(1px);
+        }
+
+        /* Feedback Modal Area */
+        .feedback-panel {
+            margin-top: 1.5rem;
+            padding: 1.2rem;
+            border-radius: 6px;
+            display: none;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .feedback-success {
+            display: block;
+            background-color: var(--light-green);
+            border-left: 5px solid var(--success-color);
+            color: var(--text-color);
+        }
+
+        .feedback-error {
+            display: block;
+            background-color: #ffebee;
+            border-left: 5px solid var(--error-color);
+            color: #111111;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .score-display {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .score-display h4 {
+            font-size: 2rem;
+            margin: 0 0 1rem 0;
+            color: var(--primary-green);
+        }
+
+        .reset-btn {
+            background-color: var(--primary-green);
+            color: #ffffff;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .reset-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* --- SVG Inline Icons Support --- */
+        .icon {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+            fill: currentColor;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            .target-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-title">
+        <h1>CompTIA Security+ Course</h1>
+        <p>Lesson 1.3: Security Control Categories</p>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle Light or Dark Mode">Dark Mode</button>
+</header>
+
+<main>
+    <!-- Section 1: Introduction -->
+    <section class="section-block" id="introduction">
+        <h2 class="section-heading">Introduction to Security Control Categories</h2>
+        <p class="lead-text">
+            When we defend an enterprise architecture, we implement safeguards called <strong>Controls</strong>. 
+            To systematically audit, deploy, and organize these safeguards, the cybersecurity industry classifies them. 
+            The four primary categories—<strong>Managerial, Operational, Technical, and Physical</strong>—represent 
+            implementation perspectives that classify <em>who or what</em> enforces a control.
+        </p>
+    </section>
+
+    <!-- Section 2: Castle Analogy -->
+    <section class="section-block" id="analogy">
+        <div class="analogy-container">
+            <h3>
+                <!-- Inline Castle SVG Icon -->
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M2,13H5V11H7V13H10V11H12V13H15V11H17V13H20V11H22V21H2V13M12,15A3,3 0 0,0 9,18H15A3,3 0 0,0 12,15Z" />
+                </svg>
+                The Medieval Castle Analogy
+            </h3>
+            <p>
+                Imagine you are protecting a royal fortress. To achieve true defense-in-depth, you need different types of guards, barriers, and laws:
+            </p>
+            <ul>
+                <li><strong>Managerial Control:</strong> The King's written royal charter specifying treaties, guard vetting policies, and emergency protocol procedures.</li>
+                <li><strong>Operational Control:</strong> The shift rotations of the guards, the daily password challenges they verbalize, and the disaster response drills they run.</li>
+                <li><strong>Technical Control:</strong> The hidden trapdoors, gears that lower the iron portcullis, and mechanical drawbridge release triggers.</li>
+                <li><strong>Physical Control:</strong> The solid stone walls, deep defensive water moats, iron-bar structures, and high turrets.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Section 3: The Four Categories -->
+    <section class="section-block" id="categories-detail">
+        <h2 class="section-heading">The Four Implementation Perspectives</h2>
+        
+        <div class="categories-grid">
+            <!-- Managerial -->
+            <div class="category-card">
+                <div>
+                    <h3>Managerial</h3>
+                    <div class="focus-badge">Focus: Oversight & Strategy</div>
+                    <p>Controls targeting administrative management, organizational policies, governance, assessments, and strategic risk postures. Executed by <strong>leadership and policy makers</strong>.</p>
+                </div>
+                <div>
+                    <strong>Key Examples:</strong>
+                    <ul>
+                        <li>Written Security Policies (e.g., AUP)</li>
+                        <li>Regular Risk Assessments</li>
+                        <li>Business Impact Analysis (BIA)</li>
+                        <li>Compliance Auditing checks</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Operational -->
+            <div class="category-card">
+                <div>
+                    <h3>Operational</h3>
+                    <div class="focus-badge">Focus: People & Procedures</div>
+                    <p>Controls executed primarily by <strong>people</strong> executing daily organizational processes rather than automated systems. Focused on physical-human interaction and workflow adherence.</p>
+                </div>
+                <div>
+                    <strong>Key Examples:</strong>
+                    <ul>
+                        <li>Security Awareness Training</li>
+                        <li>Incident Response Procedures</li>
+                        <li>Backup Configuration restores</li>
+                        <li>User account onboarding workflows</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Technical -->
+            <div class="category-card">
+                <div>
+                    <h3>Technical</h3>
+                    <div class="focus-badge">Focus: Logical & Automated</div>
+                    <p>Security safeguards executed and enforced by <strong>systems, software, hardware, or networks</strong> automatically without direct continuous human configuration.</p>
+                </div>
+                <div>
+                    <strong>Key Examples:</strong>
+                    <ul>
+                        <li>Firewall filtering policies</li>
+                        <li>Data Encryption algorithms</li>
+                        <li>Multi-Factor Authentication (MFA)</li>
+                        <li>Intrusion Detection Systems (IDS)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Physical -->
+            <div class="category-card">
+                <div>
+                    <h3>Physical</h3>
+                    <div class="focus-badge">Focus: Tangible Barriers</div>
+                    <p>Controls designed to prevent real-world physical intrusion or damage to tangible hardware, facilities, structural rooms, and hardware infrastructure.</p>
+                </div>
+                <div>
+                    <strong>Key Examples:</strong>
+                    <ul>
+                        <li>Steel doors & deadbolts</li>
+                        <li>Security perimeter fences</li>
+                        <li>Motion sensors & CCTV cameras</li>
+                        <li>HVAC units & Fire suppression</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Interactive Sorting Activity -->
+    <section class="section-block" id="interactive-activity">
+        <h2 class="section-heading">Test Your Knowledge</h2>
+        
+        <div class="activity-outer">
+            <div class="activity-header">
+                <h3>The Control Categorization Challenge</h3>
+                <p>Read the security control card below, identify <em>who or what</em> enforces it, and select the correct Category!</p>
+            </div>
+            
+            <div class="activity-body">
+                <!-- Progress Indicators -->
+                <div class="progress-container">
+                    <div id="activity-progress" class="progress-bar"></div>
+                </div>
+
+                <div id="game-container">
+                    <!-- Current Scenario -->
+                    <div class="interactive-card" id="card-display">
+                        <h4>Security Safeguard Card</h4>
+                        <p id="scenario-text">Loading...</p>
+                    </div>
+
+                    <!-- Targets / Option buttons -->
+                    <div class="target-grid" id="options-panel">
+                        <button class="target-button" onclick="submitChoice('Managerial')">
+                            <strong>Managerial</strong>
+                            <span style="font-size:0.8rem; font-weight:normal; opacity:0.8; margin-top:0.2rem;">Oversight / Law</span>
+                        </button>
+                        <button class="target-button" onclick="submitChoice('Operational')">
+                            <strong>Operational</strong>
+                            <span style="font-size:0.8rem; font-weight:normal; opacity:0.8; margin-top:0.2rem;">People / Procedures</span>
+                        </button>
+                        <button class="target-button" onclick="submitChoice('Technical')">
+                            <strong>Technical</strong>
+                            <span style="font-size:0.8rem; font-weight:normal; opacity:0.8; margin-top:0.2rem;">Logical / Code</span>
+                        </button>
+                        <button class="target-button" onclick="submitChoice('Physical')">
+                            <strong>Physical</strong>
+                            <span style="font-size:0.8rem; font-weight:normal; opacity:0.8; margin-top:0.2rem;">Tangible / Perimeter</span>
+                        </button>
+                    </div>
+
+                    <!-- Feedback Panel -->
+                    <div class="feedback-panel" id="feedback-display"></div>
+                </div>
+
+                <!-- Final Score Display -->
+                <div class="score-display hidden" id="score-panel">
+                    <h4>Challenge Completed!</h4>
+                    <p id="score-text">Your score: 0 / 0</p>
+                    <p>Excellent work expanding your grasp of Security+ Control Classifications.</p>
+                    <button class="reset-btn" onclick="resetChallenge()">Restart Challenge</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    /* --- DATA: CHANNELS FOR ASSESSMENT --- */
+    const challengeScenarios = [
+        {
+            control: "Deploying a Network Intrusion Prevention System (NIPS) that dynamically blocks malicious IP traffic at the perimeter router.",
+            category: "Technical",
+            explanation: "Correct! The firewall/IPS processes routing tables and packet headers automatically using software/hardware parameters without human execution."
+        },
+        {
+            control: "Mandating that all system administrators sign an 'Acceptable Use Policy' detailing management expectations of user access rights.",
+            category: "Managerial",
+            explanation: "Correct! Policies, standards, and rules drafted by leadership are administrative managerial directives."
+        },
+        {
+            control: "Constructing a concrete-reinforced perimeter wall and installing barbed wire above the facility grounds to slow down trespassers.",
+            category: "Physical",
+            explanation: "Correct! Structural walls and barriers represent tangible defenses designed to secure actual equipment and property."
+        },
+        {
+            control: "Instructing HR personnel to perform physical background reference checks on newly hired administrative employees.",
+            category: "Operational",
+            explanation: "Correct! Human-centric actions—like manual background investigations and hiring workflows—are classified as operational controls."
+        },
+        {
+            control: "Configuring AES-256 Bit Encryption on all corporate laptops to prevent hard drive contents from being readable if stolen.",
+            category: "Technical",
+            explanation: "Correct! Hardware and software cryptographic processing is a pure logical (Technical) implementation safeguard."
+        },
+        {
+            control: "Running a fire evacuation drill on a Tuesday morning to ensure building occupants know where to assemble outside safely.",
+            category: "Operational",
+            explanation: "Correct! Drills, daily checklist operations, and user instructions represent procedural, human-enforced operational steps."
+        }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const displayCard = document.getElementById("scenario-text");
+    const feedbackBox = document.getElementById("feedback-display");
+    const progressFill = document.getElementById("activity-progress");
+    const gameContainer = document.getElementById("game-container");
+    const scorePanel = document.getElementById("score-panel");
+    const scoreText = document.getElementById("score-text");
+
+    /* --- THEME TOGGLE ACTION --- */
+    const themeBtn = document.getElementById("theme-toggle");
+    const docElement = document.documentElement;
+
+    themeBtn.addEventListener("click", () => {
+        const activeTheme = docElement.getAttribute("data-theme");
+        if (activeTheme === "dark") {
+            docElement.removeAttribute("data-theme");
+            themeBtn.textContent = "Dark Mode";
+        } else {
+            docElement.setAttribute("data-theme", "dark");
+            themeBtn.textContent = "Light Mode";
+        }
+    });
+
+    /* --- APP LOGIC --- */
+    function initChallenge() {
+        currentIndex = 0;
+        score = 0;
+        progressFill.style.width = "0%";
+        scorePanel.classList.add("hidden");
+        gameContainer.classList.remove("hidden");
+        feedbackBox.className = "feedback-panel";
+        feedbackBox.style.display = "none";
+        renderScenario();
+    }
+
+    function renderScenario() {
+        if(currentIndex < challengeScenarios.length) {
+            displayCard.textContent = challengeScenarios[currentIndex].control;
+            updateProgressBar();
+        } else {
+            finishChallenge();
+        }
+    }
+
+    function updateProgressBar() {
+        const percent = (currentIndex / challengeScenarios.length) * 100;
+        progressFill.style.width = percent + "%";
+    }
+
+    function submitChoice(userChoice) {
+        const currentData = challengeScenarios[currentIndex];
+        feedbackBox.style.display = "block";
+
+        if(userChoice === currentData.category) {
+            score++;
+            feedbackBox.className = "feedback-panel feedback-success";
+            feedbackBox.textContent = currentData.explanation;
+        } else {
+            feedbackBox.className = "feedback-panel feedback-error";
+            feedbackBox.textContent = `Incorrect. "${currentData.control}" is actually a ${currentData.category} control category. ${currentData.explanation}`;
+        }
+
+        // Disable standard options briefly to let user process feedback before moving forward
+        toggleOptionButtons(true);
+
+        setTimeout(() => {
+            currentIndex++;
+            feedbackBox.style.display = "none";
+            toggleOptionButtons(false);
+            renderScenario();
+        }, 3200);
+    }
+
+    function toggleOptionButtons(disableState) {
+        const buttons = document.querySelectorAll("#options-panel button");
+        buttons.forEach(btn => btn.disabled = disableState);
+    }
+
+    function finishChallenge() {
+        progressFill.style.width = "100%";
+        gameContainer.classList.add("hidden");
+        scorePanel.classList.remove("hidden");
+        scoreText.textContent = `You scored ${score} out of ${challengeScenarios.length} correctly.`;
+    }
+
+    function resetChallenge() {
+        initChallenge();
+    }
+
+    // Fire application load
+    window.onload = () => {
+        initChallenge();
+    };
+</script>
+
+</body>
+</html>

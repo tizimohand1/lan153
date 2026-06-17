@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson: OS, Application & Mobile Vulnerabilities</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --primary-green: #1e7e34;
+            --light-green: #eaf5ec;
+            --dark-green: #145523;
+            --accent-black: #222222;
+            --border-color: #cccccc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--accent-black);
+            color: #ffffff;
+            padding: 2rem;
+            border-bottom: 5px solid var(--primary-green);
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        header p {
+            margin: 0.5rem 0 0 0;
+            color: #a8e6b8;
+            font-size: 1.1rem;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--primary-green);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--accent-black);
+            border-bottom: 2px solid var(--light-green);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        .vulnerability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .vuln-box {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 4px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .vuln-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(30, 126, 52, 0.15);
+            border-color: var(--primary-green);
+        }
+
+        .vuln-box h3 {
+            margin-top: 0;
+            color: var(--primary-green);
+        }
+
+        .image-container {
+            text-align: center;
+            margin: 2rem 0;
+            background: #fafafa;
+            padding: 1rem;
+            border: 1px dashed var(--primary-green);
+            border-radius: 4px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 2px;
+        }
+
+        /* Interactive Exercise Styles */
+        .interactive-container {
+            background-color: var(--light-green);
+            border: 2px solid var(--primary-green);
+            border-radius: 6px;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .scenario-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 1.2rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 1px solid var(--accent-black);
+            color: var(--accent-black);
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background-color: var(--accent-black);
+            color: #ffffff;
+        }
+
+        .option-btn.correct {
+            background-color: var(--primary-green) !important;
+            color: white !important;
+            border-color: var(--dark-green) !important;
+        }
+
+        .option-btn.incorrect {
+            background-color: #dc3545 !important;
+            color: white !important;
+            border-color: #bd2130 !important;
+        }
+
+        .feedback-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback-box.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .feedback-box.danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .score-tracker {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-black);
+            margin-bottom: 1rem;
+            text-align: right;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--accent-black);
+            color: #ffffff;
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            border-top: 4px solid var(--primary-green);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>OS, Application & Mobile Vulnerabilities</h1>
+        <p>Analyzing Threats, Mitigations, and the Attack Surface</p>
+    </header>
+
+    <main>
+        <!-- Lesson Overview -->
+        <section class="section-card">
+            <h2>Core Concepts</h2>
+            <p>Modern security landscapes require deep comprehension of risks existing across the entire tech stack. Vulnerabilities can be categorization into specific operational layers, allowing engineers to strategically audit and mitigate threats before exploitation occurs.</p>
+            
+            <div class="vulnerability-grid">
+                <div class="vuln-box">
+                    <h3>Operating System Flaws</h3>
+                    <p>OS vulnerabilities typically reside in the system architecture itself. These include <strong>kernel exploits</strong>, which compromise the core control system, <strong>privilege escalation</strong> pathways, and vulnerable <strong>unpatched system services</strong> running with root permissions.</p>
+                </div>
+                <div class="vuln-box">
+                    <h3>Application Flaws</h3>
+                    <p>Software weaknesses often arise from flawed code logic. Key threats include memory allocation oversight like <strong>buffer overflows</strong>, synchronization conflicts known as <strong>race conditions</strong>, and system exposures caused by <strong>insecure defaults</strong>.</p>
+                </div>
+                <div class="vuln-box">
+                    <h3>Mobile Weaknesses</h3>
+                    <p>The cellular paradigm introduces risks such as <strong>sideloading applications</strong> bypassing safe marketplaces, <strong>insecure local storage</strong> components, and <strong>over-privileged apps</strong> leaking excessive metadata.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Threat Deep Dive & Structural Visualization -->
+        <section class="section-card">
+            <h2>Attack Mechanisms & CVSS Prioritization</h2>
+            <p>Attack vectors like <strong>side-channel attacks</strong> (extracting cryptographic keys via physical emissions or timing metrics) and general <strong>memory corruption</strong> bypass standard access controls entirely. To address these threats effectively, teams utilize the Common Vulnerability Scoring System (CVSS) to prioritize engineering patches efficiently based on exploitability metrics, impact vectors, and risk severity scores.</p>
+            
+            <!-- Verbatim inclusion of image reference -->
+            <div class="image-container">
+                <p style="margin-top:0; font-weight: bold; color: var(--primary-green);">Reference Reference Architectural Layout Diagram:</p>
+                <img src="image_2ccf1c.png" alt="OS, Application and Mobile Attack Surfaces Matrix">
+            </div>
+        </section>
+
+        <!-- Interactive Classroom Lab Exercise -->
+        <section class="interactive-container">
+            <h2>Interactive Sandbox Challenge</h2>
+            <p>Evaluate the architectural threat scenarios described below. Identify the accurate flaw mechanics to assess the risk landscape and update the environment posture analyzer.</p>
+            
+            <div class="score-tracker">Score: <span id="current-score">0</span> / 3</div>
+
+            <!-- Question 1 -->
+            <div class="scenario-box" id="q1-box">
+                <p><strong>Scenario 1:</strong> An attacker inputs an oversized data packet into an active application network socket. The program fails to validate input boundary limitations, overwriting sequential instructions in memory and altering control execution flow.</p>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(1, false, this)">Side-Channel Attack</button>
+                    <button class="option-btn" onclick="checkAnswer(1, true, this)">Buffer Overflow / Memory Corruption</button>
+                    <button class="option-btn" onclick="checkAnswer(1, false, this)">Insecure App Defaults</button>
+                </div>
+                <div class="feedback-box" id="feedback-1"></div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="scenario-box" id="q2-box">
+                <p><strong>Scenario 2:</strong> A local user leverages a bug within the kernel's memory management subsystem to seamlessly shift execution execution space permissions from user-level configuration rings to absolute rings of control (Ring 0).</p>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(2, true, this)">Privilege Escalation</button>
+                    <button class="option-btn" onclick="checkAnswer(2, false, this)">Sideloading Risk Exposure</button>
+                    <button class="option-btn" onclick="checkAnswer(2, false, this)">Race Condition Conflict</button>
+                </div>
+                <div class="feedback-box" id="feedback-2"></div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="scenario-box" id="q3-box">
+                <p><strong>Scenario 3:</strong> A smartphone user manual-installs a modified application binary file package directly from a third-party unvetted server forum, completely skipping standard cryptographically-signed application marketplace evaluations.</p>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(3, false, this)">Kernel Exploit Framework</button>
+                    <button class="option-btn" onclick="checkAnswer(3, false, this)">Side-Channel Cryptography Leak</button>
+                    <button class="option-btn" onclick="checkAnswer(3, true, this)">Mobile Sideloading Vulnerability</button>
+                </div>
+                <div class="feedback-box" id="feedback-3"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Cybersecurity & Artificial Intelligence Learning Platform &copy; 2026</p>
+    </footer>
+
+    <script>
+        let correctAnswersCount = 0;
+        const answeredQuestions = {};
+
+        function checkAnswer(questionNum, isCorrect, selectedButton) {
+            // Check if question has already been answered to avoid double score allocation
+            if (answeredQuestions[questionNum]) return;
+
+            const parentContainer = selectedButton.parentElement;
+            const buttons = parentContainer.querySelectorAll('.option-btn');
+            const feedbackElement = document.getElementById(`feedback-${questionNum}`);
+
+            // Freeze choices
+            buttons.forEach(btn => btn.disabled = true);
+            answeredQuestions[questionNum] = true;
+
+            if (isCorrect) {
+                selectedButton.classList.add('correct');
+                feedbackElement.className = "feedback-box success";
+                feedbackElement.innerText = "Correct Choice! Threat precisely identified and logged.";
+                correctAnswersCount++;
+                document.getElementById('current-score').innerText = correctAnswersCount;
+            } else {
+                selectedButton.classList.add('incorrect');
+                feedbackElement.className = "feedback-box danger";
+                feedbackElement.innerText = "Incorrect Identification. System vulnerability profile mismatched.";
+                
+                // Highlight the correct answer for student review
+                buttons.forEach(btn => {
+                    if (btn.getAttribute('onclick').includes('true')) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+            
+            feedbackElement.style.display = "block";
+        }
+    </script>
+</body>
+</html>
